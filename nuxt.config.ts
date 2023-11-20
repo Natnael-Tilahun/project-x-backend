@@ -12,7 +12,15 @@ export default defineNuxtConfig({
       link: [],
     },
   },
-  modules: ["@nuxtjs/tailwindcss", "@davestewart/nuxt-scrollbar", "nuxt-icon"],
+  modules: [
+    "@nuxtjs/tailwindcss",
+    "@nuxtjs/color-mode",
+    "@davestewart/nuxt-scrollbar",
+    "nuxt-icon",
+  ],
+  colorMode: {
+    classSuffix: "",
+  },
   hooks: {
     "components:dirs": (dirs) => {
       dirs.unshift({
