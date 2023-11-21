@@ -1,13 +1,22 @@
 <template>
   <NuxtScrollbar
     tag="aside"
-    class="h-screen hidden bg-secondary text-secondary-foreground md:block py-5 md:w-64 font-medium border-r shrink-0"
+    class="bg-secondary text-secondary-foreground py-5 font-medium border-r shrink-0"
   >
-    <h1
-      class="text-2xl font-bold h-11 px-10 backdrop-blur-md self-center shadow-sm"
-    >
-      Project X
-    </h1>
+    <div class="flex w-full items-center justify-between px-3">
+      <h1
+        class="lg:text-2xl text-xl font-bold h-11 px-4 md:px-10 backdrop-blur-md self-center shadow-sm"
+      >
+        Project X
+      </h1>
+      <Icon
+        name="material-symbols:cancel"
+        size="22"
+        @click="closeMenuNav"
+        class="md:hidden md:w-0"
+      ></Icon>
+    </div>
+
     <ul class="flex flex-col gap-4 p-5">
       <template v-for="(link, index) in mainLinks" :key="index">
         <UiCollapsible
@@ -43,6 +52,7 @@
                 v-for="(item, dropdownIndex) in link.dropdown"
                 :key="dropdownIndex"
                 :to="item.link"
+                @click="closeMenuNav"
                 class="w-full border-l-2 hover:rounded-r-lg group-hover:border-primary hover:bg-accent px-4 py-3 rounded-none hover:text-primary"
               >
                 {{ item.title }}
@@ -56,6 +66,7 @@
         <NuxtLink
           v-else
           :to="link.link"
+          @click="closeMenuNav"
           class="flex gap-4 py-3 px-2 hover:bg-popover hover:text-primary rounded-lg transition"
         >
           <span><Icon :name="link.icon" :size="link.size"></Icon></span>
@@ -152,10 +163,16 @@ const mainLinks = [
   },
 ];
 const isOpen = ref(false);
+
+const emits = defineEmits(["closeMenuNav"]); // Define custom event
+
+const closeMenuNav = () => {
+  emits("closeMenuNav"); // Emit the toggleTheme event to the parent
+};
 </script>
 
 <style scoped>
 .router-link-active {
-  @apply font-bold text-primary;
+  @apply font-bold text-primary bg-popover;
 }
 </style>

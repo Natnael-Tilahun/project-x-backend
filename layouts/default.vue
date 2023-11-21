@@ -13,27 +13,27 @@ const capitalizeRouteName = (name: any) => {
   return "";
 };
 
-const colorMode = useColorMode(); // Set the initial color mode
+// const colorMode = useColorMode(); // Set the initial color mode
 
-const setTheme = (newTheme: any) => {
-  localStorage.setItem(LOCAL_STORAGE_THEME_KEY, newTheme);
-  colorMode.value = newTheme;
-};
+// const setTheme = (newTheme: any) => {
+//   localStorage.setItem(LOCAL_STORAGE_THEME_KEY, newTheme);
+//   colorMode.value = newTheme;
+// };
 
-const toggleTheme = () => {
-  // colorMode.value = colorMode.value === "light" ? "dark" : "light";
-  if (colorMode.value === "dark") {
-    colorMode.value = "light";
-    setTheme("light");
-    // document.body.classList.add("dark");
-  } else {
-    colorMode.value = "dark";
-    setTheme("dark");
-    // document.body.classList.remove("dark");
-  }
-};
+// const toggleTheme = () => {
+//   // colorMode.value = colorMode.value === "light" ? "dark" : "light";
+//   if (colorMode.value === "dark") {
+//     colorMode.value = "light";
+//     setTheme("light");
+//     // document.body.classList.add("dark");
+//   } else {
+//     colorMode.value = "dark";
+//     setTheme("dark");
+//     // document.body.classList.remove("dark");
+//   }
+// };
 
-console.log("colorMode", colorMode.value);
+// console.log("colorMode", colorMode.value);
 
 const isSidebarCollapsed = useSidebarCollapsed();
 
@@ -42,49 +42,53 @@ const toggleSidebar = () => {
   console.log("isSidebarcollapsed : ", isSidebarCollapsed.value);
 };
 
-// onMounted(() => {
-//   // const isDarkModePreferred = window.matchMedia(
-//   //   "(prefers-color-scheme: dark)"
-//   // ).matches;
-
-//   const themeFromLocalStorage = localStorage.getItem(LOCAL_STORAGE_THEME_KEY);
-
-//   if (themeFromLocalStorage) {
-//     colorMode.value = themeFromLocalStorage;
-//     // setTheme(themeFromLocalStorage);
-//   }
-//   // else {
-//   //   colorMode.value = isDarkModePreferred ? "dark" : "light";
-//   //   setTheme(isDarkModePreferred ? "dark" : "light");
-//   // }
-// });
+const closeMenuNav = () => {
+  isSidebarCollapsed.value = false;
+};
 </script>
 
 <template>
   <div
-    class="flex w-full min-h-screen bg-background"
-    :class="{
-      root: colorMode.value == 'light',
-      dark: colorMode.value == 'dark',
-    }"
+    class="w-full min-h-screen bg-background grid grid-cols-12 lg:grid-cols-9 xl:grid-cols-7"
+    :class="[
+      {
+        ' relative h-screen  w-full': !isSidebarCollapsed,
+      },
+      {
+        ' static  w-full': isSidebarCollapsed,
+      },
+    ]"
   >
+    <!-- ' hidden  border-4 border-white   md:backdrop md:w-[250px]' -->
+    <!-- 'text-green-300 w-2/3  border-4 border-white z-50 absolute top-0 md:block  md:backdrop md:w-[250px] ' -->
     <!-- Page Sidebar -->
-    <Sidebar class="" :style="{ width: isSidebarCollapsed ? '0' : '250px' }" />
+    <Sidebar
+      class="md:col-span-3 col-span-12 md:static lg:col-span-2 xl:col-span-1"
+      :class="[
+        {
+          'hidden col-span-12  md:block xl:col-span-1  md:col-span-3':
+            !isSidebarCollapsed,
+        },
+        {
+          'col-span-12 absolute w-2/3 md:hidden shadow-lg z-50':
+            isSidebarCollapsed,
+        },
+      ]"
+      @closeMenuNav="closeMenuNav"
+    />
 
-    <!-- <div class="md:hidden">
-      <VPImage
-        alt="Dashboard"
-        width="1280"
-        height="1214"
-        class="block"
-        :image="{
-          dark: '/examples/dashboard-dark.png',
-          light: '/examples/dashboard-light.png',
-        }"
-      />
-    </div> -->
-
-    <div class="hidden md:basis-full flex-col md:flex">
+    <div
+      class="col-span-full md:col-span-9 lg:col-span-7 xl:col-span-6 md:flex"
+      :class="[
+        {
+          'w-full   h-full top-0 left-0   flex-col md:flex':
+            !isSidebarCollapsed,
+        },
+        {
+          ' absolute  w-full h-full flex-col flex': isSidebarCollapsed,
+        },
+      ]"
+    >
       <!-- Page Header -->
       <div class="border-b">
         <div class="flex h-16 items-center px-8">

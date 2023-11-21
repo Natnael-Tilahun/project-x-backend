@@ -14,13 +14,13 @@ export default defineNuxtConfig({
   },
   modules: [
     "@nuxtjs/tailwindcss",
-    "@nuxtjs/color-mode",
+    // "@nuxtjs/color-mode",
     "@davestewart/nuxt-scrollbar",
     "nuxt-icon",
   ],
-  colorMode: {
-    classSuffix: "",
-  },
+  // colorMode: {
+  //   classSuffix: "",
+  // },
   hooks: {
     "components:dirs": (dirs) => {
       dirs.unshift({
