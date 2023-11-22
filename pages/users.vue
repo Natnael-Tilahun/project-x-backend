@@ -10,12 +10,36 @@ async function getData(): Promise<User[]> {
   return [
     {
       id: "728ed52f",
-      phone: +251933654654,
-      email: "m@example.com",
-      amount: 100,
-      accounts: [1000179835555, 10003333444444],
+      fullName: "Natnael Tilahun",
+      userName: "Nhatty",
+      email: "natnaeltilahun97@example.com",
+      role: "admin",
+      status: "active",
     },
-    // ...
+    {
+      id: "728ed52f",
+      fullName: "Natnael Tilahun",
+      userName: "Nhatty",
+      email: "abebekebede@example.com",
+      role: "admin",
+      status: "active",
+    },
+    {
+      id: "728ed52f",
+      fullName: "Natnael Tilahun",
+      userName: "Nhatty",
+      email: "natnaeltilahun97@example.com",
+      role: "admin",
+      status: "active",
+    },
+    {
+      id: "728ed52f",
+      fullName: "Natnael Tilahun",
+      userName: "Nhatty",
+      email: "natnaeltilahun97@example.com",
+      role: "admin",
+      status: "active",
+    },
   ];
 }
 
@@ -25,7 +49,11 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="data.length > 0" class="py-10 mx-auto">
+  <div v-if="data.length > 0" class="py-5 flex flex-col space-y-10 mx-auto">
+    <UiButton class="w-fit self-end px-5"
+      ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>New
+      User</UiButton
+    >
     <DataTable :columns="columns" :data="data" />
   </div>
   <div v-else class="py-10 flex justify-center items-center">

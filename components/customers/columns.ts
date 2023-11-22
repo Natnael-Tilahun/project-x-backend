@@ -1,22 +1,21 @@
 import type { ColumnDef } from "@tanstack/vue-table";
-import { Button } from "../ui/button";
-import { ArrowUpDown } from "lucide-vue-next";
+
 import { Checkbox } from "../ui/checkbox";
-import DataTableRowActionsVue from "../DataTableRowActions.vue";
 import DataTableColumnHeaderVue from "../DataTableColumnHeader.vue";
+import DataTableRowActionsVue from "../DataTableRowActions.vue";
+// import DataTableColumnHeader from "@/components/DataTableDropDown.vue";
+// import { DataTableColumnHeader } from "#build/components";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export interface User {
+export interface Customer {
   id: string;
-  fullName: string;
-  userName: string;
+  amount: number;
+  status: "pending" | "processing" | "success" | "failed";
   email: string;
-  role: string;
-  status: string;
 }
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<Customer>[] = [
   {
     id: "select",
     header: ({ table }) =>
@@ -40,28 +39,8 @@ export const columns: ColumnDef<User>[] = [
     header: "Id",
   },
   {
-    accessorKey: "fullName",
-    header: ({ column }) =>
-      h(DataTableColumnHeaderVue, { column, title: "Full Name" }),
-    cell: ({ row }) => {
-      return h(
-        "div",
-        { class: "max-w-[180px] whitespace-nowrap truncate font-medium" },
-        row.getValue("fullName")
-      );
-    },
-  },
-  {
-    accessorKey: "userName",
-    header: ({ column }) =>
-      h(DataTableColumnHeaderVue, { column, title: "UserName" }),
-    cell: ({ row }) => {
-      return h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
-        row.getValue("userName")
-      );
-    },
+    accessorKey: "status",
+    header: "Status",
   },
   {
     accessorKey: "email",
@@ -78,13 +57,18 @@ export const columns: ColumnDef<User>[] = [
       ),
   },
   {
-    accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => h("div", { class: "lowercase" }, row.getValue("role")),
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "amount",
+    header: ({ column }) =>
+      h(DataTableColumnHeaderVue, { column, title: "Amount" }),
+    cell: ({ row }) => {
+      const amount = parseFloat(row.getValue("amount"));
+      const formatted = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(amount);
+
+      return h("div", { class: " font-medium" }, formatted);
+    },
   },
   {
     header: "Actions",

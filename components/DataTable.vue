@@ -1,13 +1,20 @@
 <script setup lang="ts" generic="TData, TValue">
-import type { ColumnDef, SortingState } from "@tanstack/vue-table";
+import type {
+  ColumnDef,
+  SortingState,
+  ColumnFiltersState,
+  VisibilityState,
+} from "@tanstack/vue-table";
 import {
   FlexRender,
   getCoreRowModel,
   getPaginationRowModel,
   useVueTable,
   getSortedRowModel,
+  getFilteredRowModel,
 } from "@tanstack/vue-table";
 import { valueUpdater } from "@/lib/utils";
+import { ChevronDown } from "lucide-vue-next";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -17,6 +24,9 @@ interface DataTableProps<TData, TValue> {
 const props = defineProps<DataTableProps<any, any>>();
 
 const sorting = ref<SortingState>([]);
+const columnFilters = ref<ColumnFiltersState>([]);
+const columnVisibility = ref<VisibilityState>({});
+const rowSelection = ref({});
 
 const table = useVueTable({
   data: props.data,
@@ -25,16 +35,34 @@ const table = useVueTable({
   getPaginationRowModel: getPaginationRowModel(),
   getSortedRowModel: getSortedRowModel(),
   onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
+  onColumnFiltersChange: (updaterOrValue) =>
+    valueUpdater(updaterOrValue, columnFilters),
+  getFilteredRowModel: getFilteredRowModel(),
+  onColumnVisibilityChange: (updaterOrValue) =>
+    valueUpdater(updaterOrValue, columnVisibility),
+  onRowSelectionChange: (updaterOrValue) =>
+    valueUpdater(updaterOrValue, rowSelection),
+
   state: {
     get sorting() {
       return sorting.value;
+    },
+    get columnFilters() {
+      return columnFilters.value;
+    },
+    get columnVisibility() {
+      return columnVisibility.value;
+    },
+    get rowSelection() {
+      return rowSelection.value;
     },
   },
 });
 </script>
 
 <template>
-  <div>
+  <div class="space-y-4">
+    <DataTableToolbar :table="table" />
     <div class="border rounded-md">
       <UiTable>
         <UiTableHeader>
@@ -76,23 +104,6 @@ const table = useVueTable({
         </UiTableBody>
       </UiTable>
     </div>
-    <div class="flex items-center justify-end py-4 space-x-2">
-      <UiButton
-        variant="outline"
-        size="sm"
-        :disabled="!table.getCanPreviousPage()"
-        @click="table.previousPage()"
-      >
-        Previous
-      </UiButton>
-      <UiButton
-        variant="outline"
-        size="sm"
-        :disabled="!table.getCanNextPage()"
-        @click="table.nextPage()"
-      >
-        Next
-      </UiButton>
-    </div>
+    <DataTablePagination :table="table" />
   </div>
 </template>
