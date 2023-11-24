@@ -4,10 +4,17 @@ import { computed } from "vue";
 // import { taskSchema } from "../data/schema";
 // import { type Task } from "../data/schema";
 
+const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 const props = defineProps<DataTableRowActionsProps<any>>();
+
+function viewCustomerDetail(id: string) {
+  // alert(id);
+  navigateTo(`customerDetails/${id}`);
+  navigator.clipboard.writeText(id);
+}
 
 // const task = computed(() => taskSchema.parse(props.row.original));
 </script>
@@ -24,6 +31,9 @@ const props = defineProps<DataTableRowActionsProps<any>>();
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
+      <UiDropdownMenuItem @click="viewCustomerDetail(row.original.customerId)"
+        >View</UiDropdownMenuItem
+      >
       <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
       <UiDropdownMenuItem>Make a copy</UiDropdownMenuItem>
       <UiDropdownMenuItem>Favorite</UiDropdownMenuItem>

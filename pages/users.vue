@@ -54,7 +54,11 @@ onMounted(async () => {
       ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>New
       User</UiButton
     >
-    <DataTable :columns="columns" :data="data" />
+    <DataTable :columns="columns" :data="data">
+      <template v-slot:toolbar="{ table }">
+        <DataTableToolbar :table="table" />
+      </template>
+    </DataTable>
   </div>
   <div v-else class="py-10 flex justify-center items-center">
     <Loading />

@@ -4,6 +4,7 @@ import { ref, onMounted } from "vue";
 const LOCAL_STORAGE_THEME_KEY = "theme";
 
 const route = useRoute();
+console.log("route: ", route);
 const capitalizeRouteName = (name: any) => {
   if (name) {
     return name && typeof name === "string"

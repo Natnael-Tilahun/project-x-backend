@@ -11,19 +11,19 @@ interface DataTableToolbarProps<TData> {
 
 const props = defineProps<DataTableToolbarProps<any>>();
 
-const isFiltered = computed(
-  () => props.table.getState().columnFilters.length > 0
-);
+// const isFiltered = computed(
+//   () => props.table.getState().columnFilters.length > 0
+// );
 </script>
 
 <template>
   <div class="flex items-center justify-between">
     <div class="flex flex-1 items-center space-x-2">
       <UiInput
-        placeholder="Filter tasks..."
-        :model-value="(table.getColumn('email')?.getFilterValue() as string) ?? ''"
+        placeholder="Filter ..."
+        :model-value="(table?.getColumn('email')?.getFilterValue() as string) ?? ''"
         class="h-8 w-[150px] lg:w-[250px]"
-        @input="table.getColumn('email')?.setFilterValue($event.target.value)"
+        @input="table?.getColumn('email')?.setFilterValue($event.target.value)"
       />
     </div>
     <DataTableViewOptions :table="table" />

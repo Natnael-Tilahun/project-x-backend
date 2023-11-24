@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
+import CustomerDataTableToolbar from "~/components/CustomerDataTableSearchbar.vue.js";
 import DataTable from "~/components/DataTable.vue";
 import { columns, type Customer } from "~/components/customers/columns";
 
@@ -9,88 +10,144 @@ async function getData(): Promise<Customer[]> {
   // Fetch data from your API here.
   return [
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
+      customerId: "728ed52f",
+      customerPhone: "933665566",
+      userId: "728ed52fadfasd",
+      email: "abebekebede@example.com",
+      customerName: "Abebe Kebede",
+      accountNumber: "1000433433234334",
+      identification: "Passport",
+      status: "Active",
     },
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "natnaeltilahun97@gmail.com",
+      customerId: "hh448ed52f",
+      customerPhone: "923334455",
+      userId: "66ffd52fadfasd",
+      email: "dsdfs@example.com",
+      customerName: "Abebe Kebede",
+      accountNumber: "1000433433234334",
+      identification: "Gov Id",
+      status: "Active",
     },
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
+      customerId: "55ddd52f",
+      customerPhone: "911223344",
+      userId: "55eed52fadfasd",
+      email: "dsdsd@example.com",
+      customerName: "Abebe Kebede",
+      accountNumber: "1000433433234334",
+      identification: "Driver License",
+      status: "Active",
     },
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
-      email: "m@example.com",
+      customerId: "gg33d52f",
+      customerPhone: "944554433",
+      userId: "728ed52fadfasd",
+      email: "ggdfd@example.com",
+      customerName: "Abebe Kebede",
+      accountNumber: "1000433433234334",
+      identification: "Passport",
+      status: "UnEnrolled",
     },
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
+      customerId: "728ed52f",
+      customerPhone: "974635322",
+      userId: "728ed52fadfasd",
       email: "m@example.com",
+      customerName: "Abebe Kebede",
+      accountNumber: "1000433433234334",
+      identification: "Passport",
+      status: "Locked",
     },
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
+      customerId: "728ed52f",
+      customerPhone: "923453322",
+      userId: "728ed52fadfasd",
       email: "m@example.com",
+      customerName: "Abebe Kebede",
+      accountNumber: "1000433433234334",
+      identification: "Passport",
+      status: "New",
     },
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
+      customerId: "728ed52f",
+      customerPhone: "964534222",
+      userId: "728ed52fadfasd",
       email: "m@example.com",
+      customerName: "Abebe Kebede",
+      accountNumber: "1000433433234334",
+      identification: "Passport",
+      status: "Suspended",
     },
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
+      customerId: "728ed52f",
+      customerPhone: "933665566",
+      userId: "728ed52fadfasd",
       email: "m@example.com",
+      customerName: "Abebe Kebede",
+      accountNumber: "1000433433234334",
+      identification: "Passport",
+      status: "processing",
     },
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
+      customerId: "728ed52f",
+      customerPhone: "933665566",
+      userId: "728ed52fadfasd",
       email: "m@example.com",
+      customerName: "Abebe Kebede",
+      accountNumber: "1000433433234334",
+      identification: "Passport",
+      status: "Active",
     },
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
+      customerId: "728ed52f",
+      customerPhone: "933665566",
+      userId: "728ed52fadfasd",
       email: "m@example.com",
+      customerName: "Abebe Kebede",
+      accountNumber: "1000433433234334",
+      identification: "Passport",
+      status: "Active",
     },
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
+      customerId: "728ed52f",
+      customerPhone: "933665566",
+      userId: "728ed52fadfasd",
       email: "m@example.com",
+      customerName: "Abebe Kebede",
+      accountNumber: "1000433433234334",
+      identification: "Passport",
+      status: "Active",
     },
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
+      customerId: "728ed52f",
+      customerPhone: "933665566",
+      userId: "728ed52fadfasd",
       email: "m@example.com",
+      customerName: "Abebe Kebede",
+      accountNumber: "1000433433234334",
+      identification: "Passport",
+      status: "Active",
     },
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
+      customerId: "728ed52f",
+      customerPhone: "933665566",
+      userId: "728ed52fadfasd",
       email: "m@example.com",
+      customerName: "Abebe Kebede",
+      accountNumber: "1000433433234334",
+      identification: "Passport",
+      status: "Active",
     },
     {
-      id: "728ed52f",
-      amount: 100,
-      status: "pending",
+      customerId: "728ed52f",
+      customerPhone: "933665566",
+      userId: "728ed52fadfasd",
       email: "m@example.com",
+      customerName: "Abebe Kebede",
+      accountNumber: "1000433433234334",
+      identification: "Passport",
+      status: "Active",
     },
     // ...
   ];
@@ -99,18 +156,21 @@ async function getData(): Promise<Customer[]> {
 onMounted(async () => {
   data.value = await getData();
 });
-
-console.log("columns: ", columns, "data: ", data);
 </script>
 
 <!-- Render DataTable only if data is available -->
 <template>
   <div v-if="data.length > 0" class="py-5 flex flex-col space-y-10 mx-auto">
     <UiButton class="w-fit self-end px-5"
-      ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>New
+      ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
       Customer</UiButton
     >
-    <DataTable :columns="columns" :data="data" />
+
+    <DataTable :columns="columns" :data="data">
+      <template v-slot:toolbar="{ table }">
+        <CustomerDataTableToolbar :table="table" />
+      </template>
+    </DataTable>
   </div>
   <div v-else class="py-10 flex justify-center w-full">
     <Loading />
