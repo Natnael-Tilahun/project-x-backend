@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import CustomerDataTableToolbar from "~/components/CustomerDataTableSearchbar.vue.js";
 import DataTable from "~/components/DataTable.vue";
 import { columns, type Customer } from "~/components/customers/columns";
 
@@ -168,7 +167,7 @@ onMounted(async () => {
 
     <DataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
-        <CustomerDataTableToolbar :table="table" />
+        <CustomerDataTableSearchbar :table="table" />
       </template>
     </DataTable>
   </div>
