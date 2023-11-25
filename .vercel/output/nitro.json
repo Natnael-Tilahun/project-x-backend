@@ -1,7 +1,8 @@
 {
-  "date": "2023-11-25T16:34:01.684Z",
-  "preset": "vercel-static",
+  "date": "2023-11-25T17:28:47.373Z",
+  "preset": "vercel",
   "commands": {
-    "preview": "npx serve ./static"
+    "preview": "",
+    "deploy": ""
   }
 }
