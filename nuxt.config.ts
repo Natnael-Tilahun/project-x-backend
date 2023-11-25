@@ -1,8 +1,9 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   nitro: {
-    preset: "vercel-edge",
+    preset: "vercel-static",
   },
+  ssr: false,
   devtools: {
     enabled: true,
     timeline: {
