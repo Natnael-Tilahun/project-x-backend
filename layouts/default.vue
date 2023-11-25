@@ -101,7 +101,7 @@ const closeMenuNav = () => {
               {{
                 route.path === "/"
                   ? "Dashboard"
-                  : capitalizeRouteName(route.name)
+                  : capitalizeRouteName(route.fullPath)
               }}
             </p>
           </div>

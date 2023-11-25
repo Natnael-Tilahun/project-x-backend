@@ -26,7 +26,7 @@
       >
         <div class="flex gap-10">
           <NuxtLink
-            to="/"
+            to="/log/transactions"
             class="flex shadow-lg rounded-lg bg-card border-[1px] p-8 gap-5 items-start justify-center"
           >
             <Icon

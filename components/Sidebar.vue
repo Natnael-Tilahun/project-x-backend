@@ -89,7 +89,7 @@ const mainLinks = [
   {
     title: "Messages",
     icon: "ic:outline-wechat",
-    link: "/test",
+    link: "/messages",
     size: "22",
     showDropdown: false,
   },
