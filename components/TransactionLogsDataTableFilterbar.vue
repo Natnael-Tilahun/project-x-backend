@@ -37,25 +37,27 @@ const showOtherFilteration = ref(false);
 
       <div
         v-if="showOtherFilteration"
-        class="space-y-6 shadow-lg p-10 border-[1px]"
+        class="space-y-6 shadow-lg w-full p-5 md:p-10 border-[1px]"
       >
         <h1 class="text-xl text-left font-semibold text-primary">
           Filter Data By
         </h1>
-        <div class="grid grid-cols-3 items-center gap-7">
+        <div
+          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 w-full items-center gap-7"
+        >
           <div class="space-y-2">
             <label for="activityType">Activity Type</label>
             <UiSelect
               id="activityType"
               :model-value="(table.getColumn('activityType')?.getFilterValue() as string) ?? ''"
-              class="h-10 w-[150px] lg:w-[250px]"
+              class="h-10 w-full md:w-[150px] lg:w-[250px]"
               @input="
                 table
                   .getColumn('activityType')
                   ?.setFilterValue($event.target.value)
               "
             >
-              <UiSelectTrigger class="w-[180px]">
+              <UiSelectTrigger class="md:w-[180px]">
                 <UiSelectValue placeholder="Activity Type" />
               </UiSelectTrigger>
               <UiSelectContent>
@@ -74,7 +76,7 @@ const showOtherFilteration = ref(false);
               id="date"
               placeholder="Date"
               :model-value="(table.getColumn('dataAndTime')?.getFilterValue() as string) ?? ''"
-              class="h-10 w-[150px] lg:w-[250px]"
+              class="h-10 w-full md:w-[150px] lg:w-[250px]"
               @input="
                 table
                   .getColumn('dataAndTime')
@@ -89,7 +91,7 @@ const showOtherFilteration = ref(false);
               id="amount"
               placeholder="Amount"
               :model-value="(table.getColumn('amount')?.getFilterValue() as string) ?? ''"
-              class="h-10 w-[150px] lg:w-[250px]"
+              class="h-10 w-full md:w-[150px] lg:w-[250px]"
               @input="
                 table.getColumn('amount')?.setFilterValue($event.target.value)
               "

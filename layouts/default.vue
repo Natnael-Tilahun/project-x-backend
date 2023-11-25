@@ -92,12 +92,12 @@ const closeMenuNav = () => {
     >
       <!-- Page Header -->
       <div class="border-b">
-        <div class="flex h-16 items-center px-8">
+        <div class="flex h-16 items-center px-3 md:px-8">
           <!-- <DashboardMainNav class="mx-6" /> -->
-          <div class="flex items-center gap-5">
+          <div class="flex items-center gap-3 md:gap-5">
             <OpenSidebarIcon v-if="isSidebarCollapsed" @click="toggleSidebar" />
             <CloseSidebarIcon v-else @click="toggleSidebar" />
-            <p class="text-lg font-medium">
+            <p class="text-lg font-medium hidden md:visible">
               {{
                 route.path === "/"
                   ? "Dashboard"
@@ -106,7 +106,7 @@ const closeMenuNav = () => {
             </p>
           </div>
 
-          <div class="ml-auto flex items-center space-x-10">
+          <div class="ml-auto flex items-center space-x-2 md:space-x-10">
             <DashboardSearch />
             <!-- <div class="flex">
               <Icon
@@ -129,7 +129,7 @@ const closeMenuNav = () => {
       </div>
 
       <!-- Page Main Content -->
-      <div class="space-y-10 p-8 pt-6">
+      <div class="space-y-10 p-5 md:p-8 pt-6">
         <slot />
       </div>
     </div>

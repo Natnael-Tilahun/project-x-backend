@@ -18,16 +18,18 @@ const props = defineProps<DataTableToolbarProps<any>>();
 
 <template>
   <div
-    class="flex flex-col gap-10 w-full shadow-lg p-10 border-[1px] mb-10 h-full justify-between"
+    class="flex flex-col gap-10 w-full shadow-lg p-7 md:p-10 border-[1px] mb-10 h-full justify-between"
   >
     <h1 class="text-xl text-left font-semibold text-primary">
       Search Customer By
     </h1>
-    <div class="grid grid-cols-3 items-center gap-7">
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center gap-7"
+    >
       <UiInput
         placeholder="Phone Number"
         :model-value="(table.getColumn('customerPhone')?.getFilterValue() as string) ?? ''"
-        class="h-10 w-[150px] lg:w-[250px]"
+        class="h-10 md:w-[150px] lg:w-[250px]"
         @input="
           table.getColumn('customerPhone')?.setFilterValue($event.target.value)
         "
@@ -35,19 +37,19 @@ const props = defineProps<DataTableToolbarProps<any>>();
       <UiInput
         placeholder="Email"
         :model-value="(table.getColumn('email')?.getFilterValue() as string) ?? ''"
-        class="h-10 w-[150px] lg:w-[250px]"
+        class="h-10 md:w-[150px] lg:w-[250px]"
         @input="table.getColumn('email')?.setFilterValue($event.target.value)"
       />
       <UiInput
         placeholder="User ID"
         :model-value="(table.getColumn('userId')?.getFilterValue() as string) ?? ''"
-        class="h-10 w-[150px] lg:w-[250px]"
+        class="h-10 md:w-[150px] lg:w-[250px]"
         @input="table.getColumn('userId')?.setFilterValue($event.target.value)"
       />
       <UiInput
         placeholder="Customer ID"
         :model-value="(table.getColumn('customerId')?.getFilterValue() as string) ?? ''"
-        class="h-10 w-[150px] lg:w-[250px]"
+        class="h-10 md:w-[150px] lg:w-[250px]"
         @input="
           table.getColumn('customerId')?.setFilterValue($event.target.value)
         "
@@ -55,7 +57,7 @@ const props = defineProps<DataTableToolbarProps<any>>();
       <UiInput
         placeholder="Customer Name"
         :model-value="(table.getColumn('customerName')?.getFilterValue() as string) ?? ''"
-        class="h-10 w-[150px] lg:w-[250px]"
+        class="h-10 md:w-[150px] lg:w-[250px]"
         @input="
           table.getColumn('customerName')?.setFilterValue($event.target.value)
         "
@@ -63,14 +65,14 @@ const props = defineProps<DataTableToolbarProps<any>>();
       <UiInput
         placeholder="Account Number"
         :model-value="(table.getColumn('accountNumber')?.getFilterValue() as string) ?? ''"
-        class="h-10 w-[150px] lg:w-[250px]"
+        class="h-10 md:w-[150px] lg:w-[250px]"
         @input="
           table.getColumn('accountNumber')?.setFilterValue($event.target.value)
         "
       />
       <div class="flex">
         <UiSelect class="border-4">
-          <UiSelectTrigger class="w-[180px] bg-gray-100">
+          <UiSelectTrigger class="md:w-[180px] bg-gray-100">
             <UiSelectValue placeholder="Select Identification" />
           </UiSelectTrigger>
           <UiSelectContent>
@@ -86,7 +88,7 @@ const props = defineProps<DataTableToolbarProps<any>>();
           <UiInput
             placeholder="Identification No"
             :model-value="(table.getColumn('identification')?.getFilterValue() as string) ?? ''"
-            class="h-10 w-[150px] lg:w-[250px]"
+            class="h-10 mg:w-[150px] lg:w-[250px]"
             @input="
               table
                 .getColumn('identification')

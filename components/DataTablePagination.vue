@@ -11,8 +11,10 @@ defineProps<DataTablePaginationProps<any>>();
 </script>
 
 <template>
-  <div class="flex items-center justify-between px-2">
-    <div class="flex-1 text-sm text-muted-foreground">
+  <div
+    class="flex flex-col md:flex-row gap-6 md:gap-0 items-center justify-between px-2"
+  >
+    <div class="flex-1 self-start text-sm text-muted-foreground">
       {{ table.getFilteredSelectedRowModel().rows.length }} of
       {{ table.getFilteredRowModel().rows.length }} row(s) selected.
     </div>

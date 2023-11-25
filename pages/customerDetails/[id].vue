@@ -7,8 +7,8 @@ const openItems = ref(["item-1"]);
     <div
       class="w-full flex flex-col gap-5 p-6 bg-card shadow-none border-[0.5px] rounded-md"
     >
-      <div class="flex justify-between">
-        <h1 class="text-xl items-center text-gray-500">Abebe Kebede</h1>
+      <div class="flex items-center justify-between">
+        <h1 class="md:text-xl items-center text-gray-500">Abebe Kebede</h1>
         <UiButton class="p-6 rounded-lg">Enroll Now</UiButton>
       </div>
 
@@ -18,13 +18,13 @@ const openItems = ref(["item-1"]);
         >
           <UiTabsTrigger
             value="profile"
-            class="text-xl py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+            class="md:text-xl py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Profile
           </UiTabsTrigger>
           <UiTabsTrigger
             value="deposits"
-            class="text-xl py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+            class="md:text-xl py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
             disabled
           >
             Deposits
@@ -38,11 +38,11 @@ const openItems = ref(["item-1"]);
           <div class="flex flex-col space-y-4">
             <UiAccordion type="single" default-value="item-1" collapsible>
               <UiAccordionItem value="item-1">
-                <UiAccordionTrigger class="text-lg"
+                <UiAccordionTrigger class="md:text-lg"
                   >General Informations</UiAccordionTrigger
                 >
                 <UiAccordionContent class="w-full" v-model="openItems">
-                  <div class="grid grid-cols-3 gap-10 w-full">
+                  <div class="grid lg:grid-cols-3 gap-4 md:gap-10 w-full">
                     <div class="space-y-0">
                       <label
                         for="phoneNumber"
@@ -93,21 +93,21 @@ const openItems = ref(["item-1"]);
     <div
       class="w-full flex flex-col gap-5 p-6 bg-card shadow-none border-[1px] rounded-md"
     >
-      <UiTabs default-value="contact" class="space-y-4 w-full">
+      <UiTabs default-value="contact" class="md:space-y-4 w-full">
         <UiTabsList class="flex bg-white justify-start py-7 px-0 border-[1px]">
           <UiTabsTrigger
             value="contact"
-            class="text-xl py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary"
+            class="md:text-xl py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary"
           >
             Contact
           </UiTabsTrigger>
         </UiTabsList>
 
-        <UiTabsContent value="contact" class="space-y-4 text-base">
-          <div class="flex flex-col gap-4 w-full">
-            <div class="space-y-0 border-b-2 py-4">
-              <div class="flex justify-between">
-                <h1 class="text-lg">Communication</h1>
+        <UiTabsContent value="contact" class="space-y-4 text-sm md:text-base">
+          <div class="flex flex-col md:gap-4 w-full">
+            <div class="space-y-6 md:space-y-0 border-b-2 py-4">
+              <div class="flex items-center justify-between">
+                <h1 class="text-base md:text-lg">Communication</h1>
                 <UiButton class="pr-5" variant="outline">
                   <Icon
                     name="material-symbols:edit-outline"
@@ -116,7 +116,7 @@ const openItems = ref(["item-1"]);
                   Edit</UiButton
                 >
               </div>
-              <div class="grid grid-cols-2">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="space-y-0">
                   <label class="text-muted-foreground uppercase"
                     >Preferred Contact Method</label
@@ -134,9 +134,9 @@ const openItems = ref(["item-1"]);
               </div>
             </div>
 
-            <div class="space-y-0 border-b-2 py-4">
-              <div class="flex justify-between">
-                <h1 class="text-lg">Address</h1>
+            <div class="space-y-6 md:space-y-0 border-b-2 py-4">
+              <div class="flex items-center justify-between">
+                <h1 class="text-base md:text-lg">Address</h1>
                 <UiButton class="pr-5" variant="outline">
                   <Icon
                     name="material-symbols:edit-outline"
@@ -145,22 +145,23 @@ const openItems = ref(["item-1"]);
                   Edit</UiButton
                 >
               </div>
-              <div class="grid grid-cols-2">
-                <div class="space-y-1">
-                  <p class="text-muted-foreground uppercase">
-                    Home
-                    <UiBadge class="bg-green-700 ml-4"
+
+              <div class="grid grid-cols-1 md:grid-cols-2">
+                <div class="md:space-y-1 space-y-2">
+                  <div class="flex gap-1">
+                    <p class="text-muted-foreground uppercase">Home</p>
+                    <UiBadge class="bg-green-700 md:ml-4 text-xs"
                       >Primary Communication Address</UiBadge
                     >
-                  </p>
+                  </div>
                   <p>Piassa,Addis Abeba,Ethiopia</p>
                 </div>
               </div>
             </div>
 
-            <div class="space-y-0 border-b-2 py-4">
-              <div class="flex justify-between">
-                <h1 class="text-lg">Contact Numbers</h1>
+            <div class="md:space-y-0 space-y-6 border-b-2 py-4">
+              <div class="flex items-center justify-between">
+                <h1 class="md:text-lg text-base">Contact Numbers</h1>
                 <UiButton class="pr-5" variant="outline">
                   <Icon
                     name="material-symbols:edit-outline"
@@ -169,22 +170,23 @@ const openItems = ref(["item-1"]);
                   Edit</UiButton
                 >
               </div>
-              <div class="grid grid-cols-2">
-                <div class="space-y-1">
-                  <p class="text-muted-foreground uppercase">
-                    Mobile
-                    <UiBadge class="bg-green-700 ml-4"
+              <div class="grid grid-cols-1 md:grid-cols-2">
+                <div class="md:space-y-1 space-y-2">
+                  <div class="flex gap-1">
+                    <p class="text-muted-foreground uppercase">Mobile</p>
+                    <UiBadge class="bg-green-700 md:ml-4"
                       >Primary Communication Contact</UiBadge
                     >
-                  </p>
+                  </div>
+
                   <p>0911332233</p>
                 </div>
               </div>
             </div>
 
-            <div class="space-y-0 border-b-2 py-4">
-              <div class="flex justify-between">
-                <h1 class="text-lg">Email</h1>
+            <div class="md:space-y-0 space-y-6 border-b-2 py-4">
+              <div class="flex items-center justify-between">
+                <h1 class="md:text-lg text-base">Email</h1>
                 <UiButton class="pr-5" variant="outline">
                   <Icon
                     name="material-symbols:edit-outline"
@@ -193,14 +195,15 @@ const openItems = ref(["item-1"]);
                   Edit</UiButton
                 >
               </div>
-              <div class="grid grid-cols-2">
-                <div class="space-y-1">
-                  <p class="text-muted-foreground uppercase">
-                    Other
-                    <UiBadge class="bg-green-700 ml-4"
+              <div class="grid grid-cols-1 md:grid-cols-2">
+                <div class="md:space-y-1 space-y-2">
+                  <div class="flex gap-1">
+                    <p class="text-muted-foreground uppercase">Other</p>
+                    <UiBadge class="bg-green-700 md:ml-4"
                       >Primary Communication Email</UiBadge
                     >
-                  </p>
+                  </div>
+
                   <p>abebekebede@gmail.com</p>
                 </div>
               </div>
