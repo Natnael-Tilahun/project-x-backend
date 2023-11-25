@@ -42,8 +42,8 @@ const openItems = ref(["item-1"]);
                   >General Informations</UiAccordionTrigger
                 >
                 <UiAccordionContent class="w-full" v-model="openItems">
-                  <div class="grid lg:grid-cols-3 gap-4 md:gap-10 w-full">
-                    <div class="space-y-0">
+                  <div class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full">
+                    <div class="space-y-1">
                       <label
                         for="phoneNumber"
                         class="text-muted-foreground uppercase"
@@ -51,7 +51,7 @@ const openItems = ref(["item-1"]);
                       >
                       <p>0911223344</p>
                     </div>
-                    <div class="space-y-0">
+                    <div class="space-y-1">
                       <label
                         for="phoneNumber"
                         class="text-muted-foreground uppercase"
@@ -59,7 +59,7 @@ const openItems = ref(["item-1"]);
                       >
                       <p>01/04/1990</p>
                     </div>
-                    <div class="space-y-0">
+                    <div class="space-y-1">
                       <label
                         for="phoneNumber"
                         class="text-muted-foreground uppercase"

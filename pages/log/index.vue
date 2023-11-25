@@ -1,7 +1,7 @@
 <script lang="ts" setup></script>
 
 <template>
-  <div class="flex flex-col w-full items-center h-screen md:p-10 border-0">
+  <div class="flex flex-col w-full items-center h-screen xl:p-10 border-0">
     <UiTabs default-value="default-system-logs" class="space-y-0 w-full">
       <UiTabsList
         class="w-full bg-white flex justify-start py-7 px-0 border-[1px]"
@@ -24,10 +24,10 @@
         value="default-system-logs"
         class="space-y-4 py-10 text-base border-[0px]"
       >
-        <div class="flex flex-col md:flex-row flex-wrap gap-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
           <NuxtLink
             to="/log/transactions"
-            class="flex shadow-lg rounded-lg bg-card border-[1px] p-5 w-full md:p-8 gap-5 items-start justify-center"
+            class="flex shadow-md hover:shadow-lg transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 rounded-lg bg-card border-[1px] p-5 w-full md:p-8 gap-5 items-start justify-center"
           >
             <Icon
               name="icon-park-outline:transaction"
@@ -43,7 +43,7 @@
           </NuxtLink>
 
           <div
-            class="flex shadow-lg rounded-lg bg-card border-[1px] p-5 md:p-8 gap-5 items-start justify-center"
+            class="flex shadow-md hover:shadow-lg transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 rounded-lg bg-card border-[1px] p-5 md:p-8 gap-5 items-start justify-center"
           >
             <Icon
               name="mdi:console"
@@ -58,7 +58,7 @@
           </div>
 
           <div
-            class="flex shadow-lg rounded-lg bg-card border-[1px] p-5 md:p-8 gap-5 items-start justify-center"
+            class="flex shadow-md hover:shadow-lg transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 rounded-lg bg-card border-[1px] p-5 md:p-8 gap-5 items-start justify-center"
           >
             <Icon
               name="material-symbols:personal-injury-outline"
