@@ -44,6 +44,4 @@ export default defineNuxtConfig({
       "composables/**",
     ],
   },
-
-  ssr: false,
 });
