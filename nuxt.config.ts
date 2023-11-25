@@ -44,4 +44,7 @@ export default defineNuxtConfig({
       "composables/**",
     ],
   },
+  router: {
+    base: "/project-x-backend-chi/",
+  },
 });
