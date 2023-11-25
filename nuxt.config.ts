@@ -1,8 +1,8 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  nitro: {
-    preset: "vercel",
-  },
+  // nitro: {
+  //   preset: "vercel",
+  // },
   // ssr: false,
   devtools: {
     enabled: true,
