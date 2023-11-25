@@ -138,13 +138,13 @@ const mainLinks = [
     ],
   },
   {
-    title: "Reports & Logs",
+    title: "Logs & Reports",
     icon: "iconoir:reports-solid",
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Reports", link: "/reports" },
       { title: "Logs", link: "/logs" },
+      { title: "Reports", link: "/reports" },
     ],
   },
   {
