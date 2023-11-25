@@ -97,7 +97,7 @@ const closeMenuNav = () => {
           <div class="flex items-center gap-3 md:gap-5">
             <OpenSidebarIcon v-if="isSidebarCollapsed" @click="toggleSidebar" />
             <CloseSidebarIcon v-else @click="toggleSidebar" />
-            <p class="text-lg font-medium hidden md:visible">
+            <p class="text-lg font-medium hidden md:block">
               {{
                 route.path === "/"
                   ? "Dashboard"

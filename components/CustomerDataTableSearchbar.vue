@@ -24,7 +24,7 @@ const props = defineProps<DataTableToolbarProps<any>>();
       Search Customer By
     </h1>
     <div
-      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 items-center gap-7"
+      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 items-center gap-7"
     >
       <UiInput
         placeholder="Phone Number"

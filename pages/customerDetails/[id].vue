@@ -116,7 +116,7 @@ const openItems = ref(["item-1"]);
                   Edit</UiButton
                 >
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 <div class="space-y-0">
                   <label class="text-muted-foreground uppercase"
                     >Preferred Contact Method</label
@@ -146,9 +146,9 @@ const openItems = ref(["item-1"]);
                 >
               </div>
 
-              <div class="grid grid-cols-1 md:grid-cols-2">
+              <div class="grid grid-cols-1 lg:grid-cols-2">
                 <div class="md:space-y-1 space-y-2">
-                  <div class="flex gap-1">
+                  <div class="flex gap-1 w-full">
                     <p class="text-muted-foreground uppercase">Home</p>
                     <UiBadge class="bg-green-700 md:ml-4 text-xs"
                       >Primary Communication Address</UiBadge
@@ -170,7 +170,7 @@ const openItems = ref(["item-1"]);
                   Edit</UiButton
                 >
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-2">
+              <div class="grid grid-cols-1 lg:grid-cols-2">
                 <div class="md:space-y-1 space-y-2">
                   <div class="flex gap-1">
                     <p class="text-muted-foreground uppercase">Mobile</p>
@@ -195,7 +195,7 @@ const openItems = ref(["item-1"]);
                   Edit</UiButton
                 >
               </div>
-              <div class="grid grid-cols-1 md:grid-cols-2">
+              <div class="grid grid-cols-1 lg:grid-cols-2">
                 <div class="md:space-y-1 space-y-2">
                   <div class="flex gap-1">
                     <p class="text-muted-foreground uppercase">Other</p>
