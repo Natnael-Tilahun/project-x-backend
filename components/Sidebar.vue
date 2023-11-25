@@ -143,7 +143,7 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Logs", link: "/logs" },
+      { title: "Logs", link: "/log" },
       { title: "Reports", link: "/reports" },
     ],
   },
