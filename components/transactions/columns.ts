@@ -4,6 +4,8 @@ import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../DataTableColumnHeader.vue";
 import DataTableRowActionsVue from "../DataTableRowActions.vue";
 import { Badge } from "../ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import TransactionLogOtherInfoDetailsVue from "../TransactionLogOtherInfoDetails.vue";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -25,8 +27,14 @@ export interface TransactionLogs {
   os: string;
   deviceId: string;
   ipAddress: string;
-  otherInfo: string;
+  otherInfo: {};
 }
+
+// function viewCustomerDetail(id: string) {
+//   alert(id);
+//   navigateTo(`customerDetails/${id}`);
+//   // navigator.clipboard.writeText(id);
+// }
 
 export const columns: ColumnDef<TransactionLogs>[] = [
   {
@@ -110,6 +118,33 @@ export const columns: ColumnDef<TransactionLogs>[] = [
   {
     accessorKey: "otherInfo",
     header: "Other Info",
+    cell: ({ row }) => {
+      const additionalInfo = row.original.otherInfo;
+      const showDetails = () => {
+        return h(Popover, { placement: "top" }, [
+          h(
+            PopoverTrigger,
+            {
+              class: "cursor-pointer underline",
+            },
+            "View"
+          ),
+          h(
+            PopoverContent,
+            {
+              slot: "PopoverContent",
+            },
+            h(TransactionLogOtherInfoDetailsVue, {
+              class: "w-[900px] fixed right-0 bg-red-400",
+              otherInfoData: additionalInfo,
+            })
+            // h(OtherInfoDetails, JSON.stringify(additionalInfo, null, 2))
+          ),
+        ]);
+      };
+      return showDetails();
+      // showDetails,
+    },
   },
   {
     header: "Actions",
