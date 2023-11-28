@@ -14,7 +14,7 @@ async function getData(): Promise<User[]> {
       userName: "Nhatty",
       email: "natnaeltilahun97@example.com",
       role: "admin",
-      status: "active",
+      status: "Active",
     },
     {
       id: "728ed52f",
@@ -22,7 +22,7 @@ async function getData(): Promise<User[]> {
       userName: "Nhatty",
       email: "abebekebede@example.com",
       role: "admin",
-      status: "active",
+      status: "Active",
     },
     {
       id: "728ed52f",
@@ -30,7 +30,7 @@ async function getData(): Promise<User[]> {
       userName: "Nhatty",
       email: "natnaeltilahun97@example.com",
       role: "admin",
-      status: "active",
+      status: "New",
     },
     {
       id: "728ed52f",
@@ -38,7 +38,7 @@ async function getData(): Promise<User[]> {
       userName: "Nhatty",
       email: "natnaeltilahun97@example.com",
       role: "admin",
-      status: "active",
+      status: "Locked",
     },
   ];
 }

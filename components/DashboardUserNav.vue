@@ -37,8 +37,10 @@
       </UiDropdownMenuGroup>
       <UiDropdownMenuSeparator />
       <UiDropdownMenuItem>
-        Log out
-        <UiDropdownMenuShortcut>⇧⌘Q</UiDropdownMenuShortcut>
+        <NuxtLink to="/login">
+          Log out
+          <UiDropdownMenuShortcut>⇧⌘Q</UiDropdownMenuShortcut>
+        </NuxtLink>
       </UiDropdownMenuItem>
     </UiDropdownMenuContent>
   </UiDropdownMenu>

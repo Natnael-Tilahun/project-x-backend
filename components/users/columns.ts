@@ -4,6 +4,8 @@ import { ArrowUpDown } from "lucide-vue-next";
 import { Checkbox } from "../ui/checkbox";
 import DataTableRowActionsVue from "../DataTableRowActions.vue";
 import DataTableColumnHeaderVue from "../DataTableColumnHeader.vue";
+import { Badge } from "../ui/badge";
+// import { Badge } from "../ui/badge";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -13,7 +15,13 @@ export interface User {
   userName: string;
   email: string;
   role: string;
-  status: string;
+  status:
+    | "Active"
+    | "processing"
+    | "Suspended"
+    | "Locked"
+    | "New"
+    | "UnEnrolled";
 }
 
 export const columns: ColumnDef<User>[] = [
@@ -85,6 +93,24 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "status",
     header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status");
+      if (status == "Active") {
+        return h(Badge, { class: "bg-green-600 " }, row.getValue("status"));
+      } else if (status == "New") {
+        return h(Badge, { class: "bg-blue-500 " }, row.getValue("status"));
+      } else if (status == "Locked") {
+        return h(Badge, { class: "bg-red-500 " }, row.getValue("status"));
+      } else if (status == "processing") {
+        return h(Badge, { class: "bg-yellow-500 " }, row.getValue("status"));
+      } else if (status == "UnEnrolled") {
+        return h(Badge, { class: "bg-blue-500 " }, row.getValue("status"));
+      } else if (status == "Suspended") {
+        return h(Badge, { class: "bg-orange-700 " }, row.getValue("status"));
+      } else {
+        return h("div", { class: "" }, row.getValue("status"));
+      }
+    },
   },
   {
     header: "Actions",

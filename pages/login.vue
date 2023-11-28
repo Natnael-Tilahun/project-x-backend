@@ -1,0 +1,93 @@
+<script setup lang="ts">
+import { buttonVariants } from "~/components/ui/button";
+// import UserAuthForm from "./components/UserAuthForm.vue";
+import { cn } from "@/lib/utils";
+import UserAuthForm from "~/components/UserAuthForm.vue";
+// import { buttonVariants } from "@/lib/registry/new-york/ui/button";
+
+definePageMeta({
+  layout: false,
+});
+</script>
+
+<template>
+  <!-- <div class="md:hidden">
+    <VPImage
+      alt="Authentication"
+      width="1280"
+      height="1214"
+      class="block"
+      :image="{
+        dark: '/examples/authentication-dark.png',
+        light: '/examples/authentication-light.png',
+      }"
+    />
+  </div> -->
+
+  <div
+    class="container relative h-[800px] md:h-screen flex flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0"
+  >
+    <a
+      href=""
+      :class="
+        cn(
+          buttonVariants({ variant: 'ghost' }),
+          'absolute right-4 top-4 md:right-8 md:top-8'
+        )
+      "
+    >
+      SignUp
+    </a>
+    <div
+      class="relative hidden h-screen flex-col bg-muted p-0 text-white dark:border-r lg:flex"
+    >
+      <div
+        class="w-full h-full bg-cover bg-center contrast-75"
+        style="
+          background-image: url('https://online.cbe.com.et/apps/OnlineBanking/608826955/desktopweb/images/bank_image.png');
+        "
+      ></div>
+      <!-- </div> -->
+      <div class="absolute bottom-0 z-20 p-5 mt-auto">
+        <blockquote class="space-y-2">
+          <p class="text-lg text-secondary/80 contrast-200">
+            &ldquo;The Bank You Can Always Rely On&rdquo;
+          </p>
+          <footer class="text-sm">Commercial bank of Ethiopia</footer>
+        </blockquote>
+      </div>
+    </div>
+    <div
+      class="md:p-8 p-5 shadow-md rounded-md border-[0.5px] lg:border-none lg:shadow-none"
+    >
+      <div
+        class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]"
+      >
+        <div class="flex flex-col space-y-2 text-center">
+          <h1 class="text-2xl font-semibold tracking-tight">Login</h1>
+          <p class="text-sm text-muted-foreground">
+            Enter your email and password below to login
+          </p>
+        </div>
+        <UserAuthForm />
+        <p class="px-8 text-center text-sm text-muted-foreground">
+          By clicking continue, you agree to our
+          <a
+            href="/terms"
+            class="underline underline-offset-4 hover:text-primary"
+          >
+            Terms of Service
+          </a>
+          and
+          <a
+            href="/privacy"
+            class="underline underline-offset-4 hover:text-primary"
+          >
+            Privacy Policy
+          </a>
+          .
+        </p>
+      </div>
+    </div>
+  </div>
+</template>

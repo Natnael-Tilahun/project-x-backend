@@ -4,15 +4,41 @@ import { ref, onMounted } from "vue";
 const LOCAL_STORAGE_THEME_KEY = "theme";
 
 const route = useRoute();
-console.log("route: ", route);
-const capitalizeRouteName = (name: any) => {
-  if (name) {
-    return name && typeof name === "string"
-      ? name.charAt(0).toUpperCase() + name.slice(1)
-      : "";
+const fullPath = ref(route.fullPath);
+const pathSegments = ref([]);
+
+watch(
+  () => route.fullPath,
+  (newVal) => {
+    fullPath.value = newVal;
+    pathSegments.value = splitPath(fullPath.value);
   }
-  return "";
-};
+);
+
+function splitPath(path: any) {
+  return path.split("/").filter(Boolean);
+}
+
+function capitalizeRouteName(route: any) {
+  return route.charAt(0).toUpperCase() + route.slice(1);
+}
+
+function generateLink(index: any) {
+  const linkSegments = pathSegments.value.slice(0, index + 1);
+  const path = linkSegments.join("/");
+  return path === "/" ? path : `/${path}`;
+}
+
+// let path = route.fullPath;
+
+// const capitalizeRouteName = (name: any) => {
+//   if (name) {
+//     return name && typeof name === "string"
+//       ? name.charAt(0).toUpperCase() + name.slice(1)
+//       : "";
+//   }
+//   return "";
+// };
 
 // const colorMode = useColorMode(); // Set the initial color mode
 
@@ -94,15 +120,26 @@ const closeMenuNav = () => {
       <div class="border-b">
         <div class="flex h-16 items-center px-3 md:px-8">
           <!-- <DashboardMainNav class="mx-6" /> -->
-          <div class="flex items-center gap-3 md:gap-5">
+          <div class="flex items-center gap-3 md:gap-2">
             <OpenSidebarIcon v-if="isSidebarCollapsed" @click="toggleSidebar" />
             <CloseSidebarIcon v-else @click="toggleSidebar" />
-            <p class="text-lg font-medium hidden md:block">
-              {{
-                route.path === "/"
-                  ? "Dashboard"
-                  : capitalizeRouteName(route.fullPath)
-              }}
+            <p class="text-lg font-thin hidden md:block space-x-2">
+              <template v-if="pathSegments.length == 0">
+                <router-link to="/">Dashboard</router-link>
+              </template>
+              <template v-if="pathSegments.length > 0">
+                <span v-for="(segment, index) in pathSegments" :key="index">
+                  <template v-if="index !== 0">
+                    <Icon name="mdi:chevron-double-right" class=""></Icon>
+                  </template>
+
+                  <template v-if="segment">
+                    <NuxtLink :to="generateLink(index)">
+                      {{ capitalizeRouteName(segment) }}
+                    </NuxtLink>
+                  </template>
+                </span>
+              </template>
             </p>
           </div>
 
@@ -135,3 +172,8 @@ const closeMenuNav = () => {
     </div>
   </div>
 </template>
+<style scoped>
+.router-link-active {
+  @apply font-light text-primary bg-popover ml-1;
+}
+</style>

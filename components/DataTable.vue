@@ -66,7 +66,7 @@ const table = useVueTable({
     <!-- <DataTableToolbar :table="table" /> -->
     <div class="border rounded-md">
       <UiTable>
-        <UiTableHeader>
+        <UiTableHeader class="bg-secondary">
           <UiTableRow
             v-for="headerGroup in table.getHeaderGroups()"
             :key="headerGroup.id"
@@ -80,7 +80,7 @@ const table = useVueTable({
             </UiTableHead>
           </UiTableRow>
         </UiTableHeader>
-        <UiTableBody>
+        <UiTableBody class="text-secondary-foreground">
           <template v-if="table.getRowModel().rows?.length">
             <UiTableRow
               v-for="row in table.getRowModel().rows"

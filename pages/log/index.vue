@@ -42,7 +42,8 @@
             </div>
           </NuxtLink>
 
-          <div
+          <NuxtLink
+            to="/log/adminConsole"
             class="flex shadow-md hover:shadow-lg transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 rounded-lg bg-card border-[1px] p-5 md:p-8 gap-5 items-start justify-center"
           >
             <Icon
@@ -55,9 +56,10 @@
                 Updates made for admin and end user applications
               </p>
             </div>
-          </div>
+          </NuxtLink>
 
-          <div
+          <NuxtLink
+            to="/log/customerSpecific"
             class="flex shadow-md hover:shadow-lg transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 rounded-lg bg-card border-[1px] p-5 md:p-8 gap-5 items-start justify-center"
           >
             <Icon
@@ -73,7 +75,7 @@
                 profile
               </p>
             </div>
-          </div>
+          </NuxtLink>
         </div>
       </UiTabsContent>
 
