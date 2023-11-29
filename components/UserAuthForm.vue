@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { ref } from "vue";
-// import LucideSpinner from "~icons/lucide/loader-2";
-// import GitHubLogo from "~icons/radix-icons/github-logo";
 
 import { cn } from "@/lib/utils";
 
@@ -20,9 +18,9 @@ async function onSubmit(event: Event) {
 <template>
   <div :class="cn('grid gap-6', $attrs.class ?? '')">
     <form @submit="onSubmit">
-      <div class="grid gap-2">
+      <div class="grid gap-3">
         <div class="grid gap-1">
-          <UiLabel class="sr-only" for="email"> Email </UiLabel>
+          <UiLabel class="" for="email"> Username or Email </UiLabel>
           <UiInput
             id="email"
             placeholder="name@example.com"
@@ -34,7 +32,7 @@ async function onSubmit(event: Event) {
           />
         </div>
         <div class="grid gap-1">
-          <UiLabel class="sr-only" for="password"> Password </UiLabel>
+          <UiLabel class="" for="password"> Password </UiLabel>
           <UiInput
             id="password"
             placeholder="******"
@@ -44,6 +42,14 @@ async function onSubmit(event: Event) {
             auto-correct="off"
             :disabled="isLoading"
           />
+        </div>
+        <div class="grid pb-3">
+          <NuxtLink
+            to="/forgotPassword"
+            class="text-primary text-right text-sm"
+          >
+            Forgot Password?
+          </NuxtLink>
         </div>
         <UiButton :disabled="isLoading">
           <Icon

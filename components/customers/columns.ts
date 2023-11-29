@@ -4,8 +4,6 @@ import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../DataTableColumnHeader.vue";
 import DataTableRowActionsVue from "../DataTableRowActions.vue";
 import { Badge } from "../ui/badge";
-// import DataTableColumnHeader from "@/components/DataTableDropDown.vue";
-// import { DataTableColumnHeader } from "#build/components";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.

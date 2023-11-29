@@ -1,9 +1,6 @@
 <script setup lang="ts">
 import { buttonVariants } from "~/components/ui/button";
-// import UserAuthForm from "./components/UserAuthForm.vue";
 import { cn } from "@/lib/utils";
-import UserAuthForm from "~/components/UserAuthForm.vue";
-// import { buttonVariants } from "@/lib/registry/new-york/ui/button";
 
 definePageMeta({
   layout: false,
@@ -12,10 +9,10 @@ definePageMeta({
 
 <template>
   <div
-    class="container relative h-[800px] md:h-screen flex flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0"
+    class="container w-full relative h-[800px] md:h-screen flex flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0"
   >
-    <a
-      href=""
+    <NuxtLink
+      to="/login"
       :class="
         cn(
           buttonVariants({ variant: 'ghost' }),
@@ -23,8 +20,8 @@ definePageMeta({
         )
       "
     >
-      SignUp
-    </a>
+      Login
+    </NuxtLink>
     <div
       class="relative hidden h-screen flex-col bg-muted p-0 text-white dark:border-r lg:flex"
     >
@@ -51,12 +48,11 @@ definePageMeta({
         class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]"
       >
         <div class="flex flex-col space-y-2 text-center">
-          <h1 class="text-2xl font-semibold tracking-tight">Login</h1>
-          <!-- <p class="text-sm text-muted-foreground">
-            Enter your email(username) and password below to login
-          </p> -->
+          <h1 class="text-2xl font-semibold tracking-tight">
+            Create new password
+          </h1>
         </div>
-        <UserAuthForm />
+        <ForgotPasswordForm />
         <p class="px-8 text-center text-sm text-muted-foreground">
           By clicking continue, you agree to our
           <a

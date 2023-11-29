@@ -1,11 +1,16 @@
 import type { ColumnDef } from "@tanstack/vue-table";
 
 import { Checkbox } from "../ui/checkbox";
-import DataTableColumnHeaderVue from "../DataTableColumnHeader.vue";
 import DataTableRowActionsVue from "../DataTableRowActions.vue";
 import { Badge } from "../ui/badge";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import TransactionLogOtherInfoDetailsVue from "../TransactionLogOtherInfoDetails.vue";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -85,31 +90,36 @@ export const columns: ColumnDef<CustomerActivityLog>[] = [
     cell: ({ row }) => {
       const additionalInfo = row.original.otherInfo;
       const showDetails = () => {
-        return h(Popover, { placement: "top" }, [
+        return h(DropdownMenu, {}, [
           h(
-            PopoverTrigger,
+            DropdownMenuTrigger,
             {
               class: "cursor-pointer underline",
             },
-            "View"
+            "Views"
           ),
           h(
-            PopoverContent,
+            DropdownMenuContent,
             {
-              slot: "PopoverContent",
+              slot: "DropdownMenuContent",
             },
-            h(TransactionLogOtherInfoDetailsVue, {
-              class: "w-[900px] fixed right-0 bg-red-400",
-              otherInfoData: additionalInfo,
-            })
-            // h(OtherInfoDetails, JSON.stringify(additionalInfo, null, 2))
+            [
+              h(
+                DropdownMenuItem,
+                {},
+                h(TransactionLogOtherInfoDetailsVue, {
+                  class: "w-[900px]  right-0 ",
+                  otherInfoData: additionalInfo,
+                })
+              ),
+            ]
           ),
         ]);
       };
       return showDetails();
-      // showDetails,
     },
   },
+
   {
     header: "Actions",
     id: "actions",

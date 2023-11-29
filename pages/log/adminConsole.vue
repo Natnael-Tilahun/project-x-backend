@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import DataTable from "~/components/DataTable.vue";
-import TransactionLogsDataTableFilterbar from "~/components/TransactionLogsDataTableFilterbar.vue";
 import {
   columns,
   type TransactionLogs,

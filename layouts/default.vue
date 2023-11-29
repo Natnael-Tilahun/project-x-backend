@@ -6,6 +6,7 @@ const LOCAL_STORAGE_THEME_KEY = "theme";
 const route = useRoute();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
+pathSegments.value = splitPath(fullPath.value);
 
 watch(
   () => route.fullPath,
@@ -28,17 +29,6 @@ function generateLink(index: any) {
   const path = linkSegments.join("/");
   return path === "/" ? path : `/${path}`;
 }
-
-// let path = route.fullPath;
-
-// const capitalizeRouteName = (name: any) => {
-//   if (name) {
-//     return name && typeof name === "string"
-//       ? name.charAt(0).toUpperCase() + name.slice(1)
-//       : "";
-//   }
-//   return "";
-// };
 
 // const colorMode = useColorMode(); // Set the initial color mode
 
