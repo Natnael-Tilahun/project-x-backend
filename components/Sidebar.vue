@@ -99,7 +99,7 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Customers Roles", link: "/customer-roles" },
+      { title: "Customers Roles", link: "/customerRoles" },
       { title: "Customers", link: "/customers" },
       { title: "Permissions", link: "/permissions" },
     ],

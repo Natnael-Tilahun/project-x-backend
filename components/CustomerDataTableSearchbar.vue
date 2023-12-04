@@ -11,6 +11,29 @@ interface DataTableToolbarProps<TData> {
 
 const props = defineProps<DataTableToolbarProps<any>>();
 
+const hideAdvancedSearch = ref<boolean>(true);
+const customerPhone = ref();
+
+const clearAllFilters = () => {
+  const columnKeys = [
+    "customerPhone",
+    "email",
+    "userId",
+    "customerId",
+    "customerName",
+    "accountNumber",
+    "identification",
+    // Add other column keys here if needed
+  ];
+
+  columnKeys.forEach((key) => {
+    const column = props.table.getColumn(key);
+    if (column) {
+      column.setFilterValue("");
+    }
+  });
+};
+
 // const isFiltered = computed(
 //   () => props.table.getState().columnFilters.length > 0
 // );
@@ -33,6 +56,7 @@ const props = defineProps<DataTableToolbarProps<any>>();
         @input="
           table.getColumn('customerPhone')?.setFilterValue($event.target.value)
         "
+        ref="customerPhone"
       />
       <UiInput
         placeholder="Email"
@@ -46,6 +70,23 @@ const props = defineProps<DataTableToolbarProps<any>>();
         class="h-10 md:w-[150px] lg:w-[250px]"
         @input="table.getColumn('userId')?.setFilterValue($event.target.value)"
       />
+    </div>
+    <div
+      class="flex items-center gap-1"
+      :class="{ hidden: !hideAdvancedSearch }"
+      @click="($event) => (hideAdvancedSearch = false)"
+    >
+      <p class="text-primary text-sm">ADVANCED SEARCH</p>
+      <Icon
+        name="mdi:chevron-right"
+        class="w-6 h-6 text-muted-foreground"
+      ></Icon>
+    </div>
+
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 items-center gap-7"
+      :class="{ hidden: hideAdvancedSearch }"
+    >
       <UiInput
         placeholder="Customer ID"
         :model-value="(table.getColumn('customerId')?.getFilterValue() as string) ?? ''"
@@ -98,6 +139,23 @@ const props = defineProps<DataTableToolbarProps<any>>();
         </UiSelect>
       </div>
     </div>
+    <div
+      class="flex items-center gap-1"
+      :class="{ hidden: hideAdvancedSearch }"
+      @click="($event) => (hideAdvancedSearch = true)"
+    >
+      <p class="text-primary text-sm">HIDE ADVANCED SEARCH</p>
+      <Icon
+        name="mdi:chevron-down"
+        class="w-6 h-6 text-muted-foreground"
+      ></Icon>
+    </div>
+    <UiButton
+      class="w-fit px-10 rounded-lg border-[1px] border-primary"
+      variant="outline"
+      @click="clearAllFilters"
+      >Clear All</UiButton
+    >
   </div>
   <DataTableViewOptions :table="table" />
 </template>
