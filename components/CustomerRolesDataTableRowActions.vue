@@ -10,9 +10,9 @@ interface DataTableRowActionsProps<TData> {
 }
 const props = defineProps<DataTableRowActionsProps<any>>();
 
-function viewCustomerDetail(id: string) {
+function viewRollDetails(id: string) {
   // alert(id);
-  navigateTo(`/customers/customerDetails/${id}`);
+  navigateTo(`/customerRoles/roleDetails/${id}`);
   navigator.clipboard.writeText(id);
 }
 
@@ -31,15 +31,15 @@ function viewCustomerDetail(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiDropdownMenuItem @click="viewCustomerDetail(row.original.customerId)"
+      <UiDropdownMenuItem @click="viewRollDetails(row.original.rollId)"
         >View</UiDropdownMenuItem
       >
-      <UiDropdownMenuItem>Suspend</UiDropdownMenuItem>
-      <UiDropdownMenuItem>Reactivate</UiDropdownMenuItem>
+      <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
+      <UiDropdownMenuItem>Deactivate</UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
       <UiDropdownMenuSeparator />
       <UiDropdownMenuItem>
-        Delete
+        Copy Role
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>
     </UiDropdownMenuContent>

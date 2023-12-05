@@ -8,11 +8,16 @@ import CustomerRolesDataTableRowActionsVue from "../CustomerRolesDataTableRowAct
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export interface CustomerRole {
+  rollId: string;
   rollName: string;
   rollType: string;
   businessType: [string, string] | string;
   customers: Number;
   status: "Active" | "Suspended" | "Deactivated";
+  eAgreement: string;
+  defaultService: string;
+  roleDescription: string;
+  features: [{}];
 }
 
 export const columns: ColumnDef<CustomerRole>[] = [
@@ -37,6 +42,10 @@ export const columns: ColumnDef<CustomerRole>[] = [
   {
     accessorKey: "rollName",
     header: "Roll Name",
+  },
+  {
+    accessorKey: "rollType",
+    header: "Roll Type",
   },
   {
     accessorKey: "businessType",

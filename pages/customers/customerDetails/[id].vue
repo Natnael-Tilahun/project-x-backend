@@ -38,11 +38,11 @@ const openItems = ref(["item-1"]);
           <div class="flex flex-col space-y-4">
             <UiAccordion type="single" default-value="item-1" collapsible>
               <UiAccordionItem value="item-1">
-                <UiAccordionTrigger class="md:text-lg"
+                <UiAccordionTrigger class="md:text-lg bg-secondary px-3"
                   >General Informations</UiAccordionTrigger
                 >
                 <UiAccordionContent class="w-full" v-model="openItems">
-                  <div class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full">
+                  <div class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full p-3">
                     <div class="space-y-1">
                       <label
                         for="phoneNumber"
