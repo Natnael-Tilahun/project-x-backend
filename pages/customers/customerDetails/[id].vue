@@ -9,7 +9,9 @@ const openItems = ref(["item-1"]);
     >
       <div class="flex items-center justify-between">
         <h1 class="md:text-xl items-center text-gray-500">Abebe Kebede</h1>
-        <UiButton class="p-6 rounded-lg">Enroll Now</UiButton>
+        <NuxtLink to="/customers/customerDetails/enroll"
+          ><UiButton class="p-6 rounded-lg">Enroll Now</UiButton></NuxtLink
+        >
       </div>
 
       <UiTabs default-value="profile" class="space-y-0 w-full">
