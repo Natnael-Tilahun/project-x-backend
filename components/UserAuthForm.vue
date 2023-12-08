@@ -1,48 +1,67 @@
 <script setup lang="ts">
 import { ref } from "vue";
-
 import { cn } from "@/lib/utils";
+import { useForm } from "vee-validate";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { customerLoginFormSchema } from "~/validations/customerLoginFormSchema";
 
 const isLoading = ref(false);
-async function onSubmit(event: Event) {
-  event.preventDefault();
+
+const form = useForm({
+  validationSchema: customerLoginFormSchema,
+});
+
+const onSubmit = form.handleSubmit((values: any) => {
+  console.log("Form submitted!", values);
   isLoading.value = true;
 
   setTimeout(() => {
     isLoading.value = false;
     navigateTo("/");
   }, 3000);
-}
+});
 </script>
 
 <template>
   <div :class="cn('grid gap-6', $attrs.class ?? '')">
     <form @submit="onSubmit">
       <div class="grid gap-3">
-        <div class="grid gap-1">
-          <UiLabel class="" for="email"> Username or Email </UiLabel>
-          <UiInput
-            id="email"
-            placeholder="name@example.com"
-            type="email"
-            auto-capitalize="none"
-            auto-complete="email"
-            auto-correct="off"
-            :disabled="isLoading"
-          />
-        </div>
-        <div class="grid gap-1">
-          <UiLabel class="" for="password"> Password </UiLabel>
-          <UiInput
-            id="password"
-            placeholder="******"
-            type="text"
-            auto-capitalize="none"
-            auto-complete=""
-            auto-correct="off"
-            :disabled="isLoading"
-          />
-        </div>
+        <FormField v-slot="{ componentField }" name="email">
+          <FormItem>
+            <FormLabel> Username or Email</FormLabel>
+            <FormControl>
+              <UiInput
+                type="email"
+                placeholder="name@example.com"
+                v-bind="componentField"
+                :disabled="isLoading"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+
+        <FormField v-slot="{ componentField }" name="password">
+          <FormItem>
+            <FormLabel>Password</FormLabel>
+            <FormControl>
+              <UiInput
+                type="text"
+                placeholder="******"
+                v-bind="componentField"
+                :disabled="isLoading"
+              />
+            </FormControl>
+            <FormMessage />
+          </FormItem>
+        </FormField>
+
         <div class="grid pb-3">
           <NuxtLink
             to="/forgotPassword"

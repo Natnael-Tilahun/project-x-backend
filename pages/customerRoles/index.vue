@@ -121,13 +121,14 @@ onMounted(async () => {
 
 <template>
   <div v-if="data.length > 0" class="py-5 flex flex-col space-y-10 mx-auto">
-    <UiButton class="w-fit self-end px-5"
-      ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add
-      Customer Role</UiButton
-    >
+    <NuxtLink to="/customerRoles/new" class="w-fit self-end px-5"
+      ><UiButton
+        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add
+        Customer Role</UiButton
+      >
+    </NuxtLink>
     <DataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
-        <!-- <DataTableToolbar :table="table" /> -->
         <div class="flex items-center justify-between">
           <div class="flex flex-1 items-center space-x-2">
             <UiInput

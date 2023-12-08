@@ -1,11 +1,24 @@
 <script lang="ts" setup>
+import { type CustomerEnroll } from "~/components/customerEnroll/columns";
 import {
-  columns,
-  type CustomerEnroll,
-} from "~/components/customerEnroll/columns";
-import DataTable from "~/components/DataTable.vue";
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { toTypedSchema } from "@vee-validate/zod";
+import { z } from "zod";
+import { useForm } from "vee-validate";
 
 const data = ref<CustomerEnroll[]>([]);
+const router = useRouter();
+
+const customerEnrollformSchema = toTypedSchema(
+  z.object({
+    service: z.string(),
+    role: z.string(),
+  })
+);
 
 async function getData(): Promise<CustomerEnroll[]> {
   // Fetch data from your API here.
@@ -13,24 +26,26 @@ async function getData(): Promise<CustomerEnroll[]> {
     {
       customerId: "728ed52f",
       customerName: "Abebe Kebede",
-      service: "Corporate Online banking",
-      roll: "Administrator",
     },
-    {
-      customerId: "728ed52f",
-      customerName: "Abebe Kebede",
-      service: "Corporate Online banking",
-      roll: "Administrator",
-    },
-    {
-      customerId: "728ed52f",
-      customerName: "Abebe Kebede",
-      service: "Corporate Online banking",
-      roll: "Administrator",
-    },
-    // ...
   ];
 }
+
+const isLoading = ref(false);
+
+const form = useForm({
+  validationSchema: customerEnrollformSchema,
+});
+
+const onSubmit = form.handleSubmit((values: any) => {
+  console.log("Form submitted!", values);
+  isLoading.value = true;
+
+  setTimeout(() => {
+    isLoading.value = false;
+    router.back();
+    // navigateTo("/customers/customerDetails");
+  }, 3000);
+});
 
 onMounted(async () => {
   data.value = await getData();
@@ -38,31 +53,118 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-5 items-center h-screen p-0 bg-secondary">
-    <div
-      class="w-full flex flex-col gap-5 p-6 bg-card shadow-none border-[0.5px] rounded-md"
-    >
-      <div class="flex items-center justify-between">
-        <h1 class="md:text-xl items-center text-gray-500">
-          User: <span>Abebe Kebede</span>
-        </h1>
-        <UiButton variant="outline" class="p-6 rounded-lg"
-          >Add Customer ID</UiButton
-        >
-      </div>
-
-      <div class="flex flex-col space-y-4">
-        <DataTable :columns="columns" :data="data">
-          <!-- <template v-slot:toolbar="{ table }">
-            <CustomerDataTableSearchbar :table="table" />
-          </template> -->
-        </DataTable>
-      </div>
-      <div class="flex justify-between">
-        <UiButton variant="outline">Cancel</UiButton>
-        <UiButton>Enroll</UiButton>
-      </div>
+  <div
+    v-if="data.length > 0"
+    class="p-5 flex flex-col space-y-4 mx-auto border-[1px] shadow-sm rounded-md bg-secondary"
+  >
+    <div class="flex items-center justify-between">
+      <h1 class="md:text-xl items-center text-gray-500">
+        User: <span>Abebe Kebede</span>
+      </h1>
+      <UiButton variant="outline" class="p-6 rounded-lg"
+        >Add Customer ID</UiButton
+      >
     </div>
+    <form
+      @submit="onSubmit"
+      class="flex flex-col justify-between min-h-[400px]"
+    >
+      <UiTable>
+        <UiTableHeader>
+          <UiTableRow>
+            <UiTableHead class=""> customerId </UiTableHead>
+            <UiTableHead>customerName</UiTableHead>
+            <UiTableHead>service</UiTableHead>
+            <UiTableHead class=""> roll </UiTableHead>
+          </UiTableRow>
+        </UiTableHeader>
+        <UiTableBody>
+          <UiTableRow v-for="(d, index) of data" :key="index">
+            <UiTableCell class="font-medium">
+              {{ d.customerId }}
+            </UiTableCell>
+            <UiTableCell>{{ d.customerName }}</UiTableCell>
+            <UiTableCell>
+              <FormField v-slot="{ componentField }" name="service">
+                <FormItem>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue placeholder="Select a service" />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem value="Retail Banking">
+                          Retail online banking
+                        </UiSelectItem>
+                        <UiSelectItem value="Wealth Online Banking">
+                          Wealth Online Banking
+                        </UiSelectItem>
+                        <UiSelectItem value="Retail and wealth online banking">
+                          Retail and wealth online banking
+                        </UiSelectItem>
+                        <UiSelectItem value="Corporate Online Banking">
+                          Corporate Online Banking
+                        </UiSelectItem>
+                        <UiSelectItem value="SME Online Banking">
+                          SME Online Banking
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+            </UiTableCell>
+            <UiTableCell class="">
+              <FormField v-slot="{ componentField }" name="role">
+                <FormItem>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue placeholder="Select a role" />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem value="Administrator">
+                          Administrator
+                        </UiSelectItem>
+                        <UiSelectItem value="Authorizer">
+                          Authorizer
+                        </UiSelectItem>
+                        <UiSelectItem value="Creator"> Creator </UiSelectItem>
+                        <UiSelectItem value="Viewer"> Viewer </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+            </UiTableCell>
+          </UiTableRow>
+        </UiTableBody>
+      </UiTable>
+
+      <div class="flex justify-between">
+        <UiButton variant="outline" class="px-12 py-6 shadow-md border-2"
+          >Cancel</UiButton
+        >
+        <UiButton :disabled="isLoading" type="submit" class="px-12 py-6">
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="isLoading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+
+          Enroll
+        </UiButton>
+      </div>
+    </form>
+  </div>
+  <div v-else class="py-10 flex justify-center items-center">
+    <Loading />
   </div>
 </template>
 

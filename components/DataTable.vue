@@ -14,7 +14,6 @@ import {
   getFilteredRowModel,
 } from "@tanstack/vue-table";
 import { valueUpdater } from "@/lib/utils";
-import { ChevronDown } from "lucide-vue-next";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];

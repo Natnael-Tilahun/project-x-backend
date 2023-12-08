@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { buttonVariants } from "~/components/ui/button";
-// import UserAuthForm from "./components/UserAuthForm.vue";
 import { cn } from "@/lib/utils";
 import UserAuthForm from "~/components/UserAuthForm.vue";
-// import { buttonVariants } from "@/lib/registry/new-york/ui/button";
+import Copyright from "~/components/Copyright.vue";
 
+// Page Meta Configuration
 definePageMeta({
   layout: false,
 });
@@ -14,6 +14,7 @@ definePageMeta({
   <div
     class="container relative h-[800px] md:h-screen flex flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0"
   >
+    <!-- Sign Up Button -->
     <a
       href=""
       :class="
@@ -25,6 +26,8 @@ definePageMeta({
     >
       SignUp
     </a>
+
+    <!-- Background Image Section -->
     <div
       class="relative hidden h-screen flex-col bg-muted p-0 text-white dark:border-r lg:flex"
     >
@@ -34,7 +37,6 @@ definePageMeta({
           background-image: url('https://online.cbe.com.et/apps/OnlineBanking/608826955/desktopweb/images/bank_image.png');
         "
       ></div>
-      <!-- </div> -->
       <div class="absolute bottom-0 z-20 p-5 mt-auto">
         <blockquote class="space-y-2">
           <p class="text-lg text-secondary/80 contrast-200">
@@ -44,6 +46,8 @@ definePageMeta({
         </blockquote>
       </div>
     </div>
+
+    <!-- Login Form Section -->
     <div
       class="md:p-8 p-5 shadow-md rounded-md border-[0.5px] lg:border-none lg:shadow-none"
     >

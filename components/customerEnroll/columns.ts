@@ -8,13 +8,13 @@ import DataTableRowActionsVue from "../DataTableRowActions.vue";
 export interface CustomerEnroll {
   customerId: string;
   customerName: string;
-  service:
-    | "Retail Online Banking"
-    | "Corporate Online banking"
-    | "Wealth Online Banking"
-    | "Retail and Wealth Online Banking"
-    | "SME Online Banking";
-  roll: "Administrator" | "Authorizer" | "Creator" | "Viewer";
+  // service:
+  //   | "Retail Online Banking"
+  //   | "Corporate Online banking"
+  //   | "Wealth Online Banking"
+  //   | "Retail and Wealth Online Banking"
+  //   | "SME Online Banking";
+  // roll: "Administrator" | "Authorizer" | "Creator" | "Viewer";
   // status:
   //   | "Active"
   //   | "processing"
