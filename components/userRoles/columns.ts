@@ -1,29 +1,23 @@
 import type { ColumnDef } from "@tanstack/vue-table";
-import { ArrowUpDown } from "lucide-vue-next";
+
 import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../DataTableColumnHeader.vue";
 import { Badge } from "../ui/badge";
-import UsersDataTableRowActionsVue from "../UsersDataTableRowActions.vue";
-// import { Badge } from "../ui/badge";
+import UserRolesDataTableRowActionsVue from "../UserRolesDataTableRowActions.vue";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export interface User {
-  id: string;
-  fullName: string;
-  userName: string;
-  email: string;
-  role: string;
-  status:
-    | "Active"
-    | "processing"
-    | "Suspended"
-    | "Locked"
-    | "New"
-    | "UnEnrolled";
+export interface UserRole {
+  rollId: string;
+  rollName: string;
+  roleDescription: string;
+  legalEntity: [string] | string;
+  status: "Active" | "Suspended" | "Deactivated";
+  systemPermissions: [{}];
+  customerAccess: [{}];
 }
 
-export const columns: ColumnDef<User>[] = [
+export const columns: ColumnDef<UserRole>[] = [
   {
     id: "select",
     header: ({ table }) =>
@@ -43,51 +37,26 @@ export const columns: ColumnDef<User>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "id",
-    header: "Id",
+    accessorKey: "rollName",
+    header: "Roll Name",
   },
   {
-    accessorKey: "fullName",
-    header: ({ column }) =>
-      h(DataTableColumnHeaderVue, { column, title: "Full Name" }),
-    cell: ({ row }) => {
-      return h(
-        "div",
-        { class: "max-w-[180px] whitespace-nowrap truncate font-medium" },
-        row.getValue("fullName")
-      );
-    },
+    accessorKey: "roleDescription",
+    header: "Role Description",
   },
   {
-    accessorKey: "userName",
+    accessorKey: "legalEntity",
     header: ({ column }) =>
-      h(DataTableColumnHeaderVue, { column, title: "UserName" }),
-    cell: ({ row }) => {
-      return h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
-        row.getValue("userName")
-      );
-    },
-  },
-  {
-    accessorKey: "email",
-    header: ({ column }) =>
-      h(DataTableColumnHeaderVue, { column, title: "Email" }),
+      h(DataTableColumnHeaderVue, { column, title: "Legal Entity" }),
 
     cell: ({ row }) =>
       h(
         "div",
         {
-          class: "lowercase max-w-[210px] truncate '",
+          class: "max-w-[240px] truncate '",
         },
-        row.getValue("email")
+        row.getValue("legalEntity")
       ),
-  },
-  {
-    accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => h("div", { class: "lowercase" }, row.getValue("role")),
   },
   {
     accessorKey: "status",
@@ -119,7 +88,7 @@ export const columns: ColumnDef<User>[] = [
       return h(
         "div",
         { class: "relative" },
-        h(UsersDataTableRowActionsVue, {
+        h(UserRolesDataTableRowActionsVue, {
           row,
         })
       );

@@ -50,34 +50,6 @@ export const columns: ColumnDef<CustomerEnroll>[] = [
   { accessorKey: "customerName", header: "Customer Name" },
   { accessorKey: "service", header: "Service " },
   { accessorKey: "roll", header: "Roll" },
-  // {
-  //   accessorKey: "service",
-  //   header: ({ column }) =>
-  //     h(DataTableColumnHeaderVue, { column, title: "Service" }),
-
-  //   cell: ({ row }) =>
-  //     h(
-  //       Select,
-  //       {
-  //         class: "lowercase max-w-[210px] truncate '",
-  //       },
-  //       h(SelectItem, row.getValue("service"))
-  //     ),
-  // },
-  // {
-  //   accessorKey: "roll",
-  //   header: ({ column }) =>
-  //     h(DataTableColumnHeaderVue, { column, title: "roll" }),
-
-  //   cell: ({ row }) =>
-  //     h(
-  //       Select,
-  //       {
-  //         class: "lowercase max-w-[210px] truncate ",
-  //       },
-  //       h(SelectItem, row.getValue("roll"))
-  //     ),
-  // },
   {
     header: "Actions",
     id: "actions",

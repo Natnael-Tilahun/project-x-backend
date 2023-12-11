@@ -111,7 +111,7 @@ const mainLinks = [
     showDropdown: false,
     dropdown: [
       { title: "Users", link: "/users" },
-      { title: "Roles", link: "/roles" },
+      { title: "Roles", link: "/userRoles" },
       { title: "Permissions", link: "/permissions" },
     ],
   },

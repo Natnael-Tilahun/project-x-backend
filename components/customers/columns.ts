@@ -2,8 +2,8 @@ import type { ColumnDef } from "@tanstack/vue-table";
 
 import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../DataTableColumnHeader.vue";
-import DataTableRowActionsVue from "../DataTableRowActions.vue";
 import { Badge } from "../ui/badge";
+import CustomerDataTableRowActionsVue from "../CustomerDataTableRowActions.vue";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -102,7 +102,7 @@ export const columns: ColumnDef<Customer>[] = [
       return h(
         "div",
         { class: "relative" },
-        h(DataTableRowActionsVue, {
+        h(CustomerDataTableRowActionsVue, {
           row,
         })
       );
