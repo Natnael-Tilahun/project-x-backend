@@ -8,11 +8,11 @@ import UserRolesDataTableRowActionsVue from "../UserRolesDataTableRowActions.vue
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export interface UserRole {
-  rollId: string;
-  rollName: string;
+  roleId: string;
+  roleName: string;
   roleDescription: string;
   legalEntity: [string] | string;
-  status: "Active" | "Suspended" | "Deactivated";
+  status: "New" | "Active" | "Suspended" | "Deactivated";
   systemPermissions: [{}];
   customerAccess: [{}];
 }
@@ -37,7 +37,7 @@ export const columns: ColumnDef<UserRole>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "rollName",
+    accessorKey: "roleName",
     header: "Roll Name",
   },
   {
@@ -49,14 +49,7 @@ export const columns: ColumnDef<UserRole>[] = [
     header: ({ column }) =>
       h(DataTableColumnHeaderVue, { column, title: "Legal Entity" }),
 
-    cell: ({ row }) =>
-      h(
-        "div",
-        {
-          class: "max-w-[240px] truncate '",
-        },
-        row.getValue("legalEntity")
-      ),
+    cell: ({ row }) => row.getValue("legalEntity"),
   },
   {
     accessorKey: "status",
@@ -67,12 +60,8 @@ export const columns: ColumnDef<UserRole>[] = [
         return h(Badge, { class: "bg-green-600 " }, row.getValue("status"));
       } else if (status == "New") {
         return h(Badge, { class: "bg-blue-500 " }, row.getValue("status"));
-      } else if (status == "Locked") {
+      } else if (status == "Deactivated") {
         return h(Badge, { class: "bg-red-500 " }, row.getValue("status"));
-      } else if (status == "processing") {
-        return h(Badge, { class: "bg-yellow-500 " }, row.getValue("status"));
-      } else if (status == "UnEnrolled") {
-        return h(Badge, { class: "bg-blue-500 " }, row.getValue("status"));
       } else if (status == "Suspended") {
         return h(Badge, { class: "bg-orange-700 " }, row.getValue("status"));
       } else {
