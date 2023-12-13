@@ -9,9 +9,9 @@ async function getData(): Promise<CustomerRole[]> {
   // Fetch data from your API here.
   return [
     {
-      rollId: "1",
-      rollName: "Administrator",
-      rollType: "Business Banking",
+      roleId: "1",
+      roleName: "Administrator",
+      roleType: "Business Banking",
       businessType: ["Sole Proprietor, Partnership", "Trust"],
       customers: 40,
       status: "Active",
@@ -34,9 +34,9 @@ async function getData(): Promise<CustomerRole[]> {
       ],
     },
     {
-      rollId: "2",
-      rollName: "Administrator",
-      rollType: "Business Banking",
+      roleId: "2",
+      roleName: "Administrator",
+      roleType: "Business Banking",
       businessType: ["Sole Proprietor, Partnership", "Trust"],
       customers: 40,
       status: "Active",
@@ -60,9 +60,9 @@ async function getData(): Promise<CustomerRole[]> {
       ],
     },
     {
-      rollId: "3",
-      rollName: "Authorizer",
-      rollType: "Business Banking",
+      roleId: "3",
+      roleName: "Authorizer",
+      roleType: "Business Banking",
       businessType: ["Partnership", "Unincorporated Association"],
       customers: 2,
       status: "Active",
@@ -86,9 +86,9 @@ async function getData(): Promise<CustomerRole[]> {
       ],
     },
     {
-      rollId: "4",
-      rollName: "Authorizer",
-      rollType: "Business Banking",
+      roleId: "4",
+      roleName: "Authorizer",
+      roleType: "Business Banking",
       businessType: "-",
       customers: 0,
       status: "Active",

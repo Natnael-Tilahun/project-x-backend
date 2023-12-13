@@ -8,12 +8,12 @@ import CustomerRolesDataTableRowActionsVue from "../CustomerRolesDataTableRowAct
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export interface CustomerRole {
-  rollId: string;
-  rollName: string;
-  rollType: string;
+  roleId: string;
+  roleName: string;
+  roleType: string;
   businessType: [string, string] | string;
   customers: Number;
-  status: "Active" | "Suspended" | "Deactivated";
+  status: "Active" | "Suspended" | "Deactivated" | "New";
   eAgreement: string;
   defaultService: string;
   roleDescription: string;
@@ -40,12 +40,12 @@ export const columns: ColumnDef<CustomerRole>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "rollName",
-    header: "Roll Name",
+    accessorKey: "roleName",
+    header: "Role Name",
   },
   {
-    accessorKey: "rollType",
-    header: "Roll Type",
+    accessorKey: "roleType",
+    header: "Role Type",
   },
   {
     accessorKey: "businessType",
@@ -53,13 +53,13 @@ export const columns: ColumnDef<CustomerRole>[] = [
       h(DataTableColumnHeaderVue, { column, title: "Business Type" }),
 
     cell: ({ row }) =>
-      h(
-        "div",
-        {
-          class: "max-w-[240px] truncate '",
-        },
-        row.getValue("businessType")
-      ),
+      // h(
+      //   "div",
+      //   {
+      //     class: "max-w-[240px] truncate '",
+      //   },
+      row.getValue("businessType"),
+    // ),
   },
   { accessorKey: "customers", header: "Customers" },
   {
@@ -71,12 +71,8 @@ export const columns: ColumnDef<CustomerRole>[] = [
         return h(Badge, { class: "bg-green-600 " }, row.getValue("status"));
       } else if (status == "New") {
         return h(Badge, { class: "bg-blue-500 " }, row.getValue("status"));
-      } else if (status == "Locked") {
+      } else if (status == "Deactivated") {
         return h(Badge, { class: "bg-red-500 " }, row.getValue("status"));
-      } else if (status == "processing") {
-        return h(Badge, { class: "bg-yellow-500 " }, row.getValue("status"));
-      } else if (status == "UnEnrolled") {
-        return h(Badge, { class: "bg-blue-500 " }, row.getValue("status"));
       } else if (status == "Suspended") {
         return h(Badge, { class: "bg-orange-700 " }, row.getValue("status"));
       } else {

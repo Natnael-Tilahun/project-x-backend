@@ -23,6 +23,66 @@ async function getData(): Promise<UserRole[]> {
       ],
       customerAccess: [{}],
     },
+    {
+      roleId: "2",
+      roleName: "Front Line Staff",
+      roleDescription:
+        "This role has minimal permissions that help the users perform the dedicated tasks in Spotlight. Branch members who want to support members with Online and Mobile banking app can also be associated with this role",
+      legalEntity: ["Model Bank"],
+      status: "Active",
+      systemPermissions: [
+        {
+          ["Legal Entity"]: "Model Bank",
+          ["Permissions"]: 8,
+        },
+      ],
+      customerAccess: [{}],
+    },
+    {
+      roleId: "3",
+      roleName: "Operations",
+      roleDescription:
+        "This role can manage the various services, operations and entitlements provided by the bank/CU",
+      legalEntity: ["Model Bank"],
+      status: "Active",
+      systemPermissions: [
+        {
+          ["Legal Entity"]: "Model Bank",
+          ["Permissions"]: 18,
+        },
+      ],
+      customerAccess: [{}],
+    },
+    {
+      roleId: "4",
+      roleName: "Manager",
+      roleDescription:
+        "This role is similar to a front line staff admin but with more privileges to control what kind of information can be updated by a front line staff. ",
+      legalEntity: ["Model Bank"],
+      status: "Active",
+      systemPermissions: [
+        {
+          ["Legal Entity"]: "Model Bank",
+          ["Permissions"]: 18,
+        },
+      ],
+      customerAccess: [{}],
+    },
+    {
+      roleId: "5",
+      roleName: "Business",
+      roleDescription:
+        " This role is for business users who want to view Spotlight capabilities, review data but not make major changes. These users can also send messages to customers and view/update their details",
+      legalEntity: ["Model Bank"],
+      status: "Active",
+      systemPermissions: [
+        {
+          ["Legal Entity"]: "Model Bank",
+          ["Permissions"]: 18,
+        },
+      ],
+      customerAccess: [{}],
+    },
   ];
 }
 
@@ -33,10 +93,12 @@ onMounted(async () => {
 
 <template>
   <div v-if="data.length > 0" class="py-5 flex flex-col space-y-10 mx-auto">
-    <UiButton class="w-fit self-end px-5"
-      ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>New User
-      Role</UiButton
-    >
+    <NuxtLink to="/userRoles/new" class="w-fit self-end px-5"
+      ><UiButton
+        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add
+        User Role</UiButton
+      >
+    </NuxtLink>
     <DataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <div class="flex items-center justify-between">
