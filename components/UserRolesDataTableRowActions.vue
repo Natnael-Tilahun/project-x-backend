@@ -31,7 +31,7 @@ function viewRollDetails(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiDropdownMenuItem @click="viewRollDetails(row.original.rollId)"
+      <UiDropdownMenuItem @click="viewRollDetails(row.original.roleId)"
         >View</UiDropdownMenuItem
       >
       <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
