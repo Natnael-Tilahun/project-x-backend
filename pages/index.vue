@@ -20,7 +20,7 @@ const route = useRoute();
           </UiTabsTrigger>
         </UiTabsList> -->
   <!-- <UiTabsContent value="overview" class="space-y-4"> -->
-  <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+  <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
     <UiCard>
       <UiCardHeader
         class="flex flex-row items-center justify-between space-y-0 pb-2"

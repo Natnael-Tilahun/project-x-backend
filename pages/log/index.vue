@@ -22,59 +22,81 @@
 
       <UiTabsContent
         value="default-system-logs"
-        class="space-y-4 py-10 text-base border-[0px]"
+        class="space-y-4 py-14 text-base border-[0px] min-h-"
       >
-        <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8">
-          <NuxtLink
-            to="/log/transactions"
-            class="flex shadow-md hover:shadow-lg transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 rounded-lg bg-card border-[1px] p-5 w-full md:p-8 gap-5 items-start justify-center"
-          >
-            <Icon
-              name="icon-park-outline:transaction"
-              class="md:h-20 md:w-40 h-16 w-16 self-start"
-            ></Icon>
-            <div class="flex flex-col gap-2">
-              <h1 class="md:text-xl text-lg font-medium">Transactions</h1>
-              <p class="text-card-foreground text-sm md:text-base">
-                Details of all transactions initiated on the digiatl banking
-                channle
-              </p>
-            </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+          <NuxtLink to="/log/transactions">
+            <UiCard
+              class="hover:shadow-md transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 h-full"
+            >
+              <UiCardHeader
+                class="flex flex-row items-center justify-between space-y-0 pb-2"
+              >
+                <UiCardTitle class="text-xl font-medium">
+                  Transactions
+                </UiCardTitle>
+                <Icon
+                  name="icon-park-outline:transaction"
+                  size="40"
+                  class="text-muted-foreground"
+                ></Icon>
+              </UiCardHeader>
+              <UiCardContent>
+                <p class="text-sm text-muted-foreground">
+                  Details of all transactions initiated on the digiatl banking
+                  channle
+                </p>
+              </UiCardContent>
+            </UiCard>
           </NuxtLink>
 
-          <NuxtLink
-            to="/log/adminConsole"
-            class="flex shadow-md hover:shadow-lg transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 rounded-lg bg-card border-[1px] p-5 md:p-8 gap-5 items-start justify-center"
-          >
-            <Icon
-              name="mdi:console"
-              class="md:h-20 md:w-40 h-16 w-16 self-start"
-            ></Icon>
-            <div class="flex flex-col gap-2">
-              <h1 class="md:text-xl text-lg font-medium">Admin Console</h1>
-              <p class="text-card-foreground text-sm md:text-base">
-                Updates made for admin and end user applications
-              </p>
-            </div>
+          <NuxtLink to="/log/adminConsole">
+            <UiCard
+              class="hover:shadow-md transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 h-full"
+            >
+              <UiCardHeader
+                class="flex flex-row items-center justify-between space-y-0 pb-2"
+              >
+                <UiCardTitle class="text-xl font-medium">
+                  Admin Console
+                </UiCardTitle>
+                <Icon
+                  name="mdi:console"
+                  size="40"
+                  class="text-muted-foreground"
+                ></Icon>
+              </UiCardHeader>
+              <UiCardContent>
+                <p class="text-sm text-muted-foreground">
+                  Updates made for admin and end user applications
+                </p>
+              </UiCardContent>
+            </UiCard>
           </NuxtLink>
 
-          <NuxtLink
-            to="/log/customerSpecific"
-            class="flex shadow-md hover:shadow-lg transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 rounded-lg bg-card border-[1px] p-5 md:p-8 gap-5 items-start justify-center"
-          >
-            <Icon
-              name="material-symbols:personal-injury-outline"
-              class="md:h-20 md:w-40 h-16 w-16 self-start"
-            ></Icon>
-            <div class="flex flex-col gap-2">
-              <h1 class="md:text-xl text-lg font-medium">
-                Customer Specific Logs
-              </h1>
-              <p class="text-sm md:text-base text-card-foreground">
-                Customer's specific history and admin actions on customer's
-                profile
-              </p>
-            </div>
+          <NuxtLink to="/log/customerSpecific">
+            <UiCard
+              class="hover:shadow-md transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 h-full"
+            >
+              <UiCardHeader
+                class="flex flex-row items-center justify-between space-y-0 pb-2"
+              >
+                <UiCardTitle class="text-xl font-medium">
+                  Customer Specific Logs
+                </UiCardTitle>
+                <Icon
+                  name="material-symbols:personal-injury-outline"
+                  size="40"
+                  class="text-muted-foreground"
+                ></Icon>
+              </UiCardHeader>
+              <UiCardContent>
+                <p class="text-sm text-muted-foreground">
+                  Customer's specific history and admin actions on customer's
+                  profile
+                </p>
+              </UiCardContent>
+            </UiCard>
           </NuxtLink>
         </div>
       </UiTabsContent>
