@@ -34,7 +34,7 @@ definePageMeta({
       <div
         class="w-full h-full bg-cover bg-center contrast-75"
         style="
-          background-image: url('/cbe-tower.jpeg');
+          background-image: url('/Ethiopia_Commercial-Bank_building.jpeg');
         "
       ></div>
       <div class="absolute bottom-0 z-20 p-5 mt-auto">
