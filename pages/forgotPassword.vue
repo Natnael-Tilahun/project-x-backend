@@ -28,7 +28,7 @@ definePageMeta({
       <div
         class="w-full h-full bg-cover bg-center contrast-75"
         style="
-          background-image: url('https://online.cbe.com.et/apps/OnlineBanking/608826955/desktopweb/images/bank_image.png');
+          background-image: url('/Ethiopia_Commercial-Bank_building.jpeg');
         "
       ></div>
       <!-- </div> -->
