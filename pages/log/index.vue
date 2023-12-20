@@ -32,7 +32,7 @@
               <UiCardHeader
                 class="flex flex-row items-center justify-between space-y-0 pb-2"
               >
-                <UiCardTitle class="text-xl font-medium">
+                <UiCardTitle class="text-xl">
                   Transactions
                 </UiCardTitle>
                 <Icon
@@ -57,7 +57,7 @@
               <UiCardHeader
                 class="flex flex-row items-center justify-between space-y-0 pb-2"
               >
-                <UiCardTitle class="text-xl font-medium">
+                <UiCardTitle class="text-xl ">
                   Admin Console
                 </UiCardTitle>
                 <Icon
@@ -81,7 +81,7 @@
               <UiCardHeader
                 class="flex flex-row items-center justify-between space-y-0 pb-2"
               >
-                <UiCardTitle class="text-xl font-medium">
+                <UiCardTitle class="text-xl ">
                   Customer Specific Logs
                 </UiCardTitle>
                 <Icon

@@ -41,18 +41,18 @@ const clearAllFilters = () => {
 
 <template>
   <div
-    class="flex flex-col gap-10 w-full shadow-lg p-7 md:p-10 border-[1px] mb-10 h-full justify-between"
+    class="flex flex-col gap-6 w-full shadow-lg p-4 md:p-6 border-[1px] mb-10 h-full justify-between"
   >
-    <h1 class="text-xl text-left font-semibold text-primary">
+    <h1 class="text-xl text-left  text-primary pb-2">
       Search Customer By
     </h1>
     <div
-      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 items-center gap-7"
+      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 items-center gap-6"
     >
       <UiInput
         placeholder="Phone Number"
         :model-value="(table.getColumn('customerPhone')?.getFilterValue() as string) ?? ''"
-        class="h-10 md:w-[150px] lg:w-[250px]"
+        class="h-10 md:w-[150px] lg:w-full"
         @input="
           table.getColumn('customerPhone')?.setFilterValue($event.target.value)
         "
@@ -61,13 +61,13 @@ const clearAllFilters = () => {
       <UiInput
         placeholder="Email"
         :model-value="(table.getColumn('email')?.getFilterValue() as string) ?? ''"
-        class="h-10 md:w-[150px] lg:w-[250px]"
+        class="h-10 md:w-[150px] lg:w-full"
         @input="table.getColumn('email')?.setFilterValue($event.target.value)"
       />
       <UiInput
         placeholder="User ID"
         :model-value="(table.getColumn('userId')?.getFilterValue() as string) ?? ''"
-        class="h-10 md:w-[150px] lg:w-[250px]"
+        class="h-10 md:w-[150px] lg:w-full"
         @input="table.getColumn('userId')?.setFilterValue($event.target.value)"
       />
     </div>
@@ -84,13 +84,13 @@ const clearAllFilters = () => {
     </div>
 
     <div
-      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 items-center gap-7"
+      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 items-center gap-6"
       :class="{ hidden: hideAdvancedSearch }"
     >
       <UiInput
         placeholder="Customer ID"
         :model-value="(table.getColumn('customerId')?.getFilterValue() as string) ?? ''"
-        class="h-10 md:w-[150px] lg:w-[250px]"
+        class="h-10 md:w-[150px] lg:w-full"
         @input="
           table.getColumn('customerId')?.setFilterValue($event.target.value)
         "
@@ -98,7 +98,7 @@ const clearAllFilters = () => {
       <UiInput
         placeholder="Customer Name"
         :model-value="(table.getColumn('customerName')?.getFilterValue() as string) ?? ''"
-        class="h-10 md:w-[150px] lg:w-[250px]"
+        class="h-10 md:w-[150px] lg:w-full"
         @input="
           table.getColumn('customerName')?.setFilterValue($event.target.value)
         "
@@ -106,7 +106,7 @@ const clearAllFilters = () => {
       <UiInput
         placeholder="Account Number"
         :model-value="(table.getColumn('accountNumber')?.getFilterValue() as string) ?? ''"
-        class="h-10 md:w-[150px] lg:w-[250px]"
+        class="h-10 md:w-[150px] lg:w-full"
         @input="
           table.getColumn('accountNumber')?.setFilterValue($event.target.value)
         "

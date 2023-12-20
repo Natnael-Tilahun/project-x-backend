@@ -17,7 +17,7 @@ const showOtherFilteration = ref(false);
 </script>
 
 <template>
-  <div class="flex pt-10 gap-10 w-full mb-10 h-full justify-between">
+  <div class="flex pt-10 gap-6  w-full mb-8 h-full justify-between">
     <div class="space-y-4 w-full">
       <div class="flex items-center self-start gap-4">
         <UiInput
@@ -31,33 +31,33 @@ const showOtherFilteration = ref(false);
         <Icon
           @click="($event) => (showOtherFilteration = !showOtherFilteration)"
           name="material-symbols:filter-list"
-          class="h-8 w-8"
+          class="h-8 w-8  text-primary"
         ></Icon>
       </div>
 
       <div
         v-if="showOtherFilteration"
-        class="space-y-6 shadow-lg w-full p-5 lg:p-10 border-[1px]"
+        class="space-y-6 shadow-sm rounded-xl w-full p-4 lg:p-6 border-[1px]"
       >
-        <h1 class="text-xl text-left font-semibold text-primary">
+        <h1 class="text-xl text-left text-primary">
           Filter Data By
         </h1>
         <div
-          class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 w-full items-center gap-7"
+          class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 w-full items-center gap-6"
         >
           <div class="space-y-2">
             <label for="activityType">Activity Type</label>
             <UiSelect
               id="activityType"
               :model-value="(table.getColumn('activityType')?.getFilterValue() as string) ?? ''"
-              class="h-10 w-full md:w-[150px] lg:w-[250px]"
+              class="h-10 w-full md:w-[150px] lg:w-full"
               @input="
                 table
                   .getColumn('activityType')
                   ?.setFilterValue($event.target.value)
               "
             >
-              <UiSelectTrigger class="md:w-[180px]">
+              <UiSelectTrigger class="md:w-full">
                 <UiSelectValue placeholder="Activity Type" />
               </UiSelectTrigger>
               <UiSelectContent>
@@ -76,7 +76,7 @@ const showOtherFilteration = ref(false);
               id="date"
               placeholder="Date"
               :model-value="(table.getColumn('dataAndTime')?.getFilterValue() as string) ?? ''"
-              class="h-10 w-full md:w-[150px] lg:w-[250px]"
+              class="h-10 w-full md:w-[150px] lg:w-full"
               @input="
                 table
                   .getColumn('dataAndTime')
@@ -91,7 +91,7 @@ const showOtherFilteration = ref(false);
               id="amount"
               placeholder="Amount"
               :model-value="(table.getColumn('amount')?.getFilterValue() as string) ?? ''"
-              class="h-10 w-full md:w-[150px] lg:w-[250px]"
+              class="h-10 w-full md:w-[150px] lg:w-full"
               @input="
                 table.getColumn('amount')?.setFilterValue($event.target.value)
               "
