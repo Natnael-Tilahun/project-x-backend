@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { type Table } from "@tanstack/vue-table";
-import { computed } from "vue";
+import DataTableViewOptions from "~/components/ui/dataTable/ViewOptions.vue";
 // import { type Task } from "../data/schema";
-
-import DataTableViewOptions from "./DataTableViewOptions.vue";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;
@@ -17,7 +15,7 @@ const showOtherFilteration = ref(false);
 </script>
 
 <template>
-  <div class="flex pt-10 gap-6  w-full mb-8 h-full justify-between">
+  <div class="flex pt-10 gap-6 w-full mb-8 h-full justify-between">
     <div class="space-y-4 w-full">
       <div class="flex items-center self-start gap-4">
         <UiInput
@@ -31,7 +29,7 @@ const showOtherFilteration = ref(false);
         <Icon
           @click="($event) => (showOtherFilteration = !showOtherFilteration)"
           name="material-symbols:filter-list"
-          class="h-8 w-8  text-primary"
+          class="h-8 w-8 text-primary"
         ></Icon>
       </div>
 
@@ -39,9 +37,7 @@ const showOtherFilteration = ref(false);
         v-if="showOtherFilteration"
         class="space-y-6 shadow-sm rounded-xl w-full p-4 lg:p-6 border-[1px]"
       >
-        <h1 class="text-xl text-left text-primary">
-          Filter Data By
-        </h1>
+        <h1 class="text-xl text-left text-primary">Filter Data By</h1>
         <div
           class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 w-full items-center gap-6"
         >

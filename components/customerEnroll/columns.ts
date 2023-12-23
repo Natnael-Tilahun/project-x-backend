@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@tanstack/vue-table";
 
 import { Checkbox } from "../ui/checkbox";
-import DataTableRowActionsVue from "../DataTableRowActions.vue";
+import DataTableRowActionsVue from "../ui/dataTable/RowActions.vue";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.

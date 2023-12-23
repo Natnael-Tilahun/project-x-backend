@@ -30,60 +30,48 @@ onMounted(async () => {
 <template>
   <div
     v-if="Object.keys(data).length > 0"
-    class="flex flex-col gap-5 items-center h-screen p-0 bg-secondary"
+    class="flex flex-col gap-8 items-center"
   >
-    <div
-      class="w-full flex flex-col gap-5 p-6 bg-card shadow-none border-[0.5px] rounded-md"
+    <UiButton class="pr-5 w-fit self-end" variant="outline">
+      <Icon
+        name="material-symbols:edit-outline"
+        class="w-5 h-5 mr-2 fill-black"
+      />
+      Edit</UiButton
     >
-      <div value="profile" class="space-y-4 py-4 text-base border-[0px]">
-        <div class="flex flex-col space-y-4">
-          <UiButton class="pr-5 w-fit self-end" variant="outline">
-            <Icon
-              name="material-symbols:edit-outline"
-              class="w-5 h-5 mr-2 fill-black"
-            />
-            Edit</UiButton
+    <UiCard class="w-full p-6">
+      <UiAccordion type="single" default-value="item-1" collapsible>
+        <UiAccordionItem value="item-1">
+          <UiAccordionTrigger class="md:text-lg flex-row-reverse gap-2">
+            <UiBadge class="bg-green-700 md:ml-4 text-xs">Active</UiBadge>
+            <p class="mr-auto">{{ data.roleName }}</p></UiAccordionTrigger
           >
-          <UiAccordion type="single" default-value="item-1" collapsible>
-            <UiAccordionItem value="item-1">
-              <UiAccordionTrigger class="md:text-lg flex-row-reverse gap-2">
-                <UiBadge class="bg-green-700 md:ml-4 text-xs">Active</UiBadge>
-                <p class="mr-auto">{{ data.roleName }}</p></UiAccordionTrigger
-              >
-              <UiAccordionContent class="w-full" v-model="openItems">
-                <div class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full">
-                  <div class="space-y-1">
-                    <label
-                      for="phoneNumber"
-                      class="text-muted-foreground uppercase"
-                      >Legal Entity</label
-                    >
-                    <p v-for="(item, index) of data.legalEntity" :key="index">
-                      {{ item }}
-                      {{ item.length > index + 1 ? "," : "" }}
-                    </p>
-                  </div>
-                  <div class="space-y-1">
-                    <label
-                      for="phoneNumber"
-                      class="text-muted-foreground uppercase"
-                      >Description</label
-                    >
-                    <p>
-                      {{ data.roleDescription }}
-                    </p>
-                  </div>
-                </div>
-              </UiAccordionContent>
-            </UiAccordionItem>
-          </UiAccordion>
-        </div>
-      </div>
-    </div>
+          <UiAccordionContent class="w-full" v-model="openItems">
+            <div class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full px-6 py-2">
+              <div class="space-y-1">
+                <label for="phoneNumber" class="text-muted-foreground uppercase"
+                  >Legal Entity</label
+                >
+                <p v-for="(item, index) of data.legalEntity" :key="index">
+                  {{ item }}
+                  {{ item.length > index + 1 ? "," : " " }}
+                </p>
+              </div>
+              <div class="space-y-1">
+                <label for="phoneNumber" class="text-muted-foreground uppercase"
+                  >Description</label
+                >
+                <p>
+                  {{ data.roleDescription }}
+                </p>
+              </div>
+            </div>
+          </UiAccordionContent>
+        </UiAccordionItem>
+      </UiAccordion>
+    </UiCard>
 
-    <div
-      class="w-full flex flex-col gap-5 p-6 bg-card shadow-none border-[1px] rounded-md"
-    >
+    <UiCard class="w-full p-6">
       <UiTabs default-value="permissions" class="md:space-y-4 w-full">
         <UiTabsList class="flex bg-white justify-start py-7 px-0 border-[1px]">
           <UiTabsTrigger
@@ -99,17 +87,17 @@ onMounted(async () => {
           class="space-y-4 text-sm md:text-base"
         >
           <div class="flex flex-col md:gap-4 w-full">
-            <div class="flex flex-col space-y-4">
+            <div class="flex flex-col space-y-6">
               <UiAccordion type="single" default-value="item-1" collapsible>
                 <UiAccordionItem value="item-1">
                   <UiAccordionTrigger
-                    class="md:text-lg bg-secondary px-3 gap-2 flex justify-end items-center flex-row-reverse"
+                    class="md:text-lg bg-secondary px-3 gap-2 flex justify-end items-center flex-row-reverse rounded-lg"
                   >
                     <p class="mr-auto">System Permissions</p>
                   </UiAccordionTrigger>
                   <UiAccordionContent class="w-full" v-model="openItems">
                     <div
-                      class="flex lg:grid-cols-3 gap-4 md:gap-8 w-full justify-between p-5"
+                      class="flex lg:grid-cols-3 gap-4 md:gap-8 w-full justify-between px-8 py-4"
                     >
                       <div class="space-y-1">
                         <label
@@ -131,16 +119,17 @@ onMounted(async () => {
                   </UiAccordionContent>
                 </UiAccordionItem>
               </UiAccordion>
+
               <UiAccordion type="single" default-value="item-1" collapsible>
                 <UiAccordionItem value="item-1">
                   <UiAccordionTrigger
-                    class="md:text-lg bg-secondary px-3 gap-2 flex justify-end items-center flex-row-reverse"
+                    class="md:text-lg bg-secondary px-3 gap-2 flex justify-end items-center flex-row-reverse rounded-lg"
                   >
                     <p class="mr-auto">Customer Access</p>
                   </UiAccordionTrigger>
                   <UiAccordionContent class="w-full" v-model="openItems">
                     <div
-                      class="flex lg:grid-cols-3 gap-4 md:gap-8 w-full justify-between p-5"
+                      class="flex lg:grid-cols-3 gap-4 md:gap-8 w-full justify-between px-8 py-4"
                     >
                       Cusomer Access
                     </div>
@@ -151,7 +140,7 @@ onMounted(async () => {
           </div>
         </UiTabsContent>
       </UiTabs>
-    </div>
+    </UiCard>
   </div>
   <div v-else class="py-10 flex justify-center items-center">
     <Loading />

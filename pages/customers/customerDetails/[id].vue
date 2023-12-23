@@ -3,17 +3,17 @@ const openItems = ref(["item-1"]);
 </script>
 
 <template>
-  <div class="flex flex-col gap-5 items-center h-screen p-0 bg-secondary">
-    <div
-      class="w-full flex flex-col gap-5 p-6 bg-card shadow-none border-[0.5px] rounded-md"
-    >
-      <div class="flex items-center justify-between">
-        <h1 class="md:text-xl items-center text-gray-500">Abebe Kebede</h1>
-        <NuxtLink to="/customers/customerDetails/enroll"
-          ><UiButton class="p-6 rounded-lg">Enroll Now</UiButton></NuxtLink
-        >
-      </div>
+  <div class="flex flex-col gap-6 items-center">
+    <div class="flex w-full items-center justify-between">
+      <h1 class="md:text-xl items-center text-gray-500 font-light">
+        Abebe Kebede
+      </h1>
+      <NuxtLink to="/customers/customerDetails/enroll"
+        ><UiButton class="p-6 rounded-lg">Enroll Now</UiButton></NuxtLink
+      >
+    </div>
 
+    <UiCard class="w-full p-6">
       <UiTabs default-value="profile" class="space-y-0 w-full">
         <UiTabsList
           class="w-full bg-white flex justify-start py-7 px-0 border-[1px]"
@@ -90,11 +90,9 @@ const openItems = ref(["item-1"]);
           </div>
         </UiTabsContent>
       </UiTabs>
-    </div>
+    </UiCard>
 
-    <div
-      class="w-full flex flex-col gap-5 p-6 bg-card shadow-none border-[1px] rounded-md"
-    >
+    <UiCard class="w-full p-6">
       <UiTabs default-value="contact" class="md:space-y-4 w-full">
         <UiTabsList class="flex bg-white justify-start py-7 px-0 border-[1px]">
           <UiTabsTrigger
@@ -213,7 +211,7 @@ const openItems = ref(["item-1"]);
           </div>
         </UiTabsContent>
       </UiTabs>
-    </div>
+    </UiCard>
   </div>
 </template>
 

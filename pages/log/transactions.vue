@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import DataTable from "~/components/DataTable.vue";
-import TransactionLogsDataTableFilterbar from "~/components/TransactionLogsDataTableFilterbar.vue";
 import {
   columns,
   type TransactionLogs,
-} from "~/components/transactions/columns";
+} from "~/components/logsAndReports/transactions/columns";
 
 const data = ref<TransactionLogs[]>([]);
 
@@ -379,11 +377,11 @@ onMounted(async () => {
       >Download List</UiButton
     >
 
-    <DataTable :columns="columns" :data="data">
+    <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
-        <TransactionLogsDataTableFilterbar :table="table" />
+        <LogsAndReportsTransactionsDataTableFilterbar :table="table" />
       </template>
-    </DataTable>
+    </UiDataTable>
   </div>
   <div v-else class="py-10 flex justify-center w-full">
     <Loading />

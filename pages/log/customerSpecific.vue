@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import CustomerSpecificLogsDataTableFilterbar from "~/components/CustomerSpecificLogsDataTableFilterbar.vue";
-import DataTable from "~/components/DataTable.vue";
+import LogsAndReportsCustomerSpecificDataTableFilterbar from "~/components/logsAndReports/customerSpecific/DataTableFilterbar.vue";
 import {
   columns,
   type CustomerActivityLog,
-} from "~/components/customerSpecificLog/columns";
+} from "~/components/logsAndReports/customerSpecific/columns";
 
 const data = ref<CustomerActivityLog[]>([]);
 
@@ -731,11 +730,11 @@ onMounted(async () => {
       >Download List</UiButton
     >
 
-    <DataTable :columns="columns" :data="data">
+    <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
-        <CustomerSpecificLogsDataTableFilterbar :table="table" />
+        <LogsAndReportsCustomerSpecificDataTableFilterbar :table="table" />
       </template>
-    </DataTable>
+    </UiDataTable>
   </div>
   <div v-else class="py-10 flex justify-center w-full">
     <Loading />

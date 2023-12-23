@@ -14,6 +14,7 @@ import {
   getFilteredRowModel,
 } from "@tanstack/vue-table";
 import { valueUpdater } from "@/lib/utils";
+import DataTablePaginationVue from "./Pagination.vue";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -105,6 +106,6 @@ const table = useVueTable({
       </UiTable>
     </div>
 
-    <DataTablePagination :table="table" />
+    <DataTablePaginationVue :table="table" />
   </div>
 </template>

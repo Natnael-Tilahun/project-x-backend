@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@tanstack/vue-table";
 
 import { Checkbox } from "../ui/checkbox";
-import DataTableColumnHeaderVue from "../DataTableColumnHeader.vue";
+import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import CustomerDataTableRowActionsVue from "../CustomerDataTableRowActions.vue";
 

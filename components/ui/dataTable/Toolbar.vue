@@ -3,7 +3,7 @@ import { type Table } from "@tanstack/vue-table";
 import { computed } from "vue";
 // import { type Task } from "../data/schema";
 
-import DataTableViewOptions from "./DataTableViewOptions.vue";
+import DataTableViewOptions from "./ViewOptions.vue";
 
 interface DataTableToolbarProps<TData> {
   table: Table<TData>;

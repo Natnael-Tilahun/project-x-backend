@@ -45,15 +45,10 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div
-    v-if="data.length > 0"
-    class="flex flex-col gap-5 items-center h-screen p-0 bg-secondary"
-  >
-    <div
-      class="w-full flex flex-col gap-5 p-6 bg-card shadow-none border-[0.5px] rounded-md"
-    >
-      <div class="flex flex-col space-y-4">
-        <UiButton class="pr-5 w-fit self-end" variant="outline">
+  <div v-if="data.length > 0" class="flex flex-col gap-6">
+    <UiCard class="w-full p-6">
+      <div class="flex flex-col space-y-6">
+        <UiButton class="pr-6 w-fit self-end" variant="outline">
           <Icon
             name="material-symbols:edit-outline"
             class="w-5 h-5 mr-2 fill-black"
@@ -62,11 +57,11 @@ onMounted(async () => {
         >
         <UiAccordion type="single" default-value="item-1" collapsible>
           <UiAccordionItem value="item-1">
-            <UiAccordionTrigger class="md:text-lg bg-secondary px-3"
+            <UiAccordionTrigger class="md:text-lg bg-secondary px-3 rounded-lg"
               >Personal Informations</UiAccordionTrigger
             >
             <UiAccordionContent class="w-full" v-model="openItems">
-              <div class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full p-3">
+              <div class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full p-4">
                 <div class="space-y-1">
                   <label
                     for="phoneNumber"
@@ -97,11 +92,11 @@ onMounted(async () => {
         </UiAccordion>
         <UiAccordion type="single" default-value="item-1" collapsible>
           <UiAccordionItem value="item-1">
-            <UiAccordionTrigger class="md:text-lg bg-secondary px-3"
+            <UiAccordionTrigger class="md:text-lg bg-secondary px-3 rounded-lg"
               >Business Informations</UiAccordionTrigger
             >
             <UiAccordionContent class="w-full" v-model="openItems">
-              <div class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full p-3">
+              <div class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full p-4">
                 <div class="space-y-1">
                   <label
                     for="phoneNumber"
@@ -160,11 +155,9 @@ onMounted(async () => {
           </UiAccordionItem>
         </UiAccordion>
       </div>
-    </div>
+    </UiCard>
 
-    <div
-      class="w-full flex flex-col gap-5 p-6 bg-card shadow-none border-[1px] rounded-md"
-    >
+    <UiCard class="w-full p-6">
       <UiTabs default-value="roles" class="md:space-y-4 w-full">
         <UiTabsList class="flex bg-white justify-start py-7 px-0 border-[1px]">
           <UiTabsTrigger
@@ -195,7 +188,7 @@ onMounted(async () => {
                 <UiTableCell class="font-medium">
                   {{ role.name }}
                 </UiTableCell>
-                <UiTableCell class="max-w-[350px]">{{
+                <UiTableCell class="max-w-[450px]">{{
                   role.description
                 }}</UiTableCell>
                 <UiTableCell>
@@ -219,7 +212,7 @@ onMounted(async () => {
           <div>Permissions</div>
         </UiTabsContent>
       </UiTabs>
-    </div>
+    </UiCard>
   </div>
   <div v-else class="py-10 flex justify-center items-center">
     <Loading />

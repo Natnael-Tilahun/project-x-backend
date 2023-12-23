@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import DataTable from "~/components/DataTable.vue";
 import { columns, type Customer } from "~/components/customers/columns";
 
 const data = ref<Customer[]>([]);
@@ -165,11 +164,11 @@ onMounted(async () => {
       Customer</UiButton
     >
 
-    <DataTable :columns="columns" :data="data">
+    <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <CustomerDataTableSearchbar :table="table" />
       </template>
-    </DataTable>
+    </UiDataTable>
   </div>
   <div v-else class="py-10 flex justify-center w-full">
     <Loading />

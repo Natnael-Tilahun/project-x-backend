@@ -1,8 +1,8 @@
 <script lang="ts" setup></script>
 
 <template>
-  <div class="flex flex-col w-full items-center h-screen xl:p-10 border-0">
-    <UiTabs default-value="default-system-logs" class="space-y-0 w-full">
+  <div class="w-full h-screen">
+    <UiTabs default-value="default-system-logs" class="h-full w-full">
       <UiTabsList
         class="w-full bg-white flex justify-start py-7 px-0 border-[1px]"
       >
@@ -22,9 +22,9 @@
 
       <UiTabsContent
         value="default-system-logs"
-        class="space-y-4 py-14 text-base border-[0px] min-h-"
+        class="space-y-4 px-6 py-12 text-base border-[0.5px] h-full"
       >
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
           <NuxtLink to="/log/transactions">
             <UiCard
               class="hover:shadow-md transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-105 duration-300 h-full"
@@ -32,9 +32,7 @@
               <UiCardHeader
                 class="flex flex-row items-center justify-between space-y-0 pb-2"
               >
-                <UiCardTitle class="text-xl">
-                  Transactions
-                </UiCardTitle>
+                <UiCardTitle class="text-xl"> Transactions </UiCardTitle>
                 <Icon
                   name="icon-park-outline:transaction"
                   size="40"
@@ -57,9 +55,7 @@
               <UiCardHeader
                 class="flex flex-row items-center justify-between space-y-0 pb-2"
               >
-                <UiCardTitle class="text-xl ">
-                  Admin Console
-                </UiCardTitle>
+                <UiCardTitle class="text-xl"> Admin Console </UiCardTitle>
                 <Icon
                   name="mdi:console"
                   size="40"
@@ -81,7 +77,7 @@
               <UiCardHeader
                 class="flex flex-row items-center justify-between space-y-0 pb-2"
               >
-                <UiCardTitle class="text-xl ">
+                <UiCardTitle class="text-xl">
                   Customer Specific Logs
                 </UiCardTitle>
                 <Icon
@@ -101,7 +97,10 @@
         </div>
       </UiTabsContent>
 
-      <UiTabsContent value="my-filtered-logs" class="space-y-4 p-4">
+      <UiTabsContent
+        value="my-filtered-logs"
+        class="space-y-4 px-6 py-12 text-base border-[0.5px] h-full"
+      >
         <div class="flex flex-col space-y-4">
           <h1>My filtered logs</h1>
         </div>

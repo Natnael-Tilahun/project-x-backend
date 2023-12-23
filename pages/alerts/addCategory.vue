@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { useForm } from "vee-validate";
 import { ref } from "vue";
-
 import {
   FormControl,
   FormField,
@@ -9,8 +8,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { RadioGroupItem } from "radix-vue";
-// import { newCustomerRoleformSchema } from "~/validations/newCustomerRoleformSchema";
 
 const isLoading = ref(false);
 
@@ -32,13 +29,8 @@ const onSubmit = form.handleSubmit((values: any) => {
 </script>
 
 <template>
-  <div
-    class="flex flex-col w-full items-center h-screen xl:p-10 border-0 gap-8"
-  >
-    <form
-      @submit="onSubmit"
-      class="border-[1px] p-6 space-y-6 shadow-sm h-full w-full rounded-md"
-    >
+  <UiCard class="w-full items-center h-full gap-10">
+    <form @submit="onSubmit" class="p-6 space-y-6 shadow-sm w-full rounded-md">
       <div class="flex justify-between border-b-[1px] py-2">
         <h1 class="text-xl font-medium">Add Category</h1>
         <FormField v-slot="{ value, handleChange }" name="active">
@@ -50,7 +42,6 @@ const onSubmit = form.handleSubmit((values: any) => {
           </FormItem>
         </FormField>
       </div>
-      <!-- <div class="flex flex-col md:gap-4 w-full"> -->
       <div class="grid grid-cols-3 gap-8 justify-between h-full">
         <FormField v-slot="{ componentField }" name="categoryName">
           <FormItem>
@@ -112,29 +103,6 @@ const onSubmit = form.handleSubmit((values: any) => {
           </FormItem>
         </FormField>
 
-        <!-- <FormField v-slot="{ componentField }" name="discription">
-          <FormItem>
-            <FormLabel>Description</FormLabel>
-            <FormControl>
-              <UiTextarea
-                placeholder="Enter Description"
-                class="resize-y"
-                v-bind="componentField"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
-
-        <FormField v-slot="{ value, handleChange }" name="active">
-          <FormItem class="space-y-0.5 col-span-full flex gap-5">
-            <FormLabel class="text-base"> Active </FormLabel>
-            <FormControl>
-              <UiSwitch :checked="value" @update:checked="handleChange" />
-            </FormControl>
-          </FormItem>
-        </FormField> -->
-
         <div class="col-span-full w-full flex justify-between">
           <UiButton
             :disabled="isLoading"
@@ -155,7 +123,6 @@ const onSubmit = form.handleSubmit((values: any) => {
           </UiButton>
         </div>
       </div>
-      <!-- </div> -->
     </form>
-  </div>
+  </UiCard>
 </template>

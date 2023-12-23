@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import DataTable from "~/components/DataTable.vue";
 import { columns, type UserRole } from "~/components/userRoles/columns";
 
 const data = ref<UserRole[]>([]);
@@ -92,14 +91,14 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div v-if="data.length > 0" class="py-5 flex flex-col space-y-10 mx-auto">
-    <NuxtLink to="/userRoles/new" class="w-fit self-end px-5"
+  <div v-if="data.length > 0" class="py-4 flex flex-col space-y-10 mx-auto">
+    <NuxtLink to="/userRoles/new" class="w-fit self-end"
       ><UiButton
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add
         User Role</UiButton
       >
     </NuxtLink>
-    <DataTable :columns="columns" :data="data">
+    <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <div class="flex items-center justify-between">
           <div class="flex flex-1 items-center space-x-2">
@@ -117,7 +116,7 @@ onMounted(async () => {
           <DataTableViewOptions :table="table" />
         </div>
       </template>
-    </DataTable>
+    </UiDataTable>
   </div>
   <div v-else class="py-10 flex justify-center items-center">
     <Loading />

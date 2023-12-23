@@ -1,16 +1,13 @@
 import type { ColumnDef } from "@tanstack/vue-table";
-
-import { Checkbox } from "../ui/checkbox";
-import DataTableRowActionsVue from "../DataTableRowActions.vue";
-import { Badge } from "../ui/badge";
-import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
-import TransactionLogOtherInfoDetailsVue from "../TransactionLogOtherInfoDetails.vue";
+import { Checkbox } from "../../ui/checkbox";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../ui/dropdown-menu";
+} from "../../ui/dropdown-menu";
+import DataTableRowActionsVue from "~/components/ui/dataTable/RowActions.vue";
+import  LogsAndReportsCustomerSpecificOtherInfoDetails  from "~/components/logsAndReports/customerSpecific/OtherInfoDetails.vue";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -107,7 +104,7 @@ export const columns: ColumnDef<CustomerActivityLog>[] = [
               h(
                 DropdownMenuItem,
                 {},
-                h(TransactionLogOtherInfoDetailsVue, {
+                h(LogsAndReportsCustomerSpecificOtherInfoDetails, {
                   class: "w-[900px]  right-0 ",
                   otherInfoData: additionalInfo,
                 })

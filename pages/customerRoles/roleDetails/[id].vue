@@ -3,88 +3,82 @@ const openItems = ref(["item-1"]);
 </script>
 
 <template>
-  <div class="flex flex-col gap-5 items-center h-screen p-0 bg-secondary">
-    <div
-      class="w-full flex flex-col gap-5 p-6 bg-card shadow-none border-[0.5px] rounded-md"
-    >
-      <div value="profile" class="space-y-4 py-4 text-base border-[0px]">
-        <div class="flex flex-col space-y-4">
-          <UiAccordion type="single" default-value="item-1" collapsible>
-            <UiAccordionItem value="item-1">
-              <UiAccordionTrigger class="md:text-lg flex-row-reverse gap-2">
-                <UiBadge class="bg-green-700 md:ml-4 text-xs">Active</UiBadge>
-                <p class="mr-auto">Roll Details</p></UiAccordionTrigger
-              >
-              <UiAccordionContent class="w-full" v-model="openItems">
-                <div class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full">
-                  <div class="space-y-1">
-                    <label
-                      for="phoneNumber"
-                      class="text-muted-foreground uppercase"
-                      >Roll Name</label
-                    >
-                    <p>Administrator</p>
-                  </div>
-                  <div class="space-y-1">
-                    <label
-                      for="phoneNumber"
-                      class="text-muted-foreground uppercase"
-                      >Roll Type</label
-                    >
-                    <p>Business Banking</p>
-                  </div>
-                  <div class="space-y-1">
-                    <label
-                      for="phoneNumber"
-                      class="text-muted-foreground uppercase"
-                      >E-Agreement</label
-                    >
-                    <p>Non Required</p>
-                  </div>
-                  <div class="space-y-0">
-                    <label
-                      for="phoneNumber"
-                      class="text-muted-foreground uppercase"
-                      >Buisness Type</label
-                    >
-                    <p>
-                      Sole Proprietor, Partnership, Unincorporated, Association,
-                      Trust, Corporation
-                    </p>
-                  </div>
-                  <div class="space-y-0">
-                    <label
-                      for="phoneNumber"
-                      class="text-muted-foreground uppercase"
-                      >Default for Buisness Type</label
-                    >
-                    <p>Sole Proprietor</p>
-                  </div>
-                  <div class="space-y-0 col-span-full">
-                    <label
-                      for="phoneNumber"
-                      class="text-muted-foreground uppercase"
-                      >Description</label
-                    >
-                    <p>
-                      This business users have the highest level of access to
-                      all the functions, can create, authorize transactions &
-                      manage access of other users(register / suspend / activate
-                      users, limit access to accounts & functions, set
-                      transaction limits)
-                    </p>
-                  </div>
+  <div class="flex flex-col gap-6 items-center h-full">
+    <UiCard class="w-full p-6">
+      <div class="flex flex-col space-y-4">
+        <UiAccordion type="single" default-value="item-1" collapsible>
+          <UiAccordionItem value="item-1">
+            <UiAccordionTrigger class="md:text-lg flex-row-reverse gap-2">
+              <UiBadge class="bg-green-700 md:ml-4 text-xs">Active</UiBadge>
+              <p class="mr-auto md:text-xl">Roll Details</p></UiAccordionTrigger
+            >
+            <UiAccordionContent class="w-full border-none" v-model="openItems">
+              <div class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full">
+                <div class="space-y-1">
+                  <label
+                    for="phoneNumber"
+                    class="text-muted-foreground uppercase"
+                    >Roll Name</label
+                  >
+                  <p>Administrator</p>
                 </div>
-              </UiAccordionContent>
-            </UiAccordionItem>
-          </UiAccordion>
-        </div>
+                <div class="space-y-1">
+                  <label
+                    for="phoneNumber"
+                    class="text-muted-foreground uppercase"
+                    >Roll Type</label
+                  >
+                  <p>Business Banking</p>
+                </div>
+                <div class="space-y-1">
+                  <label
+                    for="phoneNumber"
+                    class="text-muted-foreground uppercase"
+                    >E-Agreement</label
+                  >
+                  <p>Non Required</p>
+                </div>
+                <div class="space-y-0">
+                  <label
+                    for="phoneNumber"
+                    class="text-muted-foreground uppercase"
+                    >Buisness Type</label
+                  >
+                  <p>
+                    Sole Proprietor, Partnership, Unincorporated, Association,
+                    Trust, Corporation
+                  </p>
+                </div>
+                <div class="space-y-0">
+                  <label
+                    for="phoneNumber"
+                    class="text-muted-foreground uppercase"
+                    >Default for Buisness Type</label
+                  >
+                  <p>Sole Proprietor</p>
+                </div>
+                <div class="space-y-0 col-span-full">
+                  <label
+                    for="phoneNumber"
+                    class="text-muted-foreground uppercase"
+                    >Description</label
+                  >
+                  <p>
+                    This business users have the highest level of access to all
+                    the functions, can create, authorize transactions & manage
+                    access of other users(register / suspend / activate users,
+                    limit access to accounts & functions, set transaction
+                    limits)
+                  </p>
+                </div>
+              </div>
+            </UiAccordionContent>
+          </UiAccordionItem>
+        </UiAccordion>
       </div>
-    </div>
+    </UiCard>
 
-    <div
-      class="w-full flex flex-col gap-5 p-6 bg-card shadow-none border-[1px] rounded-md"
-    >
+    <UiCard class="w-full p-6">
       <UiTabs default-value="contact" class="md:space-y-4 w-full">
         <UiTabsList class="flex bg-white justify-start py-7 px-0 border-[1px]">
           <UiTabsTrigger
@@ -144,7 +138,7 @@ const openItems = ref(["item-1"]);
           </div>
         </UiTabsContent>
       </UiTabs>
-    </div>
+    </UiCard>
   </div>
 </template>
 

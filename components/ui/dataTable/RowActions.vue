@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
-import { computed } from "vue";
 // import { taskSchema } from "../data/schema";
 // import { type Task } from "../data/schema";
 

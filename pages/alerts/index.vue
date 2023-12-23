@@ -1,16 +1,14 @@
 <script lang="ts" setup></script>
 
 <template>
-  <div
-    class="flex flex-col w-full items-center h-screen xl:p-10 border-0 gap-8"
-  >
+  <div class="flex flex-col w-full items-center h-screen border-0 gap-10">
     <NuxtLink to="/alerts/addCategory" class="self-end">
       <UiButton variant="default" class="p-6 rounded-lg"
         >Add Alert Category</UiButton
       >
     </NuxtLink>
 
-    <div class="border-[1px] p-6 space-y-6 shadow-sm h-full w-full rounded-md">
+    <UiCard class="p-6 space-y-4 h-full w-full">
       <div class="flex justify-between">
         <h1 class="text-xl font-medium">Alert Categories</h1>
         <UiButton class="pr-5" variant="outline"> Reorder</UiButton>
@@ -62,6 +60,6 @@
           </UiCard>
         </NuxtLink>
       </div>
-    </div>
+    </UiCard>
   </div>
 </template>

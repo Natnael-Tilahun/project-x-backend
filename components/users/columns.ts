@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@tanstack/vue-table";
 import { ArrowUpDown } from "lucide-vue-next";
 import { Checkbox } from "../ui/checkbox";
-import DataTableColumnHeaderVue from "../DataTableColumnHeader.vue";
+import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue"
 import { Badge } from "../ui/badge";
 import UsersDataTableRowActionsVue from "../UsersDataTableRowActions.vue";
 // import { Badge } from "../ui/badge";
