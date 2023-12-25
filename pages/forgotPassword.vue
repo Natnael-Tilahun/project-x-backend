@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { buttonVariants } from "~/components/ui/button";
 import { cn } from "@/lib/utils";
+import ForgotPasswordForm from "~/components/forgotPassword/ForgotPasswordForm.vue";
 
 definePageMeta({
   layout: false,
@@ -27,9 +28,7 @@ definePageMeta({
     >
       <div
         class="w-full h-full bg-cover bg-center contrast-75"
-        style="
-          background-image: url('/Ethiopia_Commercial-Bank_building.jpeg');
-        "
+        style="background-image: url('/Ethiopia_Commercial-Bank_building.jpeg')"
       ></div>
       <!-- </div> -->
       <div class="absolute bottom-0 z-20 p-5 mt-auto">
@@ -70,7 +69,7 @@ definePageMeta({
           </a>
           .
         </p>
-        <Copyright />
+        <UiCopyright />
       </div>
     </div>
   </div>

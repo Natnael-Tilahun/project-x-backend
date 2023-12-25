@@ -3,7 +3,7 @@ import type { ColumnDef } from "@tanstack/vue-table";
 import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
-import CustomerRolesDataTableRowActionsVue from "../CustomerRolesDataTableRowActions.vue";
+import CustomerRolesDataTableRowActionsVue from "./DataTableRowActions.vue";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.

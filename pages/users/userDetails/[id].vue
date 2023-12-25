@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import Loading from "~/components/Loading.vue";
-
 const openItems = ref(["item-1"]);
 const data = ref<any>([]);
 const isLoading = ref(false);
@@ -215,7 +213,7 @@ onMounted(async () => {
     </UiCard>
   </div>
   <div v-else class="py-10 flex justify-center items-center">
-    <Loading />
+    <UiLoading />
   </div>
 </template>
 

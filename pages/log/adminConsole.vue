@@ -384,6 +384,6 @@ onMounted(async () => {
     </UiDataTable>
   </div>
   <div v-else class="py-10 flex justify-center w-full">
-    <Loading />
+    <UiLoading />
   </div>
 </template>

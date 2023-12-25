@@ -166,11 +166,11 @@ onMounted(async () => {
 
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
-        <CustomerDataTableSearchbar :table="table" />
+        <CustomersDataTableSearchbar :table="table" />
       </template>
     </UiDataTable>
   </div>
   <div v-else class="py-10 flex justify-center w-full">
-    <Loading />
+    <UiLoading />
   </div>
 </template>

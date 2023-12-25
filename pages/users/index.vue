@@ -60,6 +60,6 @@ onMounted(async () => {
     </UiDataTable>
   </div>
   <div v-else class="py-10 flex justify-center items-center">
-    <Loading />
+    <UiLoading />
   </div>
 </template>

@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { buttonVariants } from "~/components/ui/button";
 import { cn } from "@/lib/utils";
-import UserAuthForm from "~/components/UserAuthForm.vue";
-import Copyright from "~/components/Copyright.vue";
+import LoginForm from "~/components/login/LoginForm.vue";
 
 // Page Meta Configuration
 definePageMeta({
@@ -33,9 +32,7 @@ definePageMeta({
     >
       <div
         class="w-full h-full bg-cover bg-center contrast-75"
-        style="
-          background-image: url('/Ethiopia_Commercial-Bank_building.jpeg');
-        "
+        style="background-image: url('/Ethiopia_Commercial-Bank_building.jpeg')"
       ></div>
       <div class="absolute bottom-0 z-20 p-5 mt-auto">
         <blockquote class="space-y-2">
@@ -60,7 +57,7 @@ definePageMeta({
             Enter your email(username) and password below to login
           </p> -->
         </div>
-        <UserAuthForm />
+        <LoginForm />
         <p class="px-8 text-center text-sm text-muted-foreground">
           By clicking continue, you agree to our
           <a
@@ -78,7 +75,7 @@ definePageMeta({
           </a>
           .
         </p>
-        <Copyright />
+        <UiCopyright />
       </div>
     </div>
   </div>

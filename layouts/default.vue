@@ -1,5 +1,8 @@
 <script lang="ts" setup>
 import { ref, onMounted } from "vue";
+import Sidebar from "~/components/layout/sidebar/Sidebar.vue";
+import OpenSidebarIcon from "~/components/layout/sidebar/OpenSidebarIcon.vue";
+import CloseSidebarIcon from "~/components/layout/sidebar/CloseSidebarIcon.vue";
 
 const LOCAL_STORAGE_THEME_KEY = "theme";
 

@@ -3,7 +3,7 @@ import { ArrowUpDown } from "lucide-vue-next";
 import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue"
 import { Badge } from "../ui/badge";
-import UsersDataTableRowActionsVue from "../UsersDataTableRowActions.vue";
+import UsersDataTableRowActionsVue from "./DataTableRowActions.vue";
 // import { Badge } from "../ui/badge";
 
 // This type is used to define the shape of our data.
