@@ -171,4 +171,3 @@ const onSubmit = form.handleSubmit((values: any) => {
 </template>
 
 <style lang="css" scoped></style>
-~/validations/newUserRoleFormSchema
