@@ -169,5 +169,3 @@ const onSubmit = form.handleSubmit((values: any) => {
     </UiTabs>
   </div>
 </template>
-
-~/validations/newUserRoleformSchema
