@@ -1,16 +1,23 @@
 <script lang="ts" setup></script>
 
 <template>
-  <div class="flex flex-col w-full items-center h-screen border-0 gap-10">
-    <NuxtLink to="/alerts/addCategory" class="self-end">
-      <UiButton variant="default" class="p-6 rounded-lg"
-        >Add Alert Category</UiButton
-      >
-    </NuxtLink>
+  <div class="flex flex-col w-full h-screen items-center gap-10">
+    <div class="w-full flex justify-between">
+      <div class="pb-4">
+        <h1 class="md:text-2xl text-lg font-medium">Alert Categories</h1>
+        <p class="text-sm text-muted-foreground">
+          View, create, update alert categories
+        </p>
+      </div>
+      <NuxtLink to="/alerts/addCategory" class="self-end">
+        <UiButton variant="default" class="p-6 rounded-lg"
+          >Add Alert Category</UiButton
+        >
+      </NuxtLink>
+    </div>
 
-    <UiCard class="p-6 space-y-4 h-full w-full">
-      <div class="flex justify-between">
-        <h1 class="text-xl font-medium">Alert Categories</h1>
+    <UiCard class="p-6 md:space-y-10 h-full w-full">
+      <div class="flex justify-end">
         <UiButton class="pr-5" variant="outline"> Reorder</UiButton>
       </div>
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
