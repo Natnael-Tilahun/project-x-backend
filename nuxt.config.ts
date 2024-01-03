@@ -20,7 +20,11 @@ export default defineNuxtConfig({
     // "@nuxtjs/color-mode",
     "@davestewart/nuxt-scrollbar",
     "nuxt-icon",
+    "@pinia/nuxt",
   ],
+  pinia: {
+    storesDirs: ["./stores/**", "./custom-folder/stores/**"],
+  },
   // colorMode: {
   //   classSuffix: "",
   // },

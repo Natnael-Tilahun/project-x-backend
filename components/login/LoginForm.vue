@@ -10,6 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { customerLoginFormSchema } from "~/validations/customerLoginFormSchema";
+const store = useAuthStore();
 
 const isLoading = ref(false);
 
@@ -17,14 +18,21 @@ const form = useForm({
   validationSchema: customerLoginFormSchema,
 });
 
-const onSubmit = form.handleSubmit((values: any) => {
-  console.log("Form submitted!", values);
+const onSubmit = form.handleSubmit(async (values: any) => {
   isLoading.value = true;
 
-  setTimeout(() => {
+  const { body }: any = await $fetch("/api/login", {
+    method: "post",
+    body: values,
+  }).catch((err) => {
+    console.log(err);
     isLoading.value = false;
-    navigateTo("/");
-  }, 3000);
+  });
+  store.email = body.email;
+  // setTimeout(() => {
+  isLoading.value = false;
+  navigateTo("/");
+  // }, 3000);
 });
 </script>
 

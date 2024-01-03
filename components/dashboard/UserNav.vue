@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const { userName, email } = useAuthStore();
+</script>
 
 <template>
   <UiDropdownMenu>
@@ -13,9 +15,9 @@
     <UiDropdownMenuContent class="w-56" align="end">
       <UiDropdownMenuLabel class="font-normal flex">
         <div class="flex flex-col space-y-1">
-          <p class="text-sm font-medium leading-none">Natnael Tilahun</p>
+          <p class="text-sm font-medium leading-none">{{ userName }}</p>
           <p class="text-xs leading-none text-muted-foreground">
-            natnaeltilahun@cbe.com.et
+            {{ email }}
           </p>
         </div>
       </UiDropdownMenuLabel>
