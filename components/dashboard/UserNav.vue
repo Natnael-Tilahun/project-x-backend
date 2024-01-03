@@ -13,35 +13,34 @@
     <UiDropdownMenuContent class="w-56" align="end">
       <UiDropdownMenuLabel class="font-normal flex">
         <div class="flex flex-col space-y-1">
-          <p class="text-sm font-medium leading-none">shadcn</p>
+          <p class="text-sm font-medium leading-none">Natnael Tilahun</p>
           <p class="text-xs leading-none text-muted-foreground">
-            m@example.com
+            natnaeltilahun@cbe.com.et
           </p>
         </div>
       </UiDropdownMenuLabel>
       <UiDropdownMenuSeparator />
       <UiDropdownMenuGroup>
-        <UiDropdownMenuItem>
-          Profile
-          <UiDropdownMenuShortcut>⇧⌘P</UiDropdownMenuShortcut>
-        </UiDropdownMenuItem>
-        <UiDropdownMenuItem>
-          Billing
-          <UiDropdownMenuShortcut>⌘B</UiDropdownMenuShortcut>
-        </UiDropdownMenuItem>
-        <UiDropdownMenuItem>
-          Settings
-          <UiDropdownMenuShortcut>⌘S</UiDropdownMenuShortcut>
-        </UiDropdownMenuItem>
-        <UiDropdownMenuItem>New Team</UiDropdownMenuItem>
+        <NuxtLink to="/profile">
+          <UiDropdownMenuItem>
+            Profile
+            <UiDropdownMenuShortcut>⇧⌘P</UiDropdownMenuShortcut>
+          </UiDropdownMenuItem>
+        </NuxtLink>
+        <NuxtLink to="/settings">
+          <UiDropdownMenuItem>
+            Settings
+            <UiDropdownMenuShortcut>⌘S</UiDropdownMenuShortcut>
+          </UiDropdownMenuItem>
+        </NuxtLink>
       </UiDropdownMenuGroup>
       <UiDropdownMenuSeparator />
-      <UiDropdownMenuItem>
-        <NuxtLink to="/login">
+      <NuxtLink to="/login">
+        <UiDropdownMenuItem>
           Log out
           <UiDropdownMenuShortcut>⇧⌘Q</UiDropdownMenuShortcut>
-        </NuxtLink>
-      </UiDropdownMenuItem>
+        </UiDropdownMenuItem>
+      </NuxtLink>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 </template>

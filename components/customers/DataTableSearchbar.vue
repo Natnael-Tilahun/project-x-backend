@@ -41,7 +41,7 @@ const clearAllFilters = () => {
   <div
     class="flex flex-col gap-6 w-full shadow-lg p-4 md:p-6 border-[1px] mb-10 h-full justify-between"
   >
-    <h1 class="text-xl text-left text-primary pb-2">Search Customer By</h1>
+    <h1 class="text-xl text-left pb-2">Search Customer By</h1>
     <div
       class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 items-center gap-6"
     >

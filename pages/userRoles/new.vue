@@ -7,7 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { newUserRoleformSchema } from "~/validations/newUserRoleformSchema";
+import { newUserRoleFormSchema } from "~/validations/newUserRoleFormSchema";
 
 const isLoading = ref(false);
 const activeTab = ref<string>("roleDetails"); // Reactive variable to manage active tab
@@ -17,7 +17,7 @@ const switchToAssignFeaturesTab = () => {
 };
 
 const form = useForm({
-  validationSchema: newUserRoleformSchema,
+  validationSchema: newUserRoleFormSchema,
 });
 
 const onSubmit = form.handleSubmit((values: any) => {
@@ -171,3 +171,4 @@ const onSubmit = form.handleSubmit((values: any) => {
 </template>
 
 <style lang="css" scoped></style>
+~/validations/newUserRoleFormSchema

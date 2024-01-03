@@ -53,10 +53,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div
-    v-if="data.length > 0"
-    class="p-5 flex flex-col space-y-4 mx-auto border-[1px] shadow-sm rounded-md bg-secondary"
-  >
+  <div v-if="data.length > 0" class="p-5 flex flex-col space-y-4">
     <div class="flex items-center justify-between">
       <h1 class="md:text-xl items-center text-gray-500">
         User: <span>Abebe Kebede</span>
@@ -65,103 +62,105 @@ onMounted(async () => {
         >Add Customer ID</UiButton
       >
     </div>
-    <form
-      @submit="onSubmit"
-      class="flex flex-col justify-between min-h-[400px]"
-    >
-      <UiTable>
-        <UiTableHeader>
-          <UiTableRow>
-            <UiTableHead class=""> customerId </UiTableHead>
-            <UiTableHead>customerName</UiTableHead>
-            <UiTableHead>service</UiTableHead>
-            <UiTableHead class=""> roll </UiTableHead>
-          </UiTableRow>
-        </UiTableHeader>
-        <UiTableBody>
-          <UiTableRow v-for="(d, index) of data" :key="index">
-            <UiTableCell class="font-medium">
-              {{ d.customerId }}
-            </UiTableCell>
-            <UiTableCell>{{ d.customerName }}</UiTableCell>
-            <UiTableCell>
-              <FormField v-slot="{ componentField }" name="service">
-                <FormItem>
-                  <UiSelect v-bind="componentField">
-                    <FormControl>
-                      <UiSelectTrigger>
-                        <UiSelectValue placeholder="Select a service" />
-                      </UiSelectTrigger>
-                    </FormControl>
-                    <UiSelectContent>
-                      <UiSelectGroup>
-                        <UiSelectItem value="Retail Banking">
-                          Retail online banking
-                        </UiSelectItem>
-                        <UiSelectItem value="Wealth Online Banking">
-                          Wealth Online Banking
-                        </UiSelectItem>
-                        <UiSelectItem value="Retail and wealth online banking">
-                          Retail and wealth online banking
-                        </UiSelectItem>
-                        <UiSelectItem value="Corporate Online Banking">
-                          Corporate Online Banking
-                        </UiSelectItem>
-                        <UiSelectItem value="SME Online Banking">
-                          SME Online Banking
-                        </UiSelectItem>
-                      </UiSelectGroup>
-                    </UiSelectContent>
-                  </UiSelect>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-            </UiTableCell>
-            <UiTableCell class="">
-              <FormField v-slot="{ componentField }" name="role">
-                <FormItem>
-                  <UiSelect v-bind="componentField">
-                    <FormControl>
-                      <UiSelectTrigger>
-                        <UiSelectValue placeholder="Select a role" />
-                      </UiSelectTrigger>
-                    </FormControl>
-                    <UiSelectContent>
-                      <UiSelectGroup>
-                        <UiSelectItem value="Administrator">
-                          Administrator
-                        </UiSelectItem>
-                        <UiSelectItem value="Authorizer">
-                          Authorizer
-                        </UiSelectItem>
-                        <UiSelectItem value="Creator"> Creator </UiSelectItem>
-                        <UiSelectItem value="Viewer"> Viewer </UiSelectItem>
-                      </UiSelectGroup>
-                    </UiSelectContent>
-                  </UiSelect>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-            </UiTableCell>
-          </UiTableRow>
-        </UiTableBody>
-      </UiTable>
+    <UiCard class="p-6">
+      <form
+        @submit="onSubmit"
+        class="flex flex-col justify-between min-h-[300px]"
+      >
+        <UiTable>
+          <UiTableHeader>
+            <UiTableRow>
+              <UiTableHead class=""> customerId </UiTableHead>
+              <UiTableHead>customerName</UiTableHead>
+              <UiTableHead>service</UiTableHead>
+              <UiTableHead class=""> roll </UiTableHead>
+            </UiTableRow>
+          </UiTableHeader>
+          <UiTableBody>
+            <UiTableRow v-for="(d, index) of data" :key="index">
+              <UiTableCell class="font-medium">
+                {{ d.customerId }}
+              </UiTableCell>
+              <UiTableCell>{{ d.customerName }}</UiTableCell>
+              <UiTableCell>
+                <FormField v-slot="{ componentField }" name="service">
+                  <FormItem>
+                    <UiSelect v-bind="componentField">
+                      <FormControl>
+                        <UiSelectTrigger>
+                          <UiSelectValue placeholder="Select a service" />
+                        </UiSelectTrigger>
+                      </FormControl>
+                      <UiSelectContent>
+                        <UiSelectGroup>
+                          <UiSelectItem value="Retail Banking">
+                            Retail online banking
+                          </UiSelectItem>
+                          <UiSelectItem value="Wealth Online Banking">
+                            Wealth Online Banking
+                          </UiSelectItem>
+                          <UiSelectItem
+                            value="Retail and wealth online banking"
+                          >
+                            Retail and wealth online banking
+                          </UiSelectItem>
+                          <UiSelectItem value="Corporate Online Banking">
+                            Corporate Online Banking
+                          </UiSelectItem>
+                          <UiSelectItem value="SME Online Banking">
+                            SME Online Banking
+                          </UiSelectItem>
+                        </UiSelectGroup>
+                      </UiSelectContent>
+                    </UiSelect>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+              </UiTableCell>
+              <UiTableCell class="">
+                <FormField v-slot="{ componentField }" name="role">
+                  <FormItem>
+                    <UiSelect v-bind="componentField">
+                      <FormControl>
+                        <UiSelectTrigger>
+                          <UiSelectValue placeholder="Select a role" />
+                        </UiSelectTrigger>
+                      </FormControl>
+                      <UiSelectContent>
+                        <UiSelectGroup>
+                          <UiSelectItem value="Administrator">
+                            Administrator
+                          </UiSelectItem>
+                          <UiSelectItem value="Authorizer">
+                            Authorizer
+                          </UiSelectItem>
+                          <UiSelectItem value="Creator"> Creator </UiSelectItem>
+                          <UiSelectItem value="Viewer"> Viewer </UiSelectItem>
+                        </UiSelectGroup>
+                      </UiSelectContent>
+                    </UiSelect>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+              </UiTableCell>
+            </UiTableRow>
+          </UiTableBody>
+        </UiTable>
 
-      <div class="flex justify-between">
-        <UiButton variant="outline" class="px-12 py-6 shadow-md border-2"
-          >Cancel</UiButton
-        >
-        <UiButton :disabled="isLoading" type="submit" class="px-12 py-6">
-          <Icon
-            name="svg-spinners:8-dots-rotate"
-            v-if="isLoading"
-            class="mr-2 h-4 w-4 animate-spin"
-          ></Icon>
+        <div class="flex justify-between">
+          <UiButton variant="outline" size="lg" class="">Cancel</UiButton>
+          <UiButton size="lg" :disabled="isLoading" type="submit">
+            <Icon
+              name="svg-spinners:8-dots-rotate"
+              v-if="isLoading"
+              class="mr-2 h-4 w-4 animate-spin"
+            ></Icon>
 
-          Enroll
-        </UiButton>
-      </div>
-    </form>
+            Enroll
+          </UiButton>
+        </div>
+      </form>
+    </UiCard>
   </div>
   <div v-else class="py-10 flex justify-center items-center">
     <UiLoading />

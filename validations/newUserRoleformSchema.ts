@@ -1,7 +1,7 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
 
-export const newUserRoleformSchema = toTypedSchema(
+export const newUserRoleFormSchema = toTypedSchema(
   z.object({
     roleName: z.string().min(5).max(50),
     legalEntity: z.string(),
