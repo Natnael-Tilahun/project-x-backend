@@ -8,6 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { newUserRoleformSchema } from "~/validations/newUserRoleformSchema";
+import { ref } from "vue";
 
 const isLoading = ref(false);
 const activeTab = ref<string>("roleDetails"); // Reactive variable to manage active tab
