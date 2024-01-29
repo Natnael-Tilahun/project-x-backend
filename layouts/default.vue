@@ -98,7 +98,7 @@ const closeMenuNav = () => {
     />
 
     <div
-      class="col-span-full md:col-span-9 lg:col-span-7 xl:col-span-6 md:flex"
+      class="col-span-full md:col-span-9 bg-secondary lg:col-span-7 xl:col-span-6 md:flex"
       :class="[
         {
           'w-full   h-full top-0 left-0   flex-col md:flex':
@@ -110,7 +110,7 @@ const closeMenuNav = () => {
       ]"
     >
       <!-- Page Header -->
-      <div class="border-b">
+      <div class="border-b bg-background">
         <div class="flex h-16 items-center px-3 md:px-8">
           <!-- <DashboardMainNav class="mx-6" /> -->
           <div class="flex items-center gap-3 md:gap-2">
@@ -159,7 +159,7 @@ const closeMenuNav = () => {
       </div>
 
       <!-- Page Main Content -->
-      <div class="space-y-10 p-5 md:p-8 pt-6">
+      <div class="space-y-10 p-5 bg-secondary md:p-8 pt-6">
         <slot />
       </div>
     </div>
