@@ -12,7 +12,7 @@ const date = ref({
 </script>
 
 <template>
-  <div :class="cn('grid gap-2', $attrs.class ?? '')">
+  <div :class="cn('grid gap-2 w-full ', $attrs.class ?? '')">
     <UiPopover>
       <UiPopoverTrigger as-child>
         <UiButton
@@ -20,7 +20,7 @@ const date = ref({
           :variant="'outline'"
           :class="
             cn(
-              'w-[260px] justify-start text-left font-normal',
+              'max-w-[260px] w-full justify-start text-left font-normal',
               !date && 'text-muted-foreground'
             )
           "

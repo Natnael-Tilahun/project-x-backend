@@ -3,6 +3,11 @@ export default defineNuxtConfig({
   // nitro: {
   //   preset: "vercel",
   // },
+  runtimeConfig: {
+    public: {
+      API_BASE_URL: process.env.API_BASE_URL,
+    },
+  },
   devtools: {
     enabled: true,
     timeline: {

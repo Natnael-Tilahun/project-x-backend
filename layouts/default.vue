@@ -159,7 +159,7 @@ const closeMenuNav = () => {
       </div>
 
       <!-- Page Main Content -->
-      <div class="space-y-10 p-5 bg-secondary md:p-8 pt-6">
+      <div class="space-y-10 md:space-y-0 p-5 bg-secondary md:p-8 pt-6">
         <slot />
       </div>
     </div>

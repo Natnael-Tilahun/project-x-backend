@@ -9,29 +9,45 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { customerLoginFormSchema } from "~/validations/customerLoginFormSchema";
+import { userLoginFormSchema } from "~/validations/userLoginFormSchema";
 const store = useAuthStore();
+const { login, isLoading } = await useAuth();
+let showPassword = ref(false);
 
-const isLoading = ref(false);
+// const isLoading = ref(false);
 
 const form = useForm({
-  validationSchema: customerLoginFormSchema,
+  validationSchema: userLoginFormSchema,
 });
 
-const onSubmit = form.handleSubmit(async (values: any) => {
-  isLoading.value = true;
+const togglePasswordVisibility = () => {
+  showPassword.value = !showPassword.value;
+};
 
-  const { body }: any = await $fetch("/api/login", {
-    method: "post",
-    body: values,
-  }).catch((err) => {
-    console.log(err);
-    isLoading.value = false;
-  });
-  store.email = body.email;
+const onSubmit = form.handleSubmit(async (values: any) => {
+  // isLoading.value = true;
+  const userCredentials = {
+    username: values.username,
+    password: values.password,
+    rememberMe: values.rememberMe,
+  };
+  // console.log("values; ", userCredentials);
+
+  login(userCredentials).then((data) =>
+    console.log("dataaa: ", data, isLoading.value)
+  );
+
+  // const { body }: any = await $fetch("/api/login", {
+  //   method: "post",
+  //   body: values,
+  // }).catch((err) => {
+  //   console.log(err);
+  //   isLoading.value = false;
+  // });
+  // store.email = body.email;
   // setTimeout(() => {
-  isLoading.value = false;
-  navigateTo("/");
+  // isLoading.value = false;
+  // navigateTo("/");
   // }, 3000);
 });
 </script>
@@ -40,15 +56,16 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   <div :class="cn('grid gap-6', $attrs.class ?? '')">
     <form @submit="onSubmit">
       <div class="grid gap-3">
-        <FormField v-slot="{ componentField }" name="email">
+        <FormField v-slot="{ componentField }" name="username">
           <FormItem>
             <FormLabel> Username or Email</FormLabel>
             <FormControl>
               <UiInput
-                type="email"
-                placeholder="name@example.com"
+                type="text"
+                placeholder="username"
                 v-bind="componentField"
                 :disabled="isLoading"
+                aria-autocomplete="username"
               />
             </FormControl>
             <FormMessage />
@@ -59,18 +76,53 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           <FormItem>
             <FormLabel>Password</FormLabel>
             <FormControl>
-              <UiInput
-                type="text"
-                placeholder="******"
-                v-bind="componentField"
-                :disabled="isLoading"
-              />
+              <div
+                className="relative flex items-center bg-input rounded-lg pl- focus-within:ring-1 focus-within:ring-primary"
+              >
+                <UiInput
+                  :type="[showPassword ? 'text' : 'password']"
+                  placeholder="******"
+                  v-bind="componentField"
+                  :disabled="isLoading"
+                  aria-autocomplete="password"
+                />
+
+                <Icon
+                  v-if="showPassword"
+                  name="material-symbols:visibility-off-rounded"
+                  class="absolute flex right-0 pr-3 items-center w-8 h-8"
+                  @Click="togglePasswordVisibility"
+                ></Icon>
+                <Icon
+                  v-else
+                  name="material-symbols:visibility-rounded"
+                  class="absolute flex right-0 pr-3 items-center w-8 h-8"
+                  @Click="togglePasswordVisibility"
+                ></Icon>
+              </div>
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <div class="grid pb-3">
+        <div class="flex justify-between items-center pb-3">
+          <FormField
+            v-slot="{ value, handleChange }"
+            type="checkbox"
+            name="rememberMe"
+          >
+            <FormItem
+              class="flex flex-row w-fit items-start gap-x-3 space-y-0 py-4"
+            >
+              <FormControl>
+                <UiCheckbox :checked="value" @update:checked="handleChange" />
+              </FormControl>
+              <div class="space-y-1 leading-none">
+                <FormLabel>Remember Me</FormLabel>
+                <FormMessage />
+              </div>
+            </FormItem>
+          </FormField>
           <NuxtLink
             to="/forgotPassword"
             class="text-primary text-right text-sm"
@@ -80,8 +132,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         </div>
         <UiButton :disabled="isLoading">
           <Icon
-            name="svg-spinners:8-dots-rotate"
             v-if="isLoading"
+            name="svg-spinners:8-dots-rotate"
             class="mr-2 h-4 w-4 animate-spin"
           ></Icon>
 

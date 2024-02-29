@@ -6,8 +6,10 @@ const route = useRoute();
 
 <template>
   <UiTabs default-value="overview" class="space-y-12">
-    <div class="flex items-center justify-between space-y-">
-      <UiTabsList>
+    <div
+      class="flex flex-col lg:flex-row gap-5 space-y-0justify-start lg:justify-between"
+    >
+      <UiTabsList class="md:justify-start w-fit">
         <UiTabsTrigger value="overview"> Overview </UiTabsTrigger>
         <UiTabsTrigger value="analytics" disabled> Analytics </UiTabsTrigger>
         <UiTabsTrigger value="reports" disabled> Reports </UiTabsTrigger>
@@ -15,7 +17,7 @@ const route = useRoute();
           Notifications
         </UiTabsTrigger>
       </UiTabsList>
-      <div class="flex items-center space-x-2">
+      <div class="flex items-center space-x-2 w-full md:w-fit">
         <DashboardDateRangePicker />
         <UiButton>Download</UiButton>
       </div>
