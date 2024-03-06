@@ -112,7 +112,7 @@ const mainLinks = [
     dropdown: [
       { title: "Users", link: "/users" },
       { title: "Roles", link: "/userRoles" },
-      { title: "Permissions", link: "/permissions" },
+      { title: "Permissions", link: "/userPermissions" },
     ],
   },
   {
