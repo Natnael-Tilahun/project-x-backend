@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import DashboardDateRangePicker from "~/components/dashboard/DateRangePicker.vue";
-
-const route = useRoute();
 </script>
 
 <template>

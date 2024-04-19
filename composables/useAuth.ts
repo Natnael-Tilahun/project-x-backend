@@ -6,6 +6,7 @@ export const useAuth = () => {
   const authUser = useAuthUser();
   const userAdmin = useState<boolean>("userAdmin", () => false);
   const isLoading = ref<boolean>(false);
+  const store = useAuthStore();
 
   const { toast } = useToast();
 
@@ -16,15 +17,20 @@ export const useAuth = () => {
   const login = async (user: UserInput) => {
     try {
       const { data, pending, error, status } = await useFetch(
-        `http://10.1.15.161:8080/api/v1/auth/sign-in/password`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/auth/sign-in/password`,
         {
           method: "POST",
           body: JSON.stringify(user),
           //   mode: "no-cors",
         }
       );
-      alert("fffdsaf");
-      console.log("user", data.value, status.value);
+
+      store.setAuth({
+        ...user,
+        ...data.value,
+        isAuthenticated: true,
+        role: "Admin",
+      });
       isLoading.value = pending.value;
 
       if (status.value === "error") {
@@ -97,10 +103,17 @@ export const useAuth = () => {
     }
   };
   const logout = async () => {
-    const data: any = await $fetch("/api/user/logout");
-    userAdmin.value = false;
-    setUser(data.user);
-    return data;
+    try {
+      // const data: any = await $fetch(
+      //   `${runtimeConfig.public.API_BASE_URL}/api/v1/auth/sign-out`
+      // );
+      store.$reset();
+      // setUser(data.user);
+
+      return navigateTo("/login", { replace: true });
+    } catch (err) {
+      return console.log("error: ", err);
+    }
   };
   return {
     login,

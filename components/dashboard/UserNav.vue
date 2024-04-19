@@ -1,5 +1,12 @@
 <script setup lang="ts">
-const { userName, email } = useAuthStore();
+const { username, email } = useAuthStore();
+const { logout, isLoading } = await useAuth();
+
+const logoutHandler = async () => {
+  logout().then((data) => {
+    console.log("User logged out successfully!");
+  });
+};
 </script>
 
 <template>
@@ -15,7 +22,7 @@ const { userName, email } = useAuthStore();
     <UiDropdownMenuContent class="w-56" align="end">
       <UiDropdownMenuLabel class="font-normal flex">
         <div class="flex flex-col space-y-1">
-          <p class="text-sm font-medium leading-none">{{ userName }}</p>
+          <p class="text-sm font-medium leading-none">{{ username }}</p>
           <p class="text-xs leading-none text-muted-foreground">
             {{ email }}
           </p>
@@ -37,12 +44,12 @@ const { userName, email } = useAuthStore();
         </NuxtLink>
       </UiDropdownMenuGroup>
       <UiDropdownMenuSeparator />
-      <NuxtLink to="/login">
+      <div @click="logoutHandler" to="/login">
         <UiDropdownMenuItem>
           Log out
           <UiDropdownMenuShortcut>⇧⌘Q</UiDropdownMenuShortcut>
         </UiDropdownMenuItem>
-      </NuxtLink>
+      </div>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 </template>

@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@davestewart/nuxt-scrollbar": "^1.0.0",
+    "@pinia-plugin-persistedstate/nuxt": "^1.2.0",
     "@pinia/nuxt": "^0.5.1",
     "@tanstack/vue-table": "^8.10.7",
     "@unovis/ts": "^1.2.1",

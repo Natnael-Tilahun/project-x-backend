@@ -10,9 +10,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { userLoginFormSchema } from "~/validations/userLoginFormSchema";
+import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 const store = useAuthStore();
 const { login, isLoading } = await useAuth();
 let showPassword = ref(false);
+const { toast } = useToast();
 
 // const isLoading = ref(false);
 
@@ -25,7 +27,7 @@ const togglePasswordVisibility = () => {
 };
 
 const onSubmit = form.handleSubmit(async (values: any) => {
-  // isLoading.value = true;
+  isLoading.value = true;
   const userCredentials = {
     username: values.username,
     password: values.password,
@@ -33,9 +35,14 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   };
   // console.log("values; ", userCredentials);
 
-  login(userCredentials).then((data) =>
-    console.log("dataaa: ", data, isLoading.value)
-  );
+  login(userCredentials).then(() => {
+    // toast({
+    //   title: "Hello!",
+    //   description: "Welcome back.",
+    //   variant: "success",
+    // });
+    return navigateTo("/", { replace: true });
+  });
 
   // const { body }: any = await $fetch("/api/login", {
   //   method: "post",

@@ -22,6 +22,7 @@ export default defineNuxtConfig({
   },
   modules: [
     "@nuxtjs/tailwindcss",
+    "@pinia-plugin-persistedstate/nuxt",
     // "@nuxtjs/color-mode",
     "@davestewart/nuxt-scrollbar",
     "nuxt-icon",
@@ -55,5 +56,8 @@ export default defineNuxtConfig({
       // ... or scan all modules within given directory
       "composables/**",
     ],
+  },
+  router: {
+    middleware: ["protected"],
   },
 });
