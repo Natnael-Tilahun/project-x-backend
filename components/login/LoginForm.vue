@@ -33,29 +33,25 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     password: values.password,
     rememberMe: values.rememberMe,
   };
-  // console.log("values; ", userCredentials);
 
-  login(userCredentials).then(() => {
-    // toast({
-    //   title: "Hello!",
-    //   description: "Welcome back.",
-    //   variant: "success",
-    // });
-    return navigateTo("/", { replace: true });
-  });
+  try {
+    const data = await login(userCredentials);
+    console.log("data: ", data);
+    // If login is successful, navigate to the home page
+    navigateTo("/", { replace: true });
+  } catch (error) {
+    console.error("Login error: ", error);
+    // Handle the error, e.g., display a toast message or stay on the login page
+    toast({
+      title: "Uh oh! Something went wrong.",
+      description: "There was a problem with your request. Please try again.",
 
-  // const { body }: any = await $fetch("/api/login", {
-  //   method: "post",
-  //   body: values,
-  // }).catch((err) => {
-  //   console.log(err);
-  //   isLoading.value = false;
-  // });
-  // store.email = body.email;
-  // setTimeout(() => {
-  // isLoading.value = false;
-  // navigateTo("/");
-  // }, 3000);
+      variant: "destructive",
+    });
+  } finally {
+    // Ensure to stop loading state whether login is successful or not
+    isLoading.value = false;
+  }
 });
 </script>
 
