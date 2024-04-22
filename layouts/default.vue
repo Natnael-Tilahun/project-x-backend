@@ -83,7 +83,7 @@ const closeMenuNav = () => {
     <!-- 'text-green-300 w-2/3  border-4 border-white z-50 absolute top-0 md:block  md:backdrop md:w-[250px] ' -->
     <!-- Page Sidebar -->
     <Sidebar
-      class="md:col-span-3 col-span-12 md:static lg:col-span-2 xl:col-span-1"
+      class="md:col-span-3 col-span-12 md:static shadow-none lg:col-span-2 xl:col-span-1"
       :class="[
         {
           'hidden col-span-12  md:block xl:col-span-1  md:col-span-3':
@@ -98,7 +98,7 @@ const closeMenuNav = () => {
     />
 
     <div
-      class="col-span-full md:col-span-9 bg-secondary lg:col-span-7 xl:col-span-6 md:flex"
+      class="col-span-full md:col-span-9 bg-secondary shadow-none lg:col-span-7 xl:col-span-6 md:flex"
       :class="[
         {
           'w-full   h-full top-0 left-0   flex-col md:flex':
@@ -110,7 +110,7 @@ const closeMenuNav = () => {
       ]"
     >
       <!-- Page Header -->
-      <div class="border-b bg-background">
+      <div class="border-b shadow-none bg-background">
         <div class="flex h-16 items-center px-3 md:px-8">
           <!-- <DashboardMainNav class="mx-6" /> -->
           <div class="flex items-center gap-3 md:gap-2">
@@ -159,7 +159,9 @@ const closeMenuNav = () => {
       </div>
 
       <!-- Page Main Content -->
-      <div class="space-y-10 md:space-y-0 p-5 bg-secondary md:p-8 pt-6">
+      <div
+        class="space-y-10 md:space-y-0 p-5 shadow-none bg-secondary md:p-8 pt-6"
+      >
         <slot />
       </div>
     </div>

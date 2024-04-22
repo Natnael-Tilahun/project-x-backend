@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@tanstack/vue-table";
 import { ArrowUpDown } from "lucide-vue-next";
 import { Checkbox } from "../ui/checkbox";
-import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue"
+import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import UsersDataTableRowActionsVue from "./DataTableRowActions.vue";
 // import { Badge } from "../ui/badge";
@@ -47,26 +47,14 @@ export const columns: ColumnDef<User>[] = [
     header: "Id",
   },
   {
-    accessorKey: "fullName",
+    accessorKey: "phone",
     header: ({ column }) =>
-      h(DataTableColumnHeaderVue, { column, title: "Full Name" }),
-    cell: ({ row }) => {
-      return h(
-        "div",
-        { class: "max-w-[180px] whitespace-nowrap truncate font-medium" },
-        row.getValue("fullName")
-      );
-    },
-  },
-  {
-    accessorKey: "userName",
-    header: ({ column }) =>
-      h(DataTableColumnHeaderVue, { column, title: "UserName" }),
+      h(DataTableColumnHeaderVue, { column, title: "Phone" }),
     cell: ({ row }) => {
       return h(
         "div",
         { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
-        row.getValue("userName")
+        row.getValue("phone")
       );
     },
   },
@@ -85,29 +73,49 @@ export const columns: ColumnDef<User>[] = [
       ),
   },
   {
-    accessorKey: "role",
+    accessorKey: "authorities",
     header: "Role",
-    cell: ({ row }) => h("div", { class: "lowercase" }, row.getValue("role")),
+    cell: ({ row }) => {
+      let roles = row.getValue("authorities");
+      return roles.map((role, index) => {
+        const comma = index < roles.length - 1 ? "," : ""; // Add comma if not the last role
+        return h("p", { class: "lowercase" }, [role, comma]);
+      });
+    },
   },
   {
-    accessorKey: "status",
+    accessorKey: "createdBy",
+    header: ({ column }) =>
+      h(DataTableColumnHeaderVue, { column, title: "Created By" }),
+    cell: ({ row }) => {
+      return h(
+        "div",
+        { class: "max-w-[180px] whitespace-nowrap truncate font-medium" },
+        row.getValue("createdBy")
+      );
+    },
+  },
+  {
+    accessorKey: "enrolled",
+    header: ({ column }) =>
+      h(DataTableColumnHeaderVue, { column, title: "Enrolled" }),
+    cell: ({ row }) => {
+      return h(
+        "div",
+        { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
+        row.getValue("enrolled")
+      );
+    },
+  },
+  {
+    accessorKey: "activated",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status");
-      if (status == "Active") {
-        return h(Badge, { class: "bg-green-600 " }, row.getValue("status"));
-      } else if (status == "New") {
-        return h(Badge, { class: "bg-blue-500 " }, row.getValue("status"));
-      } else if (status == "Locked") {
-        return h(Badge, { class: "bg-red-500 " }, row.getValue("status"));
-      } else if (status == "processing") {
-        return h(Badge, { class: "bg-yellow-500 " }, row.getValue("status"));
-      } else if (status == "UnEnrolled") {
-        return h(Badge, { class: "bg-blue-500 " }, row.getValue("status"));
-      } else if (status == "Suspended") {
-        return h(Badge, { class: "bg-orange-700 " }, row.getValue("status"));
+      const status = row.getValue("activated");
+      if (status) {
+        return h(Badge, { class: "bg-green-600 " }, "Active");
       } else {
-        return h("div", { class: "" }, row.getValue("status"));
+        return h(Badge, { class: "bg-red-500 whitespace-nowrap" }, "In Active");
       }
     },
   },

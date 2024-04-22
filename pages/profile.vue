@@ -9,7 +9,9 @@ import {
 } from "@/components/ui/form";
 import { profileFormSchema } from "~/validations/profileFormSchema";
 
-const isLoading = ref(false);
+const { getProfile, isLoading } = await useAuth();
+
+// const isLoading = ref(false);
 
 const form = useForm({
   validationSchema: profileFormSchema,
@@ -21,6 +23,21 @@ const onSubmit = form.handleSubmit((values: any) => {
   setTimeout(() => {
     isLoading.value = false;
   }, 3000);
+});
+
+// Fetch profile data when the component is mounted
+onMounted(async () => {
+  try {
+    isLoading.value = true;
+    const profileData = await getProfile(); // Call your API function to fetch profile
+    console.log("Profile data; ", profileData);
+    // formData.value = profileData; // Store the profile data in a reactive variable
+  } catch (error) {
+    console.error("Error fetching profile:", error);
+    // Handle error fetching profile data
+  } finally {
+    isLoading.value = false;
+  }
 });
 </script>
 

@@ -7,12 +7,13 @@ export const useAuth = () => {
   const userAdmin = useState<boolean>("userAdmin", () => false);
   const isLoading = ref<boolean>(false);
   const store = useAuthStore();
-
   const { toast } = useToast();
 
   const setUser = (user: User) => {
     authUser.value = user;
   };
+
+  console.log("store: ", store.accessToken);
 
   const login = async (user: UserInput) => {
     try {
@@ -21,7 +22,6 @@ export const useAuth = () => {
         {
           method: "POST",
           body: JSON.stringify(user),
-          //   mode: "no-cors",
         }
       );
 
@@ -34,41 +34,12 @@ export const useAuth = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: "There was a problem with your request.",
-          variant: "destructive",
-          action: h(
-            ToastAction,
-            {
-              altText: "Try again",
-            },
-            {
-              default: () => "Try again",
-            }
-          ),
-        });
-
-        return error.value;
+        throw new Error("Login error: " + error.value);
       }
-
-      //   if (data.isAdmin) {
-      //     userAdmin.value = true;
-      //   } else {
-      //     userAdmin.value = false;
-      //   }
-      //   setUser(data.user);
-
-      //   if (data.value) {
-      //     const token = useCookie('token'); // useCookie new hook in nuxt 3
-      //     token.value = data?.value?.token; // set token to cookie
-      //     this.authenticated = true; // set authenticated  state value to true
-      //   }
-      else {
-        return data.value;
-      }
+      return data.value;
     } catch (err) {
-      return console.log("error: ", err);
+      // Throw the error to be caught and handled by the caller
+      throw err;
     }
   };
   const userLoggedIn = async () => {
@@ -115,6 +86,37 @@ export const useAuth = () => {
       return console.log("error: ", err);
     }
   };
+
+  const getProfile = async () => {
+    try {
+      const { data, pending, error, status } = await useFetch(
+        `${runtimeConfig.public.API_BASE_URL}/v1/api/users/me`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      // store.setAuth({
+      //   ...user,
+      //   ...data.value,
+      //   isAuthenticated: true,
+      //   role: "Admin",
+      // });
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        throw new Error("Profile error: " + error.value);
+      }
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
   return {
     login,
     userLoggedIn,
@@ -122,5 +124,6 @@ export const useAuth = () => {
     logout,
     authUser,
     isLoading,
+    getProfile,
   };
 };
