@@ -24,7 +24,8 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Profile error: " + error.value);
+        console.log("Getting user error: ", error);
+        throw new Error("Getting user error: " + error.value);
       }
 
       return data.value;
