@@ -45,6 +45,17 @@ export const columns: ColumnDef<User>[] = [
   {
     accessorKey: "id",
     header: "Id",
+    cell: ({ row }) => {
+      const id = row.getValue("id");
+      return h(
+        "div",
+        {
+          class:
+            "overflow-hidden text-ellipsis whitespace-nowrap w-24  transition-all duration-400 ease-out hover:w-full",
+        },
+        id
+      );
+    },
   },
   {
     accessorKey: "phone",
@@ -53,7 +64,7 @@ export const columns: ColumnDef<User>[] = [
     cell: ({ row }) => {
       return h(
         "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
+        { class: "max-w-[100px] whitespace-nowrap  font-medium" },
         row.getValue("phone")
       );
     },
@@ -67,7 +78,7 @@ export const columns: ColumnDef<User>[] = [
       h(
         "div",
         {
-          class: "lowercase max-w-[210px] truncate '",
+          class: "lowercase max-w-[210px] truncate hover:w-full'",
         },
         row.getValue("email")
       ),

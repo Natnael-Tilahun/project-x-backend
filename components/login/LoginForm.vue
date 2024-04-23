@@ -41,13 +41,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     navigateTo("/", { replace: true });
   } catch (error) {
     console.error("Login error: ", error);
-    // Handle the error, e.g., display a toast message or stay on the login page
-    toast({
-      title: "Uh oh! Something went wrong.",
-      description: "There was a problem with your request. Please try again.",
-
-      variant: "destructive",
-    });
   } finally {
     // Ensure to stop loading state whether login is successful or not
     isLoading.value = false;

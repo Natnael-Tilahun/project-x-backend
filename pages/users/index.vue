@@ -54,8 +54,8 @@ onMounted(async () => {
     data.value = await getUsers(); // Call your API function to fetch profile
     console.log("Users data; ", data.value);
     // formData.value = profileData; // Store the profile data in a reactive variable
-  } catch (error) {
-    console.error("Error fetching users:", error);
+  } catch (err) {
+    console.error("Error fetching users:", err);
     isError.value = true;
     // Handle error fetching profile data
   } finally {
