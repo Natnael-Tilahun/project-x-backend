@@ -36,7 +36,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
   try {
     const data = await login(userCredentials);
-    console.log("data: ", data);
     // If login is successful, navigate to the home page
     navigateTo("/", { replace: true });
   } catch (error) {
