@@ -23,6 +23,8 @@ export const useAuth = () => {
         }
       );
 
+      console.log("status: ", status.value);
+
       if (status.value === "error") {
         // Handle the error, e.g., display a toast message or stay on the login page
         toast({
@@ -33,12 +35,15 @@ export const useAuth = () => {
         throw new Error("Login error: " + error.value);
       }
 
-      store.setAuth({
-        ...user,
-        ...data?.value,
-        isAuthenticated: true,
-        role: "Admin",
-      });
+      if (status.value === "success") {
+        store.setAuth({
+          ...user,
+          ...data?.value,
+          isAuthenticated: true,
+          role: "Admin",
+        });
+      }
+
       isLoading.value = pending.value;
       return data.value;
     } catch (err) {
