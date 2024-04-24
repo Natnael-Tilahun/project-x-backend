@@ -41,7 +41,6 @@ export const useAuth = () => {
           role: "Admin",
         });
       }
-
       isLoading.value = pending.value;
       return data.value;
     } catch (err) {
