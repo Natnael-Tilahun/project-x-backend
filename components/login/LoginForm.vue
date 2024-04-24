@@ -15,6 +15,7 @@ const store = useAuthStore();
 const { login, isLoading } = await useAuth();
 let showPassword = ref(false);
 const { toast } = useToast();
+console.log("login data before : ", store.isAuthenticated, store.accessToken);
 
 // const isLoading = ref(false);
 
@@ -36,8 +37,16 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
   try {
     const data = await login(userCredentials);
+    console.log(
+      "login data after : ",
+      data,
+      "-----",
+      store.isAuthenticated,
+      store.accessToken
+    );
+
     // If login is successful, navigate to the home page
-    navigateTo("/", { replace: true });
+    // navigateTo("/", { replace: true });
   } catch (error) {
     console.error("Login error: ", error);
   } finally {

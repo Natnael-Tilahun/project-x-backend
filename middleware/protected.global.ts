@@ -35,7 +35,6 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
       }
 
       // Update the access token in the store with the new token from the response
-
       authStore.$patch({
         refreshToken: data.value.refreshToken,
         accessToken: data.value.accessToken,
