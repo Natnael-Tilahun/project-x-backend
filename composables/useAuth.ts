@@ -23,8 +23,6 @@ export const useAuth = () => {
         }
       );
 
-      console.log("status: ", status.value);
-
       if (status.value === "error") {
         // Handle the error, e.g., display a toast message or stay on the login page
         toast({
@@ -39,7 +37,7 @@ export const useAuth = () => {
         store.setAuth({
           ...user,
           ...data?.value,
-          isAuthenticated: true,
+          isAuthenticated: data.value.accessToken ? true : false,
           role: "Admin",
         });
       }
