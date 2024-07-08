@@ -31,15 +31,13 @@ function viewRollDetails(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiDropdownMenuItem @click="viewRollDetails(row.original.permissionId)"
-        >View</UiDropdownMenuItem
-      >
+      <UiDropdownMenuItem>View</UiDropdownMenuItem>
       <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
       <UiDropdownMenuItem>Deactivate</UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
       <UiDropdownMenuSeparator />
-      <UiDropdownMenuItem>
-        Copy Permission
+      <UiDropdownMenuItem class="text-red-600">
+        Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>
     </UiDropdownMenuContent>

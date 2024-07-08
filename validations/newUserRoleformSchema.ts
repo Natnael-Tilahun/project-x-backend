@@ -3,8 +3,10 @@ import { z } from "zod";
 
 export const newUserRoleformSchema = toTypedSchema(
   z.object({
-    roleName: z.string().min(5).max(50),
-    legalEntity: z.string(),
-    description: z.string().min(5).max(200),
+    name: z.string().min(4).max(50),
+    disabled: z.boolean().default(false).optional(),
+    enforce2fa: z.boolean().default(false).optional(),
+    description: z.string().min(4).max(200),
+    // permission: z.array(z.string()).optional()
   })
 );

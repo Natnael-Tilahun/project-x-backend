@@ -94,14 +94,24 @@ const mainLinks = [
     showDropdown: false,
   },
   {
+    title: "Role Management",
+    icon: "solar:user-bold",
+    size: "22",
+    showDropdown: false,
+    dropdown: [
+      { title: "Roles", link: "/userRoles" },
+      { title: "Permissions", link: "/userPermissions" },
+    ],
+  },
+  {
     title: "Customers",
     icon: "carbon:customer-service",
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Customers Roles", link: "/customerRoles" },
+      // { title: "Customers Roles", link: "/customerRoles" },
       { title: "Customers", link: "/customers" },
-      { title: "Permissions", link: "/permissions" },
+      // { title: "Permissions", link: "/permissions" },
     ],
   },
   {
@@ -111,14 +121,21 @@ const mainLinks = [
     showDropdown: false,
     dropdown: [
       { title: "Users", link: "/users" },
-      { title: "Roles", link: "/userRoles" },
-      { title: "Permissions", link: "/userPermissions" },
+      // { title: "Roles", link: "/userRoles" },
+      // { title: "Permissions", link: "/userPermissions" },
     ],
   },
   {
     title: "Merchants",
     icon: "material-symbols:partner-exchange-outline-rounded",
     link: "/merchants",
+    size: "22",
+    showDropdown: false,
+  },
+  {
+    title: "Integrations",
+    icon: "material-symbols:partner-exchange-outline-rounded",
+    link: "/integrations",
     size: "22",
     showDropdown: false,
   },

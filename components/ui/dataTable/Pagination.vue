@@ -1,13 +1,33 @@
 <script setup lang="ts">
 import { type Table } from "@tanstack/vue-table";
-// import { type Task } from "../data/schema";
-
 import { Button } from "@/components/ui/button";
+const { setPageSize, setPageNumber } = usePagesInfoStore();
 
 interface DataTablePaginationProps<TData> {
   table: Table<TData>;
 }
 defineProps<DataTablePaginationProps<any>>();
+
+const nextPageHandler = (table: any) => {
+  console.log("table.getPageCount() ", table.getState().pagination.pageIndex);
+  setPageNumber({ pageNumber: table.getState().pagination.pageIndex + 1 });
+  table.nextPage();
+};
+
+const previousPageHandler = (table: any) => {
+  console.log(
+    "table.getPageCount() previous",
+    table.getState().pagination.pageIndex
+  );
+  setPageNumber({ pageNumber: table.getState().pagination.pageIndex - 1 });
+  table.previousPage();
+};
+
+const updatePageSize = (table: Table<any>, value: any) => {
+  const newSize = parseInt(value, 10); // Parse the selected value as an integer
+  table.setPageSize(newSize);
+  setPageSize({ pageSize: newSize }); // Update global state};
+};
 </script>
 
 <template>
@@ -23,7 +43,11 @@ defineProps<DataTablePaginationProps<any>>();
         <p class="text-sm font-medium">Rows per page</p>
         <UiSelect
           :model-value="`${table.getState().pagination.pageSize}`"
-          @update:model-value="table.setPageSize"
+          @update:model-value="
+            (newSize) => {
+              updatePageSize(table, newSize);
+            }
+          "
         >
           <UiSelectTrigger class="h-8 w-[70px]">
             <UiSelectValue
@@ -61,7 +85,7 @@ defineProps<DataTablePaginationProps<any>>();
           variant="outline"
           class="w-8 h-8 p-0"
           :disabled="!table.getCanPreviousPage()"
-          @click="table.previousPage()"
+          @click="previousPageHandler(table)"
         >
           <span class="sr-only">Go to previous page</span>
           <Icon name="radix-icons:chevron-left" class="w-4 h-4"></Icon>
@@ -70,7 +94,7 @@ defineProps<DataTablePaginationProps<any>>();
           variant="outline"
           class="w-8 h-8 p-0"
           :disabled="!table.getCanNextPage()"
-          @click="table.nextPage()"
+          @click="nextPageHandler(table)"
         >
           <span class="sr-only">Go to next page</span>
           <Icon name="radix-icons:chevron-right" class="w-4 h-4"></Icon>

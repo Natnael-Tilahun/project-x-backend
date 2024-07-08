@@ -27,6 +27,7 @@ export default defineNuxtConfig({
     "@davestewart/nuxt-scrollbar",
     "nuxt-icon",
     "@pinia/nuxt",
+    "@nuxt/image"
   ],
   pinia: {
     storesDirs: ["./stores/**", "./custom-folder/stores/**"],

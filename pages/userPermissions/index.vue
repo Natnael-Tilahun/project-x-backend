@@ -1,69 +1,52 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import {
-  columns,
-  type UserPermission,
-} from "../../components/userPermissions/columns";
+import { columns } from "../../components/userPermissions/columns";
+import { usePermissions } from "~/composables/usePermissions";
+const { getPermissions, isLoading } = usePermissions();
+const loading = ref(isLoading.value);
+const isError = ref(false);
+const data = ref<Permission[]>([]);
 
-const data = ref<UserPermission[]>([]);
+const refetch = async () => {
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    data.value = await getPermissions(); // Call your API function to fetch profile
+    console.log("Permission data; ", data.value);
+    // formData.value = profileData; // Store the profile data in a reactive variable
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    isError.value = true;
+    // Handle error fetching profile data
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
 
-async function getData(): Promise<UserPermission[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      permissionId: "1",
-      permissionName: "Super Admin",
-      permissionDescription:
-        "This user has all the permissions available in the system. ",
-      grouping: "Group A",
-      legalEntity: ["Model Bank"],
-      status: "Active",
-    },
-    {
-      permissionId: "2",
-      permissionName: "Front Line Staff",
-      permissionDescription:
-        "This role has minimal permissions that help the users perform the dedicated tasks in Spotlight. Branch members who want to support members with Online and Mobile banking app can also be associated with this role",
-      grouping: "Group B",
-      legalEntity: ["Model Bank"],
-      status: "Active",
-    },
-    {
-      permissionId: "3",
-      permissionName: "Operations",
-      permissionDescription:
-        "This role can manage the various services, operations and entitlements provided by the bank/CU",
-      grouping: "Group A",
-      legalEntity: ["Model Bank"],
-      status: "Active",
-    },
-    {
-      permissionId: "4",
-      permissionName: "Manager",
-      permissionDescription:
-        "This role is similar to a front line staff admin but with more privileges to control what kind of information can be updated by a front line staff. ",
-      grouping: "Group B",
-      legalEntity: ["Model Bank"],
-      status: "Active",
-    },
-    {
-      permissionId: "5",
-      permissionName: "Business",
-      permissionDescription:
-        " This role is for business users who want to view Spotlight capabilities, review data but not make major changes. These users can also send messages to customers and view/update their details",
-      grouping: "Group A",
-      legalEntity: ["Model Bank"],
-      status: "Active",
-    },
-  ];
+try {
+  isLoading.value = true;
+  loading.value = true;
+  data.value = await getPermissions(); // Call your API function to fetch profile
+  // console.log("Permission data; ", data.value);
+  // formData.value = profileData; // Store the profile data in a reactive variable
+} catch (err) {
+  console.error("Error fetching users:", err);
+  isError.value = true;
+  // Handle error fetching profile data
+} finally {
+  isLoading.value = false;
+  loading.value = false;
 }
-
-onMounted(async () => {
-  data.value = await getData();
-});
 </script>
 <template>
-  <div v-if="data.length > 0" class="py-4 flex flex-col space-y-10 mx-auto">
+  <div v-if="isLoading" class="py-10 flex justify-center items-center">
+    <UiLoading />
+  </div>
+  <div
+    v-else-if="data && !isError && data?.length > 0"
+    class="py-4 flex flex-col space-y-10 mx-auto"
+  >
     <NuxtLink to="/userPermissions/new" class="w-fit self-end"
       ><UiButton
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add
@@ -75,13 +58,11 @@ onMounted(async () => {
         <div class="flex items-center justify-between">
           <div class="flex flex-1 items-center space-x-2">
             <UiInput
-              placeholder="Filter by User Permission Name"
-              :model-value="(table?.getColumn('permissionName')?.getFilterValue() as string) ?? ''"
+              placeholder="Filter by User Permission Code"
+              :model-value="(table?.getColumn('code')?.getFilterValue() as string) ?? ''"
               class="h-8 w-[150px] lg:w-[250px]"
               @input="
-                table
-                  ?.getColumn('permissionName')
-                  ?.setFilterValue($event.target.value)
+                table?.getColumn('code')?.setFilterValue($event.target.value)
               "
             />
           </div>
@@ -90,8 +71,11 @@ onMounted(async () => {
       </template>
     </UiDataTable>
   </div>
-  <div v-else class="py-10 flex justify-center items-center">
-    <UiLoading />
+  <div v-else-if="data && !isError && data?.length <= 0">
+    <UiNoResultFound title="Sorry, No permission found." />
+  </div>
+  <div v-else>
+    <UiErrorMessage :retry="refetch" title="Something went wrong." />
   </div>
 </template>
 

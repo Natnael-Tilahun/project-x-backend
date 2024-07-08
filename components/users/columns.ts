@@ -15,12 +15,12 @@ export interface User {
   email: string;
   role: string;
   status:
-    | "Active"
-    | "processing"
-    | "Suspended"
-    | "Locked"
-    | "New"
-    | "UnEnrolled";
+  | "Active"
+  | "processing"
+  | "Suspended"
+  | "Locked"
+  | "New"
+  | "UnEnrolled";
 }
 
 export const columns: ColumnDef<User>[] = [
@@ -53,7 +53,7 @@ export const columns: ColumnDef<User>[] = [
           class:
             "overflow-hidden text-ellipsis whitespace-nowrap w-24  transition-all duration-400 ease-out hover:w-full",
         },
-        id
+        row.getValue("id")
       );
     },
   },

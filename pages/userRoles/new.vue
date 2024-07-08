@@ -9,112 +9,78 @@ import {
 } from "@/components/ui/form";
 import { newUserRoleformSchema } from "~/validations/newUserRoleformSchema";
 import { ref } from "vue";
+import { toast } from "~/components/ui/toast";
+const { createNewRole, isLoading } = await useRoles();
+const isError = ref(false);
+const data = ref<Role>();
 
-const isLoading = ref(false);
+const isSubmitting = ref(false);
 const activeTab = ref<string>("roleDetails"); // Reactive variable to manage active tab
-// Function to handle tab switching
-const switchToAssignFeaturesTab = () => {
-  activeTab.value = "cusomerAccess";
-};
 
 const form = useForm({
   validationSchema: newUserRoleformSchema,
+  initialValues: {
+    name: "",
+    description: "",
+    disabled: false,
+    enforce2fa: false,
+  },
 });
 
-const onSubmit = form.handleSubmit((values: any) => {
-  console.log("Form submitted!", values);
-  isLoading.value = true;
-
-  setTimeout(() => {
+const onSubmit = form.handleSubmit(async (values: any) => {
+  try {
+    isSubmitting.value = true;
+    isLoading.value = true;
+    data.value = await createNewRole(values); // Call your API function to fetch profile
+    navigateTo(`/userRoles/roleDetails/${data.value.name}`);
+    console.log("New role data; ", data.value);
+    toast({
+      title: "Role Created",
+      description: "Role created successfully",
+    });
+  } catch (err: any) {
+    console.error("Error creating new role:", err);
+    isError.value = true;
+  } finally {
     isLoading.value = false;
-    switchToAssignFeaturesTab();
-  }, 3000);
+    isSubmitting.value = false;
+  }
 });
 </script>
 
 <template>
   <div class="w-full flex flex-col gap-8">
     <div class="pb-4">
-      <h1 class="md:text-2xl text-lg font-medium">Add User Role</h1>
+      <h1 class="md:text-2xl text-lg font-medium">Add New Role</h1>
       <p class="text-sm text-muted-foreground">
-        Create new user role, customer access and system permissions
+        Create new user role, role access and system permissions
       </p>
     </div>
 
-    <UiTabs
+    <UiCard
       default-value="roleDetails"
       :model-value="activeTab"
-      class="w-full flex border-[1px] rounded-lg h-screen"
+      class="w-full flex border-[1px] rounded-lg h-full"
     >
-      <UiTabsList
-        class="flex bg-secondary h-screen justify-start items-start w-fit flex-col"
-      >
-        <UiTabsTrigger
-          value="roleDetails"
-          class="md:text-base py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary w-full"
-        >
-          Role Details
-        </UiTabsTrigger>
-        <UiTabsTrigger
-          value="cusomerAccess"
-          class="md:text-base py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary w-full"
-        >
-          Customer Access
-        </UiTabsTrigger>
-        <UiTabsTrigger
-          value="systemPermission"
-          class="md:text-base py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary w-full"
-        >
-          System Permissions
-        </UiTabsTrigger>
-      </UiTabsList>
-
-      <UiTabsContent
-        value="roleDetails"
-        class="text-sm md:text-base p-6 basis-full"
-      >
+      <div value="roleDetails" class="text-sm md:text-base p-6 basis-full">
         <form @submit="onSubmit">
           <div class="grid grid-cols-2 gap-6">
-            <FormField v-slot="{ componentField }" name="roleName">
-              <FormItem>
+            <FormField v-slot="{ componentField }" name="name">
+              <FormItem class="w-full">
                 <FormLabel> Role Name </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
-                    placeholder="Enter Customer Role Name"
+                    placeholder="Enter Role Name"
                     v-bind="componentField"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="legalEntity">
-              <FormItem>
-                <FormLabel>Legal Entity</FormLabel>
-
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select Legal Entity" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem value="Model Bank">
-                        Modle Bank
-                      </UiSelectItem>
-                      <UiSelectItem value="Retail Banking">
-                        Modle Bank Djibuty
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
-              </FormItem>
-            </FormField>
 
             <FormField v-slot="{ componentField }" name="description">
-              <FormItem>
+              <FormItem class="w-full">
                 <FormLabel>Description</FormLabel>
                 <FormControl>
                   <UiTextarea
@@ -127,46 +93,80 @@ const onSubmit = form.handleSubmit((values: any) => {
               </FormItem>
             </FormField>
 
+            <FormField v-slot="{ value, handleChange }" name="disabled">
+              <FormItem
+                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
+              >
+                <FormLabel class="text-base"> Disabled </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value" @update:checked="handleChange" />
+                </FormControl>
+              </FormItem>
+            </FormField>
+
+            <FormField v-slot="{ value, handleChange }" name="enforce2fa">
+              <FormItem
+                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
+              >
+                <FormLabel class="text-base"> Enforce 2fa </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value" @update:checked="handleChange" />
+                </FormControl>
+              </FormItem>
+            </FormField>
+
+            <!-- <FormField v-slot="{ componentField }" name="permission">
+              <FormItem>
+                <FormLabel>Permissions</FormLabel>
+
+                <UiSelect
+                  multiple
+                  v-model="selectedPermissions"
+                  v-bind="componentField"
+                >
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select permissions" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in data"
+                        :key="item.code"
+                        :value="item.code"
+                      >
+                        {{ item.code }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField> -->
+
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
-                :disabled="isLoading"
+                :disabled="isSubmitting"
                 variant="outline"
                 type="button"
                 @click="$router.go(-1)"
               >
                 Cancel
               </UiButton>
-              <UiButton :disabled="isLoading" type="submit">
+              <UiButton :disabled="isSubmitting" type="submit">
                 <Icon
                   name="svg-spinners:8-dots-rotate"
-                  v-if="isLoading"
+                  v-if="isSubmitting"
                   class="mr-2 h-4 w-4 animate-spin"
                 ></Icon>
 
-                Next
+                Submit
               </UiButton>
             </div>
           </div>
         </form>
-      </UiTabsContent>
-
-      <UiTabsContent
-        value="cusomerAccess"
-        class="space-y-4 text-sm md:text-base p-6 basis-full"
-      >
-        <div class="flex flex-col md:gap-4 w-full">
-          <h1>Customer Access</h1>
-        </div>
-      </UiTabsContent>
-
-      <UiTabsContent
-        value="systemPermission"
-        class="space-y-4 text-sm md:text-base p-6 basis-full"
-      >
-        <div class="flex flex-col md:gap-4 w-full">
-          <h1>System Permissions</h1>
-        </div>
-      </UiTabsContent>
-    </UiTabs>
+      </div>
+    </UiCard>
   </div>
 </template>

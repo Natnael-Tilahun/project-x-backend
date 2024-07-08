@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { columns, type User } from "~/components/users/columns";
-const { getUsers, isLoading } = await useUsers();
+const { getUsers, isLoading } = useUsers();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 
