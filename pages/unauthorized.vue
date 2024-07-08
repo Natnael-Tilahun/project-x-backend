@@ -15,7 +15,7 @@
     </div>
 
     <img
-      src="/Access-denied.png"
+      src="/access-denied.png"
       alt="Access denied image"
       class="w-full order-1 md:order-2"
     />
