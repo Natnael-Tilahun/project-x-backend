@@ -5,19 +5,7 @@ import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import UserRolesDataTableRowActionsVue from "./DataTableRowActions.vue";
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-export interface UserRole {
-  roleId: string;
-  roleName: string;
-  roleDescription: string;
-  legalEntity: [string] | string;
-  status: "New" | "Active" | "Suspended" | "Deactivated";
-  systemPermissions: [{}];
-  customerAccess: [{}];
-}
-
-export const columns: ColumnDef<UserRole>[] = [
+export const columns: ColumnDef<Role>[] = [
   {
     id: "select",
     header: ({ table }) =>
@@ -37,36 +25,34 @@ export const columns: ColumnDef<UserRole>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "roleName",
+    accessorKey: "name",
     header: "Roll Name",
   },
   {
-    accessorKey: "roleDescription",
+    accessorKey: "description",
     header: "Role Description",
   },
   {
-    accessorKey: "legalEntity",
-    header: ({ column }) =>
-      h(DataTableColumnHeaderVue, { column, title: "Legal Entity" }),
-
-    cell: ({ row }) => row.getValue("legalEntity"),
+    accessorKey: "enforce2fa",
+    header: "Enforce 2fa",
+    cell: ({ row }) => {
+      const enforce = row.getValue("enforce2fa");
+      if (enforce) {
+        return h("p", "True");
+      } else
+        return h("p", "False");
+    },
   },
   {
-    accessorKey: "status",
+    accessorKey: "disabled",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("status");
-      if (status == "Active") {
-        return h(Badge, { class: "bg-green-600 " }, row.getValue("status"));
-      } else if (status == "New") {
-        return h(Badge, { class: "bg-blue-500 " }, row.getValue("status"));
-      } else if (status == "Deactivated") {
-        return h(Badge, { class: "bg-red-500 " }, row.getValue("status"));
-      } else if (status == "Suspended") {
-        return h(Badge, { class: "bg-orange-700 " }, row.getValue("status"));
-      } else {
-        return h("div", { class: "" }, row.getValue("status"));
-      }
+      const status = row.getValue("disabled");
+      if (status) {
+        return h(Badge, { class: "bg-red-500  " }, "Disabled");
+      } else
+        return h(Badge, { class: "bg-green-600 " }, "Enabled");
+
     },
   },
   {
@@ -74,11 +60,29 @@ export const columns: ColumnDef<UserRole>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
+      const { getRoles, isLoading } = useRoles();
+      const loading = ref(isLoading.value);
+      const isError = ref(false);
+      const data = ref<Role[]>([]);
+      const refetch = async () => {
+        alert("jkjk")
+        try {
+          isError.value = false; // Reset isError flag
+          loading.value = true; // Show loading indicator
+          data.value = await getRoles(); // Call your API function to refetch roles
+        } catch (err) {
+          console.error("Error refetching roles:", err);
+          isError.value = true; // Set isError flag on error
+        } finally {
+          console.log("finally");
+          loading.value = false; // Hide loading indicator
+        }
+      };
       return h(
         "div",
         { class: "relative" },
         h(UserRolesDataTableRowActionsVue, {
-          row,
+          row, refetch
         })
       );
     },

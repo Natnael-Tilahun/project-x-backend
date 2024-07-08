@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import DashboardDateRangePicker from "~/components/dashboard/DateRangePicker.vue";
+const { hasPermissions } = useAuthStore();
+console.log("hjkjk: ", hasPermissions("BYPASS_TWOFACTOR"));
+console.log("hjkjk: ", hasPermissions("ALL_FUNCTIONS"));
+console.log("hjkjk: ", hasPermissions("ALL_FUNCTONS"));
 </script>
 
 <template>

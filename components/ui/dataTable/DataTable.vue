@@ -58,6 +58,11 @@ const table = useVueTable({
     },
   },
 });
+
+console.log(
+  "table.getRowModel().rows?.length: ",
+  table.getRowModel().rows?.length
+);
 </script>
 
 <template>

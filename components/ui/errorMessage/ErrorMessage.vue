@@ -1,16 +1,19 @@
 <script lang="ts" setup>
-import { defineProps } from "vue";
+import { defineProps, ref } from "vue";
+import { cn } from "~/lib/utils";
+const loading = ref(false);
 
 // Define props for title and description
 const props = defineProps({
   title: String,
   description: String,
+  retry: Function, // Define retry prop as Function
 });
 </script>
 
 <template>
   <div
-    class="{`w-full h-60 md:h-[500px] p-10 bg-[#f9ebeb] shadow-none border-none dark:bg-thm_dark_background rounded-xl border-[1px] max-h-screen flex flex-col gap-2 justify-center items-center ${className}`}"
+    class="{`w-full h-60 md:h-[500px] p-10 bg-[#f8dff3] shadow-none border-none dark:bg-thm_dark_background rounded-xl border-[1px] max-h-screen flex flex-col gap-2 justify-center items-center ${className}`}"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -29,8 +32,19 @@ const props = defineProps({
     <p
       class="text-thm_secondary_color lg:text-base text-sm dark:text-thm_dark_secondary_color"
     >
-      {{ props.message ? props.message : "Please, Try again." }}
+      {{ props.description ? props.description : "Please, Try again." }}
     </p>
+    <Icon
+      name="material-symbols:directory-sync-rounded"
+      :class="cn('h-8 w-8 cursor-pointer ', loading && 'animate-spin')"
+      @click="
+        () => {
+          loading = true;
+          props.retry && props.retry();
+          loading = false;
+        }
+      "
+    ></Icon>
   </div>
 </template>
 

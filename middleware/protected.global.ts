@@ -18,6 +18,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     authStore.refreshToken &&
     to.path !== "/login"
   ) {
+    console.log("Token expired: ", isTokenExpired(authStore.accessToken));
     try {
       // Send a request to your refresh token endpoint
       const { data, pending, error, status } = await useFetch(

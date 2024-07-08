@@ -1,176 +1,93 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns, type Customer } from "~/components/customers/columns";
+import { columns } from "~/components/customers/columns";
 
+const { getCustomers, searchCustomers, isLoading } = useCustomers();
+const loading = ref(isLoading.value);
+const isError = ref(false);
 const data = ref<Customer[]>([]);
+const keyword = ref<string>("");
 
-async function getData(): Promise<Customer[]> {
-  // Fetch data from your API here.
-  return [
-    {
-      customerId: "728ed52f",
-      customerPhone: "933665566",
-      userId: "728ed52fadfasd",
-      email: "abebekebede@example.com",
-      customerName: "Abebe Kebede",
-      accountNumber: "1000433433234334",
-      identification: "Passport",
-      status: "Active",
-    },
-    {
-      customerId: "hh448ed52f",
-      customerPhone: "923334455",
-      userId: "66ffd52fadfasd",
-      email: "dsdfs@example.com",
-      customerName: "Abebe Kebede",
-      accountNumber: "1000433433234334",
-      identification: "Gov Id",
-      status: "Active",
-    },
-    {
-      customerId: "55ddd52f",
-      customerPhone: "911223344",
-      userId: "55eed52fadfasd",
-      email: "dsdsd@example.com",
-      customerName: "Abebe Kebede",
-      accountNumber: "1000433433234334",
-      identification: "Driver License",
-      status: "Active",
-    },
-    {
-      customerId: "gg33d52f",
-      customerPhone: "944554433",
-      userId: "728ed52fadfasd",
-      email: "ggdfd@example.com",
-      customerName: "Abebe Kebede",
-      accountNumber: "1000433433234334",
-      identification: "Passport",
-      status: "UnEnrolled",
-    },
-    {
-      customerId: "728ed52f",
-      customerPhone: "974635322",
-      userId: "728ed52fadfasd",
-      email: "m@example.com",
-      customerName: "Abebe Kebede",
-      accountNumber: "1000433433234334",
-      identification: "Passport",
-      status: "Locked",
-    },
-    {
-      customerId: "728ed52f",
-      customerPhone: "923453322",
-      userId: "728ed52fadfasd",
-      email: "m@example.com",
-      customerName: "Abebe Kebede",
-      accountNumber: "1000433433234334",
-      identification: "Passport",
-      status: "New",
-    },
-    {
-      customerId: "728ed52f",
-      customerPhone: "964534222",
-      userId: "728ed52fadfasd",
-      email: "m@example.com",
-      customerName: "Abebe Kebede",
-      accountNumber: "1000433433234334",
-      identification: "Passport",
-      status: "Suspended",
-    },
-    {
-      customerId: "728ed52f",
-      customerPhone: "933665566",
-      userId: "728ed52fadfasd",
-      email: "m@example.com",
-      customerName: "Abebe Kebede",
-      accountNumber: "1000433433234334",
-      identification: "Passport",
-      status: "processing",
-    },
-    {
-      customerId: "728ed52f",
-      customerPhone: "933665566",
-      userId: "728ed52fadfasd",
-      email: "m@example.com",
-      customerName: "Abebe Kebede",
-      accountNumber: "1000433433234334",
-      identification: "Passport",
-      status: "Active",
-    },
-    {
-      customerId: "728ed52f",
-      customerPhone: "933665566",
-      userId: "728ed52fadfasd",
-      email: "m@example.com",
-      customerName: "Abebe Kebede",
-      accountNumber: "1000433433234334",
-      identification: "Passport",
-      status: "Active",
-    },
-    {
-      customerId: "728ed52f",
-      customerPhone: "933665566",
-      userId: "728ed52fadfasd",
-      email: "m@example.com",
-      customerName: "Abebe Kebede",
-      accountNumber: "1000433433234334",
-      identification: "Passport",
-      status: "Active",
-    },
-    {
-      customerId: "728ed52f",
-      customerPhone: "933665566",
-      userId: "728ed52fadfasd",
-      email: "m@example.com",
-      customerName: "Abebe Kebede",
-      accountNumber: "1000433433234334",
-      identification: "Passport",
-      status: "Active",
-    },
-    {
-      customerId: "728ed52f",
-      customerPhone: "933665566",
-      userId: "728ed52fadfasd",
-      email: "m@example.com",
-      customerName: "Abebe Kebede",
-      accountNumber: "1000433433234334",
-      identification: "Passport",
-      status: "Active",
-    },
-    {
-      customerId: "728ed52f",
-      customerPhone: "933665566",
-      userId: "728ed52fadfasd",
-      email: "m@example.com",
-      customerName: "Abebe Kebede",
-      accountNumber: "1000433433234334",
-      identification: "Passport",
-      status: "Active",
-    },
-    // ...
-  ];
+const refetch = async () => {
+  try {
+    isError.value = false; // Reset isError flag
+    loading.value = true; // Show loading indicator
+    data.value = await getCustomers(); // Call your API function to refetch roles
+    console.log("Customers data: ", data.value);
+  } catch (err: any) {
+    console.error("Error refetching customers:", err);
+    isError.value = true; // Set isError flag on error
+  } finally {
+    console.log("finally");
+    loading.value = false; // Hide loading indicator
+  }
+};
+
+try {
+  isLoading.value = true;
+  loading.value = true;
+  data.value = await getCustomers(); // Call your API function to fetch roles
+} catch (err: any) {
+  console.error("Error fetching customers:", err);
+  isError.value = true;
+} finally {
+  isLoading.value = false;
+  loading.value = false;
 }
 
-onMounted(async () => {
-  data.value = await getData();
-});
+const searchHandler = async () => {
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    data.value = await searchCustomers(keyword.value); // Call your API function to fetch roles
+  } catch (err: any) {
+    console.error("Error fetching customers:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
 </script>
 
 <!-- Render DataTable only if data is available -->
 <template>
-  <div v-if="data.length > 0" class="py-5 flex flex-col space-y-10 mx-auto">
-    <UiButton class="w-fit self-end px-5"
-      ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
-      Customer</UiButton
-    >
-
+  <div v-if="loading" class="py-10 flex justify-center w-full">
+    <UiLoading />
+  </div>
+  <div v-else-if="data" class="py-5 flex flex-col space-y-10 mx-auto">
+    <NuxtLink to="/customers/new" class="w-fit self-end">
+      <UiButton class="w-fit self-end px-5"
+        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
+        Customer</UiButton
+      >
+    </NuxtLink>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
-        <CustomersDataTableSearchbar :table="table" />
+        <!-- <CustomersDataTableSearchbar :table="table" /> -->
+        <div class="flex items-center gap-4">
+          <UiInput
+            type="search"
+            placeholder="Search..."
+            class="md:w-[100px] lg:w-[300px]"
+            v-model="keyword"
+          />
+          <UiButton @click="searchHandler">
+            <Icon
+              name="svg-spinners:8-dots-rotate"
+              v-if="isLoading"
+              class="mr-2 h-4 w-4 animate-spin"
+            ></Icon>
+            Search</UiButton
+          >
+        </div>
       </template>
     </UiDataTable>
   </div>
-  <div v-else class="py-10 flex justify-center w-full">
-    <UiLoading />
+  <!-- <div v-else-if="data && !isError && data?.length <= 0">
+    <UiNoResultFound title="Sorry, No customer found." />
+  </div> -->
+  <div v-if="isError">
+    <UiErrorMessage :retry="refetch" title="Something went wrong." />
   </div>
 </template>

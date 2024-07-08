@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { username, email } = useAuthStore();
-const { logout, isLoading } = await useAuth();
+const { logout, isLoading } = useAuth();
 
 const logoutHandler = async () => {
   logout().then((data) => {
@@ -19,10 +19,12 @@ const logoutHandler = async () => {
         </UiAvatar>
       </UiButton>
     </UiDropdownMenuTrigger>
-    <UiDropdownMenuContent class="w-56" align="end">
+    <UiDropdownMenuContent class="w-56 p-2" align="end">
       <UiDropdownMenuLabel class="font-normal flex">
-        <div class="flex flex-col space-y-1">
-          <p class="text-sm font-medium leading-none">{{ username }}</p>
+        <div class="flex flex-col">
+          <p class="text-base font-bold leading-none capitalize">
+            {{ username }}
+          </p>
           <p class="text-xs leading-none text-muted-foreground">
             {{ email }}
           </p>

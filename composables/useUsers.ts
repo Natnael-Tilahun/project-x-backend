@@ -9,9 +9,9 @@ export const useUsers = () => {
   const store = useAuthStore();
   const { toast } = useToast();
 
-  const getUsers = async () => {
+  const getUsers: () => Promise<any[]> = async () => {
     try {
-      const { data, pending, error, status } = await useFetch(
+      const { data, pending, error, status } = await useFetch<any>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/users/list`,
         {
           method: "GET",

@@ -1,16 +1,198 @@
 <script lang="ts" setup>
 const openItems = ref(["item-1"]);
+
+import { ref } from "vue";
+import { toast } from "~/components/ui/toast";
+
+const route = useRoute();
+const {
+  getCustomerById,
+  getCoreCustomerByAccountNumber,
+  activateCustomerById,
+  deActivateCustomerById,
+  linkCoreBankCustomer,
+  isLoading,
+} = useCustomers();
+const fullPath = ref(route.fullPath);
+const pathSegments = ref([]);
+const customerId = ref<string>("");
+const loading = ref(isLoading.value);
+const isError = ref(false);
+const data = ref<Customer>();
+const coreData = ref<any>();
+const accountNumber = ref<string>();
+const accountCustomerId = ref<string>();
+const tooltipText = ref<string>("Copy to clipboard");
+const tooltipOpen = ref<boolean>(true);
+
+pathSegments.value = splitPath(fullPath.value);
+const pathLength = pathSegments.value.length;
+customerId.value = pathSegments.value[pathLength - 1];
+
+function splitPath(path: any) {
+  return path.split("/").filter(Boolean);
+}
+
+const displayApiDataOnLabel = (data: any) => {
+  if (data == null || data == "") {
+    return "-";
+  }
+  if (data == false) {
+    return "false";
+  }
+  if (data == true) {
+    return "true";
+  }
+  return data; // Default case if customerActivated is undefined or any other value
+};
+
+const copyToClipboard = (data: any) => {
+  navigator.clipboard.writeText(data);
+  tooltipText.value = "Copied to clipboard";
+  tooltipOpen.value = true;
+  setTimeout(() => {
+    tooltipOpen.value = false;
+    tooltipText.value = "Copy to clipboard";
+  }, 2000); // Reset the tooltip text after 2 seconds
+};
+
+try {
+  isLoading.value = true;
+  loading.value = true;
+  data.value = await getCustomerById(customerId.value); // Call your API function to fetch roles
+  console.log("customerId.value data: ", data.value);
+} catch (err) {
+  console.error("Error fetching customers:", err);
+  isError.value = true;
+} finally {
+  isLoading.value = false;
+  loading.value = false;
+}
+
+const handleCustomerActivation = async () => {
+  try {
+    isLoading.value = true;
+    loading.value = true;
+
+    if (data.value?.customerActivated) {
+      data.value = await deActivateCustomerById(customerId.value); // Call your API function to fetch roles
+      toast({
+        title: "Customer Deactivated",
+      });
+    } else {
+      data.value = await activateCustomerById(customerId.value); // Call your API function to fetch roles
+    }
+
+    toast({
+      title: `${
+        data.value.customerActivated
+          ? "Customer activated successfully. "
+          : "Customer deactivated successfully. "
+      }`,
+    });
+  } catch (err: any) {
+    console.error("Error activating customers:", err);
+    toast({
+      title: "Uh oh! Something went wrong.",
+      description: `There was a problem with your request: ${err}`,
+      variant: "destructive",
+    });
+
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
+
+const handleLinkCoreBankCustomer = async () => {
+  if (accountCustomerId.value) {
+    try {
+      isLoading.value = true;
+      loading.value = true;
+      data.value = await linkCoreBankCustomer(accountCustomerId.value); // Call your API function to fetch roles
+      toast({
+        title: "Customer linked with core bank successfully. ",
+      });
+    } catch (err: any) {
+      console.error("Error linking customer with core bank:", err);
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: `${err.message}`,
+        variant: "destructive",
+      });
+
+      isError.value = true;
+    } finally {
+      isLoading.value = false;
+      loading.value = false;
+    }
+  } else {
+    return true;
+  }
+};
+
+const searchCoreAccountHandler = async () => {
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    coreData.value = "";
+    if (accountNumber.value) {
+      coreData.value = await getCoreCustomerByAccountNumber(
+        accountNumber.value
+      ); // Call your API function to fetch roles
+      console.log("cusomer data by account number: ", coreData.value);
+    } else {
+      return true;
+    }
+  } catch (err: any) {
+    console.error("Error fetching customers:", err);
+    toast({
+      title: "Uh oh! Something went wrong.",
+      description: `${
+        err.message == "404 NOT_FOUND" ? "Customer not found." : err.message
+      }`,
+      variant: "destructive",
+    });
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
 </script>
 
 <template>
   <div class="flex flex-col gap-6 items-center">
-    <div class="flex w-full items-center justify-between">
-      <h1 class="md:text-xl items-center text-gray-500 font-light">
-        Abebe Kebede
-      </h1>
-      <NuxtLink to="/customers/customerDetails/enroll"
-        ><UiButton class="p-6 rounded-lg">Enroll Now</UiButton></NuxtLink
+    <div class="flex w-full justify-between">
+      <div
+        class="flex flex-col justify-center items-center gap-3 border p-5 bg-background rounded-xl"
       >
+        <img
+          :src="data?.imageUrl || '/avatars/01.png'"
+          class="w-16 h-16"
+          alt="Profile"
+        />
+        <h1 class="md:text- items-center font-bold">
+          {{ data?.salutation }} {{ data?.fullName }}
+        </h1>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <UiButton
+          size="sm"
+          @click="handleCustomerActivation"
+          :disabled="isLoading || !data?.coreLinked"
+          :class="data?.customerActivated ? 'bg-red-600' : 'bg-green-600'"
+        >
+          <Icon
+            v-if="isLoading"
+            name="svg-spinners:8-dots-rotate"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          {{ data?.customerActivated ? "Deactivate" : "Activate" }}</UiButton
+        >
+      </div>
     </div>
 
     <UiCard class="w-full p-6">
@@ -25,57 +207,270 @@ const openItems = ref(["item-1"]);
             Profile
           </UiTabsTrigger>
           <UiTabsTrigger
-            value="deposits"
+            value="linkWithCoreBank"
             class="md:text-xl py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
-            disabled
           >
-            Deposits
+            Link with core bank
           </UiTabsTrigger>
         </UiTabsList>
 
         <UiTabsContent
           value="profile"
-          class="space-y-4 py-4 text-base border-[0px]"
+          class="space-y-4 pt-4 text-base border-0"
         >
           <div class="flex flex-col space-y-4">
-            <UiAccordion type="single" default-value="item-1" collapsible>
+            <UiAccordion
+              type="single"
+              class="space-y-6"
+              default-value="item-1"
+              collapsible
+            >
               <UiAccordionItem value="item-1">
                 <UiAccordionTrigger class="md:text-lg bg-secondary px-3"
                   >General Informations</UiAccordionTrigger
                 >
                 <UiAccordionContent class="w-full" v-model="openItems">
-                  <div class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full p-3">
+                  <div
+                    class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full px-3 pt-5"
+                  >
                     <div class="space-y-1">
-                      <label
-                        for="phoneNumber"
-                        class="text-muted-foreground uppercase"
-                        >Phone Number</label
-                      >
-                      <p>0911223344</p>
+                      <h1 class="text-muted-foreground uppercase">
+                        Phone Number
+                      </h1>
+                      <p>{{ data?.phone || "Not Setted" }}</p>
                     </div>
                     <div class="space-y-1">
-                      <label
-                        for="phoneNumber"
-                        class="text-muted-foreground uppercase"
-                        >Date of Birth</label
-                      >
-                      <p>01/04/1990</p>
+                      <h1 class="text-muted-foreground uppercase">Gender</h1>
+                      <p>{{ data?.gender }}</p>
                     </div>
                     <div class="space-y-1">
-                      <label
-                        for="phoneNumber"
-                        class="text-muted-foreground uppercase"
-                        >Customer ID</label
-                      >
-                      <p>342323</p>
+                      <h1 class="text-muted-foreground uppercase">
+                        Core CustomerId ID
+                      </h1>
+                      <p>{{ data?.coreCustomerId || "Not Setted" }}</p>
                     </div>
                     <div class="space-y-0">
-                      <label
-                        for="phoneNumber"
-                        class="text-muted-foreground uppercase"
-                        >Mobile / Online Banking Access</label
-                      >
-                      <p>342323</p>
+                      <h1 class="text-muted-foreground uppercase">Country</h1>
+                      <p>{{ data?.country || "Not Setted" }}</p>
+                    </div>
+                    <div class="space-y-0">
+                      <h1 class="text-muted-foreground uppercase">
+                        National Id
+                      </h1>
+                      <p>{{ data?.nationalId || "Not Setted" }}</p>
+                    </div>
+                    <div class="space-y-0">
+                      <h1 class="text-muted-foreground uppercase">
+                        Customer Activated
+                      </h1>
+                      <p>
+                        {{
+                          data?.customerActivated != null
+                            ? data?.customerActivated
+                            : "-"
+                        }}
+                      </p>
+                    </div>
+                    <div class="space-y-0">
+                      <h1 class="text-muted-foreground uppercase">Verified</h1>
+                      <p>{{ data?.verified != null ? data?.verified : "-" }}</p>
+                    </div>
+                    <div class="space-y-0">
+                      <h1 class="text-muted-foreground uppercase">
+                        IsEnrolled
+                      </h1>
+                      <p>
+                        {{ data?.isEnrolled != null ? data.isEnrolled : "-" }}
+                      </p>
+                    </div>
+                    <div class="space-y-0">
+                      <h1 class="text-muted-foreground uppercase">Status</h1>
+                      <p>{{ data?.status != null ? data?.status : "-" }}</p>
+                    </div>
+                    <div class="space-y-0">
+                      <h1 class="text-muted-foreground uppercase">
+                        Core Linked
+                      </h1>
+                      <p>
+                        {{ data?.coreLinked != null ? data.coreLinked : "-" }}
+                      </p>
+                    </div>
+                    <div class="space-y-0">
+                      <h1 class="text-muted-foreground uppercase">
+                        Vip customer
+                      </h1>
+                      <p>
+                        {{ data?.vipcustomer != null ? data.vipcustomer : "-" }}
+                      </p>
+                    </div>
+                    <div class="space-y-0">
+                      <h1 class="text-muted-foreground uppercase">
+                        Olb Allowed
+                      </h1>
+                      <p>
+                        {{ data?.olbAllowed != null ? data.olbAllowed : "-" }}
+                      </p>
+                    </div>
+                    <div class="space-y-0">
+                      <h1 class="text-muted-foreground uppercase">Roles</h1>
+                      <ul class="px-3 pt-1">
+                        <li
+                          class="list-disc"
+                          v-for="(item, index) in data?.roles"
+                          :key="index"
+                        >
+                          {{ item }}
+                        </li>
+                      </ul>
+                    </div>
+                    <div class="space-y-0">
+                      <h1 class="text-muted-foreground uppercase">
+                        Staff Member
+                      </h1>
+                      <p>
+                        {{ data?.staffMember != null ? data.staffMember : "-" }}
+                      </p>
+                    </div>
+                  </div>
+                </UiAccordionContent>
+              </UiAccordionItem>
+              <UiAccordionItem value="item-2">
+                <UiAccordionTrigger class="md:text-lg bg-secondary px-3"
+                  >Contact</UiAccordionTrigger
+                >
+                <UiAccordionContent class="w-full" v-model="openItems">
+                  <div
+                    class="flex flex-col md:gap-4 w-full space-y-4 text-sm md:text-base p-6"
+                  >
+                    <div class="space-y-6 md:space-y-0 border-b-2">
+                      <div class="flex items-center justify-between">
+                        <h1 class="text-base">Communication</h1>
+                      </div>
+                      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        <div class="space-y-0">
+                          <h1 class="text-muted-foreground uppercase text-sm">
+                            Preferred Contact Method
+                          </h1>
+                          <p>N/A</p>
+                        </div>
+                        <div class="space-y-0">
+                          <h1
+                            for="phoneNumber"
+                            class="text-muted-foreground uppercase text-sm"
+                          >
+                            Preferred Contact Time
+                          </h1>
+                          <p>N/A</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="space-y-6 md:space-y-0 border-b-2 pb-4">
+                      <div class="flex items-center justify-between">
+                        <h1 class="text-base text-muted-foreground">
+                          Address1
+                        </h1>
+                        <UiButton class="pr-5" variant="outline">
+                          <Icon
+                            name="material-symbols:edit-outline"
+                            class="w-5 h-5 mr-2 fill-black"
+                          />
+                          Edit</UiButton
+                        >
+                      </div>
+                      <div class="grid grid-cols-1 lg:grid-cols-2">
+                        <p>{{ data?.addressLine1 || "Not Setted" }}</p>
+                      </div>
+                    </div>
+
+                    <div class="space-y-6 md:space-y-0 border-b-2 pb-4">
+                      <div class="flex items-center justify-between">
+                        <h1 class="text-base text-muted-foreground">
+                          Address2
+                        </h1>
+                        <UiButton class="pr-5" variant="outline">
+                          <Icon
+                            name="material-symbols:edit-outline"
+                            class="w-5 h-5 mr-2 fill-black"
+                          />
+                          Edit</UiButton
+                        >
+                      </div>
+                      <div class="grid grid-cols-1 lg:grid-cols-2">
+                        <p>
+                          {{ data?.addressLine2 || "Not Setted" }}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="space-y-6 md:space-y-0 border-b-2 pb-4">
+                      <div class="flex items-center justify-between">
+                        <h1 class="text-base text-muted-foreground">State</h1>
+                        <UiButton class="pr-5" variant="outline">
+                          <Icon
+                            name="material-symbols:edit-outline"
+                            class="w-5 h-5 mr-2 fill-black"
+                          />
+                          Edit</UiButton
+                        >
+                      </div>
+                      <div class="grid grid-cols-1 lg:grid-cols-2">
+                        <p>
+                          {{ data?.state || "Not Setted" }}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="space-y-6 md:space-y-0 border-b-2 pb-4">
+                      <div class="flex items-center justify-between">
+                        <h1 class="text-base text-muted-foreground">City</h1>
+                        <UiButton class="pr-5" variant="outline">
+                          <Icon
+                            name="material-symbols:edit-outline"
+                            class="w-5 h-5 mr-2 fill-black"
+                          />
+                          Edit</UiButton
+                        >
+                      </div>
+                      <div class="grid grid-cols-1 lg:grid-cols-2">
+                        <p>
+                          {{ data?.city || "Not Setted" }}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div class="md:space-y-0 space-y-6 border-b-2 pb-4">
+                      <div class="flex items-center justify-between">
+                        <h1 class="text-base text-muted-foreground">
+                          Contact Numbers
+                        </h1>
+                        <UiButton class="pr-5" variant="outline">
+                          <Icon
+                            name="material-symbols:edit-outline"
+                            class="w-5 h-5 mr-2 fill-black"
+                          />
+                          Edit</UiButton
+                        >
+                      </div>
+                      <div class="grid grid-cols-1 lg:grid-cols-2">
+                        <p>{{ data?.phone || "-" }}</p>
+                      </div>
+                    </div>
+
+                    <div class="md:space-y-0 space-y-6">
+                      <div class="flex items-center justify-between">
+                        <h1 class="text-base text-muted-foreground">Email</h1>
+                        <UiButton class="pr-5" variant="outline">
+                          <Icon
+                            name="material-symbols:edit-outline"
+                            class="w-5 h-5 mr-2 fill-black"
+                          />
+                          Edit</UiButton
+                        >
+                      </div>
+                      <div class="grid grid-cols-1 lg:grid-cols-2">
+                        <p>{{ data?.email || "-" }}</p>
+                      </div>
                     </div>
                   </div>
                 </UiAccordionContent>
@@ -84,130 +479,243 @@ const openItems = ref(["item-1"]);
           </div>
         </UiTabsContent>
 
-        <UiTabsContent value="deposits" class="space-y-4 p-4">
-          <div class="flex flex-col space-y-4">
-            <h1>Deposits</h1>
-          </div>
-        </UiTabsContent>
-      </UiTabs>
-    </UiCard>
-
-    <UiCard class="w-full p-6">
-      <UiTabs default-value="contact" class="md:space-y-4 w-full">
-        <UiTabsList class="flex bg-white justify-start py-7 px-0 border-[1px]">
-          <UiTabsTrigger
-            value="contact"
-            class="md:text-xl py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary"
-          >
-            Contact
-          </UiTabsTrigger>
-        </UiTabsList>
-
-        <UiTabsContent value="contact" class="space-y-4 text-sm md:text-base">
-          <div class="flex flex-col md:gap-4 w-full">
-            <div class="space-y-6 md:space-y-0 border-b-2 py-4">
-              <div class="flex items-center justify-between">
-                <h1 class="text-base md:text-lg">Communication</h1>
-                <UiButton class="pr-5" variant="outline">
-                  <Icon
-                    name="material-symbols:edit-outline"
-                    class="w-5 h-5 mr-2 fill-black"
-                  />
-                  Edit</UiButton
+        <UiTabsContent value="linkWithCoreBank" class="space-y-4 py-8">
+          <div class="flex flex-col space-y-8">
+            <div class="flex gap-8 items-center">
+              <div class="grid w-full max-w-sm items-center gap-2">
+                <UiLabel for="search" class="font-normal text-muted-foreground"
+                  >Find customer by account number</UiLabel
                 >
-              </div>
-              <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div class="space-y-0">
-                  <label class="text-muted-foreground uppercase"
-                    >Preferred Contact Method</label
+                <div class="flex items-center gap-4">
+                  <UiInput
+                    id="search"
+                    type="search"
+                    placeholder="Search..."
+                    class="md:w-[100px] lg:w-[300px]"
+                    v-model="accountNumber"
+                  />
+                  <UiButton
+                    :disabled="accountNumber == ''"
+                    @click="searchCoreAccountHandler"
                   >
-                  <p>N/A</p>
+                    <Icon
+                      name="svg-spinners:8-dots-rotate"
+                      v-if="isLoading"
+                      class="mr-2 h-4 w-4 animate-spin"
+                    ></Icon>
+                    Search</UiButton
+                  >
+                </div>
+              </div>
+              <div class="grid w-full max-w-sm items-center gap-2">
+                <UiLabel for="search" class="font-normal text-muted-foreground"
+                  >Link with core bank</UiLabel
+                >
+                <div class="flex items-center gap-4">
+                  <UiInput
+                    id="linkWithCore"
+                    type="test"
+                    placeholder="Enter Customer Id "
+                    class="md:w-[100px] lg:w-[300px]"
+                    v-model="accountCustomerId"
+                  />
+                  <UiButton @click="handleLinkCoreBankCustomer">
+                    <Icon
+                      name="svg-spinners:8-dots-rotate"
+                      v-if="isLoading"
+                      class="mr-2 h-4 w-4 animate-spin"
+                    ></Icon>
+                    Link
+                  </UiButton>
+                </div>
+              </div>
+            </div>
+
+            <UiCard
+              class="grid lg:grid-cols-4 gap-4 md:gap-8 w-full p-6"
+              v-if="isLoading"
+            >
+              <UiSkeleton class="h-16 w-full" />
+              <UiSkeleton class="h-16 w-full" />
+              <UiSkeleton class="h-16 w-full" />
+              <UiSkeleton class="h-16 w-full" />
+              <UiSkeleton class="h-16 w-full" />
+              <UiSkeleton class="h-16 w-full" />
+              <UiSkeleton class="h-16 w-full" />
+              <UiSkeleton class="h-16 w-full" />
+              <UiSkeleton class="h-16 w-full" />
+              <UiSkeleton class="h-16 w-full" />
+              <UiSkeleton class="h-16 w-full" />
+              <UiSkeleton class="h-16 w-full" />
+            </UiCard>
+
+            <UiCard v-else-if="coreData" class="w-full text-sm">
+              <div class="grid lg:grid-cols-4 gap-4 md:gap-8 w-full p-6">
+                <div class="space-y-1">
+                  <h1 class="text-muted-foreground uppercase">Full Name</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ coreData?.fullName || "Not Setted" }}
+                  </p>
+                </div>
+                <div class="space-y-1">
+                  <h1 class="text-muted-foreground uppercase">Phone Number</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ coreData?.phone || "Not Setted" }}
+                  </p>
+                </div>
+                <div class="space-y-1">
+                  <h1 class="text-muted-foreground uppercase">Email</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ coreData?.email || "Not Setted" }}
+                  </p>
+                </div>
+                <div class="space-y-1">
+                  <h1 class="text-muted-foreground uppercase">Gender</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ coreData?.gender }}
+                  </p>
+                </div>
+
+                <div class="space-y-1">
+                  <h1 class="text-muted-foreground uppercase">
+                    Core CustomerId ID
+                  </h1>
+
+                  <UiTooltipProvider>
+                    <UiTooltip :delayDuration="2000" :update:open="tooltipOpen">
+                      <UiTooltipTrigger
+                        @click="copyToClipboard(coreData?.customerId)"
+                        as-child
+                      >
+                        <div
+                          class="flex border px-2 py-1 rounded-md justify-between items-center hover:cursor-pointer"
+                        >
+                          <p>{{ coreData?.customerId || "Not Setted" }}</p>
+                          <Icon
+                            name="material-symbols:content-copy"
+                            class="h-5 w-5 text-primary hover:"
+                          ></Icon>
+                        </div>
+                      </UiTooltipTrigger>
+                      <UiTooltipContent>
+                        <p>Copy to clipboard</p>
+                      </UiTooltipContent>
+                    </UiTooltip>
+                  </UiTooltipProvider>
+                </div>
+
+                <div class="space-y-1">
+                  <h1 class="text-muted-foreground uppercase">Date Of Birth</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{
+                      new Date(coreData?.dateOfBirth).toLocaleDateString() ||
+                      "Not Setted"
+                    }}
+                  </p>
+                </div>
+
+                <div class="space-y-0">
+                  <h1 class="text-muted-foreground uppercase">Country</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ coreData?.townCountry || "Not Setted" }}
+                  </p>
+                </div>
+
+                <div class="space-y-0">
+                  <h1 class="text-muted-foreground uppercase">Address</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ displayApiDataOnLabel(coreData?.address) }}
+                  </p>
                 </div>
                 <div class="space-y-0">
-                  <label
-                    for="phoneNumber"
-                    class="text-muted-foreground uppercase"
-                    >Preferred Contact Time</label
-                  >
-                  <p>N/A</p>
+                  <h1 class="text-muted-foreground uppercase">Street</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ displayApiDataOnLabel(coreData?.street) }}
+                  </p>
+                </div>
+                <div class="space-y-0">
+                  <h1 class="text-muted-foreground uppercase">Residence</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ displayApiDataOnLabel(coreData?.residence) }}
+                  </p>
+                </div>
+                <div class="space-y-0">
+                  <h1 class="text-muted-foreground uppercase">House No</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ displayApiDataOnLabel(coreData?.houseNo) }}
+                  </p>
+                </div>
+                <div class="space-y-0">
+                  <h1 class="text-muted-foreground uppercase">Nationality</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ displayApiDataOnLabel(coreData?.nationality) }}
+                  </p>
+                </div>
+                <div class="space-y-0">
+                  <h1 class="text-muted-foreground uppercase">
+                    Marital Status
+                  </h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ coreData?.maritalStatus || "Not Setted" }}
+                  </p>
+                </div>
+                <div class="space-y-0">
+                  <h1 class="text-muted-foreground uppercase">Customer Type</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ displayApiDataOnLabel(coreData?.customerType) }}
+                  </p>
+                </div>
+                <div class="space-y-0">
+                  <h1 class="text-muted-foreground uppercase">Status</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ displayApiDataOnLabel(coreData?.customerStatus) }}
+                  </p>
+                </div>
+                <div class="space-y-0">
+                  <h1 class="text-muted-foreground uppercase">Mnemonic</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ displayApiDataOnLabel(coreData?.mnemonic) }}
+                  </p>
+                </div>
+
+                <div class="space-y-0">
+                  <h1 class="text-muted-foreground uppercase">Title</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ displayApiDataOnLabel(coreData?.title) }}
+                  </p>
+                </div>
+                <div class="space-y-0">
+                  <h1 class="text-muted-foreground uppercase">
+                    Customer Branch Code
+                  </h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{
+                      coreData?.customerBranchCode != null
+                        ? coreData.customerBranchCode
+                        : "-"
+                    }}
+                  </p>
+                </div>
+
+                <div class="space-y-0">
+                  <h1 class="text-muted-foreground uppercase">Language</h1>
+                  <p class="border px-2 py-1 rounded-md">
+                    {{ displayApiDataOnLabel(coreData?.language) }}
+                  </p>
                 </div>
               </div>
-            </div>
-
-            <div class="space-y-6 md:space-y-0 border-b-2 py-4">
-              <div class="flex items-center justify-between">
-                <h1 class="text-base md:text-lg">Address</h1>
-                <UiButton class="pr-5" variant="outline">
-                  <Icon
-                    name="material-symbols:edit-outline"
-                    class="w-5 h-5 mr-2 fill-black"
-                  />
-                  Edit</UiButton
-                >
-              </div>
-
-              <div class="grid grid-cols-1 lg:grid-cols-2">
-                <div class="md:space-y-1 space-y-2">
-                  <div class="flex gap-1 w-full">
-                    <p class="text-muted-foreground uppercase">Home</p>
-                    <UiBadge class="bg-green-700 md:ml-4 text-xs"
-                      >Primary Communication Address</UiBadge
-                    >
-                  </div>
-                  <p>Piassa,Addis Abeba,Ethiopia</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="md:space-y-0 space-y-6 border-b-2 py-4">
-              <div class="flex items-center justify-between">
-                <h1 class="md:text-lg text-base">Contact Numbers</h1>
-                <UiButton class="pr-5" variant="outline">
-                  <Icon
-                    name="material-symbols:edit-outline"
-                    class="w-5 h-5 mr-2 fill-black"
-                  />
-                  Edit</UiButton
-                >
-              </div>
-              <div class="grid grid-cols-1 lg:grid-cols-2">
-                <div class="md:space-y-1 space-y-2">
-                  <div class="flex gap-1">
-                    <p class="text-muted-foreground uppercase">Mobile</p>
-                    <UiBadge class="bg-green-700 md:ml-4"
-                      >Primary Communication Contact</UiBadge
-                    >
-                  </div>
-
-                  <p>0911332233</p>
-                </div>
-              </div>
-            </div>
-
-            <div class="md:space-y-0 space-y-6 border-b-2 py-4">
-              <div class="flex items-center justify-between">
-                <h1 class="md:text-lg text-base">Email</h1>
-                <UiButton class="pr-5" variant="outline">
-                  <Icon
-                    name="material-symbols:edit-outline"
-                    class="w-5 h-5 mr-2 fill-black"
-                  />
-                  Edit</UiButton
-                >
-              </div>
-              <div class="grid grid-cols-1 lg:grid-cols-2">
-                <div class="md:space-y-1 space-y-2">
-                  <div class="flex gap-1">
-                    <p class="text-muted-foreground uppercase">Other</p>
-                    <UiBadge class="bg-green-700 md:ml-4"
-                      >Primary Communication Email</UiBadge
-                    >
-                  </div>
-
-                  <p>abebekebede@gmail.com</p>
-                </div>
-              </div>
-            </div>
+            </UiCard>
+            <UiCard
+              v-else
+              class="w-full h-40 flex flex-col justify-center items-center text-sm"
+            >
+              <h1 class="text-muted-foreground">
+                No core customer detail found
+              </h1>
+              <p class="text-muted-foreground">
+                Search by account number to get core customer details
+              </p>
+            </UiCard>
           </div>
         </UiTabsContent>
       </UiTabs>

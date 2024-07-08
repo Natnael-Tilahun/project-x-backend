@@ -29,8 +29,8 @@ const props = defineProps({
       class="text-thm_secondary_color lg:text-base text-sm dark:text-thm_dark_secondary_color"
     >
       {{
-        props.message
-          ? props.message
+        props?.description
+          ? props.description
           : "Currently, We don't have any data. Please try again later."
       }}
     </p>

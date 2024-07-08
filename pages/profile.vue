@@ -8,12 +8,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { profileFormSchema } from "~/validations/profileFormSchema";
+import { toast } from "~/components/ui/toast";
 
-const { getProfile, isLoading } = await useAuth();
+const { getProfile, isLoading } = useProfile();
+const loading = ref(isLoading.value);
+const isError = ref(false);
+const data = ref<User>();
 
+// const { getProfile, isLoading } = useAuth();
 // const isLoading = ref(false);
 
-const form = useForm({
+const form = useForm<Profile>({
   validationSchema: profileFormSchema,
 });
 
@@ -31,10 +36,17 @@ onMounted(async () => {
     isLoading.value = true;
     const profileData = await getProfile(); // Call your API function to fetch profile
     console.log("Profile data; ", profileData);
-    // formData.value = profileData; // Store the profile data in a reactive variable
+    console.log("form data; ", form.values);
+    form.setValues(profileData);
+
+    // form.setValues(profileData);
   } catch (error) {
     console.error("Error fetching profile:", error);
-    // Handle error fetching profile data
+    toast({
+      title: "Uh oh! Something went wrong.",
+      description: `There was a problem with your request: ${error}`,
+      variant: "destructive",
+    });
   } finally {
     isLoading.value = false;
   }
@@ -48,10 +60,27 @@ onMounted(async () => {
       <p class="text-sm text-muted-foreground">Update your profile</p>
     </div>
 
-    <UiCard class="p-6">
+    <UiCard class="p-6 space-y-8" v-if="isLoading">
+      <div class="grid grid-cols-2 gap-8">
+        <UiSkeleton class="h-16 w-full" />
+        <UiSkeleton class="h-16 w-full" />
+        <UiSkeleton class="h-16 w-full" />
+        <UiSkeleton class="h-16 w-full" />
+        <UiSkeleton class="h-16 w-full" />
+        <UiSkeleton class="h-16 w-full" />
+        <UiSkeleton class="h-16 w-full" />
+        <UiSkeleton class="h-16 w-full" />
+      </div>
+      <div class="w-full flex justify-between">
+        <UiSkeleton class="h-16 w-1/5" />
+        <UiSkeleton class="h-16 w-1/5" />
+      </div>
+    </UiCard>
+
+    <UiCard v-else class="p-6">
       <form @submit="onSubmit">
         <div class="grid grid-cols-2 gap-6">
-          <FormField v-slot="{ componentField }" name="employeeId">
+          <!-- <FormField v-slot="{ componentField }" name="employeeId">
             <FormItem>
               <FormLabel> Employee ID </FormLabel>
               <FormControl>
@@ -64,14 +93,27 @@ onMounted(async () => {
               </FormControl>
               <FormMessage />
             </FormItem>
-          </FormField>
+          </FormField> -->
           <FormField v-slot="{ componentField }" name="firstName">
             <FormItem>
               <FormLabel> First Name </FormLabel>
               <FormControl>
                 <UiInput
                   type="text"
-                  placeholder="Enter First Name"
+                  placeholder="Enter first name"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="middleName">
+            <FormItem>
+              <FormLabel> Middle Name </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="text"
+                  placeholder="Enter middle name"
                   v-bind="componentField"
                 />
               </FormControl>
@@ -84,7 +126,7 @@ onMounted(async () => {
               <FormControl>
                 <UiInput
                   type="text"
-                  placeholder="Enter Last Name"
+                  placeholder="Enter last name"
                   v-bind="componentField"
                 />
               </FormControl>
@@ -97,7 +139,6 @@ onMounted(async () => {
               <FormControl>
                 <UiInput
                   type="text"
-                  disabled
                   placeholder="Enter Email Address"
                   v-bind="componentField"
                 />
@@ -105,7 +146,20 @@ onMounted(async () => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="role">
+          <FormField v-slot="{ componentField }" name="phone">
+            <FormItem>
+              <FormLabel> Phone </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="text"
+                  placeholder="Enter phone number"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="authorities">
             <FormItem>
               <FormLabel> Role </FormLabel>
               <FormControl>
@@ -118,13 +172,12 @@ onMounted(async () => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="isActive">
+          <FormField v-slot="{ componentField }" name="activated">
             <FormItem>
               <FormLabel> Is Active </FormLabel>
               <FormControl>
                 <UiInput
                   type="text"
-                  disabled
                   placeholder="Enter status"
                   v-bind="componentField"
                 />
@@ -132,12 +185,11 @@ onMounted(async () => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="permissons">
+          <!-- <FormField v-slot="{ componentField }" name="authorities">
             <FormItem>
               <FormLabel>Permissions</FormLabel>
               <FormControl>
                 <UiTextarea
-                  disabled
                   placeholder="Enter Permissions"
                   class="resize-y"
                   v-bind="componentField"
@@ -145,7 +197,7 @@ onMounted(async () => {
               </FormControl>
               <FormMessage />
             </FormItem>
-          </FormField>
+          </FormField> -->
 
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton

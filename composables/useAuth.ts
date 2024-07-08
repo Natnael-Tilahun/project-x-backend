@@ -15,7 +15,7 @@ export const useAuth = () => {
 
   const login = async (user: UserInput) => {
     try {
-      const { data, pending, error, status } = await useFetch(
+      const { data, pending, error, status } = await useFetch<any>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/auth/sign-in/password`,
         {
           method: "POST",
@@ -33,14 +33,13 @@ export const useAuth = () => {
         throw new Error("Login error: " + error.value);
       }
 
-      if (status.value === "success") {
-        store.setAuth({
-          ...user,
-          ...data?.value,
-          isAuthenticated: data.value.accessToken ? true : false,
-          role: "Admin",
-        });
-      }
+      console.log("faffd: ", data.value)
+      store.setAuth({
+        ...user,
+        ...data?.value,
+        isAuthenticated: data?.value.accessToken ? true : false,
+      });
+      await getAuthorities()
       isLoading.value = pending.value;
       return data.value;
     } catch (err) {
@@ -75,7 +74,7 @@ export const useAuth = () => {
 
         throw new Error("Refresh-token error: " + error.value);
       }
-      conole.log("v1/api/auth/refresh-token: ", data);
+      console.log("v1/api/auth/refresh-token: ", data);
 
       // store.setAuth({
       //   ...user,
@@ -84,6 +83,46 @@ export const useAuth = () => {
       //   role: "Admin",
       // });
       // isLoading.value = pending.value;
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
+  const getAuthorities = async () => {
+    try {
+      const { data, pending, error, status } = await useFetch<any>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/auth/roles`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      if (status.value === "error") {
+        // Handle the error, e.g., display a toast message or stay on the login page
+        toast({
+          title: error?.value?.data?.title || error?.value,
+          description: error?.value?.data?.detail,
+          variant: "destructive",
+        });
+        console.log("Getting roles error: ", error);
+
+        throw new Error("Getting role error: " + error.value);
+      }
+      if (status.value === "success") {
+
+        store.setPermissions({
+          permissions: data?.value && data?.value?.permissions
+        });
+
+        navigateTo('/')
+
+      }
+
       return data.value;
     } catch (err) {
       // Throw the error to be caught and handled by the caller
@@ -122,24 +161,37 @@ export const useAuth = () => {
       //   setUser(data.user);
     }
   };
-  const logout = async () => {
-    try {
-      // const data: any = await $fetch(
-      //   `${runtimeConfig.public.API_BASE_URL}/api/v1/auth/sign-out`
-      // );
-      store.$reset();
-      // setUser(data.user);
 
-      return navigateTo("/login", { replace: true });
-    } catch (err) {
-      return console.log("error: ", err);
-    }
+  const logout = async () => {
+
+
+    // try {
+    //   const { data, pending, error, status } = await useFetch(
+    //     `${runtimeConfig.public.API_BASE_URL}/api/v1/auth/sign-out`,
+    //     {
+    //       method: "GET",
+    //       headers: {
+    //         Authorization: `Bearer ${store.accessToken}`,
+    //       },
+    //     }
+    //   );
+    //   isLoading.value = pending.value;
+    //   if (status.value === "error") {
+    //     throw new Error("Logout error: " + error.value);
+    //   }
+    store.$reset();
+    return navigateTo("/login", { replace: true });
+    // return data.value;
+    // } catch (err) {
+    //   // Throw the error to be caught and handled by the caller
+    //   throw err;
+    // }
   };
 
   const getProfile = async () => {
     try {
       const { data, pending, error, status } = await useFetch(
-        `${runtimeConfig.public.API_BASE_URL}/v1/api/users/me`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/users/me`,
         {
           method: "GET",
           headers: {

@@ -4,16 +4,8 @@ import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import UserPermissionsDataTableRowActionsVue from "./DataTableRowActions.vue";
 
-export interface UserPermission {
-  permissionId: string;
-  permissionName: string;
-  permissionDescription: string;
-  legalEntity: [string] | string;
-  status: "New" | "Active" | "Suspended" | "Deactivated";
-  grouping: string;
-}
 
-export const columns: ColumnDef<UserPermission>[] = [
+export const columns: ColumnDef<Permission>[] = [
   {
     id: "select",
     header: ({ table }) =>
@@ -37,11 +29,23 @@ export const columns: ColumnDef<UserPermission>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "permissionName",
-    header: "Permission Name",
+    accessorKey: "code",
+    header: "Code",
   },
   {
-    accessorKey: "permissionDescription",
+    accessorKey: "entityName",
+    header: "Name",
+    cell: ({ row }) => {
+      const entityName = row.getValue("entityName");
+      if (entityName) {
+        return h("p", entityName);
+      } else
+        return h("p", "None");
+
+    },
+  },
+  {
+    accessorKey: "description",
     header: "Permission Description",
   },
   {
@@ -49,30 +53,44 @@ export const columns: ColumnDef<UserPermission>[] = [
     header: "Grouping",
   },
   {
-    accessorKey: "legalEntity",
-    header: ({ column }) =>
-      h(DataTableColumnHeaderVue, { column, title: "Legal Entity" }),
-
-    cell: ({ row }) => row.getValue("legalEntity"),
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
+    accessorKey: "actionName",
+    header: "Action Name",
     cell: ({ row }) => {
-      const status = row.getValue("status");
-      if (status == "Active") {
-        return h(Badge, { class: "bg-green-600 " }, row.getValue("status"));
-      } else if (status == "New") {
-        return h(Badge, { class: "bg-blue-500 " }, row.getValue("status"));
-      } else if (status == "Deactivated") {
-        return h(Badge, { class: "bg-red-500 " }, row.getValue("status"));
-      } else if (status == "Suspended") {
-        return h(Badge, { class: "bg-orange-700 " }, row.getValue("status"));
-      } else {
-        return h("div", { class: "" }, row.getValue("status"));
-      }
+      const actionName = row.getValue("actionName");
+      if (actionName) {
+        return h("p", actionName);
+      } else
+        return h("p", "None");
+
     },
   },
+  {
+    accessorKey: "createdBy",
+    header: "Created By",
+  },
+  {
+    accessorKey: "createdDate",
+    header: "Created Date",
+    cell: ({ row }) => {
+      const createdDate = new Date(row.getValue("createdDate"))
+      const formattedCreatedDate = createdDate.toLocaleDateString();
+      return h("p", formattedCreatedDate);
+    },
+  },
+  {
+    accessorKey: "lastModifiedBy",
+    header: "Last modified by",
+  },
+  {
+    accessorKey: "lastModifiedDate",
+    header: "Last modified date",
+    cell: ({ row }) => {
+      const lastModifiedDate = new Date(row.getValue("lastModifiedDate"))
+      const formattedLastModifiedDate = lastModifiedDate.toLocaleDateString();
+      return h("p", formattedLastModifiedDate);
+    },
+  },
+
   {
     header: "Actions",
     id: "actions",
