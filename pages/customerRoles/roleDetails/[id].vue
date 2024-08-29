@@ -80,7 +80,9 @@ const openItems = ref(["item-1"]);
 
     <UiCard class="w-full p-6">
       <UiTabs default-value="contact" class="md:space-y-4 w-full">
-        <UiTabsList class="flex bg-white justify-start py-7 px-0 border-[1px]">
+        <UiTabsList
+          class="flex bg-background justify-start py-7 px-0 border-[1px]"
+        >
           <UiTabsTrigger
             value="contact"
             class="md:text-xl py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary"

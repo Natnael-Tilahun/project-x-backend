@@ -4,7 +4,7 @@
   <div class="w-full h-screen">
     <UiTabs default-value="default-system-logs" class="h-full w-full">
       <UiTabsList
-        class="w-full bg-white flex justify-start py-7 px-0 border-[1px]"
+        class="w-full bg-background flex justify-start py-7 px-0 border-[1px]"
       >
         <UiTabsTrigger
           value="default-system-logs"

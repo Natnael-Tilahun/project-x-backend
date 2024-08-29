@@ -40,7 +40,7 @@ watch(
 </script>
 
 <template>
-  <UiTabs default-value="overview" class="space-y-12">
+  <UiTabs default-value="overview" class="space-y-12 dark:bg-dark-background">
     <div
       class="flex flex-col lg:flex-row gap-5 space-y-0justify-start lg:justify-between"
     >

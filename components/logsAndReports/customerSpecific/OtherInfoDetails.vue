@@ -14,7 +14,7 @@ const otherInfoDatas = ref(otherInfoData as OtherInfoDataProps);
     class="space-y-0 p-4 shadow-xl border-0 bg-secondary text-popover-foreground w-[900px] z-50 fixed right-0"
   >
     <UiTabsList
-      class="w-full bg-white flex justify-start py-7 px-0 border-[1px]"
+      class="w-full bg-background flex justify-start py-7 px-0 border-[1px]"
     >
       <UiTabsTrigger
         value="otherInformation"

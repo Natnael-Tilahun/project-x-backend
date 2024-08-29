@@ -308,7 +308,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       <UiCard class="w-full p-6">
         <UiTabs default-value="permissions" class="md:space-y-4 w-full">
           <UiTabsList
-            class="flex bg-white justify-start py-7 px-0 border-[1px]"
+            class="flex bg-background justify-start py-7 px-0 border-[1px]"
           >
             <UiTabsTrigger
               value="permissions"

@@ -103,7 +103,7 @@ const getInitials = (name: string) =>
       v-else
       v-for="item in data"
       :key="item.id"
-      class="flex items-center cursor-pointer p-3 rounded-xl bg-accent dark:bg-gray-700 hover:bg-accent/20 hover:dark:bg-gray-600 hover:shadow-md hover:scale-[1.02] border border-transparent hover:border-accent/20 transition-all duration-300 ease-in-out"
+      class="flex items-center cursor-pointer p-3 rounded-xl bg-accent dark:bg-gray-700 dark:text-white hover:bg-accent/20 hover:dark:bg-gray-600 hover:shadow-md hover:scale-[1.02] border border-transparent hover:border-accent/20 transition-all duration-300 ease-in-out"
       @click="navigateToCustomerDetail(item.id)"
     >
       <UiAvatar class="h-9 w-9">
@@ -116,7 +116,7 @@ const getInitials = (name: string) =>
         <p class="text-sm font-medium leading-none">
           {{ item.fullName || "Full Name" }}
         </p>
-        <p class="text-sm text-muted-foreground">
+        <p class="text-sm text-muted-foreground dark:text-white">
           {{ item.coreCustomerId || "Customer ID" }}
         </p>
       </div>
