@@ -86,13 +86,13 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
   },
-  {
-    title: "Alerts",
-    icon: "ic:outline-wechat",
-    link: "/alerts",
-    size: "22",
-    showDropdown: false,
-  },
+  // {
+  //   title: "Alerts",
+  //   icon: "ic:outline-wechat",
+  //   link: "/alerts",
+  //   size: "22",
+  //   showDropdown: false,
+  // },
   {
     title: "Role Management",
     icon: "solar:user-bold",
@@ -114,17 +114,17 @@ const mainLinks = [
       // { title: "Permissions", link: "/permissions" },
     ],
   },
-  {
-    title: "Employee Management",
-    icon: "solar:user-bold",
-    size: "22",
-    showDropdown: false,
-    dropdown: [
-      { title: "Users", link: "/users" },
-      // { title: "Roles", link: "/userRoles" },
-      // { title: "Permissions", link: "/userPermissions" },
-    ],
-  },
+  // {
+  //   title: "Employee Management",
+  //   icon: "solar:user-bold",
+  //   size: "22",
+  //   showDropdown: false,
+  //   dropdown: [
+  //     { title: "Users", link: "/users" },
+  //     // { title: "Roles", link: "/userRoles" },
+  //     // { title: "Permissions", link: "/userPermissions" },
+  //   ],
+  // },
   {
     title: "Merchants",
     icon: "material-symbols:partner-exchange-outline-rounded",
@@ -132,26 +132,41 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
   },
-  {
-    title: "Integrations",
-    icon: "material-symbols:partner-exchange-outline-rounded",
-    link: "/integrations",
-    size: "22",
-    showDropdown: false,
-  },
+  // {
+  //   title: "Integrations",
+  //   icon: "material-symbols:partner-exchange-outline-rounded",
+  //   link: "/integrations",
+  //   size: "22",
+  //   showDropdown: false,
+  // },
   {
     title: "Application Content Management",
     icon: "material-symbols:create-new-folder",
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "FAQs", link: "/faqs" },
-      { title: "Privacy Policies", link: "/privacy-policies" },
-      { title: "Term & Conditions", link: "/term-conditions" },
-      { title: "Service Outage Messages", link: "/service-outage-messages" },
-      { title: "Locations", link: "/locations" },
-      { title: "Customer Care Informations", link: "/customer-care-info" },
-      { title: "Ad Campaigns", link: "/ad-campaigns" },
+      { title: "FAQs", link: "/applicationContentManagement/faqs" },
+      {
+        title: "Privacy Policies",
+        link: "/applicationContentManagement/privacy-policies",
+      },
+      {
+        title: "Term & Conditions",
+        link: "/applicationContentManagement/term-conditions",
+      },
+      {
+        title: "Service Outage Messages",
+        link: "/applicationContentManagement/service-outage-messages",
+      },
+      { title: "Locations", link: "/applicationContentManagement/locations" },
+      // {
+      //   title: "Customer Care Informations",
+      //   link: "/applicationContentManagement/customer-care-info",
+      // },
+      {
+        title: "Ad Campaigns",
+        link: "/applicationContentManagement/ad-campaigns",
+      },
     ],
   },
   {
@@ -161,20 +176,20 @@ const mainLinks = [
     showDropdown: false,
     dropdown: [
       { title: "Logs", link: "/log" },
-      { title: "Reports", link: "/reports" },
+      // { title: "Reports", link: "/reports" },
     ],
   },
-  {
-    title: "Master Data Management",
-    icon: "icon-park-solid:category-management",
-    size: "22",
-    showDropdown: false,
-    dropdown: [
-      { title: "Products", link: "/products" },
-      { title: "Services", link: "/services" },
-      { title: "Sequrity Questions", link: "/security-questions" },
-    ],
-  },
+  // {
+  //   title: "Master Data Management",
+  //   icon: "icon-park-solid:category-management",
+  //   size: "22",
+  //   showDropdown: false,
+  //   dropdown: [
+  //     { title: "Products", link: "/products" },
+  //     { title: "Services", link: "/services" },
+  //     { title: "Sequrity Questions", link: "/security-questions" },
+  //   ],
+  // },
   {
     title: "Configurations",
     icon: "material-symbols:settings",

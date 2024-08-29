@@ -30,7 +30,7 @@ export const usePermissions = () => {
       //   },
       // );
 
-      const { data, pending, error, status } = await useLazyAsyncData(
+      const { data, pending, error, status } = await useAsyncData(
         '',
         () => $fetch(`${runtimeConfig.public.API_BASE_URL}/api/v1/internal/permissions`,
           {

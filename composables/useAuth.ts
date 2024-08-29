@@ -91,6 +91,7 @@ export const useAuth = () => {
   };
 
   const getAuthorities = async () => {
+    console.log("getAuthorities")
     try {
       const { data, pending, error, status } = await useFetch<any>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/auth/roles`,

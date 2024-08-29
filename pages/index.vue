@@ -4,6 +4,39 @@ const { hasPermissions } = useAuthStore();
 console.log("hjkjk: ", hasPermissions("BYPASS_TWOFACTOR"));
 console.log("hjkjk: ", hasPermissions("ALL_FUNCTIONS"));
 console.log("hjkjk: ", hasPermissions("ALL_FUNCTONS"));
+
+const { getRoles } = useRoles();
+const { getMerchants } = useMerchants();
+const { getCustomers } = useCustomers();
+
+const isLoading = ref(true);
+const roleData = ref<Role[]>([]);
+const merchantData = ref<Merchant[]>([]);
+const customerData = ref<Customer[]>([]);
+
+const roleNumber = computed(() => roleData.value.length);
+const merchantNumber = computed(() => merchantData.value.length);
+const customerNumber = computed(() => customerData.value.length);
+
+try {
+  [roleData.value, merchantData.value, customerData.value] = await Promise.all([
+    getRoles(),
+    getMerchants(),
+    getCustomers(),
+  ]);
+} catch (error) {
+  console.error("Error fetching data:", error);
+} finally {
+  isLoading.value = false;
+}
+
+watch(
+  customerData,
+  (newData) => {
+    console.log("Customer Data in index.vue:", newData);
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
@@ -32,25 +65,7 @@ console.log("hjkjk: ", hasPermissions("ALL_FUNCTONS"));
           <UiCardHeader
             class="flex flex-row items-center justify-between space-y-0 pb-2"
           >
-            <UiCardTitle class="text-sm font-medium"> Messages </UiCardTitle>
-            <Icon
-              name="material-symbols:chat"
-              size="18"
-              class="text-muted-foreground"
-            ></Icon>
-          </UiCardHeader>
-          <UiCardContent>
-            <div class="text-2xl font-bold">+450</div>
-            <p class="text-xs text-muted-foreground">+20.1% from last month</p>
-          </UiCardContent>
-        </UiCard>
-        <UiCard>
-          <UiCardHeader
-            class="flex flex-row items-center justify-between space-y-0 pb-2"
-          >
-            <UiCardTitle class="text-sm font-medium">
-              Subscriptions
-            </UiCardTitle>
+            <UiCardTitle class="text-sm font-medium"> Customers </UiCardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -67,7 +82,7 @@ console.log("hjkjk: ", hasPermissions("ALL_FUNCTONS"));
             </svg>
           </UiCardHeader>
           <UiCardContent>
-            <div class="text-2xl font-bold">+2350</div>
+            <div class="text-2xl font-bold">{{ customerNumber }}</div>
             <p class="text-xs text-muted-foreground">+180.1% from last month</p>
           </UiCardContent>
         </UiCard>
@@ -76,6 +91,22 @@ console.log("hjkjk: ", hasPermissions("ALL_FUNCTONS"));
             class="flex flex-row items-center justify-between space-y-0 pb-2"
           >
             <UiCardTitle class="text-sm font-medium"> Merchants </UiCardTitle>
+            <Icon
+              name="carbon:customer-service"
+              size="18"
+              class="text-muted-foreground"
+            ></Icon>
+          </UiCardHeader>
+          <UiCardContent>
+            <div class="text-2xl font-bold">{{ merchantNumber }}</div>
+            <p class="text-xs text-muted-foreground">+20.1% from last month</p>
+          </UiCardContent>
+        </UiCard>
+        <UiCard>
+          <UiCardHeader
+            class="flex flex-row items-center justify-between space-y-0 pb-2"
+          >
+            <UiCardTitle class="text-sm font-medium"> Roles </UiCardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -91,7 +122,7 @@ console.log("hjkjk: ", hasPermissions("ALL_FUNCTONS"));
             </svg>
           </UiCardHeader>
           <UiCardContent>
-            <div class="text-2xl font-bold">+12,234</div>
+            <div class="text-2xl font-bold">{{ roleNumber }}</div>
             <p class="text-xs text-muted-foreground">+19% from last month</p>
           </UiCardContent>
         </UiCard>
@@ -99,7 +130,9 @@ console.log("hjkjk: ", hasPermissions("ALL_FUNCTONS"));
           <UiCardHeader
             class="flex flex-row items-center justify-between space-y-0 pb-2"
           >
-            <UiCardTitle class="text-sm font-medium"> Active Now </UiCardTitle>
+            <UiCardTitle class="text-sm font-medium">
+              Integrations
+            </UiCardTitle>
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 24 24"
@@ -114,7 +147,7 @@ console.log("hjkjk: ", hasPermissions("ALL_FUNCTONS"));
             </svg>
           </UiCardHeader>
           <UiCardContent>
-            <div class="text-2xl font-bold">+573</div>
+            <div class="text-2xl font-bold">15</div>
             <p class="text-xs text-muted-foreground">+201 since last hour</p>
           </UiCardContent>
         </UiCard>
@@ -131,12 +164,9 @@ console.log("hjkjk: ", hasPermissions("ALL_FUNCTONS"));
         <UiCard class="col-span-3">
           <UiCardHeader>
             <UiCardTitle>Recent Customers</UiCardTitle>
-            <UiCardDescription>
-              You got 265 customers this month.
-            </UiCardDescription>
           </UiCardHeader>
           <UiCardContent>
-            <DashboardRecentSales />
+            <DashboardRecentSales :customerData="customerData" />
           </UiCardContent>
         </UiCard>
       </div>
