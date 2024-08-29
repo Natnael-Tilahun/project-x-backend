@@ -42,10 +42,10 @@ const onSubmit = form.handleSubmit((values: any) => {
     <UiTabs
       default-value="roleDetails"
       :model-value="activeTab"
-      class="w-full flex border-[1px] rounded-lg h-screen"
+      class="w-full flex border dark:border-gray-700 rounded-lg h-screen bg-background p-0"
     >
       <UiTabsList
-        class="flex bg-secondary h-screen justify-start items-start w-fit flex-col"
+        class="flex bg-secondary h-screen justify-start items-start w-fit flex-col border dark:border-gray-700 p-0"
       >
         <UiTabsTrigger
           value="roleDetails"
@@ -69,10 +69,10 @@ const onSubmit = form.handleSubmit((values: any) => {
 
       <UiTabsContent
         value="roleDetails"
-        class="text-sm md:text-base p-6 basis-full"
+        class="text-sm md:text-base p-8 basis-full"
       >
         <form @submit="onSubmit">
-          <div class="grid grid-cols-2 gap-6">
+          <div class="grid grid-cols-2 gap-6 p-6 border rounded-lg">
             <FormField v-slot="{ componentField }" name="permissionName">
               <FormItem>
                 <FormLabel> Permission Name </FormLabel>

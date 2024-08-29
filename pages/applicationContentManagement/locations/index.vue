@@ -193,7 +193,7 @@ const onSubmit = form.handleSubmit(
       <h1 class="md:text-2xl text-lg font-medium">Current Locations</h1>
       <p class="text-sm text-muted-foreground">List of added locations.</p>
     </div>
-    <div class="w-full gap-4">
+    <UiCard class="w-full gap-4 p-6">
       <div v-if="locations.length === 0">
         <p class="text-gray-500">No locations currently available.</p>
       </div>
@@ -202,18 +202,20 @@ const onSubmit = form.handleSubmit(
         type="single"
         default-value="branches"
         collapsible
-        className="w-full"
+        className="w-full space-y-4"
       >
         <UiAccordionItem key="branches" value="branches">
-          <UiAccordionTrigger>Branches</UiAccordionTrigger>
-          <UiAccordionContent>
+          <UiAccordionTrigger class="w-full bg-secondary p-4 rounded-lg"
+            >Branches</UiAccordionTrigger
+          >
+          <UiAccordionContent class="w-full py-6">
             <div
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full"
             >
               <div v-for="(location, index) in locations" :key="index">
                 <UiCard
                   v-if="location.type === 'branch'"
-                  class="flex flex-col p-4 border rounded-lg shadow-md"
+                  class="flex flex-col p-4 border rounded-lg shadow-md bg-secondary"
                 >
                   <div class="flex items-center justify-between w-full mb-2">
                     <div class="flex items-center">
@@ -242,15 +244,17 @@ const onSubmit = form.handleSubmit(
           </UiAccordionContent>
         </UiAccordionItem>
         <UiAccordionItem key="atm" value="atm">
-          <UiAccordionTrigger>ATMs</UiAccordionTrigger>
-          <UiAccordionContent>
+          <UiAccordionTrigger class="w-full bg-secondary p-4 rounded-lg"
+            >ATMs</UiAccordionTrigger
+          >
+          <UiAccordionContent class="w-full py-6">
             <div
               class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 w-full"
             >
               <div v-for="(location, index) in locations" :key="index">
                 <UiCard
                   v-if="location.type === 'atm'"
-                  class="flex flex-col p-4 border rounded-lg shadow-md"
+                  class="flex flex-col p-4 border rounded-lg shadow-md bg-secondary"
                 >
                   <div class="flex items-center justify-between w-full mb-2">
                     <div class="flex items-center">
@@ -276,6 +280,6 @@ const onSubmit = form.handleSubmit(
           </UiAccordionContent>
         </UiAccordionItem>
       </UiAccordion>
-    </div>
+    </UiCard>
   </div>
 </template>

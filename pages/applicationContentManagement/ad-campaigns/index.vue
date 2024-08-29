@@ -37,11 +37,11 @@ const onSubmit = form.handleSubmit(
         description: values.description,
         image: imageUrl,
       });
+      form.resetForm(); // Reset the form after submission
       toast({
         title: "Ad Campaign Added",
         description: "Ad campaign added successfully",
       });
-      form.resetForm(); // Reset the form after submission
     } catch (err) {
       console.error("Error adding Ad Campaign:", err);
     } finally {
@@ -138,7 +138,9 @@ const onSubmit = form.handleSubmit(
       <h1 class="md:text-2xl text-lg font-medium">Current Ad Campaigns</h1>
       <p class="text-sm text-muted-foreground">List of ad campaigns.</p>
     </div>
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div
+      class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6 w-full border rounded-lg bg-background"
+    >
       <template v-if="campaigns.length === 0">
         <p class="text-gray-500">No ad campaigns currently available.</p>
       </template>
@@ -146,7 +148,7 @@ const onSubmit = form.handleSubmit(
         <UiCard
           v-for="(campaign, index) in campaigns"
           :key="index"
-          class="flex flex-col p-2 border rounded-lg shadow-md h-56"
+          class="flex flex-col p-2 border rounded-lg shadow-md h-56 bg-secondary"
         >
           <h2 class="font-semibold text-sm">{{ campaign.title }}</h2>
           <!-- Adjusted font size -->

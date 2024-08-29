@@ -5,6 +5,24 @@ import OpenSidebarIcon from "~/components/layout/sidebar/OpenSidebarIcon.vue";
 import CloseSidebarIcon from "~/components/layout/sidebar/CloseSidebarIcon.vue";
 
 const LOCAL_STORAGE_THEME_KEY = "theme";
+const isDarkMode = ref(false);
+
+// Load theme from local storage
+onMounted(() => {
+  const savedTheme = localStorage.getItem(LOCAL_STORAGE_THEME_KEY);
+  isDarkMode.value = savedTheme === "dark";
+  document.body.classList.toggle("dark", isDarkMode.value);
+});
+
+// Toggle theme function
+const toggleTheme = () => {
+  isDarkMode.value = !isDarkMode.value;
+  localStorage.setItem(
+    LOCAL_STORAGE_THEME_KEY,
+    isDarkMode.value ? "dark" : "light"
+  );
+  document.body.classList.toggle("dark", isDarkMode.value);
+};
 
 const route = useRoute();
 const fullPath = ref(route.fullPath);
@@ -33,28 +51,6 @@ function generateLink(index: any) {
   return path === "/" ? path : `/${path}`;
 }
 
-// const colorMode = useColorMode(); // Set the initial color mode
-
-// const setTheme = (newTheme: any) => {
-//   localStorage.setItem(LOCAL_STORAGE_THEME_KEY, newTheme);
-//   colorMode.value = newTheme;
-// };
-
-// const toggleTheme = () => {
-//   // colorMode.value = colorMode.value === "light" ? "dark" : "light";
-//   if (colorMode.value === "dark") {
-//     colorMode.value = "light";
-//     setTheme("light");
-//     // document.body.classList.add("dark");
-//   } else {
-//     colorMode.value = "dark";
-//     setTheme("dark");
-//     // document.body.classList.remove("dark");
-//   }
-// };
-
-// console.log("colorMode", colorMode.value);
-
 const isSidebarCollapsed = useSidebarCollapsed();
 
 const toggleSidebar = () => {
@@ -69,21 +65,14 @@ const closeMenuNav = () => {
 
 <template>
   <div
+    :class="{ dark: isDarkMode }"
     class="w-full min-h-screen bg-background grid grid-cols-12 lg:grid-cols-9 xl:grid-cols-7"
-    :class="[
-      {
-        ' relative h-screen  w-full': !isSidebarCollapsed,
-      },
-      {
-        ' static  w-full': isSidebarCollapsed,
-      },
-    ]"
   >
     <!-- ' hidden  border-4 border-white   md:backdrop md:w-[250px]' -->
     <!-- 'text-green-300 w-2/3  border-4 border-white z-50 absolute top-0 md:block  md:backdrop md:w-[250px] ' -->
     <!-- Page Sidebar -->
     <Sidebar
-      class="md:col-span-3 col-span-12 md:static shadow-none lg:col-span-2 xl:col-span-1"
+      class="md:col-span-3 col-span-12 md:static shadow-none lg:col-span-2 xl:col-span-1 bg-popover"
       :class="[
         {
           'hidden col-span-12  md:block xl:col-span-1  md:col-span-3':
@@ -110,7 +99,7 @@ const closeMenuNav = () => {
       ]"
     >
       <!-- Page Header -->
-      <div class="border-b shadow-none bg-background">
+      <div class="border-b shadow-none bg-popover text-popover-foreground">
         <div class="flex h-16 items-center px-3 md:px-8">
           <!-- <DashboardMainNav class="mx-6" /> -->
           <div class="flex items-center gap-3 md:gap-2">
@@ -138,21 +127,27 @@ const closeMenuNav = () => {
 
           <div class="ml-auto flex items-center space-x-2 md:space-x-10">
             <DashboardSearch />
-            <!-- <div class="flex">
+            <UiButton
+              variant="ghost"
+              size="icon"
+              @click="toggleTheme"
+              class="bg-primary text-primary-foreground hover:bg-gray-300 dark:bg-gray-500 dark:text-white hover:dark:bg-gray-700 rounded-full"
+            >
               <Icon
                 name="tdesign:mode-dark"
                 size="22"
-                @click="toggleTheme"
-                v-if="colorMode.value === 'dark'"
+                v-if="!isDarkMode"
+                class="h-[1.2rem] w-[1.2rem] transition-all"
               ></Icon>
               <Icon
                 size="22"
                 name="material-symbols:light-mode-outline"
-                @click="toggleTheme"
-                v-else="colorMode.value === 'light'"
+                className="bg-slate-200"
+                v-else="isDarkMode"
+                class="h-[1.2rem] w-[1.2rem] transition-all"
               >
               </Icon>
-            </div> -->
+            </UiButton>
             <DashboardUserNav />
           </div>
         </div>
@@ -169,6 +164,6 @@ const closeMenuNav = () => {
 </template>
 <style scoped>
 .router-link-active {
-  @apply font-light text-primary bg-popover ml-1;
+  @apply font-light text-primary ml-1;
 }
 </style>

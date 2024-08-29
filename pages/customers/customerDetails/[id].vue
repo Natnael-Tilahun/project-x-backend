@@ -198,7 +198,7 @@ const searchCoreAccountHandler = async () => {
     <UiCard class="w-full p-6">
       <UiTabs default-value="profile" class="space-y-0 w-full">
         <UiTabsList
-          class="w-full bg-white flex justify-start py-7 px-0 border-[1px]"
+          class="w-full bg-backgroung flex justify-start py-7 px-0 border-[1px]"
         >
           <UiTabsTrigger
             value="profile"
