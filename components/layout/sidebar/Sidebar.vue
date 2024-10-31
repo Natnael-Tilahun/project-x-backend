@@ -132,13 +132,13 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
   },
-  // {
-  //   title: "Integrations",
-  //   icon: "material-symbols:partner-exchange-outline-rounded",
-  //   link: "/integrations",
-  //   size: "22",
-  //   showDropdown: false,
-  // },
+  {
+    title: "Integrations",
+    icon: "material-symbols:partner-exchange-outline-rounded",
+    link: "/integrations",
+    size: "22",
+    showDropdown: false,
+  },
   {
     title: "Application Content Management",
     icon: "material-symbols:create-new-folder",

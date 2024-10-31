@@ -80,9 +80,6 @@ const refetch = async () => {
       </template>
     </UiDataTable>
   </div>
-  <!-- <div v-else-if="data && !isError && data?.length <= 0">
-    <UiNoResultFound title="Sorry, No customer found." />
-  </div> -->
   <div v-if="isError">
     <UiErrorMessage :retry="refetch" title="Something went wrong." />
   </div>

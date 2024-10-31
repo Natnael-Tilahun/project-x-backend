@@ -45,14 +45,11 @@ interface Permission {
   selected?: boolean
 }
 
-
-
 enum Gender {
   Male = 'Male',
   Female = 'Female',
   None = 'None'
 }
-
 
 enum Status {
   ACTIVE = 'Active',
@@ -108,7 +105,6 @@ interface Profile {
   lastName?: string
   phone?: string
 }
-
 
 interface Customer {
   id: string;
@@ -208,4 +204,156 @@ interface Integration {
   paymentErrorTemplate: string
   integrationCategory: string
   paymentSuccessTemplate: string
+}
+
+enum Auth {
+  NONE = "NONE",
+  BASIC = "BASIC",
+  BEARER = "BEARER",
+  OAUTH = "OAUTH"
+}
+
+enum HttpMethod {
+  POST = "POST",
+  GET = "GET",
+  PUT = "PUT",
+  PATCH = "PATCH",
+  OPTIONS = "OPTIONS",
+  NONE = "NONE"
+}
+
+enum IntegrationType {
+  JSON = "JSON",
+  SOAP = "SOAP",
+  XML = "XML",
+  NONE = "NONE"
+}
+
+interface ApiOperation {
+  id: string
+  operationName: string
+  httpMethod: HttpMethod
+  endpointPath: string
+  requestBodyTemplate?: string
+  responseOutputs?: []
+  requestInputs?: []
+  integrationOperations?: string
+  apiIntegration?: ApiIntegration
+}
+
+interface ApiIntegration {
+  id: string
+  name: string
+  url: string
+  type: IntegrationType
+  auth: Auth
+  description?: string
+  version?: string
+  timeout?: number
+  retryRetries?: number
+  retryDelay?: number
+  apiOperations: [ApiOperation]
+}
+
+enum ResponseScope {
+  RESPONSE = "RESPONSE",
+  HEADER = "HEADER",
+  ERROR = "ERROR",
+  NONE = "NONE"
+}
+
+enum TransferCoreMapping {
+  AMOUNT = "AMOUNT",
+  CREDIT_ACCOUNT = "CREDIT_ACCOUNT",
+  REASON = "REASON",
+  NONE = "NONE"
+}
+
+enum OperatorToCompareValue {
+  EQUAL_TO = "EQUAL_TO",
+  NOT_EQUAL_TO = "NOT_EQUAL_TO",
+  OBJECT_ = "OBJECT_",
+  OBJECT_NOT_EQUAL_TO = "OBJECT_NOT_EQUAL_TO",
+  GREATER_THAN = "GREATER_THAN",
+  LESS_THAN = "LESS_THAN",
+  GREATER_THAN_OR_EQUAL_TO = "GREATER_THAN_OR_EQUAL_TO",
+  LESS_THAN_OR_EQUAL_TO = "LESS_THAN_OR_EQUAL_TO",
+  NONE = "NONE"
+}
+
+enum DataType {
+  COLLECTION = "COLLECTION",
+  STRING = "STRING",
+  INT = "INT",
+  LONG = "LONG",
+  DOUBLE = "DOUBLE",
+  BOOLEAN = "BOOLEAN",
+  DATETIME = "DATETIME",
+  NONE = "NONE"
+}
+
+interface ResponseOutput {
+  id: string
+  outputName: string
+  dataType: DataType
+  responseValuePath: string
+  responseScope: ResponseScope
+  transferCoreMapping: TransferCoreMapping
+  isLogicField: boolean
+  constantValueToCompare: string
+  operatorToCompareValue: OperatorToCompareValue
+  isRequired: boolean
+  isVisibleForUser: boolean
+  apiOperation: ApiOperation
+}
+
+enum ValueSource {
+  USER_INPUT = "USER_INPUT",
+  PAYMENT_DETAIL = "PAYMENT_DETAIL",
+  TRANSACTION_ID = "TRANSACTION_ID",
+  TRANSACTION_DETAILS = "TRANSACTION_DETAILS",
+  TRANSACTION_AMOUNT = "TRANSACTION_AMOUNT",
+  CUSTOMER_PHONE = "CUSTOMER_PHONE",
+  CUSTOMER_EMAIL = "CUSTOMER_EMAIL",
+  CUSTOMER_ACCOUNT = "CUSTOMER_ACCOUNT",
+  NONE = "NONE",
+  CUSTOMER = "CUSTOMER",
+  TRANSACTION = "TRANSACTION",
+  ACCOUNT = "ACCOUNT",
+  PROFILE = "PROFILE"
+}
+
+enum InputType {
+  HEADER = "HEADER",
+  BODY = "BODY",
+  QUERY = "QUERY",
+  PATH = "PATH",
+  NONE = "NONE"
+}
+
+interface IntegrationFieldMapping {
+  id: string
+  sourceType: ValueSource
+  dataKey: string
+}
+
+interface RequestInput {
+  id: string
+  inputName: string
+  inputType: InputType
+  dataType: DataType
+  testValue?: string
+  defaultValue?: string
+  valueSource?: ValueSource
+  isEncoded?: boolean
+  maxLength?: number 
+  minLength?: number
+  minValue?: string
+  maxValue?: string
+  validationPattern?: string
+  transformationRule?: string
+  isRequired?: boolean
+  isHidden?: boolean
+  apiOperation?: ApiOperation
+  integrationFieldMappings?: [IntegrationFieldMapping]
 }

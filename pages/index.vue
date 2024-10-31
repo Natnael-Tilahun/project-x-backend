@@ -8,21 +8,29 @@ console.log("hjkjk: ", hasPermissions("ALL_FUNCTONS"));
 const { getRoles } = useRoles();
 const { getMerchants } = useMerchants();
 const { getCustomers } = useCustomers();
+const { getIntegrations } = useIntegrations();
 
 const isLoading = ref(true);
 const roleData = ref<Role[]>([]);
 const merchantData = ref<Merchant[]>([]);
 const customerData = ref<Customer[]>([]);
-
+const integrationData = ref<Integration[]>([]);
 const roleNumber = computed(() => roleData.value.length);
 const merchantNumber = computed(() => merchantData.value.length);
 const customerNumber = computed(() => customerData.value.length);
+const integrationNumber = computed(() => integrationData.value.length);
 
 try {
-  [roleData.value, merchantData.value, customerData.value] = await Promise.all([
+  [
+    roleData.value,
+    merchantData.value,
+    customerData.value,
+    integrationData.value,
+  ] = await Promise.all([
     getRoles(),
     getMerchants(),
     getCustomers(),
+    getIntegrations(),
   ]);
 } catch (error) {
   console.error("Error fetching data:", error);
@@ -147,8 +155,8 @@ watch(
             </svg>
           </UiCardHeader>
           <UiCardContent>
-            <div class="text-2xl font-bold">15</div>
-            <p class="text-xs text-muted-foreground">+201 since last hour</p>
+            <div class="text-2xl font-bold">{{ integrationNumber }}</div>
+            <p class="text-xs text-muted-foreground">+10 since last month</p>
           </UiCardContent>
         </UiCard>
       </div>

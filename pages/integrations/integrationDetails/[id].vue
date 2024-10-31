@@ -15,13 +15,8 @@ import {
 import { columns } from "~/components/operations/columns";
 
 const route = useRoute();
-const {
-  getIntegrationById,
-  updateIntegration,
-  createNewIntegration,
-  isSubmitting,
-  isLoading,
-} = useIntegrations();
+const { getIntegrationById, updateIntegration, isSubmitting, isLoading } =
+  useIntegrations();
 
 const openItems = ref("serviceDefinition");
 const fullPath = ref(route.fullPath);
@@ -33,10 +28,11 @@ const data = ref<ApiIntegration>();
 const apiOperationsData = ref<ApiOperation>();
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
+integrationId.value = pathSegments.value[pathLength - 1];
 const activeTab = route.query.activeTab as string;
 openItems.value = activeTab || "serviceDefinition";
 
-const integrationName = ref<string>("Create New Integration");
+const operationName = ref<string>("Configure Operations");
 
 // Watch for changes in the route's query parameters
 watch(
@@ -55,25 +51,15 @@ const form = useForm<ApiIntegration>({
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     loading.value = true;
-    data.value = await createNewIntegration(values); // Call your API function to fetch profile
+    data.value = await updateIntegration(values.id, values); // Call your API function to fetch profile
     form.setValues(data.value);
-    integrationId.value = data.value.id;
-    integrationName.value = data.value.name;
-    // openItems.value = "newOperation";
-    navigateTo({
-      path: `/integrations/integrationDetails/${data.value.id}`,
-      query: {
-        activeTab: "operations",
-      },
-    });
-
-    console.log("Created Integration data; ", data.value);
+    openItems.value = "operations";
     toast({
-      title: "Integration Created",
-      description: "Integration created successfully",
+      title: "Integration Updated",
+      description: "Integration updated successfully",
     });
   } catch (err: any) {
-    console.error("Error creating integration:", err);
+    console.error("Error updating integration:", err);
     isError.value = true;
   } finally {
     loading.value = false;
@@ -83,6 +69,41 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 function splitPath(path: any) {
   return path.split("/").filter(Boolean);
 }
+
+const displayApiDataOnLabel = (data: any) => {
+  if (data == null || data == "") {
+    return "-";
+  }
+  if (data == false) {
+    return "false";
+  }
+  if (data == true) {
+    return "true";
+  }
+  return data; // Default case if customerActivated is undefined or any other value
+};
+
+const getIntegrationData = async () => {
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    data.value = await getIntegrationById(integrationId.value); // Call your API function to fetch roles
+    form.setValues(data.value);
+  } catch (err) {
+    console.error("Error fetching integrations:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
+
+getIntegrationData();
+
+const refetch = async () => {
+  await getIntegrationData();
+};
+
 </script>
 
 <template>
@@ -91,12 +112,14 @@ function splitPath(path: any) {
       class="flex flex-col justify-center items-center gap-3 border p-5 bg-background rounded-xl"
     >
       <h1 class="md:text- items-center font-bold">
-        {{ integrationName }}
+        {{ data?.name }}
       </h1>
     </div>
 
-    <UiTabs v-model="openItems" class="py- w-full">
-      <UiTabsList class="w-full flex justify-start px-0 pt-5 gap-2">
+    <UiTabs v-model="openItems" class="w-full space-y-0">
+      <UiTabsList
+        class="w-full overflow-x-scroll flex justify-start gap-2 px-0"
+      >
         <UiTabsTrigger
           value="serviceDefinition"
           @click="
@@ -111,6 +134,52 @@ function splitPath(path: any) {
         >
           Service Definition
         </UiTabsTrigger>
+        <UiTabsTrigger
+          value="operations"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'operations',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-2xl"
+        >
+          Operations
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="configureOperations"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'configureOperations',
+              },
+            })
+          "
+          :disabled="openItems != 'configureOperations'"
+          :class="openItems == 'configureOperations' ? '' : 'hidden'"
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-2xl"
+        >
+          {{ operationName }}
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="newOperation"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'newOperation',
+              },
+            })
+          "
+          :disabled="openItems != 'newOperation'"
+          :class="openItems == 'newOperation' ? '' : 'hidden'"
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-2xl"
+        >
+          New Operation
+        </UiTabsTrigger>
       </UiTabsList>
 
       <UiTabsContent
@@ -119,6 +188,24 @@ function splitPath(path: any) {
       >
         <form @submit="onSubmit">
           <div class="grid grid-cols-2 gap-6">
+            <FormField
+              :model-value="data?.id"
+              v-slot="{ componentField }"
+              name="id"
+            >
+              <FormItem>
+                <FormLabel> ID </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    disabled
+                    placeholder="CBE050202"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
             <FormField
               :model-value="data?.name"
               v-slot="{ componentField }"
@@ -270,26 +357,24 @@ function splitPath(path: any) {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <div class="col-span-full">
-              <FormField
-                :model-value="data?.description"
-                v-slot="{ componentField }"
-                name="description"
-              >
-                <FormItem>
-                  <FormLabel> Description </FormLabel>
-                  <FormControl>
-                    <UiTextarea
-                      placeholder="Enter Description"
-                      class="resize-y col-span-full"
-                      rows="0"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-            </div>
+            <FormField
+              :model-value="data?.description"
+              v-slot="{ componentField }"
+              name="description"
+            >
+              <FormItem>
+                <FormLabel> Description </FormLabel>
+                <FormControl>
+                  <UiTextarea
+                    placeholder="Enter Description"
+                    class="resize-y"
+                    rows="0"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="loading"
@@ -307,7 +392,7 @@ function splitPath(path: any) {
                   class="mr-2 h-4 w-4 animate-spin"
                 ></Icon>
 
-                Save
+                Update
               </UiButton>
             </div>
           </div>
@@ -316,7 +401,7 @@ function splitPath(path: any) {
 
       <UiTabsContent
         value="operations"
-        class="text-base bg-white p-6 rounded-lg"
+        class="text-base bg-background p-6 rounded-lg"
       >
         <div v-if="isLoading" class="py-10 flex justify-center w-full">
           <UiLoading />
@@ -346,7 +431,7 @@ function splitPath(path: any) {
 
       <UiTabsContent
         value="configureOperations"
-        class="text-base bg-background py-6 rounded-lg"
+        class="text-base bg-background py-0 rounded-lg"
       >
         <OperationsConfigurations />
       </UiTabsContent>
@@ -360,3 +445,5 @@ function splitPath(path: any) {
     </UiTabs>
   </div>
 </template>
+
+<style lang="css" scoped></style>

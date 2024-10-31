@@ -4,6 +4,7 @@ import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import UserRolesDataTableRowActionsVue from "./DataTableRowActions.vue";
+import { NuxtLink } from "#components";
 
 export const columns: ColumnDef<Role>[] = [
   {
@@ -26,8 +27,12 @@ export const columns: ColumnDef<Role>[] = [
   },
   {
     accessorKey: "name",
-    header: "Roll Name",
-  },
+    header: "Role Name",
+    cell: ({ row }) => {
+      const route = useRoute();
+      const roleName = row.getValue("name");
+      return roleName ? h(NuxtLink, {  class: "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full", to: `${route.path}/roleDetails/${roleName}` }, roleName) : h("p", "-");
+    },  },
   {
     accessorKey: "description",
     header: "Role Description",

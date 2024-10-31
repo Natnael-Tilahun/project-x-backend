@@ -4,6 +4,7 @@ import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import MerchantsDataTableRowActionsVue from "./DataTableRowActions.vue";
+import { NuxtLink } from "#components";
 
 export const columns: ColumnDef<Merchant>[] = [
   {
@@ -25,23 +26,13 @@ export const columns: ColumnDef<Merchant>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "merchantId",
-    header: "Merchant Id",
-    cell: ({ row }) => {
-      const merchantId = row.getValue("merchantId");
-      return merchantId ? h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("merchantId")
-      ) : h("p", "-");
-    },
-  },
-  {
     accessorKey: "businessName",
     header: "Business Name",
     cell: ({ row }) => {
+      const merchantId = row.original.merchantId;
+      const route = useRoute();
       const businessName = row.getValue("businessName");
-      return businessName ? h("p", businessName) : h("p", "-");
+      return businessName ? h(NuxtLink, {  class: "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full", to: `${route.path}/merchantDetails/${merchantId}` }, businessName) : h("p", "-");
     },
   },
   {

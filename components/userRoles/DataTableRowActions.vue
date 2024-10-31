@@ -6,6 +6,10 @@ const { deleteRoleById, getRoles, isLoading } = useRoles();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const { setIsUpdated } = usePagesInfoStore();
+const openEditModal = ref(false);
+const setOpenEditModal = (value: boolean) => {
+  openEditModal.value = value;
+};
 
 const route = useRoute();
 interface DataTableRowActionsProps<TData> {
@@ -37,6 +41,7 @@ async function deleteRole(id: string) {
   } finally {
     isLoading.value = false;
     loading.value = false;
+    setOpenEditModal(false);
   }
 }
 </script>
@@ -60,13 +65,36 @@ async function deleteRole(id: string) {
       <UiDropdownMenuItem>Deactivate</UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
       <UiDropdownMenuSeparator />
-      <UiDropdownMenuItem
-        @click="deleteRole(row.original.name)"
-        class="text-red-500"
-      >
+      <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-500">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
+
+  <UiAlertDialog :open="openEditModal" :onOpenChange="setOpenEditModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          This action cannot be undone. This will permanently delete the role
+          and remove your data from our servers.
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenEditModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction @click="deleteRole(row.original.id)">
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="isLoading"
+            :disabled="isLoading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
 </template>

@@ -4,6 +4,7 @@ import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import CustomerDataTableRowActionsVue from "./DataTableRowActions.vue";
+import { NuxtLink } from "#components";
 
 export const columns: ColumnDef<Customer>[] = [
   {
@@ -25,23 +26,13 @@ export const columns: ColumnDef<Customer>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "id",
-    header: "Id",
-    cell: ({ row }) => {
-      const id = row.getValue("id");
-      return id ? h(
-        "div",
-        { class: "w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("id")
-      ) : h("p", "-");
-    },
-  },
-  {
     accessorKey: "fullName",
     header: "Full Name",
     cell: ({ row }) => {
-      const coreCustomerId = row.getValue("fullName");
-      return coreCustomerId ? h("p", coreCustomerId) : h("p", "-");
+      const id = row.original.id;
+      const route = useRoute();
+      const fullName = row.getValue("fullName");
+      return fullName ? h(NuxtLink, {  class: "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full", to: `${route.path}/customerDetails/${id}` }, fullName) : h(NuxtLink, {  class: "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full", to: `${route.path}/customerDetails/${id}` }, "No Name");
     },
   },
   {
