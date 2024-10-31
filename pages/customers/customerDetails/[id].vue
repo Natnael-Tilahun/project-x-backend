@@ -593,7 +593,7 @@ const searchCoreAccountHandler = async () => {
                           <p>{{ coreData?.customerId || "Not Setted" }}</p>
                           <Icon
                             name="material-symbols:content-copy"
-                            class="h-5 w-5 text-primary hover:"
+                            class="h-5 w-5 text-primary"
                           ></Icon>
                         </div>
                       </UiTooltipTrigger>

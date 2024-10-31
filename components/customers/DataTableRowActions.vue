@@ -4,6 +4,10 @@ import { toast } from "../ui/toast";
 const { deleteCustomerById, isLoading } = useCustomers();
 const loading = ref(isLoading.value);
 const isError = ref(false);
+const openEditModal = ref(false);
+const setOpenEditModal = (value: boolean) => {
+  openEditModal.value = value;
+};
 
 const route = useRoute();
 interface DataTableRowActionsProps<TData> {
@@ -33,6 +37,7 @@ async function deleteCustomer(id: string) {
   } finally {
     isLoading.value = false;
     loading.value = false;
+    setOpenEditModal(false);
   }
 }
 </script>
@@ -55,13 +60,36 @@ async function deleteCustomer(id: string) {
       <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
       <UiDropdownMenuSeparator />
-      <UiDropdownMenuItem
-        @click="deleteCustomer(row.original.id)"
-        class="text-red-600"
-      >
+      <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
+
+  <UiAlertDialog :open="openEditModal" :onOpenChange="setOpenEditModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          This action cannot be undone. This will permanently delete the
+          customer and remove your data from our servers.
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenEditModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction @click="deleteCustomer(row.original.id)">
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="isLoading"
+            :disabled="isLoading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
 </template>

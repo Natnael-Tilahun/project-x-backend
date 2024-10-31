@@ -25,12 +25,12 @@ const toggleTheme = () => {
 };
 
 const route = useRoute();
-const fullPath = ref(route.fullPath);
+const fullPath = ref(route.path);
 const pathSegments = ref([]);
 pathSegments.value = splitPath(fullPath.value);
 
 watch(
-  () => route.fullPath,
+  () => route.path,
   (newVal) => {
     fullPath.value = newVal;
     pathSegments.value = splitPath(fullPath.value);

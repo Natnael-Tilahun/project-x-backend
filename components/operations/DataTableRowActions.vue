@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
-const { deleteMerchant, isLoading } = useMerchants();
+import { useOperations } from "~/composables/useOperations";
+const { deleteOperation, isLoading } = useOperations();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const openEditModal = ref(false);
@@ -15,24 +16,30 @@ interface DataTableRowActionsProps<TData> {
 }
 const props = defineProps<DataTableRowActionsProps<any>>();
 
-function viewCustomerDetail(id: string) {
-  navigateTo(`/merchants/merchantDetails/${id}`);
+function viewIntegrationDetail(id: string) {
+  navigateTo({
+    path: route.path,
+    query: {
+      activeTab: "configureOperations",
+      operationId: id,
+    },
+  });
   navigator.clipboard.writeText(id);
 }
 
-async function deleteMerchants(id: string) {
+async function deleteOperationHandler(id: string) {
   try {
     isLoading.value = true;
     loading.value = true;
-    await deleteMerchant(id); // Call your API function to fetch roles
-    console.log("Merchant deleted successfully");
+    await deleteOperation(id); // Call your API function to fetch roles
+    console.log("Operation deleted successfully");
     toast({
-      title: "Merchant deleted successfully",
+      title: "Operation deleted successfully",
     });
     // Reload the window after deleting the role
     window.location.reload();
   } catch (err) {
-    console.error("Error deleting merchant:", err);
+    console.error("Error deleting operations:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
@@ -54,7 +61,7 @@ async function deleteMerchants(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiDropdownMenuItem @click="viewCustomerDetail(row.original.merchantId)"
+      <UiDropdownMenuItem @click="viewIntegrationDetail(row.original.id)"
         >View</UiDropdownMenuItem
       >
       <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
@@ -73,14 +80,14 @@ async function deleteMerchants(id: string) {
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
           This action cannot be undone. This will permanently delete the
-          merchant and remove your data from our servers.
+          operation and remove your data from our servers.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>
         <UiAlertDialogCancel @click="setOpenEditModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="deleteMerchants(row.original.id)">
+        <UiAlertDialogAction @click="deleteOperationHandler(row.original.id)">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"

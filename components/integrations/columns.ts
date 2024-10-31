@@ -4,8 +4,9 @@ import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import IntegrationsDataTableRowActionsVue from "./DataTableRowActions.vue";
+import { NuxtLink } from "#components";
 
-export const columns: ColumnDef<Integration>[] = [
+export const columns: ColumnDef<ApiIntegration>[] = [
   {
     id: "select",
     header: ({ table }) =>
@@ -25,23 +26,13 @@ export const columns: ColumnDef<Integration>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "id",
-    header: "Id",
+    accessorKey: "name",
+    header: "Name",
     cell: ({ row }) => {
-      const id = row.getValue("id");
-      return id ? h(
-        "div",
-        { class: "w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("id")
-      ) : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "companyName",
-    header: "Company Name",
-    cell: ({ row }) => {
-      const companyName = row.getValue("companyName");
-      return companyName ? h("p", companyName) : h("p", "-");
+      const route = useRoute();
+      const name = row.getValue("name");
+      return name ? h(NuxtLink, {  class: "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full", to: `${route.path}/integrationDetails/${row.original.id}` }, name) : h("p", "-");
+
     },
   },
   {
@@ -53,69 +44,63 @@ export const columns: ColumnDef<Integration>[] = [
     },
   },
   {
-    accessorKey: "integrationName",
-    header: "integrationName",
+    accessorKey: "url",
+    header: "URL",
     cell: ({ row }) => {
-      const integrationName = row.getValue("integrationName");
-      return integrationName ? h("p", integrationName) : h("p", "-");
+      const url = row.getValue("url");
+      return url ? h("p", url) : h("p", "-");
     },
   },
   {
-    accessorKey: "isDraft",
-    header: "Is Draft",
+    accessorKey: "type",
+    header: "Type",
     cell: ({ row }) => {
-      const isDraft = row.getValue("isDraft");
-      return isDraft ? h("p", isDraft) : h("p", "-");
+      const type = row.getValue("type");
+      return type ? h("p", type) : h("p", "-");
     },
   },
   {
-    accessorKey: "enabled",
-    header: "Enabled",
+    accessorKey: "auth",
+    header: "Auth", 
     cell: ({ row }) => {
-      const enabled = row.getValue("enabled");
-      return enabled ? h("p", enabled) : h("p", "-");
+      const auth = row.getValue("auth");
+      return auth ? h("p", auth) : h("p", "-");
     },
   },
   {
-    accessorKey: "accountNumber",
-    header: "Account Number",
+    accessorKey: "version",
+    header: "Version",
     cell: ({ row }) => {
-      const accountNumber = row.getValue("accountNumber");
-      return accountNumber ? h(
+      const version = row.getValue("version");
+      return version ? h(
         "div",
         { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("accountNumber")
+        row.getValue("version")
       ) : h("p", "-");
     },
   },
   {
-    accessorKey: "currencyCode",
-    header: "Currency Code",
+    accessorKey: "timeout",
+    header: "Timeout",
     cell: ({ row }) => {
-      const currencyCode = row.getValue("currencyCode");
-      return currencyCode ? h("p", currencyCode) : h("p", "-");
+      const timeout = row.getValue("timeout");
+      return timeout ? h("p", timeout) : h("p", "-");
     },
   },
   {
-    accessorKey: "integrationCategory",
-    header: "Integration Category",
+    accessorKey: "retryRetries",
+    header: "Retry Retries",
     cell: ({ row }) => {
-      const integrationCategory = row.getValue("integrationCategory");
-      return integrationCategory ? h("p", integrationCategory) : h("p", "-");
+      const retryRetries = row.getValue("retryRetries");
+      return retryRetries ? h("p", retryRetries) : h("p", "-");
     },
   },
   {
-    accessorKey: "visiblity", header: "Visiblity",
+    accessorKey: "retryDelay",
+    header: "Retry Delay",
     cell: ({ row }) => {
-      const visiblity = row.getValue("visiblity");
-      return visiblity != null ? h("p", visiblity) : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "confirmRecipientIdentity", header: "Confirm Recipient Identity",
-    cell: ({ row }) => {
-      const confirmRecipientIdentity = row.getValue("confirmRecipientIdentity");
-      return confirmRecipientIdentity != null ? h("p", confirmRecipientIdentity) : h("p", "-");
+      const retryDelay = row.getValue("retryDelay");
+      return retryDelay != null ? h("p", retryDelay) : h("p", "-");
     },
   },
   {
