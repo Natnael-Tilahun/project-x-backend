@@ -42,7 +42,7 @@ operationId.value =
   props.operationIdProps || (route.query.operationId as string) || "";
 formId.value = props.formIdProps || (route.query.formId as string) || "";
 
-const fields = ref<Field[]>(props.fields || []);
+const fields = ref<Field[]>(props?.fields || []);
 const form = useForm<Field>({
   validationSchema: formFieldsFormSchema,
 });
@@ -61,7 +61,7 @@ const getFormData = async () => {
       return;
     }
     const data = await getFormById(formId.value);
-    fields.value = data.fields;
+    fields.value = data.fields || [];
   } catch (err) {
     console.error("Error fetching form fields:", err);
     toast({
@@ -1255,7 +1255,7 @@ watch(
 
     <div
       class="w-full flex justify-center items-center h-20"
-      v-if="fields.length === 0 && !newField"
+      v-if="fields?.length == 0 && !newField"
     >
       No fields
     </div>
