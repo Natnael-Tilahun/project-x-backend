@@ -11,7 +11,7 @@ export const useMenus = () => {
   const getMenus: () => Promise<Menu[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<Menu[]>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/menus`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus`,
         {
           method: "GET",
           headers: {
@@ -45,7 +45,7 @@ export const useMenus = () => {
   const getMenuById: (id: string) => Promise<Menu> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<Menu>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/menus/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus/${id}`,
         {
           method: "GET",
           headers: {
@@ -79,7 +79,7 @@ export const useMenus = () => {
   const createNewMenu: (menuData: any) => Promise<Menu> = async (menuData) => {
     try {
       const { data, pending, error, status } = await useFetch<Menu>(
-          `${runtimeConfig.public.API_BASE_URL}/internal/menus`,
+          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus`,
         {
           method: "POST",
           headers: {
@@ -124,7 +124,7 @@ export const useMenus = () => {
   const updateMenu: (menuId: string, menuData: any) => Promise<Menu> = async (menuId, menuData) => {
     try {
       const { data, pending, error, status } = await useFetch<Menu>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/menus/${menuId}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus/${menuId}`,
         {
           method: "PATCH",
           headers: {
@@ -167,7 +167,7 @@ export const useMenus = () => {
   const deleteMenu: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-          `${runtimeConfig.public.API_BASE_URL}/internal/menus/${id}`,
+          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus/${id}`,
         {
           method: "DELETE",
           headers: {

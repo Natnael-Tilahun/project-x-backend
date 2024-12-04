@@ -16,7 +16,7 @@ export const usePermissions = () => {
   const getPermissions: () => Promise<any> = async () => {
     try {
       // const { data, pending, error, status } = await useFetch<any>(
-      //   `${runtimeConfig.public.API_BASE_URL}/internal/permissions`,
+      //   `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/permissions`,
       //   {
       //     query: {
       //       page: pageNumbers.value,
@@ -32,7 +32,7 @@ export const usePermissions = () => {
 
       const { data, pending, error, status } = await useAsyncData(
         '',
-        () => $fetch(`${runtimeConfig.public.API_BASE_URL}/internal/permissions`,
+        () => $fetch(`${runtimeConfig.public.API_BASE_URL}/api/v1/internal/permissions`,
           {
             params: {
               page: pageNumbers.value,

@@ -9,7 +9,7 @@ export const useCustomers = () => {
   const getCustomers: () => Promise<Customer[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<Customer[]>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/customers/list`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/list`,
         {
           method: "GET",
           headers: {
@@ -43,7 +43,7 @@ export const useCustomers = () => {
   const getCustomerById: (id: string) => Promise<Customer> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<Customer>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/customers/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/${id}`,
         {
           method: "GET",
           headers: {
@@ -77,7 +77,7 @@ export const useCustomers = () => {
   const getCoreCustomerByAccountNumber: (accountNumber: string) => Promise<Customer> = async (accountNumber) => {
     try {
       const { data, pending, error, status } = await useFetch<Customer>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/customers/core/${accountNumber}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/core/${accountNumber}`,
         {
           method: "GET",
           headers: {
@@ -111,7 +111,7 @@ export const useCustomers = () => {
   const searchCustomers: (keyword: string) => Promise<any> = async (keyword) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/customers/search?keyword=${keyword}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/search?keyword=${keyword}`,
         {
           method: "GET",
           headers: {
@@ -141,7 +141,7 @@ export const useCustomers = () => {
   const activateCustomerById: (id: string) => Promise<Customer> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<Customer>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/customers/${id}/activate-customer`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/${id}/activate-customer`,
         {
           method: "POST",
           headers: {
@@ -175,7 +175,7 @@ export const useCustomers = () => {
   const deActivateCustomerById: (id: string) => Promise<Customer> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<Customer>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/customers/${id}/deactivate-customer`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/${id}/deactivate-customer`,
         {
           method: "POST",
           headers: {
@@ -209,7 +209,7 @@ export const useCustomers = () => {
   const linkCoreBankCustomer: (id: string) => Promise<Customer> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<Customer>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/customers/${id}/link-core-bank-customer`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/${id}/link-core-bank-customer`,
         {
           method: "POST",
           headers: {
@@ -243,7 +243,7 @@ export const useCustomers = () => {
   const createNeweCustomer: (customerData: any) => Promise<Customer> = async (customerData) => {
     try {
       const { data, pending, error, status } = await useFetch<Customer>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/customers/create`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/create`,
         {
           method: "POST",
           headers: {
@@ -286,7 +286,7 @@ export const useCustomers = () => {
   const deleteCustomerById: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/customers/delete/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/delete/${id}`,
         {
           method: "DELETE",
           headers: {

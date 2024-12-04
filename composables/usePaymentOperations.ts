@@ -11,7 +11,7 @@ export const usePaymentOperations = () => {
   const getPaymentOperations: () => Promise<PaymentOperation[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<PaymentOperation[]>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/payment-operations`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-operations`,
         {
           method: "GET",
           headers: {
@@ -45,7 +45,7 @@ export const usePaymentOperations = () => {
   const getPaymentOperationById: (id: string) => Promise<PaymentOperation> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<PaymentOperation>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/payment-operations/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-operations/${id}`,
         {
           method: "GET",
           headers: {
@@ -79,7 +79,7 @@ export const usePaymentOperations = () => {
   const createNewPaymentOperation: (operationData: any) => Promise<PaymentOperation> = async (operationData) => {
     try {
       const { data, pending, error, status } = await useFetch<PaymentOperation>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/payment-operations`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-operations`,
         {
           method: "POST",
           headers: {
@@ -124,7 +124,7 @@ export const usePaymentOperations = () => {
   const updatePaymentOperation: (operationId: string, operationData: any) => Promise<PaymentOperation> = async (operationId, operationData) => {
     try {
       const { data, pending, error, status } = await useFetch<PaymentOperation>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/payment-operations/${operationId}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-operations/${operationId}`,
         {
           method: "PATCH",
           headers: {
@@ -168,7 +168,7 @@ export const usePaymentOperations = () => {
   const deletePaymentOperation: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/payment-operations/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-operations/${id}`,
         {
           method: "DELETE",
           headers: {
