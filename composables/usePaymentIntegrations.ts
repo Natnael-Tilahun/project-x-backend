@@ -11,7 +11,7 @@ export const usePaymentIntegrations = () => {
   const getPaymentIntegrations: () => Promise<PaymentIntegration[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<PaymentIntegration[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/payment-integrations`,
         {
           method: "GET",
           headers: {
@@ -45,7 +45,7 @@ export const usePaymentIntegrations = () => {
   const getPaymentIntegrationById: (id: string) => Promise<PaymentIntegration> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<PaymentIntegration>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/payment-integrations/${id}`,
         {
           method: "GET",
           headers: {
@@ -79,7 +79,7 @@ export const usePaymentIntegrations = () => {
   const createNewPaymentIntegration: (paymentIntegrationData: any) => Promise<PaymentIntegration> = async (paymentIntegrationData) => {
     try {
       const { data, pending, error, status } = await useFetch<PaymentIntegration>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/payment-integrations`,
         {
           method: "POST",
           headers: {
@@ -124,7 +124,7 @@ export const usePaymentIntegrations = () => {
   const updatePaymentIntegration: (paymentIntegrationId: string, paymentIntegrationData: any) => Promise<PaymentIntegration> = async (paymentIntegrationId, paymentIntegrationData) => {
     try {
       const { data, pending, error, status } = await useFetch<PaymentIntegration>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations/${paymentIntegrationId}`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/payment-integrations/${paymentIntegrationId}`,
         {
           method: "PATCH",
           headers: {
@@ -167,7 +167,7 @@ export const usePaymentIntegrations = () => {
   const deletePaymentIntegration: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/payment-integrations/${id}`,
         {
           method: "DELETE",
           headers: {

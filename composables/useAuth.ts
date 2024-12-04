@@ -16,7 +16,7 @@ export const useAuth = () => {
   const login = async (user: UserInput) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/auth/sign-in/password`,
+        `${runtimeConfig.public.API_BASE_URL}/auth/sign-in/password`,
         {
           method: "POST",
           body: JSON.stringify(user),
@@ -51,7 +51,7 @@ export const useAuth = () => {
   const getRefreshToken = async () => {
     try {
       const { data, pending, error, status } = await useFetch(
-        `${runtimeConfig.public.API_BASE_URL}/v1/api/auth/refresh-token`,
+        `${runtimeConfig.public.API_BASE_URL}/auth/refresh-token`,
         {
           method: "POST",
           body: {
@@ -94,7 +94,7 @@ export const useAuth = () => {
     console.log("getAuthorities")
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/auth/roles`,
+        `${runtimeConfig.public.API_BASE_URL}/auth/roles`,
         {
           method: "GET",
           headers: {
@@ -134,7 +134,7 @@ export const useAuth = () => {
   const userLoggedIn = async () => {
     if (!authUser.value) {
       const { data, error, status, pending } = await useFetch(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/auth/status`,
+        `${runtimeConfig.public.API_BASE_URL}/auth/status`,
         {
           headers: useRequestHeaders(["cookie"]),
         }
@@ -168,7 +168,7 @@ export const useAuth = () => {
 
     // try {
     //   const { data, pending, error, status } = await useFetch(
-    //     `${runtimeConfig.public.API_BASE_URL}/api/v1/auth/sign-out`,
+    //     `${runtimeConfig.public.API_BASE_URL}/auth/sign-out`,
     //     {
     //       method: "GET",
     //       headers: {
@@ -192,7 +192,7 @@ export const useAuth = () => {
   const getProfile = async () => {
     try {
       const { data, pending, error, status } = await useFetch(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/users/me`,
+        `${runtimeConfig.public.API_BASE_URL}/users/me`,
         {
           method: "GET",
           headers: {

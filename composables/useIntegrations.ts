@@ -11,7 +11,7 @@ export const useIntegrations = () => {
   const getIntegrations: () => Promise<ApiIntegration[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<ApiIntegration[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-integrations`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/api-integrations`,
         {
           method: "GET",
           headers: {
@@ -45,7 +45,7 @@ export const useIntegrations = () => {
   const getIntegrationById: (id: string) => Promise<ApiIntegration> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<ApiIntegration>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-integrations/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/api-integrations/${id}`,
         {
           method: "GET",
           headers: {
@@ -79,7 +79,7 @@ export const useIntegrations = () => {
   const createNewIntegration: (integrationData: any) => Promise<ApiIntegration> = async (integrationData) => {
     try {
       const { data, pending, error, status } = await useFetch<ApiIntegration>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-integrations`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/api-integrations`,
         {
           method: "POST",
           headers: {
@@ -124,7 +124,7 @@ export const useIntegrations = () => {
   const updateIntegration: (integrationId: string, integrationData: any) => Promise<ApiIntegration> = async (integrationId, integrationData) => {
     try {
       const { data, pending, error, status } = await useFetch<ApiIntegration>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-integrations/${integrationId}`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/api-integrations/${integrationId}`,
         {
           method: "PATCH",
           headers: {
@@ -167,7 +167,7 @@ export const useIntegrations = () => {
   const deleteIntegration: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-integrations/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/api-integrations/${id}`,
         {
           method: "DELETE",
           headers: {

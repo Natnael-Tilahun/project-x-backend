@@ -12,7 +12,7 @@ export const useUsers = () => {
   const getUsers: () => Promise<any[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/users/list`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/users/list`,
         {
           method: "GET",
           headers: {

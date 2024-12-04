@@ -15,7 +15,7 @@ export const useRoles = () => {
   const getRoles: () => Promise<Role[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<Role[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/list`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/roles/list`,
         {
           method: "GET",
           headers: {
@@ -42,7 +42,7 @@ export const useRoles = () => {
   const deleteRoleById: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/delete/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/roles/delete/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -74,7 +74,7 @@ export const useRoles = () => {
     console.log("name: ", name)
     try {
       const { data, pending, error, status } = await useFetch<Role>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/${name}/permissions`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/roles/${name}/permissions`,
         {
           method: "GET",
           headers: {
@@ -107,7 +107,7 @@ export const useRoles = () => {
   const createNewRole: (roleDetail: Role) => Promise<Role> = async (roleDetail) => {
     try {
       const { data, pending, error, status } = await useFetch<Role>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/create`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/roles/create`,
         {
           method: "POST",
           headers: {
@@ -146,7 +146,7 @@ export const useRoles = () => {
   const updateRolePermissions: (roleName: string, roleDetail: any) => Promise<Role> = async (roleName, roleDetail) => {
     try {
       const { data, pending, error, status } = await useFetch<Role>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/${roleName}/permissions/update`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/roles/${roleName}/permissions/update`,
         {
           method: "POST",
           headers: {

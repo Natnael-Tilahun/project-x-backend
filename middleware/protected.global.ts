@@ -22,7 +22,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     try {
       // Send a request to your refresh token endpoint
       const { data, pending, error, status } = await useFetch(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/auth/refresh-token`,
+        `${runtimeConfig.public.API_BASE_URL}/auth/refresh-token`,
         {
           method: "POST",
           body: {
