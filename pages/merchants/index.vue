@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { columns } from "~/components/merchants/columns";
+import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 
 const { getMerchants, getMerchantById, isLoading } = useMerchants();
 const loading = ref(isLoading.value);
@@ -8,32 +9,27 @@ const isError = ref(false);
 const data = ref<Merchant[]>([]);
 const keyword = ref<string>("");
 
-const refetch = async () => {
+const fetchData = async () => {
   try {
-    isError.value = false; // Reset isError flag
-    loading.value = true; // Show loading indicator
-    data.value = await getMerchants(); // Call your API function to refetch roles
-    console.log("Merchants data: ", data.value);
+    isLoading.value = true;
+    loading.value = true;
+    data.value = await getMerchants(); // Call your API function to fetch roles
   } catch (err: any) {
-    console.error("Error refetching merchants:", err);
-    isError.value = true; // Set isError flag on error
+    console.error("Error fetching merchants:", err);
+    isError.value = true;
   } finally {
-    console.log("finally");
-    loading.value = false; // Hide loading indicator
+    isLoading.value = false;
+    loading.value = false;
   }
 };
 
-try {
-  isLoading.value = true;
-  loading.value = true;
-  data.value = await getMerchants(); // Call your API function to fetch roles
-} catch (err: any) {
-  console.error("Error fetching merchants:", err);
-  isError.value = true;
-} finally {
-  isLoading.value = false;
-  loading.value = false;
-}
+const refetch = async () => {
+  await fetchData();
+};
+
+await useAsyncData("merchantsData", async () => {
+  await fetchData();
+});
 
 const searchHandler = async () => {
   try {
@@ -55,7 +51,10 @@ const searchHandler = async () => {
   <div v-if="loading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
-  <div v-else-if="data" class="py-5 flex flex-col space-y-10 mx-auto">
+  <div
+    v-else-if="data && !isError"
+    class="py-5 flex flex-col space-y-10 mx-auto"
+  >
     <NuxtLink to="/merchants/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
@@ -88,6 +87,6 @@ const searchHandler = async () => {
     <UiNoResultFound title="Sorry, No customer found." />
   </div> -->
   <div v-if="isError">
-    <UiErrorMessage :retry="refetch" title="Something went wrong." />
+    <ErrorMessage :retry="refetch" title="Something went wrong." />
   </div>
 </template>

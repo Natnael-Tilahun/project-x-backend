@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { columns } from "~/components/userRoles/columns";
+import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+
 const { getRoles, isLoading } = useRoles();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -8,30 +10,26 @@ const data = ref<Role[]>([]);
 const { pageNumber } = usePagesInfoStore();
 
 const refetch = async () => {
+  await fetchData();
+};
+
+const fetchData = async () => {
   try {
-    isError.value = false; // Reset isError flag
-    loading.value = true; // Show loading indicator
-    data.value = await getRoles(); // Call your API function to refetch roles
+    isLoading.value = true;
+    loading.value = true;
+    data.value = await getRoles(); // Call your API function to fetch roles
   } catch (err) {
-    console.error("Error refetching roles:", err);
-    isError.value = true; // Set isError flag on error
+    console.error("Error fetching roles:", err);
+    isError.value = true;
   } finally {
-    console.log("finally");
-    loading.value = false; // Hide loading indicator
+    isLoading.value = false;
+    loading.value = false;
   }
 };
 
-try {
-  isLoading.value = true;
-  loading.value = true;
-  data.value = await getRoles(); // Call your API function to fetch roles
-} catch (err) {
-  console.error("Error fetching roles:", err);
-  isError.value = true;
-} finally {
-  isLoading.value = false;
-  loading.value = false;
-}
+await useAsyncData("rolesData", async () => {
+  await fetchData();
+});
 </script>
 
 <template>
@@ -71,6 +69,6 @@ try {
     <UiNoResultFound title="Sorry, No role found." />
   </div>
   <div v-else>
-    <UiErrorMessage :retry="refetch" title="Something went wrong." />
+    <ErrorMessage :retry="refetch" title="Something went wrong." />
   </div>
 </template>

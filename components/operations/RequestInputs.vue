@@ -38,8 +38,7 @@ if (props.operationIdProps) {
   operationId.value = props.operationIdProps;
 }
 
-const requestInputs = ref<RequestInput[]>();
-requestInputs.value = props.requestInputs;
+const requestInputs = ref<RequestInput[]>(props.requestInputs || []);
 const form = useForm<RequestInput>({
   validationSchema: apiOperationRequestInputFormSchema,
 });
@@ -49,6 +48,15 @@ const onSubmit = form.handleSubmit(async (values: RequestInput) => {
   try {
     loading.value = true;
     const updatedRequestInput = await updateRequestInput(values.id, values);
+
+    // Update the local state by replacing the updated item
+    const index = requestInputs.value.findIndex(
+      (item) => item.id === values.id
+    );
+    if (index !== -1) {
+      requestInputs.value[index] = updatedRequestInput;
+    }
+
     toast({
       title: "Request Input Updated",
       description: "Request input updated successfully",
@@ -70,12 +78,20 @@ const createNewParameter = form.handleSubmit(async (values: any) => {
       apiOperation: { id: operationId.value },
     };
     const createdRequestInput = await createNewRequestInput(data);
-    console.log("Created Request Input data; ", createdRequestInput);
+
+    // Update the local state by adding the new request input
+    requestInputs.value.push(createdRequestInput);
+
+    // Reset the newParameter state
+    newParameter.value = null;
+
     toast({
       title: "Request Input Created",
       description: "Request input created successfully",
     });
-    window.location.reload();
+
+    // Reset the form
+    form.resetForm();
   } catch (err: any) {
     console.error("Error creating request input:", err);
     isError.value = true;
@@ -87,13 +103,15 @@ const createNewParameter = form.handleSubmit(async (values: any) => {
 const deleteRequestInputHandler = async (id: string) => {
   try {
     isDeleting.value = true;
-    const updatedRequestInput = await deleteRequestInput(id); // Call your API function to fetch profile
-    console.log("Updated Request Input data; ", updatedRequestInput);
+    await deleteRequestInput(id);
+
+    // Update the local state by filtering out the deleted item
+    requestInputs.value = requestInputs.value.filter((item) => item.id !== id);
+
     toast({
       title: "Request Input Deleted",
       description: "Request input deleted successfully",
     });
-    window.location.reload();
   } catch (err: any) {
     console.error("Error deleting request input:", err);
     isError.value = true;
@@ -104,14 +122,32 @@ const deleteRequestInputHandler = async (id: string) => {
 
 const newParameter = ref<RequestInput | null>(null); // To hold the new parameter data
 
+// Add this new function to check if a parameter has required fields filled
+const isParameterFilled = (parameter: RequestInput) => {
+  return parameter.inputName && parameter.inputType && parameter.dataType;
+};
+
+// Modify the addNewParameter function
 const addNewParameter = () => {
+  // Check if there's an existing newParameter and if it's not properly filled
+  if (newParameter.value && !isParameterFilled(newParameter.value)) {
+    toast({
+      title: "Incomplete Parameter",
+      description:
+        "Please fill in the required fields before adding a new parameter",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  // If previous parameter was filled, create a new one
   newParameter.value = {
     inputName: "",
-    inputType: "HEADER", // Default value
-    dataType: "STRING", // Default value
+    inputType: "",
+    dataType: "",
     testValue: "",
     defaultValue: "",
-    valueSource: "USER_INPUT", // Default value
+    valueSource: "USER_INPUT",
     maxLength: null,
     minLength: null,
     minValue: null,
@@ -123,6 +159,15 @@ const addNewParameter = () => {
     isEncoded: false,
   };
 };
+
+watch(
+  () => props.requestInputs,
+  (newInputs) => {
+    if (newInputs) {
+      requestInputs.value = newInputs;
+    }
+  }
+);
 </script>
 
 <template>

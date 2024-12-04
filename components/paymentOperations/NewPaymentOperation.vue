@@ -1,0 +1,399 @@
+<script lang="ts" setup>
+import { useForm } from "vee-validate";
+import { ref } from "vue";
+import { toast } from "~/components/ui/toast";
+import { useIntegrations } from "~/composables/useIntegrations";
+import { paymentOperationFormSchema } from "~/validations/paymentOperationFormSchema";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { PaymentOperationType } from "@/global-types";
+
+const openItems = ref("info");
+const route = useRoute();
+const { createNewPaymentOperation, isLoading } = usePaymentOperations();
+
+const fullPath = ref(route.fullPath);
+const pathSegments = ref([]);
+const integrationId = ref<string>("");
+const loading = ref(isLoading.value);
+const isError = ref(false);
+const data = ref<PaymentOperation>();
+const apiOperations = ref<ApiOperation[]>([]);
+const allPaymentOperations = ref<PaymentOperation[]>([]);
+const allPaymentIntegrations = ref<PaymentIntegration[]>([]);
+pathSegments.value = splitPath(fullPath.value);
+const pathLength = pathSegments.value.length;
+integrationId.value = route.params.id;
+const activeTab = route.query.activeTab as string;
+const operationId = ref<string>("");
+const isPreview = ref<boolean>(false);
+const formId = ref<string>("");
+const { getOperations } = useOperations();
+const { getPaymentIntegrations } = usePaymentIntegrations();
+const { getPaymentOperations } = usePaymentOperations();
+const props = defineProps<{
+  integrationId: string;
+}>();
+
+if (props.integrationId) {
+  integrationId.value = props.integrationId;
+}
+
+// Watch for changes in the route's query parameters
+watch(
+  () => route.query.activeTab,
+  (newActiveTab) => {
+    if (newActiveTab) {
+      openItems.value = newActiveTab as string; // Update the active tab when the query param
+    }
+  }
+);
+
+const form = useForm<PaymentOperation>({
+  validationSchema: paymentOperationFormSchema,
+});
+
+const getApiOperationsData = async () => {
+  try {
+    apiOperations.value = await getOperations(); // Call your API function to fetch roles
+  } catch (err) {
+    console.error("Error fetching API operations:", err);
+    isError.value = true;
+  }
+};
+
+const getAllPaymentOperations = async () => {
+  try {
+    allPaymentOperations.value = await getPaymentOperations();
+  } catch (err) {
+    console.error("Error fetching payment operations:", err);
+    isError.value = true;
+  }
+};
+
+const getAllPaymentIntegrations = async () => {
+  try {
+    allPaymentIntegrations.value = await getPaymentIntegrations();
+  } catch (err) {
+    console.error("Error fetching payment integrations:", err);
+    isError.value = true;
+  }
+};
+
+// await useAsyncData("paymentOperationsData", async () => {
+//   await getApiOperationsData();
+//   await getAllPaymentOperations();
+//   await getAllPaymentIntegrations();
+// });
+
+onMounted(async () => {
+  await getApiOperationsData();
+  await getAllPaymentOperations();
+  await getAllPaymentIntegrations();
+});
+
+const onSubmit = form.handleSubmit(async (values: any) => {
+  try {
+    loading.value = true;
+    const paymentOperationData = {
+      ...values,
+      paymentIntegration: { id: integrationId.value },
+      prevPaymentOperation:
+        typeof values.prevPaymentOperation === "string"
+          ? { id: values.prevPaymentOperation }
+          : values.prevPaymentOperation,
+      nextPaymentOperation:
+        typeof values.nextPaymentOperation === "string"
+          ? { id: values.nextPaymentOperation }
+          : values.nextPaymentOperation,
+      apiOperation:
+        typeof values.apiOperation == "string"
+          ? { id: values.apiOperation }
+          : values.apiOperation,
+      form: values.form ? values.form : null,
+    };
+    console.log("Payment Operation Values: ", paymentOperationData);
+    const response = await createNewPaymentOperation(paymentOperationData); // Call your API function to fetch profile
+    data.value = response;
+    // formId.value = response.form.id;
+    form.setValues({
+      ...response,
+      prevPaymentOperation: response.prevPaymentOperation?.id,
+      nextPaymentOperation: response.nextPaymentOperation?.id,
+      apiOperation: response.apiOperation?.id,
+    });
+    operationId.value = data.value.id;
+    openItems.value = "form";
+    toast({
+      title: "Payment Operation Created",
+      description: "Payment Operation created successfully",
+    });
+  } catch (err: any) {
+    console.error("Error creating payment operation:", err);
+    isError.value = true;
+  } finally {
+    loading.value = false;
+  }
+});
+
+function splitPath(path: any) {
+  return path.split("/").filter(Boolean);
+}
+</script>
+
+<template>
+  <div class="flex flex-col gap-6 items-cente">
+    <form @submit="onSubmit">
+      <UiTabs v-model="openItems" defaultValue="info" class="w-full">
+        <UiTabsList
+          class="w-full flex justify-start px-0 pb-0 h-fit gap-2 border-b rounded-none border-primary bg-transparent"
+        >
+          <UiTabsTrigger
+            class="text-lg w-fit min-w-[150px] data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-2 data-[state=inactive]:border rounded-t-2xl data-[state=inactive]:bg-muted data-[state=inactive]:text-muted-foreground"
+            value="info"
+            >Info</UiTabsTrigger
+          >
+          <UiTabsTrigger
+            class="text-lg data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-2 data-[state=inactive]:border rounded-t-2xl data-[state=inactive]:bg-muted data-[state=inactive]:text-muted-foreground"
+            value="form"
+            :disabled="
+              operationId == '' ||
+              operationId == null ||
+              operationId == undefined
+            "
+            >Form</UiTabsTrigger
+          >
+          <UiTabsTrigger
+            class="text-lg w-fit min-w-[150px] data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-2 data-[state=inactive]:border rounded-t-2xl data-[state=inactive]:bg-muted data-[state=inactive]:text-muted-foreground"
+            value="fields"
+            :disabled="
+              operationId == '' ||
+              operationId == null ||
+              operationId == undefined
+            "
+            >Fields</UiTabsTrigger
+          >
+        </UiTabsList>
+        <UiTabsContent class="p-6" value="info">
+          <div class="grid grid-cols-2 gap-6">
+            <FormField
+              :model-value="data?.name"
+              v-slot="{ componentField }"
+              name="name"
+            >
+              <FormItem>
+                <FormLabel> Name </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter name"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="data?.description"
+              v-slot="{ componentField }"
+              name="description"
+            >
+              <FormItem>
+                <FormLabel> Description </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter description"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="data?.paymentOperationType"
+              v-slot="{ componentField }"
+              name="paymentOperationType"
+            >
+              <FormItem>
+                <FormLabel> Payment Operation Type </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue
+                        placeholder="Select a payment operation type"
+                      />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(PaymentOperationType)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="data?.apiOperation?.id"
+              v-slot="{ componentField }"
+              name="apiOperation"
+            >
+              <FormItem>
+                <FormLabel> API Operation </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select an API operation" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in apiOperations"
+                        :value="item.id"
+                        :key="item.id"
+                      >
+                        {{ item.operationName }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="data?.prevPaymentOperation?.id"
+              v-slot="{ componentField }"
+              name="prevPaymentOperation"
+            >
+              <FormItem>
+                <FormLabel> Previous Payment Operation </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue
+                        placeholder="Select a previous payment operation"
+                      />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in allPaymentOperations"
+                        :value="item.id"
+                        :key="item.id"
+                      >
+                        {{ item.paymentOperationType }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="data?.nextPaymentOperation?.id"
+              v-slot="{ componentField }"
+              name="nextPaymentOperation"
+            >
+              <FormItem>
+                <FormLabel> Next Payment Operation </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue
+                        placeholder="Select a next payment operation"
+                      />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in allPaymentOperations"
+                        :value="item.id"
+                        :key="item.id"
+                      >
+                        {{ item.paymentOperationType }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+              </FormItem>
+            </FormField>
+            <!-- <FormField
+              :model-value="data?.paymentIntegration"
+              v-slot="{ componentField }"
+              name="paymentIntegration"
+            >
+              <FormItem>
+                <FormLabel> Payment Integration </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue
+                        placeholder="Select a payment integration"
+                      />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in allPaymentIntegrations"
+                        :value="item.id"
+                      >
+                        {{ item.integrationName }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+              </FormItem>
+            </FormField> -->
+
+            <div class="col-span-full w-full py-4 flex justify-end gap-4">
+              <UiButton
+                :disabled="loading"
+                variant="outline"
+                type="button"
+                size="sm"
+                @click="$router.go(-1)"
+              >
+                Cancel
+              </UiButton>
+              <UiButton :disabled="loading" size="sm" type="submit">
+                <Icon
+                  name="svg-spinners:8-dots-rotate"
+                  v-if="loading"
+                  class="mr-2 h-4 w-4 animate-spin"
+                ></Icon>
+
+                Save
+              </UiButton>
+            </div>
+          </div>
+        </UiTabsContent>
+
+        <UiTabsContent class="text-base h-full p-6 space-y-4" value="form">
+          <PaymentOperationsForms
+            :form="data?.form"
+            :operationIdProps="operationId"
+          />
+        </UiTabsContent>
+
+        <UiTabsContent class="text-base h-full p-6 space-y-4" value="fields">
+          <PaymentOperationsFields
+            :fields="data?.fields"
+            :formIdProps="formId"
+          />
+        </UiTabsContent>
+      </UiTabs>
+    </form>
+  </div>
+</template>

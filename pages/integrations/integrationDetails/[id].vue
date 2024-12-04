@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { columns } from "~/components/operations/columns";
+import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 
 const route = useRoute();
 const { getIntegrationById, updateIntegration, isSubmitting, isLoading } =
@@ -28,7 +29,7 @@ const data = ref<ApiIntegration>();
 const apiOperationsData = ref<ApiOperation>();
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
-integrationId.value = pathSegments.value[pathLength - 1];
+integrationId.value = route.params.id;
 const activeTab = route.query.activeTab as string;
 openItems.value = activeTab || "serviceDefinition";
 
@@ -103,7 +104,6 @@ getIntegrationData();
 const refetch = async () => {
   await getIntegrationData();
 };
-
 </script>
 
 <template>
@@ -425,7 +425,7 @@ const refetch = async () => {
           </UiDataTable>
         </div>
         <div v-if="isError">
-          <UiErrorMessage :retry="refetch" title="Something went wrong." />
+          <ErrorMessage :retry="refetch" title="Something went wrong." />
         </div>
       </UiTabsContent>
 

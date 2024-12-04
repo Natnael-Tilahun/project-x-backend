@@ -2,17 +2,23 @@
 import { ref, onMounted } from "vue";
 import { columns } from "../../components/userPermissions/columns";
 import { usePermissions } from "~/composables/usePermissions";
+import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+
 const { getPermissions, isLoading } = usePermissions();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<Permission[]>([]);
 
 const refetch = async () => {
+  await fetchData();
+};
+
+const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
     data.value = await getPermissions(); // Call your API function to fetch profile
-    console.log("Permission data; ", data.value);
+    // console.log("Permission data; ", data.value);
     // formData.value = profileData; // Store the profile data in a reactive variable
   } catch (err) {
     console.error("Error fetching users:", err);
@@ -24,20 +30,9 @@ const refetch = async () => {
   }
 };
 
-try {
-  isLoading.value = true;
-  loading.value = true;
-  data.value = await getPermissions(); // Call your API function to fetch profile
-  // console.log("Permission data; ", data.value);
-  // formData.value = profileData; // Store the profile data in a reactive variable
-} catch (err) {
-  console.error("Error fetching users:", err);
-  isError.value = true;
-  // Handle error fetching profile data
-} finally {
-  isLoading.value = false;
-  loading.value = false;
-}
+await useAsyncData("permissionsData", async () => {
+  await fetchData();
+});
 </script>
 <template>
   <div v-if="isLoading" class="py-10 flex justify-center items-center">
@@ -75,7 +70,7 @@ try {
     <UiNoResultFound title="Sorry, No permission found." />
   </div>
   <div v-else>
-    <UiErrorMessage :retry="refetch" title="Something went wrong." />
+    <ErrorMessage :retry="refetch" title="Something went wrong." />
   </div>
 </template>
 

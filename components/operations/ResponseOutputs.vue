@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const openItems = ref("");
 import { useForm } from "vee-validate";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { toast } from "~/components/ui/toast";
 import { apiOperationResponseOutputFormSchema } from "~/validations/apiOperationResponseOutputFormSchema";
 import {
@@ -47,8 +47,7 @@ if (props.operationIdProps) {
   operationId.value = props.operationIdProps;
 }
 
-const responseOutputs = ref<ResponseOutput[]>();
-responseOutputs.value = props.responseOutputs;
+const responseOutputs = ref<ResponseOutput[]>(props.responseOutputs || []);
 const form = useForm<ResponseOutput>({
   validationSchema: apiOperationResponseOutputFormSchema,
 });
@@ -56,7 +55,15 @@ const form = useForm<ResponseOutput>({
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     loading.value = true;
-    const updatedResponseOutput = await updateResponseOutput(values.id, values); // Call your API function to fetch profile
+    const updatedResponseOutput = await updateResponseOutput(values.id, values);
+
+    const index = responseOutputs.value.findIndex(
+      (item) => item.id === values.id
+    );
+    if (index !== -1) {
+      responseOutputs.value[index] = updatedResponseOutput;
+    }
+
     toast({
       title: "Response Output Updated",
       description: "Response output updated successfully",
@@ -76,15 +83,18 @@ const onSubmitNewParameter = form.handleSubmit(async (values: any) => {
       ...values,
       apiOperation: { id: operationId.value },
     };
-    const updatedResponseOutput = await createNewResponseOutput(data); // Call your API function to fetch profile
-    // form.setValues(requestInputs.value);
-    console.log("Created Response Output data; ", updatedResponseOutput);
-    openItems.value = "newParameter";
+    const createdResponseOutput = await createNewResponseOutput(data);
+
+    responseOutputs.value.push(createdResponseOutput);
+
+    newParameter.value = null;
+
     toast({
       title: "Response Output Created",
       description: "Response output created successfully",
     });
-    window.location.reload();
+
+    form.resetForm();
   } catch (err: any) {
     console.error("Error creating response output:", err);
     isError.value = true;
@@ -96,13 +106,16 @@ const onSubmitNewParameter = form.handleSubmit(async (values: any) => {
 const deleteResponseOutputHandler = async (id: string) => {
   try {
     isDeleting.value = true;
-    const updatedResponseOutput = await deleteResponseOutput(id); // Call your API function to fetch profile
-    console.log("Updated Response Output data; ", updatedResponseOutput);
+    await deleteResponseOutput(id);
+
+    responseOutputs.value = responseOutputs.value.filter(
+      (item) => item.id !== id
+    );
+
     toast({
       title: "Response Output Deleted",
       description: "Response output deleted successfully",
     });
-    window.location.reload();
   } catch (err: any) {
     console.error("Error deleting response output:", err);
     isError.value = true;
@@ -111,22 +124,45 @@ const deleteResponseOutputHandler = async (id: string) => {
   }
 };
 
-const newParameter = ref<ResponseOutput | null>(null); // To hold the new parameter data
+const newParameter = ref<ResponseOutput | null>(null);
 
 const addNewParameter = () => {
+  if (newParameter.value && !isParameterFilled(newParameter.value)) {
+    toast({
+      title: "Incomplete Parameter",
+      description:
+        "Please fill in the required fields before adding a new parameter",
+      variant: "destructive",
+    });
+    return;
+  }
+
   newParameter.value = {
     outputName: "",
-    dataType: "BOOLEAN", // Default value
+    dataType: "",
     responseValuePath: "",
-    responseScope: "ERROR", // Default value
-    transferCoreMapping: "NONE", // Default value
+    responseScope: "",
+    transferCoreMapping: "",
     isLogicField: false,
     constantValueToCompare: "",
-    operatorToCompareValue: "NOT_EQUAL_TO", // Default value
+    operatorToCompareValue: "",
     isRequired: false,
     isVisibleForUser: false,
   };
 };
+
+const isParameterFilled = (parameter: ResponseOutput) => {
+  return parameter.outputName && parameter.dataType && parameter.responseScope;
+};
+
+watch(
+  () => props.responseOutputs,
+  (newOutputs) => {
+    if (newOutputs) {
+      responseOutputs.value = newOutputs;
+    }
+  }
+);
 </script>
 
 <template>

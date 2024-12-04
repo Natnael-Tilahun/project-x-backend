@@ -25,7 +25,7 @@ const isError = ref(false);
 const data = ref<ApiOperation>();
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
-integrationId.value = pathSegments.value[pathLength - 1];
+integrationId.value = route.params.id;
 const activeTab = route.query.activeTab as string;
 const operationId = ref<string>("");
 const isPreview = ref<boolean>(false);
@@ -52,6 +52,8 @@ const form = useForm<ApiOperation>({
   validationSchema: apiOperationFormSchema,
 });
 
+console.log("Integration ID: ", integrationId.value);
+
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     loading.value = true;
@@ -61,6 +63,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         id: integrationId.value,
       },
     };
+    console.log("Operation Data: ", operationData);
     data.value = await createNewOperation(operationData); // Call your API function to fetch profile
     form.setValues(data.value);
     operationId.value = data.value.id;
@@ -97,11 +100,21 @@ function splitPath(path: any) {
           <UiTabsTrigger
             class="text-lg data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-2 data-[state=inactive]:border rounded-t-2xl data-[state=inactive]:bg-muted data-[state=inactive]:text-muted-foreground"
             value="requestInputs"
+            :disabled="
+              operationId == '' ||
+              operationId == null ||
+              operationId == undefined
+            "
             >Request Inputs</UiTabsTrigger
           >
           <UiTabsTrigger
             class="text-lg w-fit min-w-[150px] data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-2 data-[state=inactive]:border rounded-t-2xl data-[state=inactive]:bg-muted data-[state=inactive]:text-muted-foreground"
             value="responseOutputs"
+            :disabled="
+              operationId == '' ||
+              operationId == null ||
+              operationId == undefined
+            "
             >Response Outputs</UiTabsTrigger
           >
         </UiTabsList>
@@ -210,9 +223,9 @@ function splitPath(path: any) {
                   name="material-symbols:content-copy"
                   class="h-6 w-6 absolute top-4 right-4 cursor-pointer"
                 ></Icon>
-                <code class="h-fit leading-9">{{
-                  data?.requestBodyTemplate
-                }}</code>
+                <pre
+                  class="h-fit leading-9"
+                ><code>{{ data?.requestBodyTemplate }}</code></pre>
               </div>
             </div>
             <div class="col-span-full w-full py-4 flex justify-end gap-4">

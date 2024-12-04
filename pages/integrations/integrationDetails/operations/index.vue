@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { columns } from "~/components/integrations/columns";
 import { useIntegrations } from "~/composables/useIntegrations";
+import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 
 const { getIntegrations } = useIntegrations();
 const keyword = ref<string>("");
@@ -81,6 +82,6 @@ const refetch = async () => {
     </UiDataTable>
   </div>
   <div v-if="isError">
-    <UiErrorMessage :retry="refetch" title="Something went wrong." />
+    <ErrorMessage :retry="refetch" title="Something went wrong." />
   </div>
 </template>

@@ -4,7 +4,7 @@ import { z } from "zod";
 export const apiOperationResponseOutputFormSchema = toTypedSchema(
   z.object({
     id: z.string().optional().nullable(),
-    outputName: z.string(),
+    outputName: z.string().min(1, { message: "Output name is required" }),
     dataType: z.nativeEnum([
       "COLLECTION",
       "STRING",
