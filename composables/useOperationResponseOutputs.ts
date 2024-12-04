@@ -11,7 +11,7 @@ export const useOperationResponseOutputs = () => {
   const getResponseOutputs: () => Promise<ResponseOutput[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<ResponseOutput[]>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/response-outputs`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/response-outputs`,
         {
           method: "GET",
           headers: {
@@ -44,7 +44,7 @@ export const useOperationResponseOutputs = () => {
   const getResponseOutputById: (id: string) => Promise<ResponseOutput> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<ResponseOutput>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/response-outputs/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/response-outputs/${id}`,
         {
           method: "GET",
           headers: {
@@ -78,7 +78,7 @@ export const useOperationResponseOutputs = () => {
     console.log("createNewResponseOutput responseOutputData: ", responseOutputData);
     try {
       const { data, pending, error, status } = await useFetch<ResponseOutput>(
-          `${runtimeConfig.public.API_BASE_URL}/internal/response-outputs`,
+          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/response-outputs`,
         {
           method: "POST",
           headers: {
@@ -123,7 +123,7 @@ export const useOperationResponseOutputs = () => {
   const updateResponseOutput: (responseOutputId: string, responseOutputData: any) => Promise<ResponseOutput> = async (responseOutputId, responseOutputData) => {
     try {
       const { data, pending, error, status } = await useFetch<ResponseOutput>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/response-outputs/${responseOutputId}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/response-outputs/${responseOutputId}`,
         {
           method: "PATCH",
           headers: {
@@ -165,7 +165,7 @@ export const useOperationResponseOutputs = () => {
   const deleteResponseOutput: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/response-outputs/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/response-outputs/${id}`,
         {
           method: "DELETE",
           headers: {

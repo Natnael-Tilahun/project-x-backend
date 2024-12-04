@@ -11,7 +11,7 @@ export const useOperationRequestInputs = () => {
   const getRequestInputs: () => Promise<RequestInput[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<RequestInput[]>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/request-inputs`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/request-inputs`,
         {
           method: "GET",
           headers: {
@@ -45,7 +45,7 @@ export const useOperationRequestInputs = () => {
   const getRequestInputById: (id: string) => Promise<RequestInput> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<RequestInput>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/request-inputs/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/request-inputs/${id}`,
         {
           method: "GET",
           headers: {
@@ -80,7 +80,7 @@ export const useOperationRequestInputs = () => {
     console.log("createNewRequestInput requestInputData: ", requestInputData);
     try {
       const { data, pending, error, status } = await useFetch<RequestInput>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/request-inputs`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/request-inputs`,
         {
           method: "POST",
           headers: {
@@ -125,7 +125,7 @@ export const useOperationRequestInputs = () => {
   const updateRequestInput: (requestInputId: string, requestInputData: any) => Promise<RequestInput> = async (requestInputId, requestInputData) => {
     try {
       const { data, pending, error, status } = await useFetch<RequestInput>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/request-inputs/${requestInputId}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/request-inputs/${requestInputId}`,
         {
           method: "PATCH",
           headers: {
@@ -168,7 +168,7 @@ export const useOperationRequestInputs = () => {
   const deleteRequestInput: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/request-inputs/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/request-inputs/${id}`,
         {
           method: "DELETE",
           headers: {

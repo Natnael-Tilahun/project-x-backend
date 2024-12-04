@@ -11,7 +11,7 @@ export const useFields = () => {
   const getFields: () => Promise<Field[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<Field[]>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/fields`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/fields`,
         {
           method: "GET",
           headers: {
@@ -45,7 +45,7 @@ export const useFields = () => {
   const getFieldById: (id: string) => Promise<Field> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<Field>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/fields/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/fields/${id}`,
         {
           method: "GET",
           headers: {
@@ -79,7 +79,7 @@ export const useFields = () => {
   const createNewField: (fieldData: any) => Promise<Field> = async (fieldData) => {
     try {
       const { data, pending, error, status } = await useFetch<Field>(
-          `${runtimeConfig.public.API_BASE_URL}/internal/fields`,
+          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/fields`,
         {
           method: "POST",
           headers: {
@@ -124,7 +124,7 @@ export const useFields = () => {
   const updateField: (fieldId: string, fieldData: any) => Promise<Field> = async (fieldId, fieldData) => {
     try {
       const { data, pending, error, status } = await useFetch<Field>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/fields/${fieldId}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/fields/${fieldId}`,
         {
           method: "PATCH",
           headers: {
@@ -167,7 +167,7 @@ export const useFields = () => {
   const deleteField: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-          `${runtimeConfig.public.API_BASE_URL}/internal/fields/${id}`,
+          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/fields/${id}`,
         {
           method: "DELETE",
           headers: {

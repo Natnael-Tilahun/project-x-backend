@@ -10,7 +10,7 @@ export const useProfile = () => {
   const getProfile: () => Promise<Profile> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<Profile>(
-        `${runtimeConfig.public.API_BASE_URL}/users/me`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/users/me`,
         {
           method: "GET",
           headers: {

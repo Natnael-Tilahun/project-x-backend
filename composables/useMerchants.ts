@@ -11,7 +11,7 @@ export const useMerchants = () => {
   const getMerchants: () => Promise<Merchant[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<Merchant[]>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/merchants`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/merchants`,
         {
           method: "GET",
           headers: {
@@ -45,7 +45,7 @@ export const useMerchants = () => {
   const getMerchantById: (id: string) => Promise<Merchant> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<Merchant>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/merchants/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/merchants/${id}`,
         {
           method: "GET",
           headers: {
@@ -79,7 +79,7 @@ export const useMerchants = () => {
   const createNeweMerchant: (customerId: string, merchantData: any) => Promise<Merchant> = async (customerId, merchantData) => {
     try {
       const { data, pending, error, status } = await useFetch<Merchant>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/merchants/${customerId}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/merchants/${customerId}`,
         {
           method: "POST",
           headers: {
@@ -124,7 +124,7 @@ export const useMerchants = () => {
   const updateMerchant: (customerId: string, merchantData: any) => Promise<Merchant> = async (customerId, merchantData) => {
     try {
       const { data, pending, error, status } = await useFetch<Merchant>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/merchants/${customerId}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/merchants/${customerId}`,
         {
           method: "POST",
           headers: {
@@ -167,7 +167,7 @@ export const useMerchants = () => {
   const deleteMerchant: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/merchants/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/merchants/${id}`,
         {
           method: "DELETE",
           headers: {

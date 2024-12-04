@@ -11,7 +11,7 @@ export const useOperations = () => {
   const getOperations: () => Promise<ApiOperation[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<ApiOperation[]>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/api-operations`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-operations`,
         {
           method: "GET",
           headers: {
@@ -45,7 +45,7 @@ export const useOperations = () => {
   const getOperationById: (id: string) => Promise<ApiOperation> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<ApiOperation>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/api-operations/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-operations/${id}`,
         {
           method: "GET",
           headers: {
@@ -79,7 +79,7 @@ export const useOperations = () => {
   const createNewOperation: (operationData: any) => Promise<ApiOperation> = async (operationData) => {
     try {
       const { data, pending, error, status } = await useFetch<ApiOperation>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/api-operations`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-operations`,
         {
           method: "POST",
           headers: {
@@ -124,7 +124,7 @@ export const useOperations = () => {
   const updateOperation: (operationId: string, operationData: any) => Promise<ApiOperation> = async (operationId, operationData) => {
     try {
       const { data, pending, error, status } = await useFetch<ApiOperation>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/api-operations/${operationId}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-operations/${operationId}`,
         {
           method: "PATCH",
           headers: {
@@ -167,7 +167,7 @@ export const useOperations = () => {
   const deleteOperation: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/internal/api-operations/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-operations/${id}`,
         {
           method: "DELETE",
           headers: {
