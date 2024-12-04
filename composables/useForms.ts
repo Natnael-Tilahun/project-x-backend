@@ -11,7 +11,7 @@ export const useForms = () => {
   const getForms  : () => Promise<Form[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<Form[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/forms`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/forms`,
         {
           method: "GET",
           headers: {
@@ -45,7 +45,7 @@ export const useForms = () => {
   const getFormById: (id: string) => Promise<Form> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<Form>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/forms/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/forms/${id}`,
         {
           method: "GET",
           headers: {
@@ -79,7 +79,7 @@ export const useForms = () => {
   const createNewForm: (formData: any) => Promise<Form> = async (formData) => {
     try {
       const { data, pending, error, status } = await useFetch<Form>(
-          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/forms`,
+          `${runtimeConfig.public.API_BASE_URL}/internal/forms`,
         {
           method: "POST",
           headers: {
@@ -124,7 +124,7 @@ export const useForms = () => {
   const updateForm: (formId: string, formData: any) => Promise<Form> = async (formId, formData) => {
     try {
       const { data, pending, error, status } = await useFetch<Form>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/forms/${formId}`,
+        `${runtimeConfig.public.API_BASE_URL}/internal/forms/${formId}`,
         {
           method: "PATCH",
           headers: {
@@ -167,7 +167,7 @@ export const useForms = () => {
   const deleteForm: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/forms/${id}`,
+          `${runtimeConfig.public.API_BASE_URL}/internal/forms/${id}`,
         {
           method: "DELETE",
           headers: {
