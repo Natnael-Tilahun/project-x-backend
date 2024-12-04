@@ -27,8 +27,12 @@ export default defineNuxtConfig({
     "@davestewart/nuxt-scrollbar",
     "nuxt-icon",
     "@pinia/nuxt",
-    "@nuxt/image"
+    "@nuxt/image",
+    // "@babel/plugin-syntax-dynamic-import",
   ],
+  // presets: [
+  //  '@nuxt/babel-preset-app',
+  // ],
   pinia: {
     storesDirs: ["./stores/**", "./custom-folder/stores/**"],
   },
@@ -61,4 +65,7 @@ export default defineNuxtConfig({
   router: {
     middleware: ["protected"],
   },
+  experimental: {
+    modern: true,
+   },
 });

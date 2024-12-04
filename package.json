@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@nuxt/devtools": "latest",
     "@nuxt/image": "^1.7.0",
     "@nuxtjs/color-mode": "^3.3.2",

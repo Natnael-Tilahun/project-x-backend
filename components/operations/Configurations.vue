@@ -27,9 +27,9 @@ const tooltipText = ref<string>("Copy to clipboard");
 const tooltipOpen = ref<boolean>(true);
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
-integrationId.value = pathSegments.value[pathLength - 1];
+integrationId.value = route.params.id;
 const activeTab = route.query.activeTab as string;
-const operationId = route.query.operationId as string;
+const operationId = (route.query.operationId as string) || "";
 const isPreview = ref<boolean>(false);
 
 const form = useForm<ApiOperation>({
@@ -73,7 +73,9 @@ const getOperationData = async () => {
   }
 };
 
-getOperationData();
+onMounted(() => {
+  getOperationData();
+});
 
 const refetch = async () => {
   await getOperationData();
@@ -103,9 +105,14 @@ const copyToClipboard = (data: any) => {
             >Info</UiTabsTrigger
           >
           <UiTabsTrigger
+            :disabled="
+              operationId == '' ||
+              operationId == null ||
+              operationId == undefined
+            "
             class="text-lg font-normal data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-2 data-[state=inactive]:border rounded-t-2xl data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted"
             value="requestInputs"
-            >Request Inputs</UiTabsTrigger
+            >Request Inputss</UiTabsTrigger
           >
           <UiTabsTrigger
             class="text-lg font-normal data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-2 data-[state=inactive]:border rounded-t-2xl data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted"
@@ -237,9 +244,9 @@ const copyToClipboard = (data: any) => {
                   @click="copyToClipboard(data?.requestBodyTemplate)"
                   class="h-6 w-6 absolute top-4 right-4 cursor-pointer text-primary"
                 ></Icon>
-                <code class="h-fit leading-9">{{
-                  data?.requestBodyTemplate
-                }}</code>
+                <pre
+                  class="w-full max-w-full leading-9 overflow-x-auto"
+                ><code>{{ data?.requestBodyTemplate }}</code></pre>
               </div>
             </div>
             <div class="col-span-full w-full py-4 flex justify-end gap-4">

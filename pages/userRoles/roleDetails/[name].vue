@@ -8,6 +8,8 @@ import {
   FormMessage,
 } from "~/components/ui/form";
 import { useToast } from "~/components/ui/toast";
+import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+
 const { toast } = useToast();
 
 const openItems = ref(["item-1"]);
@@ -442,7 +444,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     </div>
     <div v-else>No data found.</div>
     <div v-if="isError">
-      <UiErrorMessage :retry="refetch" title="Something went wrong." />
+      <ErrorMessage :retry="refetch" title="Something went wrong." />
     </div>
   </form>
 </template>

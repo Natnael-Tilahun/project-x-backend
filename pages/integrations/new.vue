@@ -13,6 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { columns } from "~/components/operations/columns";
+import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 
 const route = useRoute();
 const {
@@ -340,7 +341,7 @@ function splitPath(path: any) {
           </UiDataTable>
         </div>
         <div v-if="isError">
-          <UiErrorMessage :retry="refetch" title="Something went wrong." />
+          <ErrorMessage :retry="refetch" title="Something went wrong." />
         </div>
       </UiTabsContent>
 

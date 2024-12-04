@@ -4,7 +4,7 @@ import { z } from "zod";
 export const apiOperationRequestInputFormSchema = toTypedSchema(
   z.object({
     id: z.string().optional().nullable(),
-    inputName: z.string(),
+    inputName: z.string().min(1, { message: "Input name is required" }),
     inputType: z.nativeEnum([
       "BODY",
       "HEADER",

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { columns, type User } from "~/components/users/columns";
+import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+
 const { getUsers, isLoading } = useUsers();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -90,6 +92,6 @@ onMounted(async () => {
     <UiNoResultFound title="Sorry, No user found." />
   </div>
   <div v-else>
-    <UiErrorMessage title="Something went wrong." />
+    <ErrorMessage title="Something went wrong." />
   </div>
 </template>

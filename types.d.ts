@@ -1,3 +1,7 @@
+import { PaymentIntegrationType } from "@/global-types";
+import { TransactionAmountType } from "@/global-types";
+import { Visibility, PaymentOperationType, FormType, DataType, TransferParams } from "@/global-types";
+
 interface User {
   email: string;
   id: string;
@@ -356,4 +360,109 @@ interface RequestInput {
   isHidden?: boolean
   apiOperation?: ApiOperation
   integrationFieldMappings?: [IntegrationFieldMapping]
+}
+
+
+interface PaymentIntegration {
+  id?: string ;
+  defaultLanguageCode?: string | null;
+  integrationName?: string | null;
+  companyName?: string | null;
+  description?: string | null;
+  iconPath?: string | null;
+  isDraft?: boolean | null;
+  enabled?: boolean | null;
+  accountNumber?: string | null;
+  minimumAmount?: number | null;
+  maximumAmount?: number | null;
+  currencyCode?: string | null;
+  paymentConfirmationTemplate?: string | null;
+  paymentDetailTemplate?: string | null;
+  paymentSuccessTemplate?: string | null;
+  paymentErrorTemplate?: string | null;
+  paymentConfirmationTemplateShort?: string | null;
+  paymentDetailTemplateShort?: string | null;
+  paymentSuccessTemplateShort?: string | null;
+  paymentErrorTemplateShort?: string | null;
+  integrationType?: PaymentIntegrationType | null;
+  transactionAmountType?: TransactionAmountType | null;
+  visibility?: Visibility | null;
+  confirmRecipientIdentity?: boolean | null;
+  reEnquirePaymentDetailBeforePayment?: boolean | null;
+  isSingleFormPayment?: boolean | null;
+  defaultPaymentReason?: string | null;
+  categoryMenus?: Menu[] | null;
+}
+
+interface Menu {
+  id?: string;
+  defaultLanguageCode?: string | null;
+  menuName?: string | null;
+  menuDescription?: string | null;
+  iconPath?: string | null;
+  enabled?: boolean | null;
+  productMenus?: PaymentIntegration[] | null;
+  parent?: Menu | null;
+}
+
+interface Local { 
+  defaultLanguageCode?: string | null;
+  localName?: string | null;
+}
+
+interface PaymentOperation {
+  id?: string | null ;
+  name?: string | null;
+  description?: string | null;
+  paymentOperationType?: PaymentOperationType | null;
+  nextPaymentOperation?: PaymentOperation | null;
+  prevPaymentOperation?: PaymentOperation | null;
+  paymentIntegration?: PaymentIntegration | null;
+  apiOperation?: ApiOperation | null;
+  form?: Form | null;
+}
+
+interface Field {
+  id?: string;
+  defaultLanguageCode?: string | null;
+  dataType?: DataType | null;
+  isUnique?: boolean | null;
+  name?: string | null;
+  label?: string | null;
+  maxLength?: number | null;
+  minLength?: number | null;
+  minValue?: string | null;
+  maxValue?: string | null;
+  isRequired?: boolean | null;
+  trim?: boolean | null;
+  defaultUserValue?: boolean | null;
+  readonly?: boolean | null;
+  transferMapping?: TransferParams | null;
+  sortOrder?: number | null;
+  width?: string | null;
+  note?: string | null;
+  placeHolder?: string | null;
+  validationPattern?: string | null;
+  validation?: string | null;
+  iInterface?: string | null;
+  options?: string | null;
+  display?: string | null;
+  displayOptions?: string | null;
+  conditions?: string | null;
+  validationMessage?: string | null;
+  form?: Form | null;
+}
+
+
+interface Form {
+  id?: string;
+  defaultLanguageCode?: string | null;
+  formName?: string | null;
+  formDescription?: string | null;
+  formType?: FormType | null;
+  stepOrder?: number | null;
+  paymentOperation?: PaymentOperation | null;
+  paymentIntegration?: PaymentIntegration | null;
+  locals?: string[] | null;
+  fields?: Field[] | null;
 }

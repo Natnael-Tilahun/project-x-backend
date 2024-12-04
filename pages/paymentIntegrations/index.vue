@@ -1,66 +1,49 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/customers/columns";
+import { columns } from "~/components/paymentIntegrations/columns";
+import { usePaymentIntegrations } from "~/composables/usePaymentIntegrations";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 
-
-const { getCustomers, searchCustomers, isLoading } = useCustomers();
-const loading = ref(isLoading.value);
-const isError = ref(false);
-const data = ref<Customer[]>([]);
+const { getPaymentIntegrations } = usePaymentIntegrations();
 const keyword = ref<string>("");
-
-const refetch = async () => {
-  await fetchData();
-};
+const data = ref<ApiPaymentIntegration[]>([]);
+const isLoading = ref(true);
+const isError = ref(false);
+const router = useRouter(); // {{ edit_2 }}
 
 const fetchData = async () => {
   try {
-    isLoading.value = true;
-    loading.value = true;
-    data.value = await getCustomers(); // Call your API function to fetch roles
-  } catch (err: any) {
-    console.error("Error fetching customers:", err);
+    data.value = await getPaymentIntegrations();
+  } catch (error) {
+    console.error("Error fetching payment integrations:", error);
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
 
-await useAsyncData("customersData", async () => {
+await useAsyncData("paymentIntegrationsData", async () => {
   await fetchData();
 });
 
-const searchHandler = async () => {
-  try {
-    isLoading.value = true;
-    loading.value = true;
-    data.value = await searchCustomers(keyword.value); // Call your API function to fetch roles
-  } catch (err: any) {
-    console.error("Error fetching customers:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-    loading.value = false;
-  }
+const refetch = async () => {
+  await fetchData();
 };
 </script>
 
 <!-- Render DataTable only if data is available -->
 <template>
-  <div v-if="loading" class="py-10 flex justify-center w-full">
+  <div v-if="isLoading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
-
   <div
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <NuxtLink to="/customers/new" class="w-fit self-end">
+    <NuxtLink to="/paymentIntegrations/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
-        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
-        Customer</UiButton
+        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
+        >Configure New</UiButton
       >
     </NuxtLink>
     <UiDataTable :columns="columns" :data="data">
@@ -73,7 +56,7 @@ const searchHandler = async () => {
             class="md:w-[100px] lg:w-[300px]"
             v-model="keyword"
           />
-          <UiButton @click="searchHandler">
+          <UiButton @click="">
             <Icon
               name="svg-spinners:8-dots-rotate"
               v-if="isLoading"
@@ -85,7 +68,9 @@ const searchHandler = async () => {
       </template>
     </UiDataTable>
   </div>
-
+  <!-- <div v-else-if="data && !isError && data?.length <= 0">
+    <UiNoResultFound title="Sorry, No customer found." />
+  </div> -->
   <div v-if="isError">
     <ErrorMessage :retry="refetch" title="Something went wrong." />
   </div>

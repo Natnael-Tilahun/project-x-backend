@@ -12,6 +12,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 
 const route = useRoute();
 const { getMerchantById, updateMerchant, isLoading, isSubmitting } =
@@ -325,7 +326,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       <UiNoResultFound title="Sorry, No merchant found." />
     </div>
     <div v-else-if="isError">
-      <UiErrorMessage title="Something went wrong." />
+      <ErrorMessage title="Something went wrong." />
     </div>
   </div>
 </template>

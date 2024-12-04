@@ -1,0 +1,76 @@
+<script lang="ts" setup>
+import { ref } from "vue";
+import { toast } from "~/components/ui/toast";
+import { PaymentOperationType } from "@/global-types";
+import { columns } from "~/components/paymentOperations/columns";
+
+const { getPaymentIntegrations, getPaymentIntegrationById } =
+  usePaymentIntegrations();
+
+const openItems = ref("configuration");
+const route = useRoute();
+
+const integrationId = ref<string>("");
+const loading = ref(false);
+const isError = ref(false);
+const data = ref<PaymentOperation[]>([]);
+integrationId.value = route.params.id;
+const activeTab = route.query.activeTab as string;
+console.log("integrationId: ", integrationId.value);
+
+const getAllPaymentOperations = async () => {
+  loading.value = true; // Set loading state
+  try {
+    const response = await getPaymentIntegrationById(integrationId.value);
+    data.value = response.paymentOperations || [];
+    console.log("data: ", data.value);
+  } catch (err) {
+    console.error("Error fetching payment integration operations:", err);
+    isError.value = true;
+  } finally {
+    loading.value = false; // Reset loading state
+  }
+};
+
+await useAsyncData(
+  "paymentOperationData",
+  async () => await getAllPaymentOperations()
+);
+
+const refetch = async () => {
+  await getAllPaymentOperations();
+};
+</script>
+
+<template>
+  <div
+    v-if="loading"
+    class="py-10 flex justify-center w-full h-60 md:h-[500px] items-center"
+  >
+    <UiLoading />
+  </div>
+  <div
+    v-else-if="data && !isError && !loading"
+    class="py-5 flex flex-col space-y-10 mx-auto"
+  >
+    <UiButton
+      @click="
+        navigateTo({
+          path: route.path,
+          query: {
+            activeTab: 'newPaymentOperation',
+          },
+        })
+      "
+      class="w-fit self-end px-5"
+      ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Configure
+      New</UiButton
+    >
+    <UiDataTable :columns="columns" :data="data">
+      <template v-slot:toolbar="{ table }"> </template>
+    </UiDataTable>
+  </div>
+  <div v-if="isError && !loading">
+    <ErrorMessage :retry="refetch" title="Something went wrong." />
+  </div>
+</template>
