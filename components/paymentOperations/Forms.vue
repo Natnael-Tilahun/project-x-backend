@@ -50,7 +50,7 @@ const formForm = useForm<Form>({
 const isNewForm = ref(true);
 
 const props = defineProps<{
-  form?: Form;
+  // form?: Form;
   operationIdProps?: string;
 }>();
 

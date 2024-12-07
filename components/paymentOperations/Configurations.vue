@@ -436,7 +436,6 @@ const copyToClipboard = (data: any) => {
         </UiTabsContent>
         <UiTabsContent class="p-6" value="form">
           <PaymentOperationsForms
-            :form="data?.form"
             :operationIdProps="operationId"
           />
         </UiTabsContent>

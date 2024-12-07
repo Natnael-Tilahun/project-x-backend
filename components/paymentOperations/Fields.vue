@@ -27,25 +27,23 @@ const { getFormById } = useForms();
 const loading = ref(isLoading.value);
 const isDeleting = ref(false);
 const isError = ref(false);
-const operationId = ref<string>("");
 const formId = ref<string>("");
 
 // Initialize formId and operationId from both route and props
 const props = defineProps<{
   fields?: Field[];
-  operationIdProps?: string;
   formIdProps?: string;
 }>();
 
 // Set operationId and formId with priority to props over route
-operationId.value =
-  props.operationIdProps || (route.query.operationId as string) || "";
-formId.value = props.formIdProps || (route.query.formId as string) || "";
+formId.value = props?.formIdProps || (route.query.formId as string) || "";
 
 const fields = ref<Field[]>(props?.fields || []);
 const form = useForm<Field>({
   validationSchema: formFieldsFormSchema,
 });
+
+console.log("formId: ", formId.value)
 
 // Modify getFormData to check for formId before making the request
 const getFormData = async () => {
@@ -61,6 +59,7 @@ const getFormData = async () => {
       return;
     }
     const data = await getFormById(formId.value);
+    console.log("form data: ", data)
     fields.value = data.fields || [];
   } catch (err) {
     console.error("Error fetching form fields:", err);
