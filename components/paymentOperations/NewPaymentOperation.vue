@@ -40,8 +40,8 @@ const props = defineProps<{
   integrationId: string;
 }>();
 
-if (props.integrationId) {
-  integrationId.value = props.integrationId;
+if (props?.integrationId) {
+  integrationId.value = props?.integrationId;
 }
 
 // Watch for changes in the route's query parameters
@@ -382,16 +382,12 @@ function splitPath(path: any) {
 
         <UiTabsContent class="text-base h-full p-6 space-y-4" value="form">
           <PaymentOperationsForms
-            :form="data?.form"
             :operationIdProps="operationId"
           />
         </UiTabsContent>
 
         <UiTabsContent class="text-base h-full p-6 space-y-4" value="fields">
-          <PaymentOperationsFields
-            :fields="data?.fields"
-            :formIdProps="formId"
-          />
+          <PaymentOperationsFields />
         </UiTabsContent>
       </UiTabs>
     </form>
