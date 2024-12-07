@@ -216,7 +216,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                     <div
                       variant="outline"
                       role="combobox"
-                      class="w-full text-sm text-left border h-10 flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
+                      class="w-full text-sm text-left border h-14 flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
                       :class="{
                         'text-muted-foreground':
                           !selectedDynamicPaymentMenus?.length,
@@ -304,10 +304,10 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <UiPopover>
                 <UiPopoverTrigger asChild>
                   <FormControl>
-                    <div
+                    <p
                       variant="outline"
                       role="combobox"
-                      class="w-full text-sm text-left border h-10 flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
+                      class="w-full h-16 text-sm text-left border flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
                       :class="{
                         'text-muted-foreground': !selectedChildren?.length,
                       }"
@@ -323,7 +323,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                         name="material-symbols:unfold-more-rounded"
                         class="ml-2 h-4 w-4 shrink-0 opacity-50"
                       ></Icon>
-                    </div>
+                    </p>
                   </FormControl>
                 </UiPopoverTrigger>
                 <UiPopoverContent class="w-[200px] p-0">
