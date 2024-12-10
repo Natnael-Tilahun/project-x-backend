@@ -16,6 +16,7 @@ import { PaymentOperationType } from "@/global-types";
 const openItems = ref("info");
 const route = useRoute();
 const { createNewPaymentOperation, isLoading } = usePaymentOperations();
+const { getIntegrations } = useIntegrations();
 
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
@@ -24,6 +25,7 @@ const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<PaymentOperation>();
 const apiOperations = ref<ApiOperation[]>([]);
+const apiIntegrations = ref<ApiIntegration[]>([]);
 const allPaymentOperations = ref<PaymentOperation[]>([]);
 const allPaymentIntegrations = ref<PaymentIntegration[]>([]);
 pathSegments.value = splitPath(fullPath.value);
@@ -39,6 +41,7 @@ const { getPaymentOperations } = usePaymentOperations();
 const props = defineProps<{
   integrationId: string;
 }>();
+const selectedApiIntegration = ref<string>("");
 
 if (props?.integrationId) {
   integrationId.value = props?.integrationId;
@@ -85,6 +88,17 @@ const getAllPaymentIntegrations = async () => {
   }
 };
 
+const getApiIntegrationsData = async () => {
+  try {
+    apiIntegrations.value = await getIntegrations(); // Call your API function to fetch roles
+    selectedApiIntegration.value = apiIntegrations.value[0].id;
+    apiOperations.value = apiIntegrations.value[0].apiOperations;
+  } catch (err) {
+    console.error("Error fetching API integrations:", err);
+    isError.value = true;
+  }
+};
+
 // await useAsyncData("paymentOperationsData", async () => {
 //   await getApiOperationsData();
 //   await getAllPaymentOperations();
@@ -92,9 +106,10 @@ const getAllPaymentIntegrations = async () => {
 // });
 
 onMounted(async () => {
-  await getApiOperationsData();
+  // await getApiOperationsData();
   await getAllPaymentOperations();
   await getAllPaymentIntegrations();
+  await getApiIntegrationsData();
 });
 
 const onSubmit = form.handleSubmit(async (values: any) => {
@@ -144,6 +159,14 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 function splitPath(path: any) {
   return path.split("/").filter(Boolean);
 }
+
+watch(selectedApiIntegration, async (newApiIntegrationId) => {
+  apiIntegrations.value.filter((integration) => {
+    if (integration.id === newApiIntegrationId) {
+      apiOperations.value = integration.apiOperations;
+    }
+  });
+});
 </script>
 
 <template>
@@ -237,6 +260,39 @@ function splitPath(path: any) {
                         :value="item"
                       >
                         {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="selectedApiIntegration"
+              v-slot="{ componentField }"
+              name="apiIntegration"
+            >
+              <FormItem>
+                <FormLabel> API Integration </FormLabel>
+                <UiSelect
+                  v-bind="componentField"
+                  @update:modelValue="
+                    (value) => (selectedApiIntegration = value)
+                  "
+                >
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select an API integration" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <FormMessage />
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in apiIntegrations"
+                        :key="item.id"
+                        :value="item.id"
+                      >
+                        {{ item.name }}
                       </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
@@ -381,9 +437,7 @@ function splitPath(path: any) {
         </UiTabsContent>
 
         <UiTabsContent class="text-base h-full p-6 space-y-4" value="form">
-          <PaymentOperationsForms
-            :operationIdProps="operationId"
-          />
+          <PaymentOperationsForms :operationIdProps="operationId" />
         </UiTabsContent>
 
         <UiTabsContent class="text-base h-full p-6 space-y-4" value="fields">

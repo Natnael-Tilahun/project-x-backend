@@ -404,7 +404,7 @@ watch(
               </FormItem>
             </FormField>
 
-            <FormField
+            <!-- <FormField
               :model-value="data?.categoryMenus"
               v-slot="{ componentField, errorMessage }"
               name="categoryMenus"
@@ -492,7 +492,7 @@ watch(
                 </UiPopover>
                 <FormMessage />
               </FormItem>
-            </FormField>
+            </FormField> -->
 
             <FormField
               :model-value="data?.defaultPaymentReason"
