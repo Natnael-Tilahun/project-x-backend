@@ -24,6 +24,7 @@ const {
 } = usePaymentOperations();
 const { getOperations } = useOperations();
 const { getPaymentIntegrations } = usePaymentIntegrations();
+const { getIntegrations } = useIntegrations();
 
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
@@ -32,6 +33,7 @@ const loading = ref(false);
 const isError = ref(false);
 const data = ref<PaymentOperation>();
 const apiOperations = ref<ApiOperation[]>([]);
+const apiIntegrations = ref<ApiIntegration[]>([]);
 const allPaymentOperations = ref<PaymentOperation[]>([]);
 const allPaymentIntegrations = ref<PaymentIntegration[]>([]);
 const tooltipText = ref<string>("Copy to clipboard");
@@ -43,6 +45,7 @@ const activeTab = route.query.activeTab as string;
 const operationId = (route.query.operationId as string) || "";
 const isPreview = ref<boolean>(false);
 const formId = ref<string>("");
+const selectedApiIntegration = ref<string>("");
 
 console.log("operationId: ", operationId);
 
@@ -109,10 +112,38 @@ const getAllPaymentOperations = async () => {
   }
 };
 
+const getApiIntegrationsData = async () => {
+  try {
+    apiIntegrations.value = await getIntegrations(); // Call your API function to fetch roles
+
+    // Find the API integration that contains the current operation
+    const apiIntegrationWithOperation = apiIntegrations.value.find(
+      (integration) =>
+        integration.apiOperations.some(
+          (operation) => operation.id === data.value.apiOperation?.id
+        )
+    );
+
+    // Update apiOperations list for the selected integration
+    if (apiIntegrationWithOperation) {
+      // Set the selected API integration
+      selectedApiIntegration.value = apiIntegrationWithOperation?.id;
+      apiOperations.value = apiIntegrationWithOperation.apiOperations;
+    } else {
+      // Set the selected API integration
+      selectedApiIntegration.value = apiIntegrations.value[0].id;
+      apiOperations.value = apiIntegrations.value[0].apiOperations;
+    }
+  } catch (err) {
+    console.error("Error fetching API integrations:", err);
+    isError.value = true;
+  }
+};
+
 const getPaymentOperationData = async () => {
   try {
     loading.value = true;
-    data.value = await getPaymentOperationById(operationId); // Call your API function to fetch roles
+    data.value = await getPaymentOperationById(operationId);
     formId.value = data.value?.form?.id;
     form.setValues({
       ...data.value,
@@ -131,15 +162,6 @@ const getPaymentOperationData = async () => {
   }
 };
 
-const getApiOperationsData = async () => {
-  try {
-    apiOperations.value = await getOperations(); // Call your API function to fetch roles
-  } catch (err) {
-    console.error("Error fetching API operations:", err);
-    isError.value = true;
-  }
-};
-
 const getAllPaymentIntegrations = async () => {
   try {
     allPaymentIntegrations.value = await getPaymentIntegrations();
@@ -150,17 +172,17 @@ const getAllPaymentIntegrations = async () => {
 };
 
 await useAsyncData("paymentOperationData", async () => {
-  getPaymentOperationData();
-  getApiOperationsData();
-  getAllPaymentOperations();
+  getApiIntegrationsData();
   getAllPaymentIntegrations();
+  getAllPaymentOperations();
+  getPaymentOperationData();
 });
 
 const refetch = async () => {
-  await getPaymentOperationData();
-  await getApiOperationsData();
+  await getApiIntegrationsData();
   await getAllPaymentOperations();
   await getAllPaymentIntegrations();
+  await getPaymentOperationData();
 };
 
 const copyToClipboard = (data: any) => {
@@ -172,6 +194,14 @@ const copyToClipboard = (data: any) => {
     tooltipText.value = "Copy to clipboard";
   }, 2000); // Reset the tooltip text after 2 seconds
 };
+
+watch(selectedApiIntegration, async (newApiIntegrationId) => {
+  apiIntegrations.value.filter((integration) => {
+    if (integration.id === newApiIntegrationId) {
+      apiOperations.value = integration.apiOperations;
+    }
+  });
+});
 </script>
 
 <template>
@@ -285,6 +315,39 @@ const copyToClipboard = (data: any) => {
                         :value="item"
                       >
                         {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="selectedApiIntegration"
+              v-slot="{ componentField }"
+              name="apiIntegration"
+            >
+              <FormItem>
+                <FormLabel> API Integration </FormLabel>
+                <UiSelect
+                  v-bind="componentField"
+                  @update:modelValue="
+                    (value) => (selectedApiIntegration = value)
+                  "
+                >
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select an API integration" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <FormMessage />
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in apiIntegrations"
+                        :key="item.id"
+                        :value="item.id"
+                      >
+                        {{ item.name }}
                       </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
@@ -435,9 +498,7 @@ const copyToClipboard = (data: any) => {
           </div>
         </UiTabsContent>
         <UiTabsContent class="p-6" value="form">
-          <PaymentOperationsForms
-            :operationIdProps="operationId"
-          />
+          <PaymentOperationsForms :operationIdProps="operationId" />
         </UiTabsContent>
 
         <UiTabsContent class="text-base h-full p-6 space-y-4" value="fields">
