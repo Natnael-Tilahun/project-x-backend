@@ -127,7 +127,7 @@ watch(
     </div>
 
     <UiTabs v-model="openItems" class="py- w-full">
-      <UiTabsList class="w-full flex justify-start px-0 pt-5 gap-2">
+      <UiTabsList class="w-full h-full flex justify-start px-0 pt-5 gap-2">
         <UiTabsTrigger
           value="serviceDefinition"
           @click="

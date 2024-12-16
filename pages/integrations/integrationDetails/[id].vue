@@ -14,10 +14,12 @@ import {
 } from "@/components/ui/form";
 import { columns } from "~/components/operations/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import { IntegrationType, Auth, Protocol } from "@/global-types";
 
 const route = useRoute();
 const { getIntegrationById, updateIntegration, isSubmitting, isLoading } =
   useIntegrations();
+const { getAuthConfigs } = useAuthConfigs();
 
 const openItems = ref("serviceDefinition");
 const fullPath = ref(route.fullPath);
@@ -27,6 +29,7 @@ const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<ApiIntegration>();
 const apiOperationsData = ref<ApiOperation>();
+const allAuthConfigs = ref<AuthConfig[]>();
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
 integrationId.value = route.params.id;
@@ -52,6 +55,9 @@ const form = useForm<ApiIntegration>({
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     loading.value = true;
+    values.authConfig = {
+      id: values.authConfig,
+    };
     data.value = await updateIntegration(values.id, values); // Call your API function to fetch profile
     form.setValues(data.value);
     openItems.value = "operations";
@@ -99,10 +105,22 @@ const getIntegrationData = async () => {
   }
 };
 
-getIntegrationData();
+const getApiAuthConfigsData = async () => {
+  try {
+    allAuthConfigs.value = await getAuthConfigs();
+  } catch (err) {
+    console.error("Error fetching api auth configs:", err);
+  }
+};
+
+onMounted(async () => {
+  getIntegrationData();
+  getApiAuthConfigsData();
+});
 
 const refetch = async () => {
   await getIntegrationData();
+  await getApiAuthConfigsData();
 };
 </script>
 
@@ -118,7 +136,7 @@ const refetch = async () => {
 
     <UiTabs v-model="openItems" class="w-full space-y-0">
       <UiTabsList
-        class="w-full overflow-x-scroll flex justify-start gap-2 px-0"
+        class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
         <UiTabsTrigger
           value="serviceDefinition"
@@ -241,6 +259,67 @@ const refetch = async () => {
               </FormItem>
             </FormField>
             <FormField
+              :model-value="data?.apiIntegrationPath"
+              v-slot="{ componentField }"
+              name="apiIntegrationPath"
+            >
+              <FormItem>
+                <FormLabel> API Integration Path </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter API Integration Path"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="data?.host"
+              v-slot="{ componentField }"
+              name="host"
+            >
+              <FormItem>
+                <FormLabel> Host </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter Host"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="data?.protocol"
+              v-slot="{ componentField }"
+              name="protocol"
+            >
+              <FormItem>
+                <FormLabel> Protocol </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a protocol" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(Protocol)"
+                        :key="item"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+              </FormItem>
+            </FormField>
+            <FormField
               :model-value="data?.type"
               v-slot="{ componentField }"
               name="type"
@@ -255,10 +334,13 @@ const refetch = async () => {
                   </FormControl>
                   <UiSelectContent>
                     <UiSelectGroup>
-                      <UiSelectItem value="JSON"> JSON </UiSelectItem>
-                      <UiSelectItem value="SOAP"> SOAP </UiSelectItem>
-                      <UiSelectItem value="XML"> XML </UiSelectItem>
-                      <UiSelectItem value="NONE"> NONE </UiSelectItem>
+                      <UiSelectItem
+                        v-for="item in Object.values(IntegrationType)"
+                        :key="item"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
@@ -279,10 +361,13 @@ const refetch = async () => {
                   </FormControl>
                   <UiSelectContent>
                     <UiSelectGroup>
-                      <UiSelectItem value="BASIC"> BASIC </UiSelectItem>
-                      <UiSelectItem value="BEARER"> BEARER </UiSelectItem>
-                      <UiSelectItem value="OAUTH"> OAUTH </UiSelectItem>
-                      <UiSelectItem value="NONE"> NONE </UiSelectItem>
+                      <UiSelectItem
+                        v-for="item in Object.values(Auth)"
+                        :key="item"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
@@ -355,6 +440,39 @@ const refetch = async () => {
                   />
                 </FormControl>
                 <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="data?.authConfig?.id"
+              v-slot="{ componentField }"
+              name="authConfig"
+            >
+              <FormItem>
+                <FormLabel> Auth Config </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue
+                        :placeholder="
+                          data?.authConfig?.id
+                            ? data?.authConfig?.id
+                            : 'Select an auth config'
+                        "
+                      />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in allAuthConfigs"
+                        :key="item.id"
+                        :value="item.id"
+                      >
+                        {{ item?.authConfigName || item?.authType || item?.id }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
               </FormItem>
             </FormField>
             <FormField

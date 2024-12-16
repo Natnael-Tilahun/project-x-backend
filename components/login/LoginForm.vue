@@ -11,8 +11,12 @@ import {
 } from "@/components/ui/form";
 import { userLoginFormSchema } from "~/validations/userLoginFormSchema";
 import { Toast, ToastAction, useToast } from "~/components/ui/toast";
+import { useAuth } from "~/composables/useAuth";
+import { useRouter } from "vue-router";
+
 const store = useAuthStore();
-const { login, isLoading } = await useAuth();
+const { login, isLoading } = useAuth();
+const router = useRouter();
 let showPassword = ref(false);
 const { toast } = useToast();
 
@@ -51,7 +55,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       <div class="grid gap-3">
         <FormField v-slot="{ componentField }" name="username">
           <FormItem>
-            <FormLabel> Username or Email</FormLabel>
+            <FormLabel>Username or Email</FormLabel>
             <FormControl>
               <UiInput
                 type="text"
