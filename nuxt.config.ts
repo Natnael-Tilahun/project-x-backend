@@ -4,23 +4,27 @@ export default defineNuxtConfig({
   //   preset: "vercel",
   // },
   ssr: false,
+
   runtimeConfig: {
     public: {
       API_BASE_URL: process.env.API_BASE_URL,
     },
   },
+
   devtools: {
     enabled: true,
     timeline: {
       enabled: true,
     },
   },
+
   app: {
     head: {
       title: "Project X Backend",
       link: [],
     },
   },
+
   modules: [
     "@nuxtjs/tailwindcss",
     "@pinia-plugin-persistedstate/nuxt",
@@ -31,12 +35,14 @@ export default defineNuxtConfig({
     "@nuxt/image",
     // "@babel/plugin-syntax-dynamic-import",
   ],
+
   // presets: [
   //  '@nuxt/babel-preset-app',
   // ],
   pinia: {
     storesDirs: ["./stores/**", "./custom-folder/stores/**"],
   },
+
   // colorMode: {
   //   classSuffix: "",
   // },
@@ -53,6 +59,7 @@ export default defineNuxtConfig({
       });
     },
   },
+
   imports: {
     dirs: [
       // Scan top-level modules
@@ -63,10 +70,14 @@ export default defineNuxtConfig({
       "composables/**",
     ],
   },
+
   router: {
     middleware: ["protected"],
   },
+
   experimental: {
     modern: true,
    },
+
+  compatibilityDate: "2024-12-16",
 });

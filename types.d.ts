@@ -1,6 +1,6 @@
 import { PaymentIntegrationType } from "@/global-types";
 import { TransactionAmountType } from "@/global-types";
-import { Visibility, PaymentOperationType, FormType, DataType, TransferParams } from "@/global-types";
+import { Visibility, PaymentOperationType, FormType, DataType, TransferParams, AuthType, Protocol, Auth, IntegrationType } from "@/global-types";
 
 interface User {
   email: string;
@@ -210,26 +210,12 @@ interface Integration {
   paymentSuccessTemplate: string
 }
 
-enum Auth {
-  NONE = "NONE",
-  BASIC = "BASIC",
-  BEARER = "BEARER",
-  OAUTH = "OAUTH"
-}
-
 enum HttpMethod {
   POST = "POST",
   GET = "GET",
   PUT = "PUT",
   PATCH = "PATCH",
   OPTIONS = "OPTIONS",
-  NONE = "NONE"
-}
-
-enum IntegrationType {
-  JSON = "JSON",
-  SOAP = "SOAP",
-  XML = "XML",
   NONE = "NONE"
 }
 
@@ -256,7 +242,11 @@ interface ApiIntegration {
   timeout?: number
   retryRetries?: number
   retryDelay?: number
-  apiOperations: [ApiOperation]
+  apiOperations: [ApiOperation],
+  apiIntegrationPath?: string
+  authConfig?: AuthConfiguration
+  protocol?: Protocol
+  host?: string
 }
 
 enum ResponseScope {
@@ -465,4 +455,30 @@ interface Form {
   paymentIntegration?: PaymentIntegration | null;
   locals?: string[] | null;
   fields?: Field[] | null;
+}
+
+interface AuthConfiguration {
+  id?: string | null;
+  authType: AuthType;
+  authConfigName?: string | null;
+  authConfigDescription?: string | null;
+  username?: string | null;
+  password?: string | null;
+  clientId?: string | null;
+  clientSecret?: string | null;
+  tokenUrl?: string | null;
+  redirectUri?: string | null;
+  codeVerifier?: string | null;
+  scope?: string | null;
+  grantType?: string | null;
+  codeChallenge?: string | null;
+  apiKey?: string | null;
+  jwtToken?: string | null;
+  currentToken?: string | null;
+  sessionCookie?: string | null;
+  additionalParams?: {
+    [key: string]: string;
+  } | null;
+  customAuthOperation?: ApiOperation | null;
+  apiIntegration?: ApiIntegration | null;
 }

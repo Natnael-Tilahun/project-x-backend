@@ -150,7 +150,7 @@ const refetch = async () => {
 
     <UiTabs v-model="openItems" class="w-full space-y-0">
       <UiTabsList
-        class="w-full overflow-x-scroll flex justify-start gap-2 px-0"
+        class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
         <UiTabsTrigger
           value="IntegrationDetails"
