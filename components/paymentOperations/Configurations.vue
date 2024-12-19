@@ -112,34 +112,6 @@ const getAllPaymentOperations = async () => {
   }
 };
 
-const getApiIntegrationsData = async () => {
-  try {
-    apiIntegrations.value = await getIntegrations(); // Call your API function to fetch roles
-
-    // Find the API integration that contains the current operation
-    const apiIntegrationWithOperation = apiIntegrations.value.find(
-      (integration) =>
-        integration.apiOperations.some(
-          (operation) => operation.id === data.value.apiOperation?.id
-        )
-    );
-
-    // Update apiOperations list for the selected integration
-    if (apiIntegrationWithOperation) {
-      // Set the selected API integration
-      selectedApiIntegration.value = apiIntegrationWithOperation?.id;
-      apiOperations.value = apiIntegrationWithOperation.apiOperations;
-    } else {
-      // Set the selected API integration
-      selectedApiIntegration.value = apiIntegrations.value[0].id;
-      apiOperations.value = apiIntegrations.value[0].apiOperations;
-    }
-  } catch (err) {
-    console.error("Error fetching API integrations:", err);
-    isError.value = true;
-  }
-};
-
 const getPaymentOperationData = async () => {
   try {
     loading.value = true;
@@ -162,6 +134,32 @@ const getPaymentOperationData = async () => {
   }
 };
 
+const getApiIntegrationsData = async () => {
+  try {
+    apiIntegrations.value = await getIntegrations(); // Call your API function to fetch roles
+    // Find the API integration that contains the current operation
+    const apiIntegrationWithOperation = apiIntegrations.value.find(
+      (integration) =>
+        integration?.apiOperations?.some(
+          (operation) => operation.id === data.value?.apiOperation?.id
+        )
+    );
+    // Update apiOperations list for the selected integration
+    if (apiIntegrationWithOperation) {
+      // Set the selected API integration
+      selectedApiIntegration.value = apiIntegrationWithOperation?.id;
+      apiOperations.value = apiIntegrationWithOperation.apiOperations;
+    } else {
+      // Set the selected API integration
+      selectedApiIntegration.value = apiIntegrations.value[0]?.id;
+      apiOperations.value = apiIntegrations.value[0]?.apiOperations;
+    }
+  } catch (err) {
+    console.error("Error fetching API integrations:", err);
+    isError.value = true;
+  }
+};
+
 const getAllPaymentIntegrations = async () => {
   try {
     allPaymentIntegrations.value = await getPaymentIntegrations();
@@ -171,18 +169,70 @@ const getAllPaymentIntegrations = async () => {
   }
 };
 
+const fetchData = async () => {
+  isLoading.value = true;
+  isError.value = false;
+  try {
+    [
+      allPaymentOperations.value,
+      allPaymentIntegrations.value,
+      apiIntegrations.value,
+      data.value,
+    ] = await Promise.all([
+      getPaymentOperations().catch(() => []),
+      getPaymentIntegrations().catch(() => []),
+      getIntegrations().catch(() => []),
+      getPaymentOperationById(operationId).catch(() => []),
+    ]);
+    isError.value = false;
+
+    allPaymentOperations.value = allPaymentOperations.value.filter(
+      (operation) =>
+        operation?.paymentIntegration?.id === data.value?.paymentIntegration?.id
+    );
+    // console.log("payOps: ", payOps);
+    formId.value = data.value?.form?.id;
+
+    // Find the API integration that contains the current operation
+    const apiIntegrationWithOperation = apiIntegrations.value.find(
+      (integration) =>
+        integration?.apiOperations?.some(
+          (operation) => operation.id === data.value?.apiOperation?.id
+        )
+    );
+
+    // Update apiOperations list for the selected integration
+    if (apiIntegrationWithOperation) {
+      // Set the selected API integration
+      selectedApiIntegration.value = apiIntegrationWithOperation?.id;
+      apiOperations.value = apiIntegrationWithOperation.apiOperations;
+    } else {
+      // Set the selected API integration
+      selectedApiIntegration.value = apiIntegrations.value[0]?.id;
+      apiOperations.value = apiIntegrations.value[0]?.apiOperations;
+    }
+  } catch (error) {
+    isError.value = true;
+    console.error("Error fetching data:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 await useAsyncData("paymentOperationData", async () => {
-  getApiIntegrationsData();
-  getAllPaymentIntegrations();
-  getAllPaymentOperations();
-  getPaymentOperationData();
+  await fetchData();
+  // getApiIntegrationsData();
+  // getPaymentOperationData();
+  // getAllPaymentIntegrations();
+  // getAllPaymentOperations();
 });
 
 const refetch = async () => {
-  await getApiIntegrationsData();
-  await getAllPaymentOperations();
-  await getAllPaymentIntegrations();
-  await getPaymentOperationData();
+  await fetchData();
+  // await getApiIntegrationsData();
+  // await getPaymentOperationData();
+  // await getAllPaymentOperations();
+  // await getAllPaymentIntegrations();
 };
 
 const copyToClipboard = (data: any) => {
@@ -235,6 +285,11 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
             class="text-lg font-normal data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-2 data-[state=inactive]:border rounded-t-2xl data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted"
             value="fields"
             >Fields</UiTabsTrigger
+          >
+          <UiTabsTrigger
+            class="text-lg font-normal w-fit min-w-[150px] data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-2 data-[state=inactive]:border rounded-t-2xl data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted"
+            value="mapping"
+            >Api request mapping</UiTabsTrigger
           >
         </UiTabsList>
         <UiTabsContent class="p-6" value="info">
@@ -404,6 +459,7 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
                         v-for="item in allPaymentOperations"
                         :key="item.id"
                         :value="item.id"
+                        :disabled="true"
                       >
                         {{ item.paymentOperationType }}
                       </UiSelectItem>
@@ -496,6 +552,12 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
               </UiButton>
             </div>
           </div>
+        </UiTabsContent>
+        <UiTabsContent class="p-6" value="mapping">
+          <PaymentOperationsMapping
+            :operationIdProps="operationId"
+            :apiRequestMappingsRegistry="data?.apiRequestMappingsRegistry"
+          />
         </UiTabsContent>
         <UiTabsContent class="p-6" value="form">
           <PaymentOperationsForms :operationIdProps="operationId" />

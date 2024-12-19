@@ -99,18 +99,50 @@ const getApiIntegrationsData = async () => {
   }
 };
 
+const fetchData = async () => {
+  isLoading.value = true;
+  isError.value = false;
+  try {
+    [
+      apiOperations.value,
+      allPaymentOperations.value,
+      allPaymentIntegrations.value,
+      apiIntegrations.value,
+    ] = await Promise.all([
+      getOperations().catch(() => []),
+      getPaymentOperations().catch(() => []),
+      getPaymentIntegrations().catch(() => []),
+      getIntegrations().catch(() => []),
+    ]);
+    isError.value = false;
+
+    allPaymentOperations.value = allPaymentOperations.value.filter(
+      (operation) => operation?.paymentIntegration?.id === integrationId.value
+    );
+
+    selectedApiIntegration.value = apiIntegrations.value[0].id;
+    apiOperations.value = apiIntegrations.value[0].apiOperations;
+  } catch (error) {
+    isError.value = true;
+    console.error("Error fetching data:", error);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
 // await useAsyncData("paymentOperationsData", async () => {
 //   await getApiOperationsData();
 //   await getAllPaymentOperations();
 //   await getAllPaymentIntegrations();
 // });
 
-onMounted(async () => {
-  // await getApiOperationsData();
-  await getAllPaymentOperations();
-  await getAllPaymentIntegrations();
-  await getApiIntegrationsData();
+await useAsyncData("paymentOperationData", async () => {
+  await fetchData();
 });
+
+const refetch = async () => {
+  await fetchData();
+};
 
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
@@ -131,6 +163,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           ? { id: values.apiOperation }
           : values.apiOperation,
       form: values.form ? values.form : null,
+      apiRequestMappingsRegistry: values.apiRequestMappingsRegistry
+        ? values.apiRequestMappingsRegistry
+        : [],
     };
     console.log("Payment Operation Values: ", paymentOperationData);
     const response = await createNewPaymentOperation(paymentOperationData); // Call your API function to fetch profile
@@ -200,6 +235,16 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
               operationId == undefined
             "
             >Fields</UiTabsTrigger
+          >
+          <UiTabsTrigger
+            class="text-lg data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-2 data-[state=inactive]:border rounded-t-2xl data-[state=inactive]:bg-muted data-[state=inactive]:text-muted-foreground"
+            value="mapping"
+            :disabled="
+              operationId == '' ||
+              operationId == null ||
+              operationId == undefined
+            "
+            >Mapping</UiTabsTrigger
           >
         </UiTabsList>
         <UiTabsContent class="p-6" value="info">
@@ -347,6 +392,7 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
                         v-for="item in allPaymentOperations"
                         :value="item.id"
                         :key="item.id"
+                        :disabled="true"
                       >
                         {{ item.paymentOperationType }}
                       </UiSelectItem>
@@ -384,34 +430,7 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
                 </UiSelect>
               </FormItem>
             </FormField>
-            <!-- <FormField
-              :model-value="data?.paymentIntegration"
-              v-slot="{ componentField }"
-              name="paymentIntegration"
-            >
-              <FormItem>
-                <FormLabel> Payment Integration </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue
-                        placeholder="Select a payment integration"
-                      />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in allPaymentIntegrations"
-                        :value="item.id"
-                      >
-                        {{ item.integrationName }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField> -->
+            
 
             <div class="col-span-full w-full py-4 flex justify-end gap-4">
               <UiButton
@@ -434,6 +453,13 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
               </UiButton>
             </div>
           </div>
+        </UiTabsContent>
+
+        <UiTabsContent class="p-6" value="mapping">
+          <PaymentOperationsMapping
+            :operationIdProps="operationId"
+            :apiRequestMappingsRegistry="data?.apiRequestMappingsRegistry"
+          />
         </UiTabsContent>
 
         <UiTabsContent class="text-base h-full p-6 space-y-4" value="form">

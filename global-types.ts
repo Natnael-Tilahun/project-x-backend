@@ -117,3 +117,14 @@ export enum IntegrationType {
   XML = "XML",
   NONE = "NONE"
 }
+
+export enum MappingPathPrefix {
+  ENQUIRY_FORM_INPUT_PREFIX = "$enquiryFormInput.",
+  ENQUIRY_API_RESPONSE_PREFIX = "$enquiryApiResponse.",
+  PAYMENT_FORM_INPUT_PREFIX = "$paymentFormInput.",
+  NOTIFY_API_RESPONSE_PREFIX = "$notifyApiResponse.",
+  CURRENT_CUSTOMER_PREFIX = "$currentCustomer.",
+  DEBITED_ACCOUNT_PREFIX = "$debitedAccount.",
+  CREDITED_ACCOUNT_PREFIX = "$creditedAccount.",
+  TRANSACTION_PREFIX = "$transaction.",
+}

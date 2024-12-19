@@ -400,6 +400,12 @@ interface Local {
   localName?: string | null;
 }
 
+interface ApiRequestMappingsRegistry {
+  apiRequestInputName: string;
+  mappingPath: string;
+}
+
+
 interface PaymentOperation {
   id?: string | null ;
   name?: string | null;
@@ -410,6 +416,7 @@ interface PaymentOperation {
   paymentIntegration?: PaymentIntegration | null;
   apiOperation?: ApiOperation | null;
   form?: Form | null;
+  apiRequestMappingsRegistry?: ApiRequestMappingsRegistry[] | null;
 }
 
 interface Field {
