@@ -1,6 +1,6 @@
 import { PaymentIntegrationType } from "@/global-types";
 import { TransactionAmountType } from "@/global-types";
-import { Visibility, PaymentOperationType, FormType, DataType, TransferParams, AuthType, Protocol, Auth, IntegrationType } from "@/global-types";
+import { Visibility, PaymentOperationType, FormType, DataType, TransferParams, AuthType, Protocol, Auth, IntegrationType, MenuLayoutType, PaginationType } from "@/global-types";
 
 interface User {
   email: string;
@@ -393,6 +393,12 @@ interface Menu {
   enabled?: boolean | null;
   productMenus?: PaymentIntegration[] | null;
   parent?: Menu | null;
+  children?: Menu[] | null;
+  menuLayoutType?: MenuLayoutType | null;
+  gridNumberOfColumns?: number | null;
+  sortOrder?: number | null;
+  paginationType?: PaginationType | null;
+  paginationSize?: number | null;
 }
 
 interface Local { 

@@ -128,3 +128,14 @@ export enum MappingPathPrefix {
   CREDITED_ACCOUNT_PREFIX = "$creditedAccount.",
   TRANSACTION_PREFIX = "$transaction.",
 }
+
+export enum MenuLayoutType {
+  GRID = "GRID",
+  LIST = "LIST",
+}
+
+export enum PaginationType {
+  PAGINATED = "PAGINATED",
+  INFINITE_SCROLL = "INFINITE_SCROLL",
+  NONE = "NONE",
+}

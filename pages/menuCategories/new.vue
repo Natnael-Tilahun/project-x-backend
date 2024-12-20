@@ -7,6 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { PaginationType, MenuLayoutType } from "@/global-types";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 import { menuFormSchema } from "~/validations/menuFormSchema";
@@ -147,6 +148,91 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                   <UiInput
                     type="text"
                     placeholder="Enter default language code"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="menuLayoutType">
+              <FormItem>
+                <FormLabel> Menu Layout Type </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a menu layout type" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(MenuLayoutType)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="gridNumberOfColumns">
+              <FormItem>
+                <FormLabel> Grid Number Of Columns </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="number"
+                    placeholder="Enter grid number of columns"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="sortOrder">
+              <FormItem>
+                <FormLabel> Sort Order </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="number"
+                    placeholder="Enter sort order"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="paginationType">
+              <FormItem>
+                <FormLabel> Pagination Type </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a Pagination type" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(PaginationType)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="paginationSize">
+              <FormItem>
+                <FormLabel> Pagination Size </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="number"
+                    placeholder="Enter pagination size"
                     v-bind="componentField"
                   />
                 </FormControl>

@@ -60,6 +60,38 @@ export const columns: ColumnDef<Menu>[] = [
     },
   },
   {
+    accessorKey: "menuLayoutType",
+    header: "Layout Type",
+    cell: ({ row }) => {
+      const menuLayoutType = row.getValue("menuLayoutType");
+      return menuLayoutType ? h("p", menuLayoutType) : h("p", "-");
+    },
+  },
+  {
+    accessorKey: "gridNumberOfColumns",
+    header: "Grid Num Of Columns",
+    cell: ({ row }) => {
+      const gridNumberOfColumns = row.getValue("gridNumberOfColumns");
+      return gridNumberOfColumns ? h("p", gridNumberOfColumns) : h("p", "-");
+    },
+  },
+  {
+    accessorKey: "sortOrder",
+    header: "Sort Order",
+    cell: ({ row }) => {
+      const sortOrder = row.getValue("sortOrder");
+      return sortOrder ? h("p", sortOrder) : h("p", "-");
+    },
+  },
+  {
+    accessorKey: "paginationType",
+    header: "Pagination Type",
+    cell: ({ row }) => {
+      const paginationType = row.getValue("paginationType");
+      return paginationType ? h("p", paginationType) : h("p", "-");
+    },
+  },
+  {
     accessorKey: "enabled",
     header: "Enabled",
     cell: ({ row }) => {
