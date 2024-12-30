@@ -8,7 +8,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { newCustomerformSchema } from "~/validations/newCustomerformSchema";
-import { ref } from "vue";
+import { ref, onBeforeUnmount } from "vue";
 import { toast } from "~/components/ui/toast";
 const { createNeweCustomer, isLoading } = useCustomers();
 const isError = ref(false);
@@ -41,14 +41,24 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 });
 
 const handleFileChange = (event: Event) => {
+  // Revoke previous URL if it exists
+  if (image.value) {
+    URL.revokeObjectURL(image.value);
+  }
+
   const target = event.target as HTMLInputElement;
   const file = target.files ? target.files[0] : null;
   if (file) {
     image.value = URL.createObjectURL(file);
-    // form.setFieldValue("imageUrl", image.value);
-    console.log("imalge: ", image.value);
   }
 };
+
+// Clean up on component unmount
+onBeforeUnmount(() => {
+  if (image.value) {
+    URL.revokeObjectURL(image.value);
+  }
+});
 
 //  // Create a URL for the binary data
 //  const url = URL.createObjectURL(blob);

@@ -7,7 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ref } from "vue";
+import { ref, onBeforeUnmount } from "vue";
 import { toast } from "~/components/ui/toast";
 import { newMerchantFormSchema } from "~/validations/newMerchantFormSchema";
 const { createNeweMerchant, isLoading } = useMerchants();
@@ -38,6 +38,12 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isLoading.value = false;
     isSubmitting.value = false;
   }
+});
+
+onBeforeUnmount(() => {
+  isError.value = false;
+  data.value = undefined;
+  isSubmitting.value = false;
 });
 </script>
 

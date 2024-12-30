@@ -70,7 +70,11 @@ export const useAuthStore = defineStore("auth", {
       return (role: string) => state.userRole === role;
     }
   },
+  // persist: {
+  //   storage: persistedState.cookies,
+  // },
   persist: {
-    storage: persistedState.cookies,
+    storage: sessionStorage,
+    paths: ['isAuthenticated', 'accessToken', 'refreshToken', 'refreshTokenExpiresIn']
   },
 });

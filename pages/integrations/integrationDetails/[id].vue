@@ -521,7 +521,7 @@ const refetch = async () => {
         value="operations"
         class="text-base bg-background p-6 rounded-lg"
       >
-        <div v-if="isLoading" class="py-10 flex justify-center w-full">
+        <div v-if="loading" class="py-10 flex justify-center w-full">
           <UiLoading />
         </div>
         <div v-else-if="data" class="py-5 flex flex-col space-y-10 mx-auto">
@@ -538,7 +538,7 @@ const refetch = async () => {
             ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
             >Configure New</UiButton
           >
-          <UiDataTable :columns="columns" :data="data?.apiOperations">
+          <UiDataTable :columns="columns" :data="data?.apiOperations || []">
             <template v-slot:toolbar="{ table }"> </template>
           </UiDataTable>
         </div>
