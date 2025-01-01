@@ -12,6 +12,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { HttpMethod, BodyType } from "@/global-types";
 
 const route = useRoute();
 const { getOperationById, updateOperation, isSubmitting, isLoading } =
@@ -112,7 +113,7 @@ const copyToClipboard = (data: any) => {
             "
             class="text-lg font-normal data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-2 data-[state=inactive]:border rounded-t-2xl data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted"
             value="requestInputs"
-            >Request Inputss</UiTabsTrigger
+            >Request Inputs</UiTabsTrigger
           >
           <UiTabsTrigger
             class="text-lg font-normal data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-2 data-[state=inactive]:border rounded-t-2xl data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted"
@@ -163,7 +164,7 @@ const copyToClipboard = (data: any) => {
               name="httpMethod"
             >
               <FormItem>
-                <FormLabel> HTTP Method </FormLabel>
+                <FormLabel> HTTP Method</FormLabel>
                 <UiSelect v-bind="componentField">
                   <FormControl>
                     <UiSelectTrigger>
@@ -172,10 +173,38 @@ const copyToClipboard = (data: any) => {
                   </FormControl>
                   <UiSelectContent>
                     <UiSelectGroup>
-                      <UiSelectItem value="GET"> GET </UiSelectItem>
-                      <UiSelectItem value="POST"> POST </UiSelectItem>
-                      <UiSelectItem value="PUT"> PUT </UiSelectItem>
-                      <UiSelectItem value="DELETE"> DELETE </UiSelectItem>
+                      <UiSelectItem
+                        v-for="item in Object.values(HttpMethod)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="data?.bodyType"
+              v-slot="{ componentField }"
+              name="bodyType"
+            >
+              <FormItem>
+                <FormLabel> Body Type</FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a body type" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(BodyType)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>

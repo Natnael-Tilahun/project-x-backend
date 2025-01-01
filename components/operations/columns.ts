@@ -52,23 +52,11 @@ export const columns: ColumnDef<ApiOperation>[] = [
     },
   },
   {
-    accessorKey: "requestBodyTemplate",
-    header: "Request Body Template",
-    cell: ({ row }) => {
-      const requestBodyTemplate = row.getValue("requestBodyTemplate");
-      return requestBodyTemplate ? h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("requestBodyTemplate")
-      ) : h("p", "-");
-    },
-  },
-  {
     accessorKey: "apiIntegration",
     header: "API Integration",
     cell: ({ row }) => {
       const apiIntegration = row.getValue("apiIntegration");
-      return apiIntegration ? h("p", apiIntegration) : h("p", "-");
+      return apiIntegration ? h("p", apiIntegration?.name) : h("p", "-");
     },
   },
   {
@@ -79,7 +67,7 @@ export const columns: ColumnDef<ApiOperation>[] = [
       return responseOutputs ? h(
         "div",
         { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("responseOutputs")
+        row.getValue("responseOutputs")?.length
       ) : h("p", "-");
     },
   },
@@ -91,7 +79,7 @@ export const columns: ColumnDef<ApiOperation>[] = [
       return requestInputs ? h(
         "div",
         { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("requestInputs")
+        row.getValue("requestInputs")?.length
       ) : h("p", "-");
     },
   },

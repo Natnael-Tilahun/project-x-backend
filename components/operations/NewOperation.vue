@@ -11,7 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
+import { BodyType, HttpMethod } from "@/global-types";
 const openItems = ref("info");
 const route = useRoute();
 const { getOperationById, updateOperation, createNewOperation, isLoading } =
@@ -152,10 +152,38 @@ function splitPath(path: any) {
                   </FormControl>
                   <UiSelectContent>
                     <UiSelectGroup>
-                      <UiSelectItem value="GET"> GET </UiSelectItem>
-                      <UiSelectItem value="POST"> POST </UiSelectItem>
-                      <UiSelectItem value="PUT"> PUT </UiSelectItem>
-                      <UiSelectItem value="DELETE"> DELETE </UiSelectItem>
+                      <UiSelectItem
+                        v-for="item in Object.values(HttpMethod)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="data?.bodyType"
+              v-slot="{ componentField }"
+              name="bodyType"
+            >
+              <FormItem>
+                <FormLabel> Body Type</FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a body type" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(BodyType)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>

@@ -223,6 +223,7 @@ interface ApiOperation {
   id: string
   operationName: string
   httpMethod: HttpMethod
+  bodyType?: BodyType
   endpointPath: string
   requestBodyTemplate?: string
   responseOutputs?: []

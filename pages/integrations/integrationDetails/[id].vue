@@ -12,7 +12,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { columns } from "~/components/operations/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { IntegrationType, Auth, Protocol } from "@/global-types";
 
@@ -20,15 +19,13 @@ const route = useRoute();
 const { getIntegrationById, updateIntegration, isSubmitting, isLoading } =
   useIntegrations();
 const { getAuthConfigs } = useAuthConfigs();
-
 const openItems = ref("serviceDefinition");
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
 const integrationId = ref<string>("");
-const loading = ref(isLoading.value);
+const loading = ref(false);
 const isError = ref(false);
 const data = ref<ApiIntegration>();
-const apiOperationsData = ref<ApiOperation>();
 const allAuthConfigs = ref<AuthConfig[]>();
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
@@ -55,9 +52,11 @@ const form = useForm<ApiIntegration>({
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     loading.value = true;
-    values.authConfig = {
-      id: values.authConfig,
-    };
+    values.authConfig = values.authConfig
+      ? {
+          id: values.authConfig,
+        }
+      : null;
     data.value = await updateIntegration(values.id, values); // Call your API function to fetch profile
     form.setValues(data.value);
     openItems.value = "operations";
@@ -92,7 +91,6 @@ const displayApiDataOnLabel = (data: any) => {
 
 const getIntegrationData = async () => {
   try {
-    isLoading.value = true;
     loading.value = true;
     data.value = await getIntegrationById(integrationId.value); // Call your API function to fetch roles
     form.setValues(data.value);
@@ -100,7 +98,6 @@ const getIntegrationData = async () => {
     console.error("Error fetching integrations:", err);
     isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
   }
 };
@@ -204,347 +201,334 @@ const refetch = async () => {
         value="serviceDefinition"
         class="text-base bg-background p-6 rounded-lg"
       >
-        <form @submit="onSubmit">
-          <div class="grid grid-cols-2 gap-6">
-            <FormField
-              :model-value="data?.id"
-              v-slot="{ componentField }"
-              name="id"
-            >
-              <FormItem>
-                <FormLabel> ID </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    disabled
-                    placeholder="CBE050202"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.name"
-              v-slot="{ componentField }"
-              name="name"
-            >
-              <FormItem>
-                <FormLabel> Name </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter name"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.url"
-              v-slot="{ componentField }"
-              name="url"
-            >
-              <FormItem>
-                <FormLabel> URL </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter URL"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.apiIntegrationPath"
-              v-slot="{ componentField }"
-              name="apiIntegrationPath"
-            >
-              <FormItem>
-                <FormLabel> API Integration Path </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter API Integration Path"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.host"
-              v-slot="{ componentField }"
-              name="host"
-            >
-              <FormItem>
-                <FormLabel> Host </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter Host"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.protocol"
-              v-slot="{ componentField }"
-              name="protocol"
-            >
-              <FormItem>
-                <FormLabel> Protocol </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a protocol" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in Object.values(Protocol)"
-                        :key="item"
-                        :value="item"
-                      >
-                        {{ item }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.type"
-              v-slot="{ componentField }"
-              name="type"
-            >
-              <FormItem>
-                <FormLabel> Type </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a service type" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in Object.values(IntegrationType)"
-                        :key="item"
-                        :value="item"
-                      >
-                        {{ item }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.auth"
-              v-slot="{ componentField }"
-              name="auth"
-            >
-              <FormItem>
-                <FormLabel> Auth </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a auth type" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in Object.values(Auth)"
-                        :key="item"
-                        :value="item"
-                      >
-                        {{ item }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.version"
-              v-slot="{ componentField }"
-              name="version"
-            >
-              <FormItem>
-                <FormLabel> Version </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter version"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.timeout"
-              v-slot="{ componentField }"
-              name="timeout"
-            >
-              <FormItem>
-                <FormLabel> Timeout </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="number"
-                    placeholder="Enter timeout"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.retryRetries"
-              v-slot="{ componentField }"
-              name="retryRetries"
-            >
-              <FormItem>
-                <FormLabel> Retry Retries </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="number"
-                    placeholder="Enter retry retries"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.retryDelay"
-              v-slot="{ componentField }"
-              name="retryDelay"
-            >
-              <FormItem>
-                <FormLabel> Retry Delay </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="number"
-                    placeholder="Enter retry delay"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.authConfig?.id"
-              v-slot="{ componentField }"
-              name="authConfig"
-            >
-              <FormItem>
-                <FormLabel> Auth Config </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue
-                        :placeholder="
-                          data?.authConfig?.id
-                            ? data?.authConfig?.id
-                            : 'Select an auth config'
-                        "
-                      />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in allAuthConfigs"
-                        :key="item.id"
-                        :value="item.id"
-                      >
-                        {{ item?.authConfigName || item?.authType || item?.id }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.description"
-              v-slot="{ componentField }"
-              name="description"
-            >
-              <FormItem>
-                <FormLabel> Description </FormLabel>
-                <FormControl>
-                  <UiTextarea
-                    placeholder="Enter Description"
-                    class="resize-y"
-                    rows="0"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <div class="col-span-full w-full py-4 flex justify-between">
-              <UiButton
-                :disabled="loading"
-                variant="outline"
-                type="button"
-                size="lg"
-                @click="$router.go(-1)"
+        <div v-if="loading" class="py-10 flex justify-center w-full">
+          <UiLoading />
+        </div>
+        <div v-else-if="data && !isError">
+          <form @submit="onSubmit">
+            <div class="grid grid-cols-2 gap-6">
+              <FormField
+                :model-value="data?.id"
+                v-slot="{ componentField }"
+                name="id"
               >
-                Cancel
-              </UiButton>
-              <UiButton :disabled="loading" size="lg" type="submit">
-                <Icon
-                  name="svg-spinners:8-dots-rotate"
-                  v-if="loading"
-                  class="mr-2 h-4 w-4 animate-spin"
-                ></Icon>
+                <FormItem>
+                  <FormLabel> ID </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="text"
+                      disabled
+                      placeholder="CBE050202"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.name"
+                v-slot="{ componentField }"
+                name="name"
+              >
+                <FormItem>
+                  <FormLabel> Name </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="text"
+                      placeholder="Enter name"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.url"
+                v-slot="{ componentField }"
+                name="url"
+              >
+                <FormItem>
+                  <FormLabel> URL </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="text"
+                      placeholder="Enter URL"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.apiIntegrationPath"
+                v-slot="{ componentField }"
+                name="apiIntegrationPath"
+              >
+                <FormItem>
+                  <FormLabel> API Integration Path </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="text"
+                      placeholder="Enter API Integration Path"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.host"
+                v-slot="{ componentField }"
+                name="host"
+              >
+                <FormItem>
+                  <FormLabel> Host </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="text"
+                      placeholder="Enter Host"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.protocol"
+                v-slot="{ componentField }"
+                name="protocol"
+              >
+                <FormItem>
+                  <FormLabel> Protocol </FormLabel>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue placeholder="Select a protocol" />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem
+                          v-for="item in Object.values(Protocol)"
+                          :key="item"
+                          :value="item"
+                        >
+                          {{ item }}
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.type"
+                v-slot="{ componentField }"
+                name="type"
+              >
+                <FormItem>
+                  <FormLabel> Type </FormLabel>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue placeholder="Select a service type" />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem
+                          v-for="item in Object.values(IntegrationType)"
+                          :key="item"
+                          :value="item"
+                        >
+                          {{ item }}
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.auth"
+                v-slot="{ componentField }"
+                name="auth"
+              >
+                <FormItem>
+                  <FormLabel> Auth </FormLabel>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue placeholder="Select a auth type" />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem
+                          v-for="item in Object.values(Auth)"
+                          :key="item"
+                          :value="item"
+                        >
+                          {{ item }}
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.version"
+                v-slot="{ componentField }"
+                name="version"
+              >
+                <FormItem>
+                  <FormLabel> Version </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="text"
+                      placeholder="Enter version"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.timeout"
+                v-slot="{ componentField }"
+                name="timeout"
+              >
+                <FormItem>
+                  <FormLabel> Timeout </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter timeout"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.retryRetries"
+                v-slot="{ componentField }"
+                name="retryRetries"
+              >
+                <FormItem>
+                  <FormLabel> Retry Retries </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter retry retries"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.retryDelay"
+                v-slot="{ componentField }"
+                name="retryDelay"
+              >
+                <FormItem>
+                  <FormLabel> Retry Delay </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter retry delay"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.authConfig?.id"
+                v-slot="{ componentField }"
+                name="authConfig"
+              >
+                <FormItem>
+                  <FormLabel> Auth Config </FormLabel>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue
+                          :placeholder="
+                            data?.authConfig?.id
+                              ? data?.authConfig?.id
+                              : 'Select an auth config'
+                          "
+                        />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem
+                          v-for="item in allAuthConfigs"
+                          :key="item.id"
+                          :value="item.id"
+                        >
+                          {{
+                            item?.authConfigName || item?.authType || item?.id
+                          }}
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.description"
+                v-slot="{ componentField }"
+                name="description"
+              >
+                <FormItem>
+                  <FormLabel> Description </FormLabel>
+                  <FormControl>
+                    <UiTextarea
+                      placeholder="Enter Description"
+                      class="resize-y"
+                      rows="0"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <div class="col-span-full w-full py-4 flex justify-between">
+                <UiButton
+                  :disabled="loading"
+                  variant="outline"
+                  type="button"
+                  size="lg"
+                  @click="$router.go(-1)"
+                >
+                  Cancel
+                </UiButton>
+                <UiButton :disabled="loading" size="lg" type="submit">
+                  <Icon
+                    name="svg-spinners:8-dots-rotate"
+                    v-if="loading"
+                    class="mr-2 h-4 w-4 animate-spin"
+                  ></Icon>
 
-                Update
-              </UiButton>
+                  Update
+                </UiButton>
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
+        <div v-if="isError">
+          <ErrorMessage :retry="refetch" title="Something went wrong." />
+        </div>
       </UiTabsContent>
 
       <UiTabsContent
         value="operations"
         class="text-base bg-background p-6 rounded-lg"
       >
-        <div v-if="loading" class="py-10 flex justify-center w-full">
-          <UiLoading />
-        </div>
-        <div v-else-if="data" class="py-5 flex flex-col space-y-10 mx-auto">
-          <UiButton
-            @click="
-              navigateTo({
-                path: route.path,
-                query: {
-                  activeTab: 'newOperation',
-                },
-              })
-            "
-            class="w-fit self-end px-5"
-            ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
-            >Configure New</UiButton
-          >
-          <UiDataTable :columns="columns" :data="data?.apiOperations || []">
-            <template v-slot:toolbar="{ table }"> </template>
-          </UiDataTable>
-        </div>
-        <div v-if="isError">
-          <ErrorMessage :retry="refetch" title="Something went wrong." />
-        </div>
+        <Operations :apiIntegrationIdProps="integrationId" />
       </UiTabsContent>
 
       <UiTabsContent

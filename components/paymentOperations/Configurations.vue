@@ -173,47 +173,33 @@ const fetchData = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
-    [
-      allPaymentOperations.value,
-      allPaymentIntegrations.value,
-      apiIntegrations.value,
-      data.value,
-    ] = await Promise.all([
-      getPaymentOperations().catch(() => []),
-      getPaymentIntegrations().catch(() => []),
-      getIntegrations().catch(() => []),
-      getPaymentOperationById(operationId).catch(() => []),
+    // Fetch only what's needed initially
+    const [paymentOperation, integrations] = await Promise.all([
+      getPaymentOperationById(operationId),
+      getIntegrations(),
     ]);
-    isError.value = false;
 
-    allPaymentOperations.value = allPaymentOperations.value.filter(
-      (operation) =>
-        operation?.paymentIntegration?.id === data.value?.paymentIntegration?.id
-    );
-    // console.log("payOps: ", payOps);
-    formId.value = data.value?.form?.id;
+    data.value = paymentOperation;
+    console.log("data: ", data.value);
+    apiIntegrations.value = integrations;
 
-    // Find the API integration that contains the current operation
-    const apiIntegrationWithOperation = apiIntegrations.value.find(
-      (integration) =>
-        integration?.apiOperations?.some(
-          (operation) => operation.id === data.value?.apiOperation?.id
-        )
-    );
+    // Set initial API operations based on the selected integration
+    if (apiIntegrations.value.length > 0) {
+      selectedApiIntegration.value = apiIntegrations.value[0].id;
+      apiOperations.value = apiIntegrations.value[0].apiOperations;
+    }
 
-    // Update apiOperations list for the selected integration
-    if (apiIntegrationWithOperation) {
-      // Set the selected API integration
-      selectedApiIntegration.value = apiIntegrationWithOperation?.id;
-      apiOperations.value = apiIntegrationWithOperation.apiOperations;
-    } else {
-      // Set the selected API integration
-      selectedApiIntegration.value = apiIntegrations.value[0]?.id;
-      apiOperations.value = apiIntegrations.value[0]?.apiOperations;
+    // Only fetch these if needed for the current view
+    if (data.value?.paymentIntegration?.id) {
+      allPaymentOperations.value = await getPaymentOperations();
+      allPaymentOperations.value = allPaymentOperations.value.filter(
+        (op) =>
+          op?.paymentIntegration?.id === data.value?.paymentIntegration?.id
+      );
     }
   } catch (error) {
-    isError.value = true;
     console.error("Error fetching data:", error);
+    isError.value = true;
   } finally {
     isLoading.value = false;
   }
@@ -245,17 +231,40 @@ const copyToClipboard = (data: any) => {
   }, 2000); // Reset the tooltip text after 2 seconds
 };
 
-watch(selectedApiIntegration, async (newApiIntegrationId) => {
-  apiIntegrations.value.filter((integration) => {
-    if (integration.id === newApiIntegrationId) {
+watch(
+  selectedApiIntegration,
+  (newApiIntegrationId) => {
+    if (!newApiIntegrationId) return;
+
+    const integration = apiIntegrations.value.find(
+      (i) => i.id === newApiIntegrationId
+    );
+    if (integration) {
       apiOperations.value = integration.apiOperations;
     }
-  });
-});
+  },
+  { immediate: true }
+);
+
+const cleanup = () => {
+  data.value = undefined;
+  apiOperations.value = [];
+  apiIntegrations.value = [];
+  allPaymentOperations.value = [];
+  allPaymentIntegrations.value = [];
+};
+
+onBeforeUnmount(cleanup);
 </script>
 
 <template>
-  <div class="flex flex-col gap-6 items-cente">
+  <div v-if="isError">
+    <ErrorMessage :retry="refetch" title="Something went wrong." />
+  </div>
+  <div v-else-if="loading" class="flex justify-center p-8">
+    <UiLoading />
+  </div>
+  <div v-else class="flex flex-col gap-6 items-cente">
     <form @submit="onSubmit">
       <UiTabs defaultValue="info" class="w-full">
         <UiTabsList
@@ -293,7 +302,7 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
           >
         </UiTabsList>
         <UiTabsContent class="p-6" value="info">
-          <div class="grid grid-cols-2 gap-6">
+          <div :key="data?.id" class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <FormField
               :model-value="data?.id"
               v-slot="{ componentField }"
