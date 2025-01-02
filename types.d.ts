@@ -1,6 +1,6 @@
 import { PaymentIntegrationType } from "@/global-types";
 import { TransactionAmountType } from "@/global-types";
-import { Visibility, PaymentOperationType, FormType, DataType, TransferParams, AuthType, Protocol, Auth, IntegrationType, MenuLayoutType, PaginationType } from "@/global-types";
+import { Visibility, PaymentOperationType, FormType, LogicalOperators, InputType, DataType, TransferParams, AuthType, Protocol, Auth, IntegrationType, MenuLayoutType, PaginationType, Operators, OperatorToCompareValue, ResponseScope, TransferCoreMapping, ValueSource, Operators, OperatorToCompareValue, ResponseScope, TransferCoreMapping, ValueSource, Operators } from "@/global-types";
 
 interface User {
   email: string;
@@ -276,17 +276,6 @@ enum OperatorToCompareValue {
   NONE = "NONE"
 }
 
-enum DataType {
-  COLLECTION = "COLLECTION",
-  STRING = "STRING",
-  INT = "INT",
-  LONG = "LONG",
-  DOUBLE = "DOUBLE",
-  BOOLEAN = "BOOLEAN",
-  DATETIME = "DATETIME",
-  NONE = "NONE"
-}
-
 interface ResponseOutput {
   id: string
   outputName: string
@@ -318,18 +307,18 @@ enum ValueSource {
   PROFILE = "PROFILE"
 }
 
-enum InputType {
-  HEADER = "HEADER",
-  BODY = "BODY",
-  QUERY = "QUERY",
-  PATH = "PATH",
-  NONE = "NONE"
-}
+
 
 interface IntegrationFieldMapping {
   id: string
   sourceType: ValueSource
   dataKey: string
+}
+
+interface ValidationRule {
+  operator: Operators
+  agaist: string
+  errorMessage: string
 }
 
 interface RequestInput {
@@ -339,7 +328,7 @@ interface RequestInput {
   dataType: DataType
   testValue?: string
   defaultValue?: string
-  valueSource?: ValueSource
+  valueSourcePath?: string
   isEncoded?: boolean
   maxLength?: number 
   minLength?: number
@@ -351,6 +340,9 @@ interface RequestInput {
   isHidden?: boolean
   apiOperation?: ApiOperation
   integrationFieldMappings?: [IntegrationFieldMapping]
+  logicalOperator?: LogicalOperators
+  validationRules?: [ValidationRule]
+  validationMessage?: string
 }
 
 
