@@ -11,6 +11,17 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+  SheetFooter,
+} from "@/components/ui/sheet";
+import { DataType, LogicalOperators, Operators } from "@/global-types";
 
 const route = useRoute();
 const {
@@ -43,61 +54,99 @@ const form = useForm<RequestInput>({
   validationSchema: apiOperationRequestInputFormSchema,
 });
 
-// Update existing parameter
-const onSubmit = form.handleSubmit(async (values: RequestInput) => {
-  try {
-    loading.value = true;
-    const updatedRequestInput = await updateRequestInput(values.id, values);
+// Add this interface if not already present
+interface ValidationRule {
+  operator: string;
+  against: string;
+  errorMessage: string;
+}
 
-    // Update the local state by replacing the updated item
-    const index = requestInputs.value.findIndex(
-      (item) => item.id === values.id
-    );
-    if (index !== -1) {
-      requestInputs.value[index] = updatedRequestInput;
-    }
-
+// Modify the addNewParameter function to properly initialize validation rules
+const addNewParameter = () => {
+  // Check if there's an existing newParameter and if it's not properly filled
+  if (newParameter.value && !isParameterFilled(newParameter.value)) {
     toast({
-      title: "Request Input Updated",
-      description: "Request input updated successfully",
+      title: "Incomplete Parameter",
+      description:
+        "Please fill in the required fields before adding a new parameter",
+      variant: "destructive",
     });
-  } catch (err: any) {
-    console.error("Error updating request input:", err);
-    isError.value = true;
-  } finally {
-    loading.value = false;
+    return;
   }
-});
 
-// Submit new parameter
+  // Initialize with empty validation rules array
+  newParameter.value = {
+    inputName: "",
+    inputType: "",
+    dataType: "",
+    testValue: "",
+    defaultValue: "",
+    valueSourcePath: "",
+    maxLength: null,
+    minLength: null,
+    minValue: null,
+    maxValue: null,
+    validationPattern: "",
+    transformationRule: "",
+    isRequired: false,
+    isHidden: false,
+    isEncoded: false,
+    validationMessage: "",
+    logicalOperator: "",
+    validationRules: [], // Initialize as empty array
+  };
+};
+
+// Add state for managing validation rules
+const currentValidationRules = ref<ValidationRule[]>([]);
+
+// Function to add new validation rule
+const addValidationRule = () => {
+  if (!newParameter.value.validationRules) {
+    newParameter.value.validationRules = [];
+  }
+  newParameter.value.validationRules.push({
+    operator: "",
+    against: "",
+    errorMessage: "",
+  });
+};
+
+// Function to remove validation rule
+const removeValidationRule = (index: number) => {
+  if (newParameter.value.validationRules) {
+    newParameter.value.validationRules.splice(index, 1);
+  }
+};
+
+// Modify the createNewParameter function
 const createNewParameter = form.handleSubmit(async (values: any) => {
-  try {
-    loading.value = true;
-    const data = {
-      ...values,
-      apiOperation: { id: operationId.value },
-    };
-    const createdRequestInput = await createNewRequestInput(data);
+  console.log("values before modification", values);
+  const submissionData = {
+    ...values,
+    apiOperation: { id: operationId.value },
+    validationRules: newParameter.value.validationRules || [], // Include validation rules
+  };
+  console.log("submissionData", submissionData);
 
-    // Update the local state by adding the new request input
-    requestInputs.value.push(createdRequestInput);
+  // try {
+  //   loading.value = true;
+  //   const createdRequestInput = await createNewRequestInput(submissionData);
+  //   requestInputs.value.push(createdRequestInput);
+  //   newParameter.value = null;
 
-    // Reset the newParameter state
-    newParameter.value = null;
+  //   toast({
+  //     title: "Request Input Created",
+  //     description: "Request input created successfully",
+  //   });
 
-    toast({
-      title: "Request Input Created",
-      description: "Request input created successfully",
-    });
-
-    // Reset the form
-    form.resetForm();
-  } catch (err: any) {
-    console.error("Error creating request input:", err);
-    isError.value = true;
-  } finally {
-    loading.value = false;
-  }
+  //   form.resetForm();
+  // } catch (err: any) {
+  //   console.error("Error creating request input:", err);
+  //   isError.value = true;
+  // } finally {
+  //   loading.value = false;
+  // }
 });
 
 const deleteRequestInputHandler = async (id: string) => {
@@ -125,39 +174,6 @@ const newParameter = ref<RequestInput | null>(null); // To hold the new paramete
 // Add this new function to check if a parameter has required fields filled
 const isParameterFilled = (parameter: RequestInput) => {
   return parameter.inputName && parameter.inputType && parameter.dataType;
-};
-
-// Modify the addNewParameter function
-const addNewParameter = () => {
-  // Check if there's an existing newParameter and if it's not properly filled
-  if (newParameter.value && !isParameterFilled(newParameter.value)) {
-    toast({
-      title: "Incomplete Parameter",
-      description:
-        "Please fill in the required fields before adding a new parameter",
-      variant: "destructive",
-    });
-    return;
-  }
-
-  // If previous parameter was filled, create a new one
-  newParameter.value = {
-    inputName: "",
-    inputType: "",
-    dataType: "",
-    testValue: "",
-    defaultValue: "",
-    valueSourcePath: "",
-    maxLength: null,
-    minLength: null,
-    minValue: null,
-    maxValue: null,
-    validationPattern: "",
-    transformationRule: "",
-    isRequired: false,
-    isHidden: false,
-    isEncoded: false,
-  };
 };
 
 watch(
@@ -254,16 +270,13 @@ watch(
                   </FormControl>
                   <UiSelectContent>
                     <UiSelectGroup>
-                      <UiSelectItem value="STRING"> STRING </UiSelectItem>
-                      <UiSelectItem value="INT"> INT </UiSelectItem>
-                      <UiSelectItem value="LONG"> LONG </UiSelectItem>
-                      <UiSelectItem value="DOUBLE"> DOUBLE </UiSelectItem>
-                      <UiSelectItem value="BOOLEAN"> BOOLEAN </UiSelectItem>
-                      <UiSelectItem value="DATETIME"> DATETIME </UiSelectItem>
-                      <UiSelectItem value="COLLECTION">
-                        COLLECTION
+                      <UiSelectItem
+                        v-for="item in Object.values(DataType)"
+                        :key="item"
+                        :value="item"
+                      >
+                        {{ item }}
                       </UiSelectItem>
-                      <UiSelectItem value="NONE"> NONE </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
@@ -476,6 +489,174 @@ watch(
                 <FormMessage />
               </FormItem>
             </FormField>
+            <Sheet>
+              <SheetTrigger class="w-full">
+                <UiButton
+                  size="sm"
+                  class="w-full"
+                  type="button"
+                  variant="outline"
+                >
+                  Add Validation
+                </UiButton>
+              </SheetTrigger>
+              <SheetContent
+                class="md:min-w-[600px] sm:min-w-full flex flex-col"
+              >
+                <SheetHeader>
+                  <SheetTitle class="border-b-2">Validations</SheetTitle>
+                  <SheetDescription class="py-4 space-y-4">
+                    <!-- Logical Operator -->
+                    <FormField
+                      :model-value="newParameter.logicalOperator"
+                      v-slot="{ componentField }"
+                      name="logicalOperator"
+                    >
+                      <FormItem>
+                        <FormLabel>Logical Operator</FormLabel>
+                        <UiSelect v-bind="componentField">
+                          <FormControl>
+                            <UiSelectTrigger>
+                              <UiSelectValue
+                                placeholder="Select a logical operator"
+                              />
+                            </UiSelectTrigger>
+                          </FormControl>
+                          <UiSelectContent>
+                            <UiSelectGroup>
+                              <UiSelectItem
+                                v-for="op in Object.values(LogicalOperators)"
+                                :value="op"
+                                :key="op"
+                              >
+                                {{ op }}
+                              </UiSelectItem>
+                            </UiSelectGroup>
+                          </UiSelectContent>
+                        </UiSelect>
+                      </FormItem>
+                    </FormField>
+
+                    <!-- Validation Message -->
+                    <FormField
+                      :model-value="newParameter?.validationMessage"
+                      v-slot="{ componentField }"
+                      name="validationMessage"
+                    >
+                      <FormItem>
+                        <FormLabel> Validation Message </FormLabel>
+                        <FormControl>
+                          <UiInput
+                            type="text"
+                            placeholder="validation message"
+                            v-bind="componentField"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    </FormField>
+                    <!-- Validation Rules section -->
+                    <div class="space-y-4">
+                      <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-bold">Validation Rules</h2>
+                        <UiButton
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          @click="addValidationRule"
+                        >
+                          <Icon
+                            name="material-symbols:add"
+                            class="mr-2 h-4 w-4"
+                          />
+                          Add Rule
+                        </UiButton>
+                      </div>
+
+                      <div
+                        v-for="(rule, index) in newParameter.validationRules"
+                        :key="index"
+                        class="border p-4 rounded-lg space-y-4"
+                      >
+                        <div class="flex justify-end">
+                          <UiButton
+                            type="button"
+                            variant="destructive"
+                            size="sm"
+                            @click="removeValidationRule(index)"
+                          >
+                            <Icon
+                              name="material-symbols:delete-outline"
+                              class="h-4 w-4"
+                            />
+                          </UiButton>
+                        </div>
+
+                        <FormField v-model="rule.operator">
+                          <FormItem>
+                            <FormLabel>Operator</FormLabel>
+                            <UiSelect v-model="rule.operator">
+                              <FormControl>
+                                <UiSelectTrigger>
+                                  <UiSelectValue
+                                    placeholder="Select an operator"
+                                  />
+                                </UiSelectTrigger>
+                              </FormControl>
+                              <UiSelectContent>
+                                <UiSelectGroup>
+                                  <UiSelectItem
+                                    v-for="op in Object.values(Operators)"
+                                    :value="op"
+                                    :key="op"
+                                  >
+                                    {{ op }}
+                                  </UiSelectItem>
+                                </UiSelectGroup>
+                              </UiSelectContent>
+                            </UiSelect>
+                          </FormItem>
+                        </FormField>
+
+                        <FormField v-model="rule.against">
+                          <FormItem>
+                            <FormLabel>Against</FormLabel>
+                            <FormControl>
+                              <UiInput
+                                type="text"
+                                placeholder="against"
+                                v-model="rule.against"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        </FormField>
+
+                        <FormField v-model="rule.errorMessage">
+                          <FormItem>
+                            <FormLabel>Error Message</FormLabel>
+                            <FormControl>
+                              <UiInput
+                                type="text"
+                                placeholder="error message"
+                                v-model="rule.errorMessage"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        </FormField>
+                      </div>
+                    </div>
+                  </SheetDescription>
+                </SheetHeader>
+                <SheetFooter class="flex justify-end gap-4 mt-auto">
+                  <SheetClose asChild>
+                    <UiButton variant="outline">Cancel</UiButton>
+                  </SheetClose>
+                  <UiButton @click="onSubmit" type="button">
+                    Save changes
+                  </UiButton>
+                </SheetFooter>
+              </SheetContent>
+            </Sheet>
           </div>
           <div
             class="col-span-full w-full pt-4 border-t flex justify-end gap-4"
@@ -590,16 +771,13 @@ watch(
                   </FormControl>
                   <UiSelectContent>
                     <UiSelectGroup>
-                      <UiSelectItem value="STRING"> STRING </UiSelectItem>
-                      <UiSelectItem value="INT"> INT </UiSelectItem>
-                      <UiSelectItem value="LONG"> LONG </UiSelectItem>
-                      <UiSelectItem value="DOUBLE"> DOUBLE </UiSelectItem>
-                      <UiSelectItem value="BOOLEAN"> BOOLEAN </UiSelectItem>
-                      <UiSelectItem value="DATETIME"> DATETIME </UiSelectItem>
-                      <UiSelectItem value="COLLECTION">
-                        COLLECTION
+                      <UiSelectItem
+                        v-for="item in Object.values(DataType)"
+                        :value="item"
+                        :key="item"
+                      >
+                        {{ item }}
                       </UiSelectItem>
-                      <UiSelectItem value="NONE"> NONE </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
@@ -807,16 +985,165 @@ watch(
               </FormItem>
             </FormField>
 
-            <!-- <UiButton
-              :disabled="loading"
-              size="sm"
-              type="button"
-              variant="outline"
-              class="self-center"
-              @click="addValidation(item.id)"
-            >
-              Add Validation
-            </UiButton> -->
+            <Sheet>
+              <SheetTrigger class="w-full">
+                <UiButton
+                  size="sm"
+                  class="w-full"
+                  type="button"
+                  variant="outline"
+                >
+                  Add Validation
+                </UiButton>
+              </SheetTrigger>
+              <SheetContent
+                class="md:min-w-[600px] sm:min-w-full flex flex-col"
+              >
+                <SheetHeader>
+                  <SheetTitle class="border-b-2">Validations</SheetTitle>
+                  <SheetDescription class="py-4 space-y-4">
+                    <!-- Logical Operator -->
+                    <FormField
+                      v-model="item.logicalOperator"
+                      name="logicalOperator"
+                      v-slot="{ componentField }"
+                    >
+                      <FormItem>
+                        <FormLabel>Logical Operator</FormLabel>
+                        <UiSelect v-bind="componentField">
+                          <FormControl>
+                            <UiSelectTrigger>
+                              <UiSelectValue
+                                placeholder="Select a logical operator"
+                              />
+                            </UiSelectTrigger>
+                          </FormControl>
+                          <UiSelectContent>
+                            <UiSelectGroup>
+                              <UiSelectItem
+                                v-for="op in Object.values(LogicalOperators)"
+                                :value="op"
+                                :key="op"
+                              >
+                                {{ op }}
+                              </UiSelectItem>
+                            </UiSelectGroup>
+                          </UiSelectContent>
+                        </UiSelect>
+                      </FormItem>
+                    </FormField>
+
+                    <!-- Validation Message -->
+                    <FormField
+                      v-model="item.validationMessage"
+                      v-slot="{ componentField }"
+                      name="validationMessage"
+                    >
+                      <FormItem>
+                        <FormLabel>Validation Message</FormLabel>
+                        <FormControl>
+                          <UiInput
+                            type="text"
+                            placeholder="validation message"
+                            v-bind="componentField"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <!-- Validation Rules -->
+                    <div class="space-y-4">
+                      <div class="flex items-center justify-between">
+                        <h2 class="text-lg font-bold">Validation Rules</h2>
+                        <UiButton type="button" variant="outline" size="sm">
+                          <Icon
+                            name="material-symbols:add"
+                            class="mr-2 h-4 w-4"
+                          />
+                          Add Rule
+                        </UiButton>
+                      </div>
+                      <div
+                        v-for="(rule, index) in item.validationRules"
+                        :key="index"
+                        class="border p-4 rounded-lg space-y-4"
+                      >
+                        <FormField
+                          v-model="item.validationRules[index].operator"
+                          name="operator"
+                        >
+                          <FormItem>
+                            <FormLabel>Operator</FormLabel>
+                            <UiSelect v-bind="componentField">
+                              <FormControl>
+                                <UiSelectTrigger>
+                                  <UiSelectValue
+                                    placeholder="Select an operator"
+                                  />
+                                </UiSelectTrigger>
+                              </FormControl>
+                              <UiSelectContent>
+                                <UiSelectGroup>
+                                  <UiSelectItem
+                                    v-for="op in Object.values(Operators)"
+                                    :value="op"
+                                    :key="op"
+                                  >
+                                    {{ op }}
+                                  </UiSelectItem>
+                                </UiSelectGroup>
+                              </UiSelectContent>
+                            </UiSelect>
+                          </FormItem>
+                        </FormField>
+
+                        <FormField
+                          v-model="item.validationRules[index].against"
+                          v-slot="{ componentField }"
+                          name="against"
+                        >
+                          <FormItem>
+                            <FormLabel>Against</FormLabel>
+                            <FormControl>
+                              <UiInput
+                                type="text"
+                                placeholder="against"
+                                v-bind="componentField"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        </FormField>
+
+                        <FormField
+                          v-model="item.validationRules[index].errorMessage"
+                          v-slot="{ componentField }"
+                          name="errorMessage"
+                        >
+                          <FormItem>
+                            <FormLabel>Error Message</FormLabel>
+                            <FormControl>
+                              <UiInput
+                                type="text"
+                                placeholder="error message"
+                                v-bind="componentField"
+                              />
+                            </FormControl>
+                          </FormItem>
+                        </FormField>
+                      </div>
+                    </div>
+                  </SheetDescription>
+                </SheetHeader>
+                <SheetFooter class="flex justify-end gap-4 mt-auto">
+                  <SheetClose asChild>
+                    <UiButton variant="outline">Cancel</UiButton>
+                  </SheetClose>
+                  <UiButton @click="onSubmit" type="button">
+                    Save changes
+                  </UiButton>
+                </SheetFooter>
+              </SheetContent>
+            </Sheet>
           </div>
           <div
             class="col-span-full w-full flex justify-end gap-4 pt-4 border-t"
