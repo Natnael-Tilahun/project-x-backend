@@ -1,7 +1,6 @@
 {
   "style": "default",
   "typescript": true,
-  "tsConfigPath": "./.nuxt/tsconfig.json",
   "tailwind": {
     "config": "tailwind.config.js",
     "css": "assets/css/tailwind.css",

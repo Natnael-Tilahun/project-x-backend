@@ -1,6 +1,6 @@
 import { PaymentIntegrationType } from "@/global-types";
 import { TransactionAmountType } from "@/global-types";
-import { Visibility, PaymentOperationType, FormType, LogicalOperators, InputType, DataType, TransferParams, AuthType, Protocol, Auth, IntegrationType, MenuLayoutType, PaginationType, Operators, OperatorToCompareValue, ResponseScope, TransferCoreMapping, ValueSource, OperatorToCompareValue, ResponseScope, TransferCoreMapping, ValueSource } from "@/global-types";
+import { Visibility, PaymentOperationType, FormType, LogicalOperators, InputType, DataType, TransferParams, AuthType, Protocol, Auth, IntegrationType, MenuLayoutType, PaginationType, Operators, OperatorToCompareValue, ResponseScope, TransferCoreMapping, ValueSource, Operators, OperatorToCompareValue, ResponseScope, TransferCoreMapping, ValueSource, Operators } from "@/global-types";
 
 interface User {
   email: string;
@@ -317,7 +317,7 @@ interface IntegrationFieldMapping {
 
 interface ValidationRule {
   operator: Operators
-  against: string
+  agaist: string
   errorMessage: string
 }
 
