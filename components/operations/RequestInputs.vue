@@ -11,6 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { DataType, LogicalOperators, Operators } from "@/global-types";
 
 const route = useRoute();
 const {
@@ -254,16 +255,13 @@ watch(
                   </FormControl>
                   <UiSelectContent>
                     <UiSelectGroup>
-                      <UiSelectItem value="STRING"> STRING </UiSelectItem>
-                      <UiSelectItem value="INT"> INT </UiSelectItem>
-                      <UiSelectItem value="LONG"> LONG </UiSelectItem>
-                      <UiSelectItem value="DOUBLE"> DOUBLE </UiSelectItem>
-                      <UiSelectItem value="BOOLEAN"> BOOLEAN </UiSelectItem>
-                      <UiSelectItem value="DATETIME"> DATETIME </UiSelectItem>
-                      <UiSelectItem value="COLLECTION">
-                        COLLECTION
+                      <UiSelectItem
+                        v-for="item in Object.values(DataType)"
+                        :key="item"
+                        :value="item"
+                      >
+                        {{ item }}
                       </UiSelectItem>
-                      <UiSelectItem value="NONE"> NONE </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
