@@ -1,0 +1,27 @@
+{
+  "typescript.enable": true,
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.validate.enable": true,
+  "javascript.validate.enable": true,
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "volar.takeOverMode.enabled": true,
+  "typescript.suggest.autoImports": true,
+  "volar.completion.autoImportComponent": true,
+  "volar.completion.preferredTagNameCase": "pascal",
+  "volar.format.initialIndent": {
+    "html": true
+  },
+  "volar.codeLens.scriptSetupTools": true,
+  "volar.doctor.checkVueTsc": true,
+  "json.schemas": [
+
+  ]
+}

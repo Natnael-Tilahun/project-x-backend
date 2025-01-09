@@ -17,5 +17,6 @@ export const apiOperationFormSchema = toTypedSchema(
     integrationOperations: z.string().optional().nullable(),
     apiIntegration: z.any().optional().nullable(),
     bodyType: bodyTypeSchema,
+    apiOperationPath: z.string().optional().nullable(),
   })
 );
