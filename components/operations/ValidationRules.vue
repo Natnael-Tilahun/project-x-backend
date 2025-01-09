@@ -58,21 +58,17 @@ const form = useForm<Partial<RequestInput>>({
   initialValues: {
     logicalOperator:
       props.requestInput?.validationConfig?.logicalOperator || null,
-    validationRules: props.requestInput?.validationConfig?.validationRules?.map(
-      (rule) => ({
-        operator: rule.operator,
-        against: Array.isArray(rule.against)
-          ? rule.against
-          : [rule.against].filter(Boolean), // Convert to array and filter out null/undefined
-        errorMessage: rule.errorMessage,
-      })
-    ) || [
-      {
-        operator: null,
-        against: [""],
-        errorMessage: "",
-      },
-    ],
+    validationRules: props.requestInput?.validationConfig?.validationRules
+      ?.length
+      ? props.requestInput.validationConfig.validationRules
+      : [
+          {
+            // Default validation rule when none exists
+            operator: null,
+            against: [""],
+            errorMessage: "",
+          },
+        ],
     validationMessage: props.requestInput?.validationMessage || "",
   },
 });
@@ -83,14 +79,25 @@ watch(
   (newConfig) => {
     if (newConfig) {
       form.setValues({
-        logicalOperator: newConfig.logicalOperator,
-        validationRules: newConfig.validationRules?.map((rule) => ({
-          operator: rule.operator,
-          against: Array.isArray(rule.against)
-            ? rule.against
-            : [rule.against].filter(Boolean),
-          errorMessage: rule.errorMessage,
-        })),
+        validationConfig: {
+          logicalOperator: newConfig.logicalOperator || null,
+          validationRules: newConfig.validationRules?.length
+            ? newConfig.validationRules.map((rule) => ({
+                operator: rule.operator,
+                against: Array.isArray(rule.against)
+                  ? rule.against
+                  : [rule.against].filter(Boolean),
+                errorMessage: rule.errorMessage,
+              }))
+            : [
+                {
+                  // Default validation rule when none exists
+                  operator: null,
+                  against: [""],
+                  errorMessage: "",
+                },
+              ],
+        },
         validationMessage: props.requestInput?.validationMessage || "",
       });
     }
@@ -113,8 +120,13 @@ const onSubmit = form.handleSubmit(async (values) => {
       ...props.requestInput,
       id: requestInputId.value,
       validationConfig: {
-        validationRules: values.validationRules || [],
-        logicalOperator: values.logicalOperator,
+        validationRules:
+          values?.validationRules?.map((rule) => ({
+            operator: rule.operator,
+            against: rule.against || [], // Return empty array if no valid values
+            errorMessage: rule.errorMessage,
+          })) || [],
+        logicalOperator: values?.logicalOperator,
       },
       validationMessage: values.validationMessage,
     };
@@ -155,13 +167,12 @@ watch(
 
 // Add helper function to check if a rule is filled
 const isValidationRuleFilled = (rule: ValidationRule) => {
-  return rule.operator && rule.against && rule.errorMessage;
+  return rule.operator && rule.against;
 };
 
 // Update the addValidationRule function
 const addValidationRule = () => {
   const currentRules = form.values.validationRules || [];
-
   // Check if the last rule is filled
   const lastRule = currentRules[currentRules.length - 1];
   if (!lastRule || !isValidationRuleFilled(lastRule)) {
@@ -277,33 +288,33 @@ const removeAgainstValue = (ruleIndex: number, againstIndex: number) => {
   }
 };
 
-// Watch for operator changes and update against fields accordingly
+// Update the operator change watcher
 watch(
   () => form.values.validationConfig?.validationRules,
   (newRules, oldRules) => {
     if (!newRules || !oldRules) return;
-
     newRules.forEach((rule, index) => {
       const oldRule = oldRules[index];
       if (oldRule && rule.operator !== oldRule.operator) {
         const fieldCount = getOperatorAgainstFieldCount(rule.operator);
-
         nextTick(() => {
           // Preserve existing values if possible
-          const existingValues = rule.against || [];
+          const existingValues = oldRule.against || [];
           if (fieldCount === 1) {
+            console.log("existingValues:", existingValues);
+            // For single value operators, keep only the first value
             form.setFieldValue(`validationRules.${index}.against`, [
-              existingValues[0] || "",
+              existingValues[0] || null,
             ]);
           } else if (fieldCount === 2) {
             form.setFieldValue(`validationRules.${index}.against`, [
-              existingValues[0] || "",
-              existingValues[1] || "",
+              existingValues[0] || null,
+              existingValues[1] || null,
             ]);
           } else if (fieldCount === -1) {
             form.setFieldValue(
               `validationRules.${index}.against`,
-              existingValues.length ? existingValues : [""]
+              existingValues.length ? existingValues : [null]
             );
           } else if (fieldCount === 0) {
             form.setFieldValue(`validationRules.${index}.against`, []);
@@ -427,6 +438,20 @@ const getPlaceholder = (operator: Operators, index: number): string => {
               </UiButton>
             </div>
 
+            <div v-if="!form.values?.validationRules?.length">
+              {{
+                $nextTick(() => {
+                  form.setFieldValue("validationRules", [
+                    {
+                      operator: null,
+                      against: [""],
+                      errorMessage: "",
+                    },
+                  ]);
+                })
+              }}
+            </div>
+
             <div
               v-for="(rule, index) in form.values.validationRules"
               :key="index"
@@ -478,13 +503,19 @@ const getPlaceholder = (operator: Operators, index: number): string => {
               </FormField>
 
               <div class="space-y-2">
-                <div class="mb-2">Against Values</div>
-                <!-- Only show against fields if operator requires them -->
+                <div class="mb-2">
+                  Against Values
+                  <span class="text-red-500 ml-1">*</span>
+                </div>
                 <template
                   v-if="getOperatorAgainstFieldCount(rule.operator) > 0"
                 >
+                  <div v-if="!rule.against?.length">
+                    {{ $nextTick(() => addAgainstValue(index)) }}
+                  </div>
+
                   <div
-                    v-for="(_, againstIndex) in rule.against"
+                    v-for="(_, againstIndex) in rule.against || []"
                     :key="againstIndex"
                     class="flex gap-2"
                   >
@@ -515,14 +546,18 @@ const getPlaceholder = (operator: Operators, index: number): string => {
                       </FormItem>
                     </FormField>
 
-                    <!-- Show remove button for IN/NIN operators with multiple fields -->
-                    <!-- v-if="getOperatorAgainstFieldCount(rule.operator) === -1 && rule.against.length > 1" -->
-
+                    <!-- Show remove button for extra fields or IN/NIN operators -->
                     <UiButton
+                      v-if="
+                        (getOperatorAgainstFieldCount(rule.operator) === 1 &&
+                          againstIndex > 0) ||
+                        (getOperatorAgainstFieldCount(rule.operator) === -1 &&
+                          rule.against.length > 1)
+                      "
                       type="button"
                       variant="destructive"
-                      size="sm"
                       class="self-end"
+                      size="sm"
                       @click="removeAgainstValue(index, againstIndex)"
                     >
                       <Icon
@@ -532,13 +567,13 @@ const getPlaceholder = (operator: Operators, index: number): string => {
                     </UiButton>
                   </div>
 
-                  <!-- Add value button for IN/NIN operators -->
-                  <!-- v-if="
+                  <!-- Add value button -->
+                  <UiButton
+                    v-if="
                       getOperatorAgainstFieldCount(rule.operator) === -1 ||
                       (getOperatorAgainstFieldCount(rule.operator) === 2 &&
-                        rule?.against?.length < 2)
-                    " -->
-                  <UiButton
+                        (!rule.against || rule.against.length < 2))
+                    "
                     type="button"
                     variant="outline"
                     size="sm"

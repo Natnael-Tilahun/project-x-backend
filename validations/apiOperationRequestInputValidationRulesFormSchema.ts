@@ -11,7 +11,10 @@ export const apiOperationRequestInputValidationRulesFormSchema = toTypedSchema(
       .array(
         z.object({
           operator: operatorSchema,
-          against: z.array(z.any()).optional().nullable(),
+          against: z
+            .array(z.string().min(1, { message: "This field is required" }))
+            .optional()
+            .nullable(),
           errorMessage: z.string().optional().nullable(),
         })
       )

@@ -337,7 +337,7 @@ interface IntegrationFieldMapping {
 
 interface ValidationRule {
   operator: Operators;
-  against: string;
+  against: string | number;
   errorMessage: string;
 }
 

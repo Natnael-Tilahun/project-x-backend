@@ -1,12 +1,19 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
-import { LogicalOperators, InputType, DataType, Operators } from "@/global-types";
+import {
+  LogicalOperators,
+  InputType,
+  DataType,
+  Operators,
+} from "@/global-types";
 
-const logicalOperatorSchema = z.nativeEnum(LogicalOperators).optional().nullable();
+const logicalOperatorSchema = z
+  .nativeEnum(LogicalOperators)
+  .optional()
+  .nullable();
 const inputTypeSchema = z.nativeEnum(InputType);
 const dataTypeSchema = z.nativeEnum(DataType);
 const operatorSchema = z.nativeEnum(Operators);
-
 
 export const apiOperationRequestInputFormSchema = toTypedSchema(
   z.object({
@@ -27,11 +34,19 @@ export const apiOperationRequestInputFormSchema = toTypedSchema(
     isRequired: z.boolean(),
     isHidden: z.boolean().optional().nullable(),
     apiOperation: z.any().optional().nullable(),
-    validationRules: z.array(z.object({
-      operator: operatorSchema,
-      against: z.any().optional().nullable(),
-      errorMessage: z.string().optional().nullable(),
-    })).optional().nullable(),
+    validationRules: z
+      .array(
+        z.object({
+          operator: operatorSchema,
+          against: z
+            .array(z.string().min(1, { message: "This field is required" }))
+            .optional()
+            .nullable(),
+          errorMessage: z.string().optional().nullable(),
+        })
+      )
+      .optional()
+      .nullable(),
     // operator: operatorSchema,
     // against: z.any().optional().nullable(),
     // errorMessage: z.string().optional().nullable(),
