@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const openItems = ref("");
 import { useForm } from "vee-validate";
-import { ref } from "vue";
+import { ref, nextTick } from "vue";
 import { toast } from "~/components/ui/toast";
 import { apiOperationRequestInputValidationRulesFormSchema } from "~/validations/apiOperationRequestInputValidationRulesFormSchema";
 import {
@@ -46,7 +46,7 @@ const requestInputValidationRules = ref<RequestInputValidations>({
   validationRules: props.requestInput?.validationConfig?.validationRules || [
     {
       operator: null,
-      against: null,
+      against: [""],
       errorMessage: null,
     },
   ],
@@ -58,20 +58,45 @@ const form = useForm<Partial<RequestInput>>({
   initialValues: {
     logicalOperator:
       props.requestInput?.validationConfig?.logicalOperator || null,
-    validationRules:
-      props.requestInput?.validationConfig &&
-      props.requestInput.validationConfig.validationRules?.length
-        ? props.requestInput.validationConfig.validationRules
-        : [
-            {
-              operator: null,
-              against: null,
-              errorMessage: null,
-            },
-          ],
+    validationRules: props.requestInput?.validationConfig?.validationRules?.map(
+      (rule) => ({
+        operator: rule.operator,
+        against: Array.isArray(rule.against)
+          ? rule.against
+          : [rule.against].filter(Boolean), // Convert to array and filter out null/undefined
+        errorMessage: rule.errorMessage,
+      })
+    ) || [
+      {
+        operator: null,
+        against: [""],
+        errorMessage: "",
+      },
+    ],
     validationMessage: props.requestInput?.validationMessage || "",
   },
 });
+
+// Update the watcher for props changes
+watch(
+  () => props.requestInput?.validationConfig,
+  (newConfig) => {
+    if (newConfig) {
+      form.setValues({
+        logicalOperator: newConfig.logicalOperator,
+        validationRules: newConfig.validationRules?.map((rule) => ({
+          operator: rule.operator,
+          against: Array.isArray(rule.against)
+            ? rule.against
+            : [rule.against].filter(Boolean),
+          errorMessage: rule.errorMessage,
+        })),
+        validationMessage: props.requestInput?.validationMessage || "",
+      });
+    }
+  },
+  { deep: true, immediate: true }
+);
 
 // Update the onSubmit function
 const onSubmit = form.handleSubmit(async (values) => {
@@ -128,8 +153,6 @@ watch(
   }
 );
 
-console.log("validationRules:", requestInputValidationRules.value);
-
 // Add helper function to check if a rule is filled
 const isValidationRuleFilled = (rule: ValidationRule) => {
   return rule.operator && rule.against && rule.errorMessage;
@@ -155,7 +178,7 @@ const addValidationRule = () => {
     ...currentRules,
     {
       operator: null,
-      against: null,
+      against: [""],
       errorMessage: null,
     },
   ]);
@@ -165,6 +188,171 @@ const removeValidationRule = (index: number) => {
   const currentRules = [...(form.values.validationRules || [])];
   currentRules.splice(index, 1);
   form.setFieldValue("validationRules", currentRules);
+};
+
+// Add these helper functions to your script section
+const getOperatorAgainstFieldCount = (operator: Operators): number => {
+  switch (operator) {
+    // Operators that need 2 values
+    case Operators.BETWEEN:
+    case Operators.NBETWEEN:
+      return 2;
+
+    // Operators that can have multiple values
+    case Operators.IN:
+    case Operators.NIN:
+      return -1; // unlimited fields
+
+    // Operators that don't need any values
+    case Operators.EMPTY:
+    case Operators.NEMPTY:
+    case Operators.NNULL:
+      return 0;
+
+    // Pattern-based operators (single value)
+    case Operators.PATTERN:
+    case Operators.CONTAINS:
+    case Operators.NCONTAINS:
+    case Operators.ICONTAINS:
+    case Operators.STARTS_WITH:
+    case Operators.NSTARTS_WITH:
+    case Operators.ISTARTS_WITH:
+    case Operators.NISTARTS_WITH:
+    case Operators.ENDS_WITH:
+    case Operators.NENDS_WITH:
+    case Operators.IENDS_WITH:
+    case Operators.NIENDS_WITH:
+      return 1;
+
+    // Length-based operators (single numeric value)
+    case Operators.MAX_LENGTH:
+    case Operators.MIN_LENGTH:
+      return 1;
+
+    // Comparison operators (single value)
+    case Operators.EQ:
+    case Operators.NEQ:
+    case Operators.LT:
+    case Operators.LTE:
+    case Operators.GT:
+    case Operators.GTE:
+      return 1;
+
+    default:
+      return 1;
+  }
+};
+
+const addAgainstValue = (ruleIndex: number) => {
+  const currentRules = form.values?.validationRules || [];
+  if (currentRules[ruleIndex]) {
+    const currentAgainst = Array.isArray(currentRules[ruleIndex].against)
+      ? currentRules[ruleIndex].against
+      : [];
+
+    const operator = currentRules[ruleIndex].operator;
+    const fieldCount = getOperatorAgainstFieldCount(operator);
+
+    // Only add if we haven't reached the maximum for BETWEEN operators
+    if (fieldCount === 2 && currentAgainst.length >= 2) {
+      return;
+    }
+
+    form.setFieldValue(`validationRules.${ruleIndex}.against`, [
+      ...currentAgainst,
+      "",
+    ]);
+  }
+};
+
+const removeAgainstValue = (ruleIndex: number, againstIndex: number) => {
+  const currentRules = form.values?.validationRules || [];
+  if (
+    currentRules[ruleIndex] &&
+    Array.isArray(currentRules[ruleIndex].against)
+  ) {
+    const newAgainst = [...currentRules[ruleIndex].against];
+    newAgainst.splice(againstIndex, 1);
+    form.setFieldValue(`validationRules.${ruleIndex}.against`, newAgainst);
+  }
+};
+
+// Watch for operator changes and update against fields accordingly
+watch(
+  () => form.values.validationConfig?.validationRules,
+  (newRules, oldRules) => {
+    if (!newRules || !oldRules) return;
+
+    newRules.forEach((rule, index) => {
+      const oldRule = oldRules[index];
+      if (oldRule && rule.operator !== oldRule.operator) {
+        const fieldCount = getOperatorAgainstFieldCount(rule.operator);
+
+        nextTick(() => {
+          // Preserve existing values if possible
+          const existingValues = rule.against || [];
+          if (fieldCount === 1) {
+            form.setFieldValue(`validationRules.${index}.against`, [
+              existingValues[0] || "",
+            ]);
+          } else if (fieldCount === 2) {
+            form.setFieldValue(`validationRules.${index}.against`, [
+              existingValues[0] || "",
+              existingValues[1] || "",
+            ]);
+          } else if (fieldCount === -1) {
+            form.setFieldValue(
+              `validationRules.${index}.against`,
+              existingValues.length ? existingValues : [""]
+            );
+          } else if (fieldCount === 0) {
+            form.setFieldValue(`validationRules.${index}.against`, []);
+          }
+        });
+      }
+    });
+  },
+  { deep: true }
+);
+
+// Debug log to verify the form values
+watch(
+  () => form.values,
+  (values) => {
+    // console.log("Form values:", values);
+  },
+  { deep: true }
+);
+
+// Add helper functions for labels and placeholders
+const getOperatorLabel = (operator: Operators, index: number): string => {
+  switch (operator) {
+    case Operators.PATTERN:
+      return "Regex Pattern";
+    case Operators.MAX_LENGTH:
+    case Operators.MIN_LENGTH:
+      return "Length Value";
+    case Operators.IN:
+    case Operators.NIN:
+      return `Value ${index + 1}`;
+    default:
+      return "Value";
+  }
+};
+
+const getPlaceholder = (operator: Operators, index: number): string => {
+  switch (operator) {
+    case Operators.PATTERN:
+      return "Enter regex pattern";
+    case Operators.MAX_LENGTH:
+    case Operators.MIN_LENGTH:
+      return "Enter number";
+    case Operators.BETWEEN:
+    case Operators.NBETWEEN:
+      return index === 0 ? "Enter minimum value" : "Enter maximum value";
+    default:
+      return "Enter value";
+  }
 };
 </script>
 
@@ -289,22 +477,78 @@ const removeValidationRule = (index: number) => {
                 </FormItem>
               </FormField>
 
-              <FormField
-                :name="`validationRules.${index}.against`"
-                v-model="rule.against"
-              >
-                <FormItem>
-                  <FormLabel>Against</FormLabel>
-                  <FormControl>
-                    <UiInput
-                      v-model="rule.against"
-                      type="text"
-                      placeholder="against"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
+              <div class="space-y-2">
+                <div class="mb-2">Against Values</div>
+                <!-- Only show against fields if operator requires them -->
+                <template
+                  v-if="getOperatorAgainstFieldCount(rule.operator) > 0"
+                >
+                  <div
+                    v-for="(_, againstIndex) in rule.against"
+                    :key="againstIndex"
+                    class="flex gap-2"
+                  >
+                    <FormField
+                      :name="`validationRules.${index}.against.${againstIndex}`"
+                      :model-value="rule.against[againstIndex]"
+                    >
+                      <FormItem class="flex-1">
+                        <FormLabel>
+                          {{
+                            getOperatorAgainstFieldCount(rule.operator) === 2
+                              ? againstIndex === 0
+                                ? "Minimum value"
+                                : "Maximum value"
+                              : getOperatorLabel(rule.operator, againstIndex)
+                          }}
+                        </FormLabel>
+                        <FormControl>
+                          <UiInput
+                            v-model="rule.against[againstIndex]"
+                            type="text"
+                            :placeholder="
+                              getPlaceholder(rule.operator, againstIndex)
+                            "
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    </FormField>
+
+                    <!-- Show remove button for IN/NIN operators with multiple fields -->
+                    <!-- v-if="getOperatorAgainstFieldCount(rule.operator) === -1 && rule.against.length > 1" -->
+
+                    <UiButton
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      class="self-end"
+                      @click="removeAgainstValue(index, againstIndex)"
+                    >
+                      <Icon
+                        name="material-symbols:delete-outline"
+                        class="h-4 w-4"
+                      />
+                    </UiButton>
+                  </div>
+
+                  <!-- Add value button for IN/NIN operators -->
+                  <!-- v-if="
+                      getOperatorAgainstFieldCount(rule.operator) === -1 ||
+                      (getOperatorAgainstFieldCount(rule.operator) === 2 &&
+                        rule?.against?.length < 2)
+                    " -->
+                  <UiButton
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    @click="addAgainstValue(index)"
+                  >
+                    <Icon name="material-symbols:add" class="mr-2 h-4 w-4" />
+                    Add Value
+                  </UiButton>
+                </template>
+              </div>
 
               <FormField
                 :name="`validationRules.${index}.errorMessage`"

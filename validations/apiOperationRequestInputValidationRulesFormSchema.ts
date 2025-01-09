@@ -11,7 +11,7 @@ export const apiOperationRequestInputValidationRulesFormSchema = toTypedSchema(
       .array(
         z.object({
           operator: operatorSchema,
-          against: z.any(),
+          against: z.array(z.any()).optional().nullable(),
           errorMessage: z.string().optional().nullable(),
         })
       )
