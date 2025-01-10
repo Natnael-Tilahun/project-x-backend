@@ -4,7 +4,6 @@ export default defineNuxtConfig({
   //   preset: "vercel",
   // },
   ssr: false,
-
   runtimeConfig: {
     public: {
       API_BASE_URL: process.env.API_BASE_URL,

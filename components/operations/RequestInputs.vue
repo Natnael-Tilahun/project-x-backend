@@ -11,6 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { DataType, LogicalOperators, Operators } from "@/global-types";
 
 const route = useRoute();
 const {
@@ -147,7 +148,7 @@ const addNewParameter = () => {
     dataType: "",
     testValue: "",
     defaultValue: "",
-    valueSource: "USER_INPUT",
+    valueSourcePath: "",
     maxLength: null,
     minLength: null,
     minValue: null,
@@ -254,16 +255,13 @@ watch(
                   </FormControl>
                   <UiSelectContent>
                     <UiSelectGroup>
-                      <UiSelectItem value="STRING"> STRING </UiSelectItem>
-                      <UiSelectItem value="INT"> INT </UiSelectItem>
-                      <UiSelectItem value="LONG"> LONG </UiSelectItem>
-                      <UiSelectItem value="DOUBLE"> DOUBLE </UiSelectItem>
-                      <UiSelectItem value="BOOLEAN"> BOOLEAN </UiSelectItem>
-                      <UiSelectItem value="DATETIME"> DATETIME </UiSelectItem>
-                      <UiSelectItem value="COLLECTION">
-                        COLLECTION
+                      <UiSelectItem
+                        v-for="item in Object.values(DataType)"
+                        :key="item"
+                        :value="item"
+                      >
+                        {{ item }}
                       </UiSelectItem>
-                      <UiSelectItem value="NONE"> NONE </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
@@ -304,54 +302,20 @@ watch(
               </FormItem>
             </FormField>
             <FormField
-              :model-value="newParameter?.valueSource"
+              :model-value="newParameter?.valueSourcePath"
               v-slot="{ componentField }"
-              name="valueSource"
+              name="valueSourcePath"
             >
               <FormItem>
-                <FormLabel> Value Source </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a value source" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem value="USER_INPUT">
-                        USER_INPUT
-                      </UiSelectItem>
-                      <UiSelectItem value="PAYMENT_DETAIL">
-                        PAYMENT_DETAIL
-                      </UiSelectItem>
-                      <UiSelectItem value="TRANSACTION_ID">
-                        TRANSACTION_ID
-                      </UiSelectItem>
-                      <UiSelectItem value="TRANSACTION_DETAILS">
-                        TRANSACTION_DETAILS
-                      </UiSelectItem>
-                      <UiSelectItem value="TRANSACTION_AMOUNT">
-                        TRANSACTION_AMOUNT
-                      </UiSelectItem>
-                      <UiSelectItem value="CUSTOMER_PHONE">
-                        CUSTOMER_PHONE
-                      </UiSelectItem>
-                      <UiSelectItem value="CUSTOMER_EMAIL">
-                        CUSTOMER_EMAIL
-                      </UiSelectItem>
-                      <UiSelectItem value="CUSTOMER_ACCOUNT">
-                        CUSTOMER_ACCOUNT
-                      </UiSelectItem>
-                      <UiSelectItem value="CUSTOMER"> CUSTOMER </UiSelectItem>
-                      <UiSelectItem value="TRANSACTION">
-                        TRANSACTION
-                      </UiSelectItem>
-                      <UiSelectItem value="ACCOUNT"> ACCOUNT </UiSelectItem>
-                      <UiSelectItem value="PROFILE"> PROFILE </UiSelectItem>
-                      <UiSelectItem value="NONE"> NONE </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
+                <FormLabel> Value Source Path </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="value source path"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
               </FormItem>
             </FormField>
             <FormField
@@ -514,6 +478,18 @@ watch(
           <div
             class="col-span-full w-full pt-4 border-t flex justify-end gap-4"
           >
+            <!-- <UiSheet>
+              <UiSheetTrigger>
+                <UiButton variant="outline" type="button" size="sm">
+                  Manage Validation Rules
+                </UiButton>
+              </UiSheetTrigger>
+              <UiSheetContent
+                class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+              >
+                <OperationsValidationRules :requestInput="item" />
+              </UiSheetContent>
+            </UiSheet> -->
             <UiButton
               :disabled="loading"
               variant="outline"
@@ -674,54 +650,20 @@ watch(
               </FormItem>
             </FormField>
             <FormField
-              :model-value="item.valueSource"
+              :model-value="item.valueSourcePath"
               v-slot="{ componentField }"
-              name="valueSource"
+              name="valueSourcePath"
             >
               <FormItem>
-                <FormLabel> Value Source </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a value source" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem value="USER_INPUT">
-                        USER_INPUT
-                      </UiSelectItem>
-                      <UiSelectItem value="PAYMENT_DETAIL">
-                        PAYMENT_DETAIL
-                      </UiSelectItem>
-                      <UiSelectItem value="TRANSACTION_ID">
-                        TRANSACTION_ID
-                      </UiSelectItem>
-                      <UiSelectItem value="TRANSACTION_DETAILS">
-                        TRANSACTION_DETAILS
-                      </UiSelectItem>
-                      <UiSelectItem value="TRANSACTION_AMOUNT">
-                        TRANSACTION_AMOUNT
-                      </UiSelectItem>
-                      <UiSelectItem value="CUSTOMER_PHONE">
-                        CUSTOMER_PHONE
-                      </UiSelectItem>
-                      <UiSelectItem value="CUSTOMER_EMAIL">
-                        CUSTOMER_EMAIL
-                      </UiSelectItem>
-                      <UiSelectItem value="CUSTOMER_ACCOUNT">
-                        CUSTOMER_ACCOUNT
-                      </UiSelectItem>
-                      <UiSelectItem value="CUSTOMER"> CUSTOMER </UiSelectItem>
-                      <UiSelectItem value="TRANSACTION">
-                        TRANSACTION
-                      </UiSelectItem>
-                      <UiSelectItem value="ACCOUNT"> ACCOUNT </UiSelectItem>
-                      <UiSelectItem value="PROFILE"> PROFILE </UiSelectItem>
-                      <UiSelectItem value="NONE"> NONE </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
+                <FormLabel> Value Source Path </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="value source path"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
               </FormItem>
             </FormField>
             <FormField
@@ -874,10 +816,33 @@ watch(
                 <FormMessage />
               </FormItem>
             </FormField>
+
+            <!-- <UiButton
+              :disabled="loading"
+              size="sm"
+              type="button"
+              variant="outline"
+              class="self-center"
+              @click="addValidation(item.id)"
+            >
+              Add Validation
+            </UiButton> -->
           </div>
           <div
             class="col-span-full w-full flex justify-end gap-4 pt-4 border-t"
           >
+            <UiSheet>
+              <UiSheetTrigger>
+                <UiButton variant="outline" type="button" size="sm">
+                  Manage Validation Rules
+                </UiButton>
+              </UiSheetTrigger>
+              <UiSheetContent
+                class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+              >
+                <OperationsRequestInputsValidationRules :requestInput="item" />
+              </UiSheetContent>
+            </UiSheet>
             <UiButton
               :disabled="loading"
               variant="outline"

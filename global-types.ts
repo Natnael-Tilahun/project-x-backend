@@ -45,6 +45,14 @@ export enum DataType {
     NONE = 'NONE',
 }
 
+export enum InputType {
+  HEADER = "HEADER",
+  BODY = "BODY",
+  QUERY = "QUERY",
+  PATH = "PATH",
+  NONE = "NONE"
+}
+
 export enum TransferParams {
     AMOUNT = 'AMOUNT',
     CREDIT_ACCOUNT = 'CREDIT_ACCOUNT',
@@ -214,3 +222,38 @@ export enum HttpMethod {
   NONE = 'NONE',
 }
 
+export enum LogicalOperators {
+  AND = 'AND',
+  OR = 'OR',
+  NONE = 'NONE',
+}
+
+export enum Operators {
+  EQ = 'EQ',
+  NEQ = 'NEQ',
+  LT = 'LT',
+  LTE = 'LTE',
+  GT = 'GT',
+  GTE = 'GTE',
+  IN = 'IN',
+  NIN = 'NIN',
+  NNULL = 'NNULL',
+  PATTERN = 'PATTERN',
+  MAX_LENGTH = 'MAX_LENGTH',
+  MIN_LENGTH = 'MIN_LENGTH',
+  CONTAINS = 'CONTAINS',
+  NCONTAINS = 'NCONTAINS',
+  ICONTAINS = 'ICONTAINS',
+  STARTS_WITH = 'STARTS_WITH',
+  NSTARTS_WITH = 'NSTARTS_WITH',
+  ISTARTS_WITH = 'ISTARTS_WITH',
+  NISTARTS_WITH = 'NISTARTS_WITH',
+  ENDS_WITH = 'ENDS_WITH',
+  NENDS_WITH = 'NENDS_WITH',
+  IENDS_WITH = 'IENDS_WITH',
+  NIENDS_WITH = 'NIENDS_WITH',
+  BETWEEN = 'BETWEEN',
+  NBETWEEN = 'NBETWEEN',
+  EMPTY = 'EMPTY',
+  NEMPTY = 'NEMPTY',
+}

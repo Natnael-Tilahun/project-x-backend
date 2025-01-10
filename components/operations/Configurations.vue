@@ -227,6 +227,24 @@ const copyToClipboard = (data: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
+            <FormField
+              :model-value="data?.apiOperationPath"
+              v-slot="{ componentField }"
+              name="apiOperationPath"
+            >
+              <FormItem>
+                <FormLabel> Api Operation Path </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter api operation path"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+
             <div class="col-span-full w-full">
               <FormField
                 :model-value="data?.requestBodyTemplate"
