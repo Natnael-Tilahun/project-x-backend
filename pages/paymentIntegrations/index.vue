@@ -22,7 +22,7 @@ const fetchData = async () => {
   }
 };
 
-await useAsyncData("paymentIntegrationsData", async () => {
+onMounted(async () => {
   await fetchData();
 });
 
@@ -33,7 +33,10 @@ const refetch = async () => {
 
 <!-- Render DataTable only if data is available -->
 <template>
-  <div v-if="isLoading" class="py-10 flex justify-center w-full">
+  <div
+    v-if="isLoading"
+    class="py-10 flex justify-center items-center w-full h-[50vh]"
+  >
     <UiLoading />
   </div>
   <div

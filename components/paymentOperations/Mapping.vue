@@ -1,4 +1,12 @@
 <script lang="ts" setup>
+const getMappingPathParts = (fullPath: string) => {
+  const [prefix, ...rest] = fullPath.split(".");
+  return {
+    prefix: prefix + ".",
+    value: rest.join("."),
+  };
+};
+
 const openItems = ref("");
 import { useForm } from "vee-validate";
 import { ref } from "vue";
@@ -33,7 +41,6 @@ const operationId = ref<string>("");
 const apiOperationId = ref<string>("");
 const apiOperationRequestInputName = ref<string[]>([]);
 const MappingPathPrefixs = ref(Object.values(MappingPathPrefix)[0]);
-const mappingPathPrefix = ref(MappingPathPrefixs[0] || "");
 const mappingPathValues = ref<string[]>([]);
 const apiOperationData = ref<ApiOperation | null>(null);
 const paymentOperationData = ref<PaymentOperation | null>(null);
@@ -41,6 +48,7 @@ const paymentOperationData = ref<PaymentOperation | null>(null);
 const props = defineProps<{
   apiRequestMappingsRegistry?: ApiRequestMappingsRegistry[];
   operationIdProps?: string;
+  apiRequestMappingsRegistryOptions?: ApiRequestMappingsRegistry[];
 }>();
 
 // Set operationId and formId with priority to props over route
@@ -50,6 +58,9 @@ operationId.value =
 const apiRequestMappingsRegistry = ref<ApiRequestMappingsRegistry[]>(
   props?.apiRequestMappingsRegistry || []
 );
+const apiRequestMappingsRegistryOptions = ref<ApiRequestMappingsRegistry[]>(
+  props?.apiRequestMappingsRegistryOptions || []
+);
 
 const form = useForm<PaymentOperation>({
   validationSchema: apiRequestMappingsRegistryFormSchema,
@@ -57,43 +68,72 @@ const form = useForm<PaymentOperation>({
 
 console.log("operationId: ", operationId.value);
 
-// Modify getFormData to check for formId before making the request
+// Add back mappingPathPrefix for new field form
+const mappingPathPrefix = ref("");
+
+// Modify getOperationData function
 const getOperationData = async () => {
   try {
     if (!operationId.value) {
-      console.warn("Operation ID is not available");
       toast({
         title: "Operation ID is required",
-        description:
-          "Please provide a operation ID. If you don't have a operation ID, please create a new operation first.",
+        description: "Please provide an operation ID first.",
         variant: "destructive",
       });
       return;
     }
+
     isFetching.value = true;
     paymentOperationData.value = await getPaymentOperationById(
       operationId.value
     );
-    mappingPathValues.value = paymentOperationData.value?.form?.fields?.map(
-      (field) => field.name
-    );
-    if (
-      paymentOperationData.value?.paymentOperationType ==
-      "PROCESS_PAYMENT_AND_NOTIFY_WEBHOOK"
-    ) {
+
+    if (paymentOperationData.value) {
+      const {
+        paymentOperationType,
+        apiRequestMappingsRegistry: registryData,
+        form,
+        apiOperation,
+      } = paymentOperationData.value;
+
+      // Update form fields
+      mappingPathValues.value = form?.fields?.map((field) => field.name) || [];
+
+      // Set available prefixes based on operation type
       MappingPathPrefixs.value = Object.values(MappingPathPrefix).filter(
-        (prefix) => prefix !== MappingPathPrefix.NOTIFY_API_RESPONSE_PREFIX
+        (prefix) => {
+          if (paymentOperationType === "PROCESS_PAYMENT_AND_NOTIFY_WEBHOOK") {
+            return prefix !== MappingPathPrefix.NOTIFY_API_RESPONSE_PREFIX;
+          }
+          if (paymentOperationType === "ENQUIRY") {
+            return [
+              MappingPathPrefix.ENQUIRY_FORM_INPUT_PREFIX,
+              MappingPathPrefix.CURRENT_CUSTOMER_PREFIX,
+            ].includes(prefix);
+          }
+          return true;
+        }
       );
-    } else if (paymentOperationData.value?.paymentOperationType == "ENQUIRY") {
-      MappingPathPrefixs.value = Object.values(MappingPathPrefix).filter(
-        (prefix) =>
-          prefix == MappingPathPrefix.ENQUIRY_FORM_INPUT_PREFIX ||
-          prefix == MappingPathPrefix.CURRENT_CUSTOMER_PREFIX
-      );
+
+      // Set initial mapping path prefix for new field form
+      if (registryData?.length) {
+        mappingPathPrefix.value = getMappingPathParts(
+          registryData[0].mappingPath
+        ).prefix;
+      } else {
+        mappingPathPrefix.value = MappingPathPrefixs.value[0] || "";
+      }
+
+      apiRequestMappingsRegistry.value = registryData || [];
+      apiOperationId.value = apiOperation?.id;
+
+      // Update available mapping path values based on the prefix
+      if (mappingPathPrefix.value) {
+        mappingPathValues.value =
+          apiRequestMappingsRegistryOptions.value?.[mappingPathPrefix.value] ||
+          [];
+      }
     }
-    apiRequestMappingsRegistry.value =
-      paymentOperationData.value?.apiRequestMappingsRegistry || [];
-    apiOperationId.value = paymentOperationData.value?.apiOperation?.id;
   } catch (err) {
     console.error("Error fetching operation fields:", err);
     toast({
@@ -154,35 +194,39 @@ const originalInputName = ref<string>("");
 // Update existing parameter
 const onSubmit = form.handleSubmit(
   async (values: ApiRequestMappingsRegistry) => {
-    const index = apiRequestMappingsRegistry.value.findIndex(
-      (item) =>
-        item.apiRequestInputName === originalInputName.value ||
-        item.apiRequestInputName === values.apiRequestInputName
-    );
-
-    if (index !== -1) {
-      apiRequestMappingsRegistry.value[index].mappingPath =
-        mappingPathPrefix.value + values.mappingPath;
-      apiRequestMappingsRegistry.value[index].apiRequestInputName =
-        values.apiRequestInputName;
-    }
-    const updatedData = {
-      id: operationId.value,
-      apiRequestMappingsRegistry: apiRequestMappingsRegistry.value,
-    };
+    console.log("values: ", values);
     try {
       loading.value = true;
-      const response = await updatePaymentOperation(
-        operationId.value,
-        updatedData
+      const index = apiRequestMappingsRegistry.value.findIndex(
+        (item) =>
+          item.apiRequestInputName === originalInputName.value ||
+          item.apiRequestInputName === values.apiRequestInputName
       );
+
+      if (index !== -1) {
+        apiRequestMappingsRegistry.value[index] = {
+          ...apiRequestMappingsRegistry.value[index],
+          mappingPath: mappingPathPrefix.value + values.mappingPath,
+          apiRequestInputName: values.apiRequestInputName,
+        };
+      }
+
+      await updatePaymentOperation(operationId.value, {
+        id: operationId.value,
+        apiRequestMappingsRegistry: apiRequestMappingsRegistry.value,
+      });
+
       toast({
-        title: "Mapping Updated",
+        title: "Success",
         description: "Mapping updated successfully",
       });
-    } catch (err: any) {
+    } catch (err) {
       console.error("Error updating mapping:", err);
-      isError.value = true;
+      toast({
+        title: "Error",
+        description: "Failed to update mapping",
+        variant: "destructive",
+      });
     } finally {
       loading.value = false;
     }
@@ -214,7 +258,6 @@ const createNewFieldHandler = form.handleSubmit(async (values: any) => {
     };
 
     const response = await updatePaymentOperation(operationId.value, data);
-    console.log("response: ", response);
     const createdMapping = response.apiRequestMappingsRegistry;
     // Update the local state by adding the new request input
     apiRequestMappingsRegistry.value = createdMapping;
@@ -251,7 +294,6 @@ const deleteFieldHandler = async (apiRequestInputName: string) => {
       operationId.value,
       updatedData
     );
-    console.log("response: ", response);
     toast({
       title: "Mapping Deleted",
       description: "Mapping deleted successfully",
@@ -302,24 +344,10 @@ watch(
 
 watch(
   () => mappingPathPrefix.value,
-  (newData) => {
-    if (newData) {
-      if (newData == MappingPathPrefix.ENQUIRY_API_RESPONSE_PREFIX) {
-        mappingPathValues.value = apiOperationData.value?.responseOutputs?.map(
-          (output) => output.outputName
-        );
-      } else if (newData == MappingPathPrefix.ENQUIRY_FORM_INPUT_PREFIX) {
-        mappingPathValues.value = paymentOperationData.value?.form?.fields?.map(
-          (field) => field.name
-        );
-      } else if (newData == MappingPathPrefix.PAYMENT_FORM_INPUT_PREFIX) {
-        mappingPathValues.value =
-          paymentOperationData.value?.prevPaymentOperation?.form?.fields?.map(
-            (field) => field.name
-          );
-      } else {
-        mappingPathValues.value = [];
-      }
+  (newPrefix) => {
+    if (newPrefix) {
+      mappingPathValues.value =
+        apiRequestMappingsRegistryOptions.value?.[newPrefix] || [];
     }
   }
 );
@@ -328,6 +356,11 @@ watch(
 const startEditing = (item: ApiRequestMappingsRegistry) => {
   originalInputName.value = item.apiRequestInputName;
   // ... other editing setup code ...
+};
+
+// Add a function to get mapping path values for a specific prefix
+const getMappingPathValuesForPrefix = (prefix: string) => {
+  return apiRequestMappingsRegistryOptions.value?.[prefix] || [];
 };
 </script>
 
@@ -406,7 +439,7 @@ const startEditing = (item: ApiRequestMappingsRegistry) => {
               name="mappingPath"
             >
               <FormItem class="col-span-2">
-                <FormLabel> Mapping Path </FormLabel>
+                <FormLabel>Mapping Path</FormLabel>
                 <FormControl class="w-full flex">
                   <div class="w-full flex">
                     <UiSelect
@@ -532,26 +565,36 @@ const startEditing = (item: ApiRequestMappingsRegistry) => {
               ></Icon>
             </div>
             <FormField
-              :model-value="item?.mappingPath.split('.')[1]"
+              :model-value="getMappingPathParts(item.mappingPath).value"
               v-slot="{ componentField }"
               name="mappingPath"
             >
               <FormItem class="col-span-2">
-                <FormLabel> Mapping Path {{ item.mappingPath }} </FormLabel>
+                <FormLabel>Mapping Path</FormLabel>
                 <FormControl class="w-full flex">
                   <div class="w-full flex">
                     <UiSelect
                       id="mappingPathPrefix"
-                      :model-value="mappingPathPrefix"
+                      :model-value="
+                        getMappingPathParts(item.mappingPath).prefix
+                      "
                       @update:model-value="
-                        (value) => (mappingPathPrefix = value)
+                        (value) => {
+                          // Update only this specific item's mapping path
+                          item.mappingPath =
+                            value + getMappingPathParts(item.mappingPath).value;
+                        }
                       "
                       class="h-10 w-full"
                     >
                       <UiSelectTrigger
                         class="md:w-full focus:ring-0 focus:ring-offset-0 rounded-r-none"
                       >
-                        <UiSelectValue placeholder="Mapping Path Prefix" />
+                        <UiSelectValue
+                          :placeholder="
+                            getMappingPathParts(item.mappingPath).prefix
+                          "
+                        />
                       </UiSelectTrigger>
                       <UiSelectContent>
                         <UiSelectGroup>
@@ -567,16 +610,30 @@ const startEditing = (item: ApiRequestMappingsRegistry) => {
                       v-bind="componentField"
                       id="mappingPath"
                       class="h-10 w-full"
+                      @update:model-value="
+                        (value) => {
+                          const currentPrefix = getMappingPathParts(
+                            item.mappingPath
+                          ).prefix;
+                          item.mappingPath = currentPrefix + value;
+                        }
+                      "
                     >
                       <UiSelectTrigger
                         class="md:w-full focus:ring-0 focus:ring-offset-0 rounded-r-none"
                       >
-                        <UiSelectValue placeholder="Mapping Path value" />
+                        <UiSelectValue
+                          :placeholder="
+                            getMappingPathParts(item.mappingPath).value
+                          "
+                        />
                       </UiSelectTrigger>
                       <UiSelectContent>
                         <UiSelectGroup>
                           <UiSelectItem
-                            v-for="value in mappingPathValues"
+                            v-for="value in getMappingPathValuesForPrefix(
+                              getMappingPathParts(item.mappingPath).prefix
+                            )"
                             :value="value"
                             >{{ value }}</UiSelectItem
                           >

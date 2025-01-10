@@ -103,76 +103,75 @@ function splitPath(path: any) {
   return path.split("/").filter(Boolean);
 }
 
-const getAllPaymentOperations = async () => {
-  try {
-    allPaymentOperations.value = await getPaymentOperations();
-  } catch (err) {
-    console.error("Error fetching payment operations:", err);
-    isError.value = true;
-  }
-};
+// const getAllPaymentOperations = async () => {
+//   try {
+//     allPaymentOperations.value = await getPaymentOperations();
+//   } catch (err) {
+//     console.error("Error fetching payment operations:", err);
+//     isError.value = true;
+//   }
+// };
 
-const getPaymentOperationData = async () => {
-  try {
-    loading.value = true;
-    data.value = await getPaymentOperationById(operationId);
-    formId.value = data.value?.form?.id;
-    form.setValues({
-      ...data.value,
-      paymentIntegration: data.value.paymentIntegration?.id,
-      prevPaymentOperation: data.value.prevPaymentOperation?.id,
-      nextPaymentOperation: data.value.nextPaymentOperation?.id,
-      apiOperation: data.value.apiOperation?.id,
-    });
-    loading.value = false;
-  } catch (err) {
-    console.error("Error fetching payment operations:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-    loading.value = false;
-  }
-};
+// const getPaymentOperationData = async () => {
+//   try {
+//     loading.value = true;
+//     data.value = await getPaymentOperationById(operationId);
+//     formId.value = data.value?.form?.id;
+//     form.setValues({
+//       ...data.value,
+//       paymentIntegration: data.value.paymentIntegration?.id,
+//       prevPaymentOperation: data.value.prevPaymentOperation?.id,
+//       nextPaymentOperation: data.value.nextPaymentOperation?.id,
+//       apiOperation: data.value.apiOperation?.id,
+//     });
+//     loading.value = false;
+//   } catch (err) {
+//     console.error("Error fetching payment operations:", err);
+//     isError.value = true;
+//   } finally {
+//     loading.value = false;
+//   }
+// };
 
-const getApiIntegrationsData = async () => {
-  try {
-    apiIntegrations.value = await getIntegrations(); // Call your API function to fetch roles
-    // Find the API integration that contains the current operation
-    const apiIntegrationWithOperation = apiIntegrations.value.find(
-      (integration) =>
-        integration?.apiOperations?.some(
-          (operation) => operation.id === data.value?.apiOperation?.id
-        )
-    );
-    // Update apiOperations list for the selected integration
-    if (apiIntegrationWithOperation) {
-      // Set the selected API integration
-      selectedApiIntegration.value = apiIntegrationWithOperation?.id;
-      apiOperations.value = apiIntegrationWithOperation.apiOperations;
-    } else {
-      // Set the selected API integration
-      selectedApiIntegration.value = apiIntegrations.value[0]?.id;
-      apiOperations.value = apiIntegrations.value[0]?.apiOperations;
-    }
-  } catch (err) {
-    console.error("Error fetching API integrations:", err);
-    isError.value = true;
-  }
-};
+// const getApiIntegrationsData = async () => {
+//   try {
+//     apiIntegrations.value = await getIntegrations(); // Call your API function to fetch roles
+//     // Find the API integration that contains the current operation
+//     const apiIntegrationWithOperation = apiIntegrations.value.find(
+//       (integration) =>
+//         integration?.apiOperations?.some(
+//           (operation) => operation.id === data.value?.apiOperation?.id
+//         )
+//     );
+//     // Update apiOperations list for the selected integration
+//     if (apiIntegrationWithOperation) {
+//       // Set the selected API integration
+//       selectedApiIntegration.value = apiIntegrationWithOperation?.id;
+//       apiOperations.value = apiIntegrationWithOperation.apiOperations;
+//     } else {
+//       // Set the selected API integration
+//       selectedApiIntegration.value = apiIntegrations.value[0]?.id;
+//       apiOperations.value = apiIntegrations.value[0]?.apiOperations;
+//     }
+//   } catch (err) {
+//     console.error("Error fetching API integrations:", err);
+//     isError.value = true;
+//   }
+// };
 
-const getAllPaymentIntegrations = async () => {
-  try {
-    allPaymentIntegrations.value = await getPaymentIntegrations();
-  } catch (err) {
-    console.error("Error fetching payment integrations:", err);
-    isError.value = true;
-  }
-};
+// const getAllPaymentIntegrations = async () => {
+//   try {
+//     allPaymentIntegrations.value = await getPaymentIntegrations();
+//   } catch (err) {
+//     console.error("Error fetching payment integrations:", err);
+//     isError.value = true;
+//   }
+// };
 
 const fetchData = async () => {
-  isLoading.value = true;
   isError.value = false;
   try {
+    loading.value = true;
     // Fetch only what's needed initially
     const [paymentOperation, integrations] = await Promise.all([
       getPaymentOperationById(operationId),
@@ -180,7 +179,6 @@ const fetchData = async () => {
     ]);
 
     data.value = paymentOperation;
-    console.log("data: ", data.value);
     apiIntegrations.value = integrations;
 
     // Set initial API operations based on the selected integration
@@ -201,16 +199,20 @@ const fetchData = async () => {
     console.error("Error fetching data:", error);
     isError.value = true;
   } finally {
-    isLoading.value = false;
+    loading.value = false;
   }
 };
 
-await useAsyncData("paymentOperationData", async () => {
+// await useAsyncData("paymentOperationData", async () => {
+//   await fetchData();
+//   // getApiIntegrationsData();
+//   // getPaymentOperationData();
+//   // getAllPaymentIntegrations();
+//   // getAllPaymentOperations();
+// });
+
+onMounted(async () => {
   await fetchData();
-  // getApiIntegrationsData();
-  // getPaymentOperationData();
-  // getAllPaymentIntegrations();
-  // getAllPaymentOperations();
 });
 
 const refetch = async () => {
@@ -258,13 +260,7 @@ onBeforeUnmount(cleanup);
 </script>
 
 <template>
-  <div v-if="isError">
-    <ErrorMessage :retry="refetch" title="Something went wrong." />
-  </div>
-  <div v-else-if="loading" class="flex justify-center p-8">
-    <UiLoading />
-  </div>
-  <div v-else class="flex flex-col gap-6 items-cente">
+  <div class="flex flex-col gap-6 items-cente">
     <form @submit="onSubmit">
       <UiTabs defaultValue="info" class="w-full">
         <UiTabsList
@@ -302,7 +298,14 @@ onBeforeUnmount(cleanup);
           >
         </UiTabsList>
         <UiTabsContent class="p-6" value="info">
-          <div :key="data?.id" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div v-if="loading" class="py-10 flex justify-center w-full">
+            <UiLoading />
+          </div>
+          <div
+            v-else-if="data && !isError"
+            :key="data?.id"
+            class="grid grid-cols-1 md:grid-cols-2 gap-6"
+          >
             <FormField
               :model-value="data?.id"
               v-slot="{ componentField }"
@@ -561,11 +564,17 @@ onBeforeUnmount(cleanup);
               </UiButton>
             </div>
           </div>
+          <div v-if="isError">
+            <ErrorMessage :retry="refetch" title="Something went wrong." />
+          </div>
         </UiTabsContent>
         <UiTabsContent class="p-6" value="mapping">
           <PaymentOperationsMapping
             :operationIdProps="operationId"
             :apiRequestMappingsRegistry="data?.apiRequestMappingsRegistry"
+            :apiRequestMappingsRegistryOptions="
+              data?.apiRequestMappingsRegistryOptions
+            "
           />
         </UiTabsContent>
         <UiTabsContent class="p-6" value="form">
@@ -574,7 +583,7 @@ onBeforeUnmount(cleanup);
 
         <UiTabsContent class="text-base h-full p-6 space-y-4" value="fields">
           <PaymentOperationsFields
-            :fields="data?.fields"
+            :fields="data?.form?.fields"
             :formIdProps="formId"
           />
         </UiTabsContent>

@@ -389,24 +389,6 @@ const handleDeleteForm = async () => {
         </FormItem>
       </FormField> -->
 
-      <FormField
-        :model-value="data?.fields"
-        v-slot="{ componentField }"
-        name="fields"
-      >
-        <FormItem>
-          <FormLabel> Fields </FormLabel>
-          <FormControl>
-            <UiInput
-              type="text"
-              placeholder="Enter fields"
-              v-bind="componentField"
-            />
-          </FormControl>
-          <FormMessage />
-        </FormItem>
-      </FormField>
-
       <div class="col-span-full w-full py-4 flex justify-end gap-4">
         <UiButton
           :disabled="loading"

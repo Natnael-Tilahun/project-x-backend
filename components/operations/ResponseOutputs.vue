@@ -12,16 +12,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-import {
-  Table,
-  TableBody,
-  TableCaption,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-
 const route = useRoute();
 
 const {
