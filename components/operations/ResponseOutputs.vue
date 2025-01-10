@@ -707,6 +707,20 @@ watch(
           <div
             class="col-span-full w-full flex justify-end gap-4 pt-4 border-t"
           >
+            <UiSheet>
+              <UiSheetTrigger>
+                <UiButton variant="outline" type="button" size="sm">
+                  Manage Validation Rules
+                </UiButton>
+              </UiSheetTrigger>
+              <UiSheetContent
+                class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+              >
+                <OperationsResponseOutputsValidationRules
+                  :responseOutput="item"
+                />
+              </UiSheetContent>
+            </UiSheet>
             <UiButton
               :disabled="loading"
               variant="outline"

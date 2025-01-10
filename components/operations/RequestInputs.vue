@@ -840,7 +840,7 @@ watch(
               <UiSheetContent
                 class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
               >
-                <OperationsValidationRules :requestInput="item" />
+                <OperationsRequestInputsValidationRules :requestInput="item" />
               </UiSheetContent>
             </UiSheet>
             <UiButton

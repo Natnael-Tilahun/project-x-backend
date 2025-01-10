@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-const openItems = ref("");
 import { useForm } from "vee-validate";
 import { ref, nextTick } from "vue";
 import { toast } from "~/components/ui/toast";
@@ -22,7 +21,7 @@ interface RequestInputValidations {
 const route = useRoute();
 const { updateRequestInput, isLoading } = useOperationRequestInputs();
 
-const loading = ref(isLoading.value);
+const loading = ref(false);
 const isError = ref(false);
 const operationId = ref<string>("");
 const requestInputId = ref<string>("");
@@ -40,17 +39,6 @@ if (props.operationIdProps) {
 console.log("props.requestInput:", props.requestInput);
 
 requestInputId.value = props.requestInput?.id || "";
-const requestInputValidationRules = ref<RequestInputValidations>({
-  logicalOperator: props.requestInput?.validationConfig?.logicalOperator || "",
-  validationMessage: props.requestInput?.validationMessage || "",
-  validationRules: props.requestInput?.validationConfig?.validationRules || [
-    {
-      operator: null,
-      against: [""],
-      errorMessage: null,
-    },
-  ],
-});
 
 // Initialize the form with the existing values or default empty values
 const form = useForm<Partial<RequestInput>>({
@@ -107,13 +95,6 @@ watch(
 
 // Update the onSubmit function
 const onSubmit = form.handleSubmit(async (values) => {
-  console.log(
-    "values:",
-    values,
-    values.validationRules,
-    values.validationMessage
-  );
-
   try {
     loading.value = true;
     const updateData = {
@@ -123,7 +104,7 @@ const onSubmit = form.handleSubmit(async (values) => {
         validationRules:
           values?.validationRules?.map((rule) => ({
             operator: rule.operator,
-            against: rule.against || [], // Return empty array if no valid values
+            against: rule.against || [],
             errorMessage: rule.errorMessage,
           })) || [],
         logicalOperator: values?.logicalOperator,
@@ -140,12 +121,10 @@ const onSubmit = form.handleSubmit(async (values) => {
 
     toast({
       title: "Validation Rules Updated",
-
       description: "Validation rules updated successfully",
     });
-  } catch (err: any) {
+  } catch (err) {
     console.error("Error updating validation rules:", err);
-    isError.value = true;
     toast({
       title: "Error",
       description: "Failed to update validation rules",
@@ -155,15 +134,6 @@ const onSubmit = form.handleSubmit(async (values) => {
     loading.value = false;
   }
 });
-
-watch(
-  () => props.requestInput,
-  (newInputs) => {
-    if (newInputs) {
-      requestInputValidationRules.value = newInputs;
-    }
-  }
-);
 
 // Add helper function to check if a rule is filled
 const isValidationRuleFilled = (rule: ValidationRule) => {
@@ -326,15 +296,6 @@ watch(
   { deep: true }
 );
 
-// Debug log to verify the form values
-watch(
-  () => form.values,
-  (values) => {
-    // console.log("Form values:", values);
-  },
-  { deep: true }
-);
-
 // Add helper functions for labels and placeholders
 const getOperatorLabel = (operator: Operators, index: number): string => {
   switch (operator) {
@@ -370,7 +331,7 @@ const getPlaceholder = (operator: Operators, index: number): string => {
 <template>
   <UiSheet>
     <UiSheetHeader>
-      <UiSheetTitle class="border-b-2">Validations</UiSheetTitle>
+      <UiSheetTitle class="border-b-2">Request Inputs Validations</UiSheetTitle>
       <UiSheetDescription class="py-4 space-y-4">
         <form @submit="onSubmit" class="space-y-4">
           <!-- Logical Operator -->
@@ -430,7 +391,7 @@ const getPlaceholder = (operator: Operators, index: number): string => {
                 variant="outline"
                 size="sm"
                 class="bg-white text-black"
-                :disabled="loading"
+                :disabled="isLoading"
                 @click="addValidationRule"
               >
                 <Icon name="material-symbols:add" class="mr-2 h-4 w-4" />

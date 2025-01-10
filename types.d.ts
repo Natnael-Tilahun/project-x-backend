@@ -311,6 +311,12 @@ interface ResponseOutput {
   isRequired: boolean;
   isVisibleForUser: boolean;
   apiOperation: ApiOperation;
+  integrationFieldMappings?: [IntegrationFieldMapping];
+  validationMessage?: string;
+  validationConfig?: {
+    logicalOperator?: LogicalOperators;
+    validationRules?: [ValidationRule];
+  };
 }
 
 enum ValueSource {
