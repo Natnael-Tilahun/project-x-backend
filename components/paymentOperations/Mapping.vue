@@ -191,35 +191,53 @@ if (apiOperationId.value) {
 // Add this ref to store the original input name when editing
 const originalInputName = ref<string>("");
 
-// Update existing parameter
+// Add activeItemId ref
+const activeItemId = ref<string | null>(null);
+
+// Add function to start editing
+const startEditing = (item: ApiRequestMappingsRegistry) => {
+  activeItemId.value = item.apiRequestInputName;
+  originalInputName.value = item.apiRequestInputName;
+};
+
+// Modify onSubmit handler
 const onSubmit = form.handleSubmit(
   async (values: ApiRequestMappingsRegistry) => {
-    console.log("values: ", values);
     try {
       loading.value = true;
+      // Get the current item being edited
       const index = apiRequestMappingsRegistry.value.findIndex(
-        (item) =>
-          item.apiRequestInputName === originalInputName.value ||
-          item.apiRequestInputName === values.apiRequestInputName
+        (item) => item.apiRequestInputName === activeItemId.value
       );
-
       if (index !== -1) {
+        const currentItem = apiRequestMappingsRegistry.value[index];
+        const currentPrefix = getMappingPathParts(
+          currentItem.mappingPath
+        ).prefix;
+
+        // Update the item with its own prefix
         apiRequestMappingsRegistry.value[index] = {
-          ...apiRequestMappingsRegistry.value[index],
-          mappingPath: mappingPathPrefix.value + values.mappingPath,
+          ...currentItem,
           apiRequestInputName: values.apiRequestInputName,
+          mappingPath: currentPrefix + values.mappingPath,
         };
+        console.log(
+          "apiRequestMappingsRegistryyy: ",
+          apiRequestMappingsRegistry.value
+        );
+        await updatePaymentOperation(operationId.value, {
+          id: operationId.value,
+          apiRequestMappingsRegistry: apiRequestMappingsRegistry.value,
+        });
+
+        toast({
+          title: "Success",
+          description: "Mapping updated successfully",
+        });
+
+        // Reset active item
+        activeItemId.value = null;
       }
-
-      await updatePaymentOperation(operationId.value, {
-        id: operationId.value,
-        apiRequestMappingsRegistry: apiRequestMappingsRegistry.value,
-      });
-
-      toast({
-        title: "Success",
-        description: "Mapping updated successfully",
-      });
     } catch (err) {
       console.error("Error updating mapping:", err);
       toast({
@@ -232,6 +250,31 @@ const onSubmit = form.handleSubmit(
     }
   }
 );
+
+// Add function to cancel editing
+const cancelEditing = () => {
+  activeItemId.value = null;
+  originalInputName.value = "";
+};
+
+// Add function to update mapping path for a specific item
+const updateItemMappingPath = (
+  item: ApiRequestMappingsRegistry,
+  newPrefix: string,
+  value?: string
+) => {
+  const index = apiRequestMappingsRegistry.value.findIndex(
+    (i) => i.apiRequestInputName === item.apiRequestInputName
+  );
+
+  if (index !== -1) {
+    const currentParts = getMappingPathParts(item.mappingPath);
+    apiRequestMappingsRegistry.value[index] = {
+      ...item,
+      mappingPath: newPrefix + (value || currentParts.value),
+    };
+  }
+};
 
 // Submit new parameter
 const createNewFieldHandler = form.handleSubmit(async (values: any) => {
@@ -351,12 +394,6 @@ watch(
     }
   }
 );
-
-// Add this when opening/editing a field (probably in your template where you show the form)
-const startEditing = (item: ApiRequestMappingsRegistry) => {
-  originalInputName.value = item.apiRequestInputName;
-  // ... other editing setup code ...
-};
 
 // Add a function to get mapping path values for a specific prefix
 const getMappingPathValuesForPrefix = (prefix: string) => {
@@ -525,7 +562,7 @@ const getMappingPathValuesForPrefix = (prefix: string) => {
         {{ item.apiRequestInputName }}
       </UiAccordionTrigger>
       <UiAccordionContent class="pt-6 px-6 bg-muted rounded-lg">
-        <form @submit="onSubmit">
+        <form @submit="onSubmit" @click="startEditing(item)">
           <div class="grid md:grid-cols-4 grid-cols-1 gap-6 pb-4">
             <FormField
               :model-value="item?.apiRequestInputName"
@@ -579,11 +616,7 @@ const getMappingPathValuesForPrefix = (prefix: string) => {
                         getMappingPathParts(item.mappingPath).prefix
                       "
                       @update:model-value="
-                        (value) => {
-                          // Update only this specific item's mapping path
-                          item.mappingPath =
-                            value + getMappingPathParts(item.mappingPath).value;
-                        }
+                        (value) => updateItemMappingPath(item, value)
                       "
                       class="h-10 w-full"
                     >
@@ -615,7 +648,7 @@ const getMappingPathValuesForPrefix = (prefix: string) => {
                           const currentPrefix = getMappingPathParts(
                             item.mappingPath
                           ).prefix;
-                          item.mappingPath = currentPrefix + value;
+                          updateItemMappingPath(item, currentPrefix, value);
                         }
                       "
                     >
@@ -654,6 +687,7 @@ const getMappingPathValuesForPrefix = (prefix: string) => {
               variant="outline"
               type="button"
               size="sm"
+              @click="cancelEditing"
             >
               Cancel
             </UiButton>
@@ -701,7 +735,6 @@ const getMappingPathValuesForPrefix = (prefix: string) => {
                 v-if="loading"
                 class="mr-2 h-4 w-4 animate-spin"
               ></Icon>
-
               Update
             </UiButton>
           </div>
