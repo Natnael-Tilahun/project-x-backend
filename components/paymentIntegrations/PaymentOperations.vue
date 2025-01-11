@@ -19,8 +19,8 @@ const activeTab = route.query.activeTab as string;
 console.log("integrationId: ", integrationId.value);
 
 const getAllPaymentOperations = async () => {
-  loading.value = true; // Set loading state
   try {
+    loading.value = true;
     const response = await getPaymentIntegrationById(integrationId.value);
     data.value = response.paymentOperations || [];
     console.log("data: ", data.value);
@@ -32,10 +32,9 @@ const getAllPaymentOperations = async () => {
   }
 };
 
-await useAsyncData(
-  "paymentOperationData",
-  async () => await getAllPaymentOperations()
-);
+onMounted(() => {
+  getAllPaymentOperations();
+});
 
 const refetch = async () => {
   await getAllPaymentOperations();

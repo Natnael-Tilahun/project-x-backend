@@ -43,8 +43,6 @@ const form = useForm<Field>({
   validationSchema: formFieldsFormSchema,
 });
 
-console.log("formId: ", formId.value)
-
 // Modify getFormData to check for formId before making the request
 const getFormData = async () => {
   try {
@@ -59,7 +57,6 @@ const getFormData = async () => {
       return;
     }
     const data = await getFormById(formId.value);
-    console.log("form data: ", data)
     fields.value = data.fields || [];
   } catch (err) {
     console.error("Error fetching form fields:", err);
