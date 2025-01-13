@@ -8,9 +8,13 @@ export const usePaymentIntegrations = () => {
 
   const store = useAuthStore();
 
-  const getPaymentIntegrations: () => Promise<PaymentIntegration[]> = async () => {
+  const getPaymentIntegrations: () => Promise<
+    PaymentIntegration[]
+  > = async () => {
     try {
-      const { data, pending, error, status } = await useFetch<PaymentIntegration[]>(
+      const { data, pending, error, status } = await useFetch<
+        PaymentIntegration[]
+      >(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations`,
         {
           method: "GET",
@@ -25,9 +29,12 @@ export const usePaymentIntegrations = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -42,26 +49,32 @@ export const usePaymentIntegrations = () => {
     }
   };
 
-  const getPaymentIntegrationById: (id: string) => Promise<PaymentIntegration> = async (id) => {
+  const getPaymentIntegrationById: (
+    id: string
+  ) => Promise<PaymentIntegration> = async (id) => {
     try {
-      const { data, pending, error, status } = await useFetch<PaymentIntegration>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations/${id}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
-      );
+      const { data, pending, error, status } =
+        await useFetch<PaymentIntegration>(
+          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations/${id}`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${store.accessToken}`,
+            },
+          }
+        );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -76,36 +89,89 @@ export const usePaymentIntegrations = () => {
     }
   };
 
-  const createNewPaymentIntegration: (paymentIntegrationData: any) => Promise<PaymentIntegration> = async (paymentIntegrationData) => {
+  const getPaymentIntegrationPaymentOperations: (
+    id: string
+  ) => Promise<PaymentOperation[]> = async (id) => {
     try {
-      const { data, pending, error, status } = await useFetch<PaymentIntegration>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations`,
+      const { data, pending, error, status } = await useFetch<
+        PaymentOperation[]
+      >(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations/${id}/payment-operations`,
         {
-          method: "POST",
+          method: "GET",
           headers: {
             Authorization: `Bearer ${store.accessToken}`,
           },
-          body: JSON.stringify(paymentIntegrationData),
-        },
+        }
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
 
-        console.log("Creating new payment integration error: ", error.value)
+      if (!data.value) {
+        throw new Error(
+          "No payment operations with this payment integration id received"
+        );
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
+  const createNewPaymentIntegration: (
+    paymentIntegrationData: any
+  ) => Promise<PaymentIntegration> = async (paymentIntegrationData) => {
+    try {
+      const { data, pending, error, status } =
+        await useFetch<PaymentIntegration>(
+          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations`,
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${store.accessToken}`,
+            },
+            body: JSON.stringify(paymentIntegrationData),
+          }
+        );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message || error.value?.data?.detail,
+          variant: "destructive",
+        });
+
+        console.log("Creating new payment integration error: ", error.value);
 
         if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Creating new payment integration error: ", error.value?.data?.fieldErrors[0].message)
-        }
-        else {
-          console.log("Creating new payment integration errorrr: ", error.value?.data?.message)
+          console.log(
+            "Creating new payment integration error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Creating new payment integration errorrr: ",
+            error.value?.data?.message
+          );
         }
         throw new Error(error.value);
       }
@@ -121,40 +187,56 @@ export const usePaymentIntegrations = () => {
     }
   };
 
-  const updatePaymentIntegration: (paymentIntegrationId: string, paymentIntegrationData: any) => Promise<PaymentIntegration> = async (paymentIntegrationId, paymentIntegrationData) => {
+  const updatePaymentIntegration: (
+    paymentIntegrationId: string,
+    paymentIntegrationData: any
+  ) => Promise<PaymentIntegration> = async (
+    paymentIntegrationId,
+    paymentIntegrationData
+  ) => {
     try {
-      const { data, pending, error, status } = await useFetch<PaymentIntegration>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations/${paymentIntegrationId}`,
-        {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-          body: JSON.stringify(paymentIntegrationData),
-        },
-      );
+      const { data, pending, error, status } =
+        await useFetch<PaymentIntegration>(
+          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations/${paymentIntegrationId}`,
+          {
+            method: "PATCH",
+            headers: {
+              Authorization: `Bearer ${store.accessToken}`,
+            },
+            body: JSON.stringify(paymentIntegrationData),
+          }
+        );
 
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
 
         if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Updating payment integration error: ", error.value?.data?.fieldErrors[0].message)
-        }
-        else {
-          console.log("Updating payment integration errorrr: ", error.value?.data?.message)
+          console.log(
+            "Updating payment integration error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Updating payment integration errorrr: ",
+            error.value?.data?.message
+          );
         }
         throw new Error(error.value?.data);
       }
 
       if (!data.value) {
-        throw new Error("No payment integration with this payment integration id received");
+        throw new Error(
+          "No payment integration with this payment integration id received"
+        );
       }
 
       return data.value;
@@ -179,12 +261,18 @@ export const usePaymentIntegrations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        console.log("Deleting payment integration error: ", error.value?.data?.message)
+        console.log(
+          "Deleting payment integration error: ",
+          error.value?.data?.message
+        );
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -195,14 +283,14 @@ export const usePaymentIntegrations = () => {
     }
   };
 
-
   return {
     isLoading,
     getPaymentIntegrations,
     getPaymentIntegrationById,
+    getPaymentIntegrationPaymentOperations,
     createNewPaymentIntegration,
     deletePaymentIntegration,
     updatePaymentIntegration,
-    isSubmitting
+    isSubmitting,
   };
 };

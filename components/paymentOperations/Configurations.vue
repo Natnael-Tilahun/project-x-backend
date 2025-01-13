@@ -23,7 +23,8 @@ const {
   isLoading,
 } = usePaymentOperations();
 const { getOperations } = useOperations();
-const { getPaymentIntegrations } = usePaymentIntegrations();
+const { getPaymentIntegrations, getPaymentIntegrationPaymentOperations } =
+  usePaymentIntegrations();
 const { getIntegrations } = useIntegrations();
 
 const fullPath = ref(route.fullPath);
@@ -46,6 +47,7 @@ const operationId = (route.query.operationId as string) || "";
 const isPreview = ref<boolean>(false);
 const formId = ref<string>("");
 const selectedApiIntegration = ref<string>("");
+const selectedApiOperations = ref<string[]>([]);
 
 console.log("operationId: ", operationId);
 
@@ -173,28 +175,37 @@ const fetchData = async () => {
   try {
     loading.value = true;
     // Fetch only what's needed initially
-    const [paymentOperation, integrations] = await Promise.all([
-      getPaymentOperationById(operationId),
-      getIntegrations(),
+    [
+      apiOperations.value,
+      allPaymentOperations.value,
+      data.value,
+      apiIntegrations.value,
+    ] = await Promise.all([
+      getOperations().catch(() => []),
+      getPaymentIntegrationPaymentOperations(integrationId.value).catch(
+        () => []
+      ),
+      getPaymentOperationById(operationId).catch(() => []),
+      getIntegrations().catch(() => []),
     ]);
-
-    data.value = paymentOperation;
-    apiIntegrations.value = integrations;
-
-    // Set initial API operations based on the selected integration
-    if (apiIntegrations.value.length > 0) {
-      selectedApiIntegration.value = apiIntegrations.value[0].id;
-      apiOperations.value = apiIntegrations.value[0].apiOperations;
-    }
+    selectedApiIntegration.value = apiIntegrations.value[0].id;
+    selectedApiOperations.value = apiOperations.value.filter(
+      (operation) =>
+        operation?.apiIntegration?.id === selectedApiIntegration.value
+    );
+    console.log(
+      "data: ",
+      data.value?.apiRequestMappingsRegistryOptions["$enquiryApiResponse."]
+    );
 
     // Only fetch these if needed for the current view
-    if (data.value?.paymentIntegration?.id) {
-      allPaymentOperations.value = await getPaymentOperations();
-      allPaymentOperations.value = allPaymentOperations.value.filter(
-        (op) =>
-          op?.paymentIntegration?.id === data.value?.paymentIntegration?.id
-      );
-    }
+    // if (data.value?.paymentIntegration?.id) {
+    //   allPaymentOperations.value = await getPaymentOperations();
+    //   allPaymentOperations.value = allPaymentOperations.value.filter(
+    //     (op) =>
+    //       op?.paymentIntegration?.id === data.value?.paymentIntegration?.id
+    //   );
+    // }
   } catch (error) {
     console.error("Error fetching data:", error);
     isError.value = true;
@@ -235,15 +246,10 @@ const copyToClipboard = (data: any) => {
 
 watch(
   selectedApiIntegration,
-  (newApiIntegrationId) => {
-    if (!newApiIntegrationId) return;
-
-    const integration = apiIntegrations.value.find(
-      (i) => i.id === newApiIntegrationId
+  async (newApiIntegrationId) => {
+    selectedApiOperations.value = apiOperations.value.filter(
+      (operation) => operation?.apiIntegration?.id === newApiIntegrationId
     );
-    if (integration) {
-      apiOperations.value = integration.apiOperations;
-    }
   },
   { immediate: true }
 );
@@ -389,6 +395,41 @@ onBeforeUnmount(cleanup);
               </FormItem>
             </FormField>
             <FormField
+              :model-value="data?.amountEnquiryPath"
+              v-slot="{ componentField }"
+              name="amountEnquiryPath"
+            >
+              <FormItem>
+                <FormLabel> Amount Enquiry Path </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Enter amount enquiry path" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <FormMessage />
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-if="data?.apiRequestMappingsRegistryOptions"
+                        v-for="item in data?.apiRequestMappingsRegistryOptions[
+                          '$enquiryApiResponse.'
+                        ]"
+                        :key="item.id"
+                        :value="item.id"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                      <UiSelectItem v-else
+                        >No amount enquiry path found</UiSelectItem
+                      >
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+              </FormItem>
+            </FormField>
+
+            <FormField
               :model-value="selectedApiIntegration"
               v-slot="{ componentField }"
               name="apiIntegration"
@@ -438,12 +479,16 @@ onBeforeUnmount(cleanup);
                   <UiSelectContent>
                     <UiSelectGroup>
                       <UiSelectItem
-                        v-for="item in apiOperations"
+                        v-if="selectedApiOperations.length > 0"
+                        v-for="item in selectedApiOperations"
                         :key="item.id"
                         :value="item.id"
                       >
                         {{ item.operationName }}
                       </UiSelectItem>
+                      <UiSelectItem v-else
+                        >No API operations found</UiSelectItem
+                      >
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
@@ -510,7 +555,7 @@ onBeforeUnmount(cleanup);
                 </UiSelect>
               </FormItem>
             </FormField>
-            <FormField
+            <!-- <FormField
               :model-value="data?.paymentIntegration?.id"
               v-slot="{ componentField }"
               name="paymentIntegration"
@@ -541,7 +586,7 @@ onBeforeUnmount(cleanup);
                 </UiSelect>
                 <FormMessage />
               </FormItem>
-            </FormField>
+            </FormField> -->
 
             <div class="col-span-full w-full py-4 flex justify-end gap-4">
               <UiButton

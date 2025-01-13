@@ -21,7 +21,7 @@ const { getIntegrations } = useIntegrations();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
 const integrationId = ref<string>("");
-const loading = ref(isLoading.value);
+const loading = ref(false);
 const isError = ref(false);
 const data = ref<PaymentOperation>();
 const apiOperations = ref<ApiOperation[]>([]);
@@ -36,12 +36,14 @@ const operationId = ref<string>("");
 const isPreview = ref<boolean>(false);
 const formId = ref<string>("");
 const { getOperations } = useOperations();
-const { getPaymentIntegrations } = usePaymentIntegrations();
+const { getPaymentIntegrations, getPaymentIntegrationPaymentOperations } =
+  usePaymentIntegrations();
 const { getPaymentOperations } = usePaymentOperations();
 const props = defineProps<{
   integrationId: string;
 }>();
 const selectedApiIntegration = ref<string>("");
+const selectedApiOperations = ref<string[]>([]);
 
 if (props?.integrationId) {
   integrationId.value = props?.integrationId;
@@ -64,6 +66,7 @@ const form = useForm<PaymentOperation>({
 const getApiOperationsData = async () => {
   try {
     apiOperations.value = await getOperations(); // Call your API function to fetch roles
+    console.log("API Operations: ", apiOperations.value);
   } catch (err) {
     console.error("Error fetching API operations:", err);
     isError.value = true;
@@ -72,7 +75,9 @@ const getApiOperationsData = async () => {
 
 const getAllPaymentOperations = async () => {
   try {
-    allPaymentOperations.value = await getPaymentOperations();
+    allPaymentOperations.value = await getPaymentIntegrationPaymentOperations(
+      integrationId.value
+    );
   } catch (err) {
     console.error("Error fetching payment operations:", err);
     isError.value = true;
@@ -100,7 +105,7 @@ const getApiIntegrationsData = async () => {
 };
 
 const fetchData = async () => {
-  isLoading.value = true;
+  loading.value = true;
   isError.value = false;
   try {
     [
@@ -110,23 +115,24 @@ const fetchData = async () => {
       apiIntegrations.value,
     ] = await Promise.all([
       getOperations().catch(() => []),
-      getPaymentOperations().catch(() => []),
+      getPaymentIntegrationPaymentOperations(integrationId.value).catch(
+        () => []
+      ),
       getPaymentIntegrations().catch(() => []),
       getIntegrations().catch(() => []),
     ]);
-    isError.value = false;
-
-    allPaymentOperations.value = allPaymentOperations.value.filter(
-      (operation) => operation?.paymentIntegration?.id === integrationId.value
-    );
-
     selectedApiIntegration.value = apiIntegrations.value[0].id;
-    apiOperations.value = apiIntegrations.value[0].apiOperations;
+
+    selectedApiOperations.value = apiOperations.value.filter(
+      (operation) =>
+        operation?.apiIntegration?.id === selectedApiIntegration.value
+    );
   } catch (error) {
     isError.value = true;
     console.error("Error fetching data:", error);
   } finally {
     isLoading.value = false;
+    loading.value = false;
   }
 };
 
@@ -196,16 +202,18 @@ function splitPath(path: any) {
 }
 
 watch(selectedApiIntegration, async (newApiIntegrationId) => {
-  apiIntegrations.value.filter((integration) => {
-    if (integration.id === newApiIntegrationId) {
-      apiOperations.value = integration.apiOperations;
-    }
-  });
+  selectedApiOperations.value = apiOperations.value.filter(
+    (operation) => operation?.apiIntegration?.id === newApiIntegrationId
+  );
 });
 </script>
 
 <template>
-  <div class="flex flex-col gap-6 items-cente">
+  <div v-if="loading" class="py-10 flex justify-center w-full">
+    <UiLoading />
+  </div>
+
+  <div v-else-if="!loading && !isError" class="flex flex-col gap-6 items-cente">
     <form @submit="onSubmit">
       <UiTabs v-model="openItems" defaultValue="info" class="w-full">
         <UiTabsList
@@ -360,7 +368,7 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
                   <UiSelectContent>
                     <UiSelectGroup>
                       <UiSelectItem
-                        v-for="item in apiOperations"
+                        v-for="item in selectedApiOperations"
                         :value="item.id"
                         :key="item.id"
                       >
@@ -430,7 +438,6 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
                 </UiSelect>
               </FormItem>
             </FormField>
-            
 
             <div class="col-span-full w-full py-4 flex justify-end gap-4">
               <UiButton
@@ -471,5 +478,8 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
         </UiTabsContent>
       </UiTabs>
     </form>
+  </div>
+  <div v-else-if="isError" class="flex flex-col gap-6 items-cente">
+    <ErrorMessage :retry="refetch" title="Something went wrong." />
   </div>
 </template>

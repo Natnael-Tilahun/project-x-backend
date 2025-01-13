@@ -4,8 +4,11 @@ import { toast } from "~/components/ui/toast";
 import { PaymentOperationType } from "@/global-types";
 import { columns } from "~/components/paymentOperations/columns";
 
-const { getPaymentIntegrations, getPaymentIntegrationById } =
-  usePaymentIntegrations();
+const {
+  getPaymentIntegrations,
+  getPaymentIntegrationById,
+  getPaymentIntegrationPaymentOperations,
+} = usePaymentIntegrations();
 
 const openItems = ref("configuration");
 const route = useRoute();
@@ -21,8 +24,10 @@ console.log("integrationId: ", integrationId.value);
 const getAllPaymentOperations = async () => {
   try {
     loading.value = true;
-    const response = await getPaymentIntegrationById(integrationId.value);
-    data.value = response.paymentOperations || [];
+    const response = await getPaymentIntegrationPaymentOperations(
+      integrationId.value
+    );
+    data.value = response;
     console.log("data: ", data.value);
   } catch (err) {
     console.error("Error fetching payment integration operations:", err);
