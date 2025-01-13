@@ -21,7 +21,6 @@ export const apiOperationResponseOutputValidationRulesFormSchema =
         )
         .optional()
         .nullable(),
-      validationMessage: z.string().optional().nullable(),
       logicalOperator: logicalOperatorSchema,
     })
   );

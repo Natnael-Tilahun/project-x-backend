@@ -650,23 +650,6 @@ watch(
               </FormItem>
             </FormField>
             <FormField
-              :model-value="item.valueSourcePath"
-              v-slot="{ componentField }"
-              name="valueSourcePath"
-            >
-              <FormItem>
-                <FormLabel> Value Source Path </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="value source path"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
               :model-value="item.maxLength"
               v-slot="{ componentField }"
               name="maxLength"

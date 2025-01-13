@@ -3,7 +3,7 @@ import { z } from "zod";
 import { Protocol, Auth, IntegrationType } from "@/global-types";
 const ProtocolSchema = z.nativeEnum(Protocol).optional().nullable();
 const AuthSchema = z.nativeEnum(Auth);
-const IntegrationTypeSchema = z.nativeEnum(IntegrationType);  
+const IntegrationTypeSchema = z.nativeEnum(IntegrationType);
 
 export const apiIntegrationFormSchema = toTypedSchema(
   z.object({
@@ -22,6 +22,6 @@ export const apiIntegrationFormSchema = toTypedSchema(
     authConfig: z.any().optional().nullable(),
     protocol: ProtocolSchema,
     host: z.string().optional().nullable(),
+    // retryStrategy: z.any().optional().nullable(),
   })
 );
-

@@ -20,7 +20,6 @@ export const apiOperationRequestInputValidationRulesFormSchema = toTypedSchema(
       )
       .optional()
       .nullable(),
-    validationMessage: z.string().optional().nullable(),
     logicalOperator: logicalOperatorSchema,
   })
 );

@@ -271,92 +271,6 @@ watch(
               </FormItem>
             </FormField>
             <FormField
-              :model-value="newParameter?.transferCoreMapping"
-              v-slot="{ componentField }"
-              name="transferCoreMapping"
-            >
-              <FormItem>
-                <FormLabel> Transfer Core Mapping </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue
-                        placeholder="Select a transfer core mapping"
-                      />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem value="AMOUNT"> AMOUNT </UiSelectItem>
-                      <UiSelectItem value="CREDIT_ACCOUNT">
-                        CREDIT_ACCOUNT
-                      </UiSelectItem>
-                      <UiSelectItem value="REASON"> REASON </UiSelectItem>
-                      <UiSelectItem value="NONE"> NONE </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="newParameter?.constantValueToCompare"
-              v-slot="{ componentField }"
-              name="constantValueToCompare"
-            >
-              <FormItem>
-                <FormLabel> Constant Value To Compare </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="constant value to compare"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="newParameter?.operatorToCompareValue"
-              v-slot="{ componentField }"
-              name="operatorToCompareValue"
-            >
-              <FormItem>
-                <FormLabel> Operator To Compare Value </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue
-                        placeholder="Select an operator to compare value"
-                      />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem value="EQUAL_TO"> EQUAL_TO </UiSelectItem>
-                      <UiSelectItem value="NOT_EQUAL_TO">
-                        NOT_EQUAL_TO
-                      </UiSelectItem>
-                      <UiSelectItem value="OBJECT_"> OBJECT_ </UiSelectItem>
-                      <UiSelectItem value="OBJECT_NOT_EQUAL_TO">
-                        OBJECT_NOT_EQUAL_TO
-                      </UiSelectItem>
-                      <UiSelectItem value="GREATER_THAN">
-                        GREATER_THAN
-                      </UiSelectItem>
-                      <UiSelectItem value="LESS_THAN"> LESS_THAN </UiSelectItem>
-                      <UiSelectItem value="GREATER_THAN_OR_EQUAL_TO">
-                        GREATER_THAN_OR_EQUAL_TO
-                      </UiSelectItem>
-                      <UiSelectItem value="LESS_THAN_OR_EQUAL_TO">
-                        LESS_THAN_OR_EQUAL_TO
-                      </UiSelectItem>
-                      <UiSelectItem value="NONE"> NONE </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
               :model-value="newParameter?.isRequired"
               v-slot="{ componentField }"
               name="isRequired"
@@ -368,43 +282,6 @@ watch(
                     :checked="newParameter?.isRequired"
                     @update:checked="
                       newParameter.isRequired = !newParameter.isRequired
-                    "
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="newParameter?.isLogicField"
-              v-slot="{ componentField }"
-              name="isLogicField"
-            >
-              <FormItem>
-                <FormLabel> Is Logic Field </FormLabel>
-                <FormControl>
-                  <UiSwitch
-                    :checked="newParameter?.isLogicField"
-                    @update:checked="
-                      newParameter.isLogicField = !newParameter.isLogicField
-                    "
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="newParameter?.isVisibleForUser"
-              v-slot="{ componentField }"
-              name="isVisibleForUser"
-            >
-              <FormItem>
-                <FormLabel> Is Visible For User </FormLabel>
-                <FormControl>
-                  <UiSwitch
-                    :checked="newParameter?.isVisibleForUser"
-                    @update:checked="
-                      newParameter.isVisibleForUser =
-                        !newParameter.isVisibleForUser
                     "
                   />
                 </FormControl>
@@ -558,92 +435,6 @@ watch(
               </FormItem>
             </FormField>
             <FormField
-              :model-value="item.transferCoreMapping"
-              v-slot="{ componentField }"
-              name="transferCoreMapping"
-            >
-              <FormItem>
-                <FormLabel> Transfer Core Mapping </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue
-                        placeholder="Select a transfer core mapping"
-                      />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem value="AMOUNT"> AMOUNT </UiSelectItem>
-                      <UiSelectItem value="CREDIT_ACCOUNT">
-                        CREDIT_ACCOUNT
-                      </UiSelectItem>
-                      <UiSelectItem value="REASON"> REASON </UiSelectItem>
-                      <UiSelectItem value="NONE"> NONE </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.constantValueToCompare"
-              v-slot="{ componentField }"
-              name="constantValueToCompare"
-            >
-              <FormItem>
-                <FormLabel> Constant Value To Compare </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="constant value to compare"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.operatorToCompareValue"
-              v-slot="{ componentField }"
-              name="operatorToCompareValue"
-            >
-              <FormItem>
-                <FormLabel> Operator To Compare Value </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue
-                        placeholder="Select an operator to compare value"
-                      />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem value="EQUAL_TO"> EQUAL_TO </UiSelectItem>
-                      <UiSelectItem value="NOT_EQUAL_TO">
-                        NOT_EQUAL_TO
-                      </UiSelectItem>
-                      <UiSelectItem value="OBJECT_"> OBJECT_ </UiSelectItem>
-                      <UiSelectItem value="OBJECT_NOT_EQUAL_TO">
-                        OBJECT_NOT_EQUAL_TO
-                      </UiSelectItem>
-                      <UiSelectItem value="GREATER_THAN">
-                        GREATER_THAN
-                      </UiSelectItem>
-                      <UiSelectItem value="LESS_THAN"> LESS_THAN </UiSelectItem>
-                      <UiSelectItem value="GREATER_THAN_OR_EQUAL_TO">
-                        GREATER_THAN_OR_EQUAL_TO
-                      </UiSelectItem>
-                      <UiSelectItem value="LESS_THAN_OR_EQUAL_TO">
-                        LESS_THAN_OR_EQUAL_TO
-                      </UiSelectItem>
-                      <UiSelectItem value="NONE"> NONE </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
               :model-value="item.isRequired"
               v-slot="{ componentField }"
               name="isRequired"
@@ -654,40 +445,6 @@ watch(
                   <UiSwitch
                     :checked="item.isRequired"
                     @update:checked="item.isRequired = !item.isRequired"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.isLogicField"
-              v-slot="{ componentField }"
-              name="isLogicField"
-            >
-              <FormItem>
-                <FormLabel> Is Logic Field </FormLabel>
-                <FormControl>
-                  <UiSwitch
-                    :checked="item.isLogicField"
-                    @update:checked="item.isLogicField = !item.isLogicField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.isVisibleForUser"
-              v-slot="{ componentField }"
-              name="isVisibleForUser"
-            >
-              <FormItem>
-                <FormLabel> Is Visible For User </FormLabel>
-                <FormControl>
-                  <UiSwitch
-                    :checked="item.isVisibleForUser"
-                    @update:checked="
-                      item.isVisibleForUser = !item.isVisibleForUser
-                    "
                   />
                 </FormControl>
                 <FormMessage />

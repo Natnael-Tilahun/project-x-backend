@@ -304,15 +304,9 @@ interface ResponseOutput {
   dataType: DataType;
   responseValuePath: string;
   responseScope: ResponseScope;
-  transferCoreMapping: TransferCoreMapping;
-  isLogicField: boolean;
-  constantValueToCompare: string;
-  operatorToCompareValue: OperatorToCompareValue;
   isRequired: boolean;
-  isVisibleForUser: boolean;
   apiOperation: ApiOperation;
   integrationFieldMappings?: [IntegrationFieldMapping];
-  validationMessage?: string;
   validationConfig?: {
     logicalOperator?: LogicalOperators;
     validationRules?: [ValidationRule];
@@ -354,7 +348,6 @@ interface RequestInput {
   dataType: DataType;
   testValue?: string;
   defaultValue?: string;
-  valueSourcePath?: string;
   isEncoded?: boolean;
   maxLength?: number;
   minLength?: number;
@@ -366,7 +359,6 @@ interface RequestInput {
   isHidden?: boolean;
   apiOperation?: ApiOperation;
   integrationFieldMappings?: [IntegrationFieldMapping];
-  validationMessage?: string;
   validationConfig?: {
     logicalOperator?: LogicalOperators;
     validationRules?: [ValidationRule];

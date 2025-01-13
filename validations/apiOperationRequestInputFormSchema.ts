@@ -23,7 +23,7 @@ export const apiOperationRequestInputFormSchema = toTypedSchema(
     dataType: dataTypeSchema,
     testValue: z.string().optional().nullable(),
     defaultValue: z.string().optional().nullable(),
-    valueSourcePath: z.string().optional().nullable(),
+    // valueSourcePath: z.string().optional().nullable(),
     isEncoded: z.boolean(),
     maxLength: z.number().optional().nullable(),
     minLength: z.number().optional().nullable(),
@@ -50,7 +50,7 @@ export const apiOperationRequestInputFormSchema = toTypedSchema(
     // operator: operatorSchema,
     // against: z.any().optional().nullable(),
     // errorMessage: z.string().optional().nullable(),
-    validationMessage: z.string().optional().nullable(),
-    logicalOperator: logicalOperatorSchema,
+    //validationMessage: z.string().optional().nullable(),
+    //logicalOperator: logicalOperatorSchema,
   })
 );
