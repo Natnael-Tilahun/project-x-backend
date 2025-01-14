@@ -23,6 +23,7 @@ import {
   ResponseScope,
   TransferCoreMapping,
   ValueSource,
+  RetryStrategy,
 } from "@/global-types";
 
 interface User {
@@ -259,10 +260,11 @@ interface ApiIntegration {
   name: string;
   url: string;
   type: IntegrationType;
-  auth: Auth;
+  // auth: Auth;
   description?: string;
   version?: string;
   timeout?: number;
+  retryStrategy?: RetryStrategy;
   retryRetries?: number;
   retryDelay?: number;
   apiOperations: [ApiOperation];

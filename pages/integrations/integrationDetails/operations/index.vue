@@ -12,6 +12,8 @@ const isError = ref(false);
 const router = useRouter(); // {{ edit_2 }}
 
 try {
+  isError.value = false;
+  isLoading.value = true;
   data.value = await getIntegrations();
 } catch (error) {
   console.error("Error fetching integrations:", error);
@@ -22,6 +24,7 @@ try {
 
 const refetch = async () => {
   try {
+    isError.value = false;
     isLoading.value = true;
     data.value = await getIntegrations();
   } catch (error) {
@@ -52,7 +55,10 @@ const refetch = async () => {
   <div v-if="isLoading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
-  <div v-else-if="data" class="py-5 flex flex-col space-y-10 mx-auto">
+  <div
+    v-else-if="data && !isError"
+    class="py-5 flex flex-col space-y-10 mx-auto"
+  >
     <NuxtLink to="/integrations/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon

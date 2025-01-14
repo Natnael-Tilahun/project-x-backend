@@ -13,7 +13,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import { IntegrationType, Auth, Protocol } from "@/global-types";
+import { IntegrationType, Protocol, RetryStrategy } from "@/global-types";
+import AuthConfig from "~/components/operations/AuthConfig.vue";
 
 const route = useRoute();
 const { getIntegrationById, updateIntegration, isSubmitting, isLoading } =
@@ -54,7 +55,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     loading.value = true;
     values.authConfig = values.authConfig
       ? {
-          id: values.authConfig,
+          ...values.authConfig,
         }
       : null;
     data.value = await updateIntegration(values.id, values); // Call your API function to fetch profile
@@ -348,22 +349,22 @@ const refetch = async () => {
                 </FormItem>
               </FormField>
               <FormField
-                :model-value="data?.auth"
+                :model-value="data?.retryStrategy"
                 v-slot="{ componentField }"
-                name="auth"
+                name="retryStrategy"
               >
                 <FormItem>
-                  <FormLabel> Auth </FormLabel>
+                  <FormLabel> Retry Strategy </FormLabel>
                   <UiSelect v-bind="componentField">
                     <FormControl>
                       <UiSelectTrigger>
-                        <UiSelectValue placeholder="Select a auth type" />
+                        <UiSelectValue placeholder="Select a retry strategy" />
                       </UiSelectTrigger>
                     </FormControl>
                     <UiSelectContent>
                       <UiSelectGroup>
                         <UiSelectItem
-                          v-for="item in Object.values(Auth)"
+                          v-for="item in Object.values(RetryStrategy)"
                           :key="item"
                           :value="item"
                         >
@@ -443,7 +444,8 @@ const refetch = async () => {
                   <FormMessage />
                 </FormItem>
               </FormField>
-              <FormField
+
+              <!-- <FormField
                 :model-value="data?.authConfig?.id"
                 v-slot="{ componentField }"
                 name="authConfig"
@@ -477,7 +479,7 @@ const refetch = async () => {
                     </UiSelectContent>
                   </UiSelect>
                 </FormItem>
-              </FormField>
+              </FormField> -->
               <FormField
                 :model-value="data?.description"
                 v-slot="{ componentField }"
@@ -496,6 +498,27 @@ const refetch = async () => {
                   <FormMessage />
                 </FormItem>
               </FormField>
+              <UiSheet>
+                <div class="flex flex-col gap-2">
+                  <UiLabel>Auth Config</UiLabel>
+                  <UiSheetTrigger>
+                    <UiButton
+                      class="w-full"
+                      variant="outline"
+                      type="button"
+                      size="sm"
+                    >
+                      Auth Config
+                    </UiButton>
+                  </UiSheetTrigger>
+                </div>
+
+                <UiSheetContent
+                  class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+                >
+                  <AuthConfig :apiIntegrationProps="data" />
+                </UiSheetContent>
+              </UiSheet>
               <div class="col-span-full w-full py-4 flex justify-between">
                 <UiButton
                   :disabled="loading"
