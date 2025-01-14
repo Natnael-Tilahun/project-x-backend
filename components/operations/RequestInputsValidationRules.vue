@@ -48,7 +48,15 @@ const form = useForm<Partial<RequestInput>>({
       props.requestInput?.validationConfig?.logicalOperator || null,
     validationRules: props.requestInput?.validationConfig?.validationRules
       ?.length
-      ? props.requestInput.validationConfig.validationRules
+      ? props.requestInput.validationConfig.validationRules.map((rule) => ({
+          operator: rule.operator,
+          against: Array.isArray(rule.against)
+            ? rule.against
+            : rule.against
+            ? [rule.against]
+            : [""],
+          errorMessage: rule.errorMessage,
+        }))
       : [
           {
             // Default validation rule when none exists
@@ -57,7 +65,6 @@ const form = useForm<Partial<RequestInput>>({
             errorMessage: "",
           },
         ],
-    validationMessage: props.requestInput?.validationMessage || "",
   },
 });
 
@@ -74,7 +81,9 @@ watch(
                 operator: rule.operator,
                 against: Array.isArray(rule.against)
                   ? rule.against
-                  : [rule.against].filter(Boolean),
+                  : rule.against
+                  ? [rule.against]
+                  : [""],
                 errorMessage: rule.errorMessage,
               }))
             : [
@@ -86,7 +95,6 @@ watch(
                 },
               ],
         },
-        validationMessage: props.requestInput?.validationMessage || "",
       });
     }
   },
@@ -102,14 +110,18 @@ const onSubmit = form.handleSubmit(async (values) => {
       id: requestInputId.value,
       validationConfig: {
         validationRules:
-          values?.validationRules?.map((rule) => ({
-            operator: rule.operator,
-            against: rule.against || [],
-            errorMessage: rule.errorMessage,
-          })) || [],
+          values?.validationRules?.map((rule) => {
+            const fieldCount = getOperatorAgainstFieldCount(rule.operator);
+            return {
+              operator: rule.operator,
+              // Convert back to string for single-value operators
+              against:
+                fieldCount === 1 ? rule.against?.[0] || "" : rule.against || [],
+              errorMessage: rule.errorMessage,
+            };
+          }) || [],
         logicalOperator: values?.logicalOperator,
       },
-      validationMessage: values.validationMessage,
     };
 
     console.log("Submitting values:", updateData);
@@ -364,24 +376,6 @@ const getPlaceholder = (operator: Operators, index: number): string => {
             </FormItem>
           </FormField>
 
-          <!-- Validation Message -->
-          <FormField
-            v-model="form.values.validationMessage"
-            name="validationMessage"
-            v-slot="{ field }"
-          >
-            <FormItem>
-              <FormLabel>Validation Message</FormLabel>
-              <FormControl>
-                <UiInput
-                  type="text"
-                  placeholder="validation message"
-                  v-bind="field"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
           <!-- Validation Rules section -->
           <div class="space-y-4">
             <div class="flex items-center justify-between">
