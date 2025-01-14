@@ -1,9 +1,9 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
-import { Protocol, Auth, IntegrationType } from "@/global-types";
+import { Protocol, IntegrationType, RetryStrategy } from "@/global-types";
 const ProtocolSchema = z.nativeEnum(Protocol).optional().nullable();
-const AuthSchema = z.nativeEnum(Auth);
 const IntegrationTypeSchema = z.nativeEnum(IntegrationType);
+const RetryStrategySchema = z.nativeEnum(RetryStrategy).optional().nullable();
 
 export const apiIntegrationFormSchema = toTypedSchema(
   z.object({
@@ -11,7 +11,6 @@ export const apiIntegrationFormSchema = toTypedSchema(
     name: z.string().min(2),
     url: z.string().min(2),
     type: IntegrationTypeSchema,
-    auth: AuthSchema,
     description: z.string().optional().nullable(),
     version: z.string().min(0).max(50).optional().nullable(),
     timeout: z.number().optional().nullable(),
@@ -22,6 +21,6 @@ export const apiIntegrationFormSchema = toTypedSchema(
     authConfig: z.any().optional().nullable(),
     protocol: ProtocolSchema,
     host: z.string().optional().nullable(),
-    // retryStrategy: z.any().optional().nullable(),
+    retryStrategy: RetryStrategySchema,
   })
 );

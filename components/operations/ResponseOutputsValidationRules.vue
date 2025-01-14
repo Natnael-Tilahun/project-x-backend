@@ -35,8 +35,6 @@ if (props.operationIdProps) {
   operationId.value = props.operationIdProps;
 }
 
-console.log("props.responseOutput:", props.responseOutput);
-
 responseOutputId.value = props.responseOutput?.id || "";
 
 // Initialize the form with the existing values or default empty values
@@ -126,7 +124,6 @@ const onSubmit = form.handleSubmit(async (values) => {
       responseOutputId.value,
       updateData
     );
-    console.log("updatedResponseOutput:", updatedResponseOutput);
 
     toast({
       title: "Validation Rules Updated",
@@ -280,7 +277,6 @@ watch(
           // Preserve existing values if possible
           const existingValues = oldRule.against || [];
           if (fieldCount === 1) {
-            console.log("existingValues:", existingValues);
             // For single value operators, keep only the first value
             form.setFieldValue(`validationRules.${index}.against`, [
               existingValues[0] || null,
