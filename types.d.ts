@@ -7,7 +7,7 @@ import {
   LogicalOperators,
   InputType,
   DataType,
-  TransferParams,
+  TransferMapping,
   AuthType,
   Protocol,
   Auth,
@@ -24,6 +24,12 @@ import {
   TransferCoreMapping,
   ValueSource,
   RetryStrategy,
+  GenerationType,
+  DateStepUnit,
+  InterfaceType,
+  AutoCompleteTrigger,
+  Display,
+  Width,
 } from "@/global-types";
 
 interface User {
@@ -309,10 +315,7 @@ interface ResponseOutput {
   isRequired: boolean;
   apiOperation: ApiOperation;
   integrationFieldMappings?: [IntegrationFieldMapping];
-  validationConfig?: {
-    logicalOperator?: LogicalOperators;
-    validationRules?: [ValidationRule];
-  };
+  validationConfig?: ValidationConfig | null;
 }
 
 enum ValueSource {
@@ -361,10 +364,7 @@ interface RequestInput {
   isHidden?: boolean;
   apiOperation?: ApiOperation;
   integrationFieldMappings?: [IntegrationFieldMapping];
-  validationConfig?: {
-    logicalOperator?: LogicalOperators;
-    validationRules?: [ValidationRule];
-  };
+  validationConfig?: ValidationConfig | null;
 }
 
 interface PaymentIntegration {
@@ -449,24 +449,118 @@ interface Field {
   minLength?: number | null;
   minValue?: string | null;
   maxValue?: string | null;
+  defaultValue?: boolean | null; //changed
   isRequired?: boolean | null;
-  trim?: boolean | null;
-  defaultUserValue?: boolean | null;
   readonly?: boolean | null;
-  transferMapping?: TransferParams | null;
+  transferMapping?: TransferMapping | null;
   sortOrder?: number | null;
-  width?: string | null;
-  note?: string | null;
-  placeHolder?: string | null;
+  width?: Width | null;
   validationPattern?: string | null;
-  validation?: string | null;
-  iInterface?: string | null;
-  options?: string | null;
-  display?: string | null;
-  displayOptions?: string | null;
-  conditions?: string | null;
+  autoGenerateConfig?: AutoGenerateConfig | null;
+  isHidden?: boolean | null;
+  interfaceType?: InterfaceType | null;
+  options?: Options | null;
+  display?: Display | null;
+  displayOptions?: DisplayOptions | null;
+  validationConfig?: ValidationConfig | null;
   validationMessage?: string | null;
   form?: Form | null;
+}
+
+interface AutoGenerateConfig {
+  enabled: boolean;
+  generationType: GenerationType;
+  dataType: DataType;
+  prefix: string;
+  suffix: string;
+  length: number;
+  allowManualOverride: boolean;
+  minValue: number;
+  maxValue: number;
+  step: number;
+  padding: boolean;
+  paddingLength: number;
+  reservedValues: number[];
+  excludePatterns: string[];
+  pattern: string;
+  allowedChars: string;
+  uuidVersion: number;
+  uuidNamespace: string;
+  startDate: string;
+  startDateTime: string;
+  dateFormat: string;
+  dateTimeFormat: string;
+  timezone: string;
+  dateStep: number;
+  dateStepUnit: DateStepUnit;
+  unique: boolean;
+  retryAttempts: number;
+  collisionStrategy: string;
+  logValues: boolean;
+  auditEnabled: boolean;
+  obfuscation: boolean;
+  encryption: boolean;
+  dependentOn: string;
+  customRule: string;
+  batchSize: number;
+  concurrency: number;
+  validationRegex: string;
+  postValidation: boolean;
+}
+
+interface Choice {
+  text: string;
+  value: string;
+  icon: string;
+  color: string;
+  isDefault: boolean;
+}
+
+interface Options {
+  placeholder?: string | null;
+  iconLeft?: string | null;
+  clear?: boolean | null;
+  font?: string | null;
+  trim?: boolean | null;
+  masked?: boolean | null;
+  slug?: boolean | null;
+  choices?: Choice[] | null;
+  allowOther?: boolean | null;
+  allowNone?: boolean | null;
+  url?: string | null;
+  resultsPath?: string | null;
+  autoCompleteTrigger?: AutoCompleteTrigger | null;
+  minValue?: number | null;
+  maxValue?: number | null;
+  stepInterval?: number | null;
+  alwaysShowValue?: boolean | null;
+}
+
+interface DisplayOptions {
+  format?: boolean | null;
+  bold?: boolean | null;
+  color?: string | null;
+  background?: string | null;
+  icon?: string | null;
+  masked?: boolean | null;
+  prefix?: string | null;
+  suffix?: string | null;
+  font?: string | null;
+  italic?: boolean | null;
+  border?: boolean | null;
+  relative?: boolean | null;
+  strict?: boolean | null;
+  labelOn?: string | null;
+  labelOff?: string | null;
+  colorOn?: string | null;
+  colorOff?: string | null;
+  iconOn?: string | null;
+  iconOff?: string | null;
+}
+
+interface ValidationConfig {
+  logicalOperator?: LogicalOperators | null;
+  validationRules?: ValidationRule[] | null;
 }
 
 interface Form {

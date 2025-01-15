@@ -53,7 +53,7 @@ export enum InputType {
   NONE = "NONE",
 }
 
-export enum TransferParams {
+export enum TransferMapping {
   AMOUNT = "AMOUNT",
   CREDIT_ACCOUNT = "CREDIT_ACCOUNT",
   REASON = "REASON",
@@ -261,5 +261,52 @@ export enum Operators {
 export enum RetryStrategy {
   FIXED_DELAY = "FIXED_DELAY",
   EXPONENTIAL_BACKOFF = "EXPONENTIAL_BACKOFF",
+  NONE = "NONE",
+}
+
+export enum GenerationType {
+  SEQUENTIAL = "SEQUENTIAL",
+  RANDOM = "RANDOM",
+  PATTERN_BASED = "PATTERN_BASED",
+  UUID = "UUID",
+  DATE = "DATE",
+  DATE_TIME = "DATE_TIME",
+  NONE = "NONE",
+}
+
+export enum DateStepUnit {
+  DAYS = "DAYS",
+  HOURS = "HOURS",
+  MINUTES = "MINUTES",
+  SECONDS = "SECONDS",
+}
+
+export enum InterfaceType {
+  INPUT = "INPUT",
+  SELECT_DROPDOWN = "SELECT_DROPDOWN",
+  BOOLEAN = "BOOLEAN",
+  INPUT_AUTOCOMPLETE_API = "INPUT_AUTOCOMPLETE_API",
+  INPUT_MULTILINE = "INPUT_MULTILINE",
+  DATETIME = "DATETIME",
+  SLIDER = "SLIDER",
+  SELECT_RADIO = "SELECT_RADIO",
+}
+
+export enum AutoCompleteTrigger {
+  DEBOUNCE = "DEBOUNCE",
+  THROTTLE = "THROTTLE",
+}
+
+export enum Display {
+  FORMATTED_VALUE = "FORMATTED_VALUE",
+  ROW_VALUE = "ROW_VALUE",
+  BOOLEAN = "BOOLEAN",
+  DATETIME = "DATETIME",
+  NONE = "NONE",
+}
+
+export enum Width {
+  FULL = "FULL",
+  HALF = "HALF",
   NONE = "NONE",
 }

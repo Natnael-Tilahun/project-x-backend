@@ -19,7 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { DataType, TransferParams, MappingPathPrefix } from "@/global-types";
+import { DataType, TransferMapping, MappingPathPrefix } from "@/global-types";
 
 const route = useRoute();
 const {

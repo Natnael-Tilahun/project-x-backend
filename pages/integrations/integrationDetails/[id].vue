@@ -113,12 +113,12 @@ const getApiAuthConfigsData = async () => {
 
 onMounted(async () => {
   getIntegrationData();
-  getApiAuthConfigsData();
+  // getApiAuthConfigsData();
 });
 
 const refetch = async () => {
   await getIntegrationData();
-  await getApiAuthConfigsData();
+  // await getApiAuthConfigsData();
 };
 </script>
 
