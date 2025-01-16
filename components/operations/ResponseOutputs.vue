@@ -180,7 +180,7 @@ watch(
       <UiAccordionContent class="pt-6 px-6 bg-muted rounded-lg">
         <form @submit="onSubmitNewParameter">
           <div
-            class="grid xl:grid-cols-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-4"
+            class="grid xl:grid-cols-5 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-4"
           >
             <FormField
               :model-value="newParameter?.outputName"

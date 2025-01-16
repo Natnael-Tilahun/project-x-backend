@@ -19,13 +19,13 @@ const AutoCompleteTriggerSchema = z
   .optional()
   .nullable();
 const DisplaySchema = z.nativeEnum(Display).nullable();
-const InterfaceTypeSchema = z.nativeEnum(InterfaceType).nullable();
+const InterfaceTypeSchema = z.nativeEnum(InterfaceType);
 const DateStepUnitSchema = z.nativeEnum(DateStepUnit).nullable();
 const GenerationTypeSchema = z.nativeEnum(GenerationType).nullable();
 
 export const formFieldsFormSchema = toTypedSchema(
   z.object({
-    id: z.string().optional(),
+    id: z.string().optional().nullable(),
     defaultLanguageCode: z.string().optional().nullable(),
     dataType: DataTypeSchema,
     isUnique: z.boolean().optional().nullable(),

@@ -13,7 +13,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import { DataType, GenerationType, DateStepUnit } from "@/global-types";
+import {
+  DataType,
+  GenerationType,
+  DateStepUnit,
+  Display,
+} from "@/global-types";
 
 const route = useRoute();
 const { updateField } = useFields();
@@ -25,12 +30,15 @@ const formFields = ref<Field>();
 const isError = ref(false);
 const formFieldsProps = defineProps<{
   formFieldsProps: Field;
+  displayOptions?: Partial<Field>;
 }>();
 formFields.value = formFieldsProps.formFieldsProps;
-const data = ref<Field>(formFields.value?.displayOptions);
+const data = ref<Partial<Field>>(formFieldsProps?.displayOptions);
+const display = ref<string>(formFieldsProps.formFieldsProps?.display);
 
 console.log("formFieldsPropss:", formFields.value);
 console.log("displayOptions:", data.value);
+console.log("display:", display.value);
 
 const form = useForm({
   validationSchema: formFieldsDisplayOptionsFormSchema,
@@ -106,295 +114,294 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           <UiCard v-else-if="!isError" class="w-full p-6">
             <form @submit="onSubmit">
               <div class="grid grid-cols-2 gap-6 w-full">
-                <FormField
-                  :model-value="data?.format"
-                  v-slot="{ value, handleChange }"
-                  name="format"
-                >
-                  <FormItem>
-                    <FormLabel> Format </FormLabel>
-                    <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField
-                  :model-value="data?.bold"
-                  v-slot="{ value, handleChange }"
-                  name="bold"
-                >
-                  <FormItem>
-                    <FormLabel> Bold </FormLabel>
-                    <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="color">
-                  <FormItem>
-                    <FormLabel>Color </FormLabel>
-                    <FormControl>
-                      <div class="flex gap-2">
-                        <UiInput
-                          type="color"
-                          class="w-1/3"
-                          placeholder="Enter color"
-                          v-bind="componentField"
-                        />
-                        <UiInput
-                          type="text"
-                          placeholder="Enter color"
-                          v-bind="componentField"
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="background">
-                  <FormItem>
-                    <FormLabel>Background </FormLabel>
-                    <FormControl>
-                      <div class="flex gap-2">
-                        <UiInput
-                          type="color"
-                          class="w-1/3"
-                          placeholder="Enter background"
-                          v-bind="componentField"
-                        />
-                        <UiInput
-                          type="text"
-                          placeholder="Enter background"
-                          v-bind="componentField"
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="icon">
-                  <FormItem>
-                    <FormLabel> Icon </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter icon"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField
-                  :model-value="data?.masked"
-                  v-slot="{ value, handleChange }"
-                  name="masked"
-                >
-                  <FormItem>
-                    <FormLabel> Masked </FormLabel>
-                    <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="prefix">
-                  <FormItem>
-                    <FormLabel> Prefix </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter prefix"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="suffix">
-                  <FormItem>
-                    <FormLabel> Suffix </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter suffix"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="font">
-                  <FormItem>
-                    <FormLabel> Font </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter font"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField
-                  :model-value="data?.italic"
-                  v-slot="{ value, handleChange }"
-                  name="italic"
-                >
-                  <FormItem>
-                    <FormLabel> Italic </FormLabel>
-                    <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField
-                  :model-value="data?.border"
-                  v-slot="{ value, handleChange }"
-                  name="border"
-                >
-                  <FormItem>
-                    <FormLabel> Border </FormLabel>
-                    <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField
-                  :model-value="data?.relative"
-                  v-slot="{ value, handleChange }"
-                  name="relative"
-                >
-                  <FormItem>
-                    <FormLabel> Relative </FormLabel>
-                    <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField
-                  :model-value="data?.strict"
-                  v-slot="{ value, handleChange }"
-                  name="strict"
-                >
-                  <FormItem>
-                    <FormLabel> Strict </FormLabel>
-                    <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="labelOn">
-                  <FormItem>
-                    <FormLabel> Label On </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter label on"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="labelOff">
-                  <FormItem>
-                    <FormLabel> Label Off </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter label off"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="colorOn">
-                  <FormItem>
-                    <FormLabel> Color On </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter color on"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="colorOff">
-                  <FormItem>
-                    <FormLabel> Color Off </FormLabel>
-                    <FormControl>
-                      <FormControl>
-                        <UiInput
-                          type="text"
-                          placeholder="Enter color off"
-                          v-bind="componentField"
-                        />
-                      </FormControl>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="iconOn">
-                  <FormItem>
-                    <FormLabel> Icon On </FormLabel>
-                    <FormControl>
-                      <FormControl>
-                        <UiInput
-                          type="text"
-                          placeholder="Enter icon on"
-                          v-bind="componentField"
-                        />
-                      </FormControl>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="iconOff">
-                  <FormItem>
-                    <FormLabel> Icon Off </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter icon off"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
+                <!-- Common display options - always visible -->
+                <div class="col-span-full border p-4 rounded-md space-y-4">
+                  <h2 class="font-semibold">Common Options</h2>
+                  <div class="grid grid-cols-2 gap-6">
+                    <FormField v-slot="{ value, handleChange }" name="format">
+                      <FormItem>
+                        <FormLabel>Format</FormLabel>
+                        <FormControl>
+                          <UiSwitch
+                            :checked="value"
+                            @update:checked="handleChange"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
 
+                    <FormField v-slot="{ value, handleChange }" name="bold">
+                      <FormItem>
+                        <FormLabel>Bold</FormLabel>
+                        <FormControl>
+                          <UiSwitch
+                            :checked="value"
+                            @update:checked="handleChange"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <FormField v-slot="{ componentField }" name="color">
+                      <FormItem>
+                        <FormLabel>Color</FormLabel>
+                        <FormControl>
+                          <div class="flex gap-2">
+                            <UiInput
+                              type="color"
+                              class="w-1/3"
+                              v-bind="componentField"
+                            />
+                            <UiInput
+                              type="text"
+                              placeholder="Enter color"
+                              v-bind="componentField"
+                            />
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <FormField v-slot="{ componentField }" name="background">
+                      <FormItem>
+                        <FormLabel>Background</FormLabel>
+                        <FormControl>
+                          <div class="flex gap-2">
+                            <UiInput
+                              type="color"
+                              class="w-1/3"
+                              v-bind="componentField"
+                            />
+                            <UiInput
+                              type="text"
+                              placeholder="Enter background"
+                              v-bind="componentField"
+                            />
+                          </div>
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <FormField v-slot="{ componentField }" name="icon">
+                      <FormItem>
+                        <FormLabel>Icon</FormLabel>
+                        <FormControl>
+                          <UiInput
+                            type="text"
+                            placeholder="Enter icon"
+                            v-bind="componentField"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <FormField v-slot="{ value, handleChange }" name="masked">
+                      <FormItem>
+                        <FormLabel>Masked</FormLabel>
+                        <FormControl>
+                          <UiSwitch
+                            :checked="value"
+                            @update:checked="handleChange"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+                  </div>
+                </div>
+
+                <!-- Formatted-value display options -->
+                <div
+                  v-if="display === Display.FORMATTED_VALUE"
+                  class="col-span-full border p-4 rounded-md space-y-4"
+                >
+                  <h2 class="font-semibold">Formatted Value Options</h2>
+                  <div class="grid grid-cols-2 gap-6">
+                    <FormField v-slot="{ componentField }" name="prefix">
+                      <FormItem>
+                        <FormLabel>Prefix</FormLabel>
+                        <FormControl>
+                          <UiInput
+                            type="text"
+                            placeholder="Enter prefix"
+                            v-bind="componentField"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <FormField v-slot="{ componentField }" name="suffix">
+                      <FormItem>
+                        <FormLabel>Suffix</FormLabel>
+                        <FormControl>
+                          <UiInput
+                            type="text"
+                            placeholder="Enter suffix"
+                            v-bind="componentField"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <FormField v-slot="{ componentField }" name="font">
+                      <FormItem>
+                        <FormLabel>Font</FormLabel>
+                        <FormControl>
+                          <UiInput
+                            type="text"
+                            placeholder="Enter font"
+                            v-bind="componentField"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <FormField v-slot="{ value, handleChange }" name="italic">
+                      <FormItem>
+                        <FormLabel>Italic</FormLabel>
+                        <FormControl>
+                          <UiSwitch
+                            :checked="value"
+                            @update:checked="handleChange"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <FormField v-slot="{ value, handleChange }" name="border">
+                      <FormItem>
+                        <FormLabel>Border</FormLabel>
+                        <FormControl>
+                          <UiSwitch
+                            :checked="value"
+                            @update:checked="handleChange"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+                  </div>
+                </div>
+
+                <!-- Datetime display options -->
+                <div
+                  v-if="display === Display.DATETIME"
+                  class="col-span-full border p-4 rounded-md space-y-4"
+                >
+                  <h2 class="font-semibold">DateTime Options</h2>
+                  <div class="grid grid-cols-2 gap-6">
+                    <FormField v-slot="{ value, handleChange }" name="relative">
+                      <FormItem>
+                        <FormLabel>Relative</FormLabel>
+                        <FormControl>
+                          <UiSwitch
+                            :checked="value"
+                            @update:checked="handleChange"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <FormField v-slot="{ value, handleChange }" name="strict">
+                      <FormItem>
+                        <FormLabel>Strict</FormLabel>
+                        <FormControl>
+                          <UiSwitch
+                            :checked="value"
+                            @update:checked="handleChange"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+                  </div>
+                </div>
+
+                <!-- Boolean display options -->
+                <div
+                  v-if="display === Display.BOOLEAN"
+                  class="col-span-full border p-4 rounded-md space-y-4"
+                >
+                  <h2 class="font-semibold">Boolean Options</h2>
+                  <div class="grid grid-cols-2 gap-6">
+                    <FormField v-slot="{ componentField }" name="labelOn">
+                      <FormItem>
+                        <FormLabel>Label On</FormLabel>
+                        <FormControl>
+                          <UiInput
+                            type="text"
+                            placeholder="Enter label on"
+                            v-bind="componentField"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <FormField v-slot="{ componentField }" name="labelOff">
+                      <FormItem>
+                        <FormLabel>Label Off</FormLabel>
+                        <FormControl>
+                          <UiInput
+                            type="text"
+                            placeholder="Enter label off"
+                            v-bind="componentField"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <FormField v-slot="{ componentField }" name="colorOn">
+                      <FormItem>
+                        <FormLabel>Color On</FormLabel>
+                        <FormControl>
+                          <UiInput
+                            type="text"
+                            placeholder="Enter color on"
+                            v-bind="componentField"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <FormField v-slot="{ componentField }" name="colorOff">
+                      <FormItem>
+                        <FormLabel>Color Off</FormLabel>
+                        <FormControl>
+                          <UiInput
+                            type="text"
+                            placeholder="Enter color off"
+                            v-bind="componentField"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <FormField v-slot="{ componentField }" name="iconOn">
+                      <FormItem>
+                        <FormLabel>Icon On</FormLabel>
+                        <FormControl>
+                          <UiInput
+                            type="text"
+                            placeholder="Enter icon on"
+                            v-bind="componentField"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+
+                    <FormField v-slot="{ componentField }" name="iconOff">
+                      <FormItem>
+                        <FormLabel>Icon Off</FormLabel>
+                        <FormControl>
+                          <UiInput
+                            type="text"
+                            placeholder="Enter icon off"
+                            v-bind="componentField"
+                          />
+                        </FormControl>
+                      </FormItem>
+                    </FormField>
+                  </div>
+                </div>
+
+                <!-- Action buttons -->
                 <div class="col-span-full w-full py-4 flex justify-between">
                   <UiButton
                     :disabled="submitting"
@@ -409,8 +416,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                       name="svg-spinners:8-dots-rotate"
                       v-if="submitting"
                       class="mr-2 h-4 w-4 animate-spin"
-                    ></Icon>
-
+                    />
                     Update
                   </UiButton>
                 </div>

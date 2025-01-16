@@ -2,7 +2,7 @@
 const openItems = ref(["item-1"]);
 
 import { useForm } from "vee-validate";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { toast } from "~/components/ui/toast";
 import { formFieldsOptionsFormSchema } from "~/validations/formFieldsOptionsFormSchema";
 import {
@@ -18,6 +18,7 @@ import {
   GenerationType,
   DateStepUnit,
   AutoCompleteTrigger,
+  InterfaceType,
 } from "@/global-types";
 
 const route = useRoute();
@@ -30,23 +31,21 @@ const formFields = ref<Field>();
 const isError = ref(false);
 const formFieldsProps = defineProps<{
   formFieldsProps: Field;
+  options?: Partial<Field>;
 }>();
 formFields.value = formFieldsProps.formFieldsProps;
-const data = ref<Field>(formFields.value?.options);
-
-console.log("formFieldsPropss:", formFields.value);
-console.log("options:", data.value);
+const data = ref<Partial<Field>>(formFieldsProps.options);
+const interfaceType = ref<string>(
+  formFieldsProps?.formFieldsProps?.interfaceType
+);
 
 const form = useForm({
   validationSchema: formFieldsOptionsFormSchema,
 });
 
-if (data.value) {
-  form.setValues(data.value);
-}
-
 const onSubmit = form.handleSubmit(async (values: any) => {
   console.log("valuess:", values);
+
   try {
     submitting.value = true;
     isError.value = false;
@@ -76,6 +75,19 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isError.value = false;
   }
 });
+
+watch(
+  () => formFieldsProps?.options,
+  (newOptions) => {
+    if (newOptions) {
+      // Deep clone the options to ensure we have a fresh copy
+      data.value = JSON.parse(JSON.stringify(newOptions));
+      // Update form values with the cloned data
+      form.setValues(data.value);
+    }
+  },
+  { immediate: true, deep: true }
+);
 
 // const paramKeys = ref<string[]>([]);
 
@@ -213,93 +225,170 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <div
-                  class="col-span-full border p-4 rounded-md space-y-4 grid grid-cols-2 gap-4"
+                <template
+                  v-if="
+                    interfaceType == InterfaceType.SELECT_DROPDOWN ||
+                    interfaceType == InterfaceType.SELECT_RADIO
+                  "
                 >
-                  <h1 class="col-span-full text-lg font-semibold">Choices</h1>
-                  <FormField
-                    :model-value="data?.choices?.text"
-                    v-slot="{ componentField }"
-                    name="choices.text"
-                  >
-                    <FormItem>
-                      <FormLabel> Text </FormLabel>
-                      <FormControl>
-                        <UiInput
-                          type="text"
-                          placeholder="Enter text"
-                          v-bind="componentField"
+                  <div class="col-span-full border p-4 rounded-md space-y-4">
+                    <div class="flex justify-between items-center">
+                      <h1 class="text-lg font-semibold">Choices</h1>
+                      <UiButton
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        @click="
+                          () => {
+                            const choices = form.values.choices || [];
+                            form.setFieldValue('choices', [
+                              ...choices,
+                              {
+                                text: '',
+                                value: '',
+                                icon: '',
+                                color: '',
+                                isDefault: false,
+                              },
+                            ]);
+                          }
+                        "
+                      >
+                        Add Choice
+                      </UiButton>
+                    </div>
+
+                    <div
+                      v-for="(choice, index) in form.values.choices || [
+                        {
+                          text: '',
+                          value: '',
+                          icon: '',
+                          color: '',
+                          isDefault: false,
+                        },
+                      ]"
+                      :key="index"
+                      class="grid grid-cols-2 gap-4 px-4 py-6 border rounded-md relative"
+                    >
+                      <UiButton
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        class="absolute right-1 top-1"
+                        @click="
+                          () => {
+                            const choices = [...(form.values.choices || [])];
+                            choices.splice(index, 1);
+                            form.setFieldValue('choices', choices);
+                          }
+                        "
+                      >
+                        <Icon
+                          name="lucide:x"
+                          class="h-5 text-red-500 border border-red-500 rounded-md w-5"
                         />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  </FormField>
+                      </UiButton>
+
+                      <FormField
+                        :name="`choices.${index}.text`"
+                        v-slot="{ componentField }"
+                      >
+                        <FormItem>
+                          <FormLabel>Text</FormLabel>
+                          <FormControl>
+                            <UiInput
+                              type="text"
+                              placeholder="Enter text"
+                              v-bind="componentField"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      </FormField>
+
+                      <FormField
+                        :name="`choices.${index}.value`"
+                        v-slot="{ componentField }"
+                      >
+                        <FormItem>
+                          <FormLabel>Value</FormLabel>
+                          <FormControl>
+                            <UiInput
+                              type="text"
+                              placeholder="Enter value"
+                              v-bind="componentField"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      </FormField>
+
+                      <FormField
+                        :name="`choices.${index}.icon`"
+                        v-slot="{ componentField }"
+                      >
+                        <FormItem>
+                          <FormLabel>Icon</FormLabel>
+                          <FormControl>
+                            <UiInput
+                              type="text"
+                              placeholder="Enter icon"
+                              v-bind="componentField"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      </FormField>
+
+                      <FormField
+                        :name="`choices.${index}.color`"
+                        v-slot="{ componentField }"
+                      >
+                        <FormItem>
+                          <FormLabel>Color</FormLabel>
+                          <FormControl>
+                            <div class="flex gap-2">
+                              <UiInput
+                                type="color"
+                                class="w-1/3"
+                                v-bind="componentField"
+                              />
+                              <UiInput
+                                type="text"
+                                placeholder="Enter color"
+                                v-bind="componentField"
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      </FormField>
+
+                      <FormField
+                        :name="`choices.${index}.isDefault`"
+                        v-slot="{ value, handleChange }"
+                      >
+                        <FormItem>
+                          <FormLabel>Is Default</FormLabel>
+                          <FormControl>
+                            <UiSwitch
+                              :checked="value"
+                              @update:checked="handleChange"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      </FormField>
+                    </div>
+                  </div>
                   <FormField
-                    :model-value="data?.choices?.value"
-                    v-slot="{ componentField }"
-                    name="choices.value"
-                  >
-                    <FormItem>
-                      <FormLabel> Value </FormLabel>
-                      <FormControl>
-                        <UiInput
-                          type="text"
-                          placeholder="Enter value"
-                          v-bind="componentField"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  </FormField>
-                  <FormField
-                    :model-value="data?.choices?.icon"
-                    v-slot="{ componentField }"
-                    name="choices.icon"
-                  >
-                    <FormItem>
-                      <FormLabel> Icon </FormLabel>
-                      <FormControl>
-                        <UiInput
-                          type="text"
-                          placeholder="Enter icon"
-                          v-bind="componentField"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  </FormField>
-                  <FormField
-                    :model-value="data?.choices?.color"
-                    v-slot="{ componentField }"
-                    name="choices.color"
-                  >
-                    <FormItem>
-                      <FormLabel>Color </FormLabel>
-                      <FormControl>
-                        <div class="flex gap-2">
-                          <UiInput
-                            type="color"
-                            class="w-1/3"
-                            placeholder="Enter color"
-                            v-bind="componentField"
-                          />
-                          <UiInput
-                            type="text"
-                            placeholder="Enter color"
-                            v-bind="componentField"
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  </FormField>
-                  <FormField
-                    :model-value="data?.choices?.isDefault"
+                    :model-value="data?.allowOther"
                     v-slot="{ value, handleChange }"
-                    name="choices.isDefault"
+                    name="allowOther"
                   >
                     <FormItem>
-                      <FormLabel> Is Default </FormLabel>
+                      <FormLabel> Allow Other </FormLabel>
                       <FormControl>
                         <UiSwitch
                           :checked="value"
@@ -309,149 +398,148 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                       <FormMessage />
                     </FormItem>
                   </FormField>
-                </div>
-                <FormField
-                  :model-value="data?.allowOther"
-                  v-slot="{ value, handleChange }"
-                  name="allowOther"
-                >
-                  <FormItem>
-                    <FormLabel> Allow Other </FormLabel>
-                    <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField
-                  :model-value="data?.allowNone"
-                  v-slot="{ value, handleChange }"
-                  name="allowNone"
-                >
-                  <FormItem>
-                    <FormLabel> Allow None </FormLabel>
-                    <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="url">
-                  <FormItem>
-                    <FormLabel> URL </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter url"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="resultsPath">
-                  <FormItem>
-                    <FormLabel> Results Path </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter results path"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField
-                  :model-value="data?.autoCompleteTrigger"
-                  v-slot="{ componentField }"
-                  name="autoCompleteTrigger"
-                >
-                  <FormItem>
-                    <FormLabel> Auto Complete Trigger </FormLabel>
-                    <UiSelect v-bind="componentField">
+                  <FormField
+                    :model-value="data?.allowNone"
+                    v-slot="{ value, handleChange }"
+                    name="allowNone"
+                  >
+                    <FormItem>
+                      <FormLabel> Allow None </FormLabel>
                       <FormControl>
-                        <UiSelectTrigger>
-                          <UiSelectValue
-                            placeholder="Select an auto complete trigger"
-                          />
-                        </UiSelectTrigger>
+                        <UiSwitch
+                          :checked="value"
+                          @update:checked="handleChange"
+                        />
                       </FormControl>
-                      <UiSelectContent>
-                        <UiSelectGroup>
-                          <UiSelectItem
-                            v-for="item in Object.values(AutoCompleteTrigger)"
-                            :key="item"
-                            :value="item"
-                          >
-                            {{ item }}
-                          </UiSelectItem>
-                        </UiSelectGroup>
-                      </UiSelectContent>
-                    </UiSelect>
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="minValue">
-                  <FormItem>
-                    <FormLabel> Min Value </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="number"
-                        placeholder="Enter min value"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="maxValue">
-                  <FormItem>
-                    <FormLabel> Max Value </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="number"
-                        placeholder="Enter max value"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="stepInterval">
-                  <FormItem>
-                    <FormLabel> Step Interval </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="number"
-                        placeholder="Enter step interval"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField
-                  :model-value="data?.alwaysShowValue"
-                  v-slot="{ value, handleChange }"
-                  name="alwaysShowValue"
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </template>
+
+                <template
+                  v-if="interfaceType == InterfaceType.INPUT_AUTOCOMPLETE_API"
                 >
-                  <FormItem>
-                    <FormLabel> Always Show Value </FormLabel>
-                    <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
+                  <FormField v-slot="{ componentField }" name="url">
+                    <FormItem>
+                      <FormLabel>
+                        URL <span class="text-red-500">*</span></FormLabel
+                      >
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter url"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="resultsPath">
+                    <FormItem>
+                      <FormLabel>
+                        Results Path <span class="text-red-500">*</span>
+                      </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter results path"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.autoCompleteTrigger"
+                    v-slot="{ componentField }"
+                    name="autoCompleteTrigger"
+                  >
+                    <FormItem>
+                      <FormLabel>
+                        Auto Complete Trigger
+                        <span class="text-red-500">*</span>
+                      </FormLabel>
+                      <UiSelect v-bind="componentField">
+                        <FormControl>
+                          <UiSelectTrigger>
+                            <UiSelectValue
+                              placeholder="Select an auto complete trigger"
+                            />
+                          </UiSelectTrigger>
+                        </FormControl>
+                        <UiSelectContent>
+                          <UiSelectGroup>
+                            <UiSelectItem
+                              v-for="item in Object.values(AutoCompleteTrigger)"
+                              :key="item"
+                              :value="item"
+                            >
+                              {{ item }}
+                            </UiSelectItem>
+                          </UiSelectGroup>
+                        </UiSelectContent>
+                      </UiSelect>
+                    </FormItem>
+                  </FormField>
+                </template>
+
+                <template v-if="interfaceType == InterfaceType.SLIDER">
+                  <FormField v-slot="{ componentField }" name="minValue">
+                    <FormItem>
+                      <FormLabel> Min Value </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="number"
+                          placeholder="Enter min value"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="maxValue">
+                    <FormItem>
+                      <FormLabel> Max Value </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="number"
+                          placeholder="Enter max value"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="stepInterval">
+                    <FormItem>
+                      <FormLabel> Step Interval </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="number"
+                          placeholder="Enter step interval"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.alwaysShowValue"
+                    v-slot="{ value, handleChange }"
+                    name="alwaysShowValue"
+                  >
+                    <FormItem>
+                      <FormLabel> Always Show Value </FormLabel>
+                      <FormControl>
+                        <UiSwitch
+                          :checked="value"
+                          @update:checked="handleChange"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </template>
 
                 <div class="col-span-full w-full py-4 flex justify-between">
                   <UiButton

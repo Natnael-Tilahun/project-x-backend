@@ -188,15 +188,17 @@ const fetchData = async () => {
       getPaymentOperationById(operationId).catch(() => []),
       getIntegrations().catch(() => []),
     ]);
+
+    console.log("apiIntegrations: ", apiIntegrations.value);
     selectedApiIntegration.value = apiIntegrations.value[0].id;
     selectedApiOperations.value = apiOperations.value.filter(
       (operation) =>
         operation?.apiIntegration?.id === selectedApiIntegration.value
     );
-    console.log(
-      "data: ",
-      data.value?.apiRequestMappingsRegistryOptions["$enquiryApiResponse."]
-    );
+    console.log("data: ", data.value.apiOperation);
+    console.log("apiOperations: ", apiOperations.value);
+
+    route.query.formId = data.value?.form?.id;
 
     // Only fetch these if needed for the current view
     // if (data.value?.paymentIntegration?.id) {

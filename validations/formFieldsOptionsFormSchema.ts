@@ -25,13 +25,15 @@ export const formFieldsOptionsFormSchema = toTypedSchema(
     masked: z.boolean().optional().nullable(),
     slug: z.boolean().optional().nullable(),
     choices: z
-      .object({
-        text: z.string().optional().nullable(),
-        value: z.string().optional().nullable(),
-        icon: z.string().optional().nullable(),
-        color: z.string().optional().nullable(),
-        isDefault: z.boolean().optional().nullable(),
-      })
+      .array(
+        z.object({
+          text: z.string().optional().nullable(),
+          value: z.string().optional().nullable(),
+          icon: z.string().optional().nullable(),
+          color: z.string().optional().nullable(),
+          isDefault: z.boolean().optional().nullable(),
+        })
+      )
       .optional()
       .nullable(),
     allowOther: z.boolean().optional().nullable(),
@@ -43,5 +45,7 @@ export const formFieldsOptionsFormSchema = toTypedSchema(
     maxValue: z.number().optional().nullable(),
     stepInterval: z.number().optional().nullable(),
     alwaysShowValue: z.boolean().optional().nullable(),
+    relative: z.boolean().optional().nullable(),
+    strict: z.boolean().optional().nullable(),
   })
 );

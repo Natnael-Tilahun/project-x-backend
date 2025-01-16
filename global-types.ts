@@ -290,6 +290,7 @@ export enum InterfaceType {
   DATETIME = "DATETIME",
   SLIDER = "SLIDER",
   SELECT_RADIO = "SELECT_RADIO",
+  NONE = "NONE",
 }
 
 export enum AutoCompleteTrigger {
