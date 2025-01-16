@@ -73,6 +73,7 @@ const getFormData = async (operId: string) => {
       console.warn("Operation ID is not available");
       return;
     }
+    loading.value = true
     const response = await getPaymentOperationById(operId);
     if (response?.form) {
       data.value = response?.form;
@@ -88,15 +89,17 @@ const getFormData = async (operId: string) => {
       description: "Failed to fetch operation form",
       variant: "destructive",
     });
+  }finally{
+    loading.value = false
   }
 };
 
 // Only fetch data if formId is available
-if (operationId.value) {
-  await useAsyncData("formData", async () => {
+
+   onMounted(async() => {
     await getFormData(operationId.value);
-  });
-}
+  })
+
 
 const onSubmit = formForm.handleSubmit(async (values: Form) => {
   try {
@@ -184,7 +187,10 @@ const handleDeleteForm = async () => {
 </script>
 
 <template>
-  <form @submit="onSubmit">
+    <div v-if = "loading" class="py-10 flex justify-center w-full">
+    <UiLoading />
+  </div>
+  <form v-else @submit="onSubmit">
     <div class="grid grid-cols-2 gap-6">
       <FormField :model-value="data?.id" v-slot="{ componentField }" name="id">
         <FormItem>

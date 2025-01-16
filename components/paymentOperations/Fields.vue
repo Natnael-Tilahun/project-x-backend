@@ -11,7 +11,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { DataType, TransferParams } from "@/global-types";
+import {
+  DataType,
+  TransferMapping,
+  Width,
+  InterfaceType,
+  Display,
+} from "@/global-types";
 
 const route = useRoute();
 const {
@@ -38,11 +44,13 @@ const props = defineProps<{
 // Set operationId and formId with priority to props over route
 formId.value = props?.formIdProps || (route.query.formId as string) || "";
 
-const fields = ref<Field[]>(props?.fields || []);
+const fields = ref<Field[]>([]);
 const form = useForm<Field>({
   validationSchema: formFieldsFormSchema,
 });
 
+console.log("fields: ", fields.value);
+console.log("formid: ", formId.value);
 // Modify getFormData to check for formId before making the request
 const getFormData = async () => {
   try {
@@ -56,8 +64,10 @@ const getFormData = async () => {
       });
       return;
     }
+    loading.value = true;
     const data = await getFormById(formId.value);
     fields.value = data.fields || [];
+    console.log("fields: ", fields.value);
   } catch (err) {
     console.error("Error fetching form fields:", err);
     toast({
@@ -65,18 +75,20 @@ const getFormData = async () => {
       description: "Failed to fetch form fields",
       variant: "destructive",
     });
+  } finally {
+    loading.value = false;
   }
 };
 
 // Only fetch data if formId is available
-if (formId.value) {
-  await useAsyncData("formData", async () => {
-    await getFormData();
-  });
-}
+
+onMounted(async () => {
+  await getFormData();
+});
 
 // Update existing parameter
 const onSubmit = form.handleSubmit(async (values: Field) => {
+  console.log("valuess: ", values);
   try {
     loading.value = true;
     const updatedField = await updateField(values.id, values);
@@ -118,6 +130,7 @@ const createNewFieldHandler = form.handleSubmit(async (values: any) => {
     };
 
     const createdField = await createNewField(data);
+    console.log("createdField: ", createdField);
     // Update the local state by adding the new request input
     fields.value.push(createdField);
     // Reset the newParameter state
@@ -185,22 +198,20 @@ const addNewParameter = () => {
     minLength: null,
     minValue: null,
     maxValue: null,
+    defaultValue: false,
     isRequired: false,
-    trim: false,
-    defaultUserValue: false,
     readonly: false,
     transferMapping: "",
     sortOrder: null,
     width: null,
-    note: null,
-    placeHolder: null,
     validationPattern: null,
-    validation: null,
-    iInterface: null,
+    autoGenerateConfig: null,
+    isHidden: false,
+    interfaceType: InterfaceType.NONE,
     options: null,
     display: null,
     displayOptions: null,
-    conditions: null,
+    validationConfig: null,
     validationMessage: null,
     form: null,
   };
@@ -228,8 +239,10 @@ watch(
       Add Field
     </UiButton>
   </div>
-
-  <UiAccordion type="single" collapsible defaultValue="newField">
+  <div v-if="loading" class="py-10 flex justify-center w-full">
+    <UiLoading />
+  </div>
+  <UiAccordion v-else type="single" collapsible defaultValue="newField">
     <UiAccordionItem
       class="my-2 border-b-0 space-y-2"
       v-if="newField"
@@ -271,40 +284,6 @@ watch(
                   <UiInput
                     type="text"
                     placeholder="Enter label"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.placeHolder"
-              v-slot="{ componentField }"
-              name="placeHolder"
-            >
-              <FormItem>
-                <FormLabel> Placeholder </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter placeholder"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.note"
-              v-slot="{ componentField }"
-              name="note"
-            >
-              <FormItem>
-                <FormLabel> Note </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter note"
                     v-bind="componentField"
                   />
                 </FormControl>
@@ -386,14 +365,23 @@ watch(
             >
               <FormItem>
                 <FormLabel> Width </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter width"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a width" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(Width)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
               </FormItem>
             </FormField>
             <FormField
@@ -438,7 +426,7 @@ watch(
                   <UiSelectContent>
                     <UiSelectGroup>
                       <UiSelectItem
-                        v-for="item in Object.values(TransferParams)"
+                        v-for="item in Object.values(TransferMapping)"
                         :value="item"
                       >
                         {{ item }}
@@ -500,23 +488,6 @@ watch(
               </FormItem>
             </FormField>
             <FormField
-              :model-value="data?.validation"
-              v-slot="{ componentField }"
-              name="validation"
-            >
-              <FormItem>
-                <FormLabel> Validation </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter validation"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
               :model-value="data?.validationMessage"
               v-slot="{ componentField }"
               name="validationMessage"
@@ -534,99 +505,70 @@ watch(
               </FormItem>
             </FormField>
             <FormField
-              :model-value="data?.iInterface"
+              :model-value="data?.interfaceType || InterfaceType.NONE"
               v-slot="{ componentField }"
-              name="iInterface"
+              name="interfaceType"
             >
               <FormItem>
-                <FormLabel> Interface </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter interface"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
+                <FormLabel> Interface Type </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a interface type" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(InterfaceType)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
               </FormItem>
             </FormField>
             <FormField
-              :model-value="data?.display"
+              :model-value="data?.display || Display.NONE"
               v-slot="{ componentField }"
               name="display"
             >
               <FormItem>
                 <FormLabel> Display </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter display"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a display" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(Display)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
               </FormItem>
             </FormField>
             <FormField
-              :model-value="data?.displayOptions"
+              :model-value="data?.defaultValue"
               v-slot="{ componentField }"
-              name="displayOptions"
+              name="defaultValue"
             >
               <FormItem>
-                <FormLabel> Display Options </FormLabel>
+                <FormLabel> Default Value </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
-                    placeholder="Enter display options"
+                    placeholder="Enter default value"
                     v-bind="componentField"
                   />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.options"
-              v-slot="{ componentField }"
-              name="options"
-            >
-              <FormItem>
-                <FormLabel> Options </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter options"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.conditions"
-              v-slot="{ componentField }"
-              name="conditions"
-            >
-              <FormItem>
-                <FormLabel> Conditions </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter conditions"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.defaultUserValue"
-              v-slot="{ value, handleChange }"
-              name="defaultUserValue"
-            >
-              <FormItem>
-                <FormLabel> Default User Value </FormLabel>
-                <FormControl>
-                  <UiSwitch :checked="value" @update:checked="handleChange" />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -658,12 +600,12 @@ watch(
               </FormItem>
             </FormField>
             <FormField
-              :model-value="data?.trim"
+              :model-value="data?.readonly"
               v-slot="{ value, handleChange }"
-              name="trim"
+              name="readonly"
             >
               <FormItem>
-                <FormLabel> Trim </FormLabel>
+                <FormLabel> Readonly </FormLabel>
                 <FormControl>
                   <UiSwitch :checked="value" @update:checked="handleChange" />
                 </FormControl>
@@ -671,12 +613,12 @@ watch(
               </FormItem>
             </FormField>
             <FormField
-              :model-value="data?.readonly"
+              :model-value="data?.isHidden"
               v-slot="{ value, handleChange }"
-              name="readonly"
+              name="isHidden"
             >
               <FormItem>
-                <FormLabel> Readonly </FormLabel>
+                <FormLabel> Is Hidden </FormLabel>
                 <FormControl>
                   <UiSwitch :checked="value" @update:checked="handleChange" />
                 </FormControl>
@@ -776,50 +718,16 @@ watch(
               </FormItem>
             </FormField>
             <FormField
-              :model-value="item?.placeHolder"
+              :model-value="item?.defaultValue"
               v-slot="{ componentField }"
-              name="placeHolder"
+              name="defaultValue"
             >
               <FormItem>
-                <FormLabel> Placeholder </FormLabel>
+                <FormLabel> Default Value </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
-                    placeholder="Enter placeholder"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item?.note"
-              v-slot="{ componentField }"
-              name="note"
-            >
-              <FormItem>
-                <FormLabel> Note </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter note"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item?.defaultUserValue"
-              v-slot="{ componentField }"
-              name="defaultUserValue"
-            >
-              <FormItem>
-                <FormLabel> Default User Value </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter default user value"
+                    placeholder="Enter default value"
                     v-bind="componentField"
                   />
                 </FormControl>
@@ -901,14 +809,23 @@ watch(
             >
               <FormItem>
                 <FormLabel> Width </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter width"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a width" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="items in Object.values(Width)"
+                        :value="items"
+                      >
+                        {{ items }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
               </FormItem>
             </FormField>
             <FormField
@@ -953,7 +870,7 @@ watch(
                   <UiSelectContent>
                     <UiSelectGroup>
                       <UiSelectItem
-                        v-for="param in Object.values(TransferParams)"
+                        v-for="param in Object.values(TransferMapping)"
                         :value="param"
                       >
                         {{ param }}
@@ -1015,23 +932,6 @@ watch(
               </FormItem>
             </FormField>
             <FormField
-              :model-value="item?.validation"
-              v-slot="{ componentField }"
-              name="validation"
-            >
-              <FormItem>
-                <FormLabel> Validation </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter validation"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
               :model-value="item?.validationMessage"
               v-slot="{ componentField }"
               name="validationMessage"
@@ -1049,88 +949,55 @@ watch(
               </FormItem>
             </FormField>
             <FormField
-              :model-value="item?.iInterface"
+              :model-value="item?.interfaceType || InterfaceType.NONE"
               v-slot="{ componentField }"
-              name="iInterface"
+              name="interfaceType"
             >
               <FormItem>
-                <FormLabel> Interface </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter interface"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
+                <FormLabel> Interface Type </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a interface type" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(InterfaceType)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
               </FormItem>
             </FormField>
             <FormField
-              :model-value="item?.display"
+              :model-value="item?.display || Display.NONE"
               v-slot="{ componentField }"
               name="display"
             >
               <FormItem>
                 <FormLabel> Display </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter display"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item?.displayOptions"
-              v-slot="{ componentField }"
-              name="displayOptions"
-            >
-              <FormItem>
-                <FormLabel> Display Options </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter display options"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item?.options"
-              v-slot="{ componentField }"
-              name="options"
-            >
-              <FormItem>
-                <FormLabel> Options </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter options"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item?.conditions"
-              v-slot="{ componentField }"
-              name="conditions"
-            >
-              <FormItem>
-                <FormLabel> Conditions </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter conditions"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a display" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(Display)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
               </FormItem>
             </FormField>
             <FormField
@@ -1160,19 +1027,6 @@ watch(
               </FormItem>
             </FormField>
             <FormField
-              :model-value="item?.trim"
-              v-slot="{ value, handleChange }"
-              name="trim"
-            >
-              <FormItem>
-                <FormLabel> Trim </FormLabel>
-                <FormControl>
-                  <UiSwitch :checked="value" @update:checked="handleChange" />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
               :model-value="item?.readonly"
               v-slot="{ value, handleChange }"
               name="readonly"
@@ -1185,6 +1039,89 @@ watch(
                 <FormMessage />
               </FormItem>
             </FormField>
+            <FormField
+              :model-value="item?.isHidden"
+              v-slot="{ value, handleChange }"
+              name="isHidden"
+            >
+              <FormItem>
+                <FormLabel> Is Hidden </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value" @update:checked="handleChange" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <UiSheet>
+              <UiSheetTrigger>
+                <div class="flex flex-col gap-2">
+                  <UiLabel>Options</UiLabel>
+                  <UiButton variant="outline" type="button" size="sm">
+                    Options
+                  </UiButton>
+                </div>
+              </UiSheetTrigger>
+              <UiSheetContent
+                class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+              >
+                <PaymentOperationsFieldsOptions
+                  :formFieldsProps="form.values"
+                  :options="item?.options"
+                />
+              </UiSheetContent>
+            </UiSheet>
+            <UiSheet>
+              <UiSheetTrigger>
+                <div class="flex flex-col gap-2">
+                  <UiLabel> Display Options</UiLabel>
+                  <UiButton variant="outline" type="button" size="sm">
+                    Display Options
+                  </UiButton>
+                </div>
+              </UiSheetTrigger>
+              <UiSheetContent
+                class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+              >
+                <PaymentOperationsFieldsDisplayOptions
+                  :formFieldsProps="form.values"
+                  :displayOptions="item?.displayOptions"
+                />
+              </UiSheetContent>
+            </UiSheet>
+            <UiSheet>
+              <UiSheetTrigger>
+                <div class="flex flex-col gap-2">
+                  <UiLabel> Auto Generate Config</UiLabel>
+                  <UiButton variant="outline" type="button" size="sm">
+                    Auto Generate Config
+                  </UiButton>
+                </div>
+              </UiSheetTrigger>
+              <UiSheetContent
+                class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+              >
+                <PaymentOperationsFieldsAutoGenerateConfig
+                  :formFieldsProps="item"
+                />
+              </UiSheetContent>
+            </UiSheet>
+            <UiSheet>
+              <UiSheetTrigger>
+                <div class="flex flex-col gap-2">
+                  <UiLabel> Validation Config</UiLabel>
+                  <UiButton variant="outline" type="button" size="sm">
+                    Validation Config
+                  </UiButton>
+                </div>
+              </UiSheetTrigger>
+              <UiSheetContent
+                class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+              >
+                <PaymentOperationsFieldsValidationConfig
+                  :formFieldsProps="item"
+                />
+              </UiSheetContent>
+            </UiSheet>
           </div>
           <div
             class="col-span-full w-full flex justify-end gap-4 pt-4 border-t"

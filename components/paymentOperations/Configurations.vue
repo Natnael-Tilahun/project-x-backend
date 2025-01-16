@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const openItems = ref("configuration");
 import { useForm } from "vee-validate";
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
 import { toast } from "~/components/ui/toast";
 import { useIntegrations } from "~/composables/useIntegrations";
 import { paymentOperationFormSchema } from "~/validations/paymentOperationFormSchema";
@@ -188,15 +188,17 @@ const fetchData = async () => {
       getPaymentOperationById(operationId).catch(() => []),
       getIntegrations().catch(() => []),
     ]);
+
+    console.log("apiIntegrations: ", apiIntegrations.value);
     selectedApiIntegration.value = apiIntegrations.value[0].id;
     selectedApiOperations.value = apiOperations.value.filter(
       (operation) =>
         operation?.apiIntegration?.id === selectedApiIntegration.value
     );
-    console.log(
-      "data: ",
-      data.value?.apiRequestMappingsRegistryOptions["$enquiryApiResponse."]
-    );
+    console.log("data: ", data.value.apiOperation);
+    console.log("apiOperations: ", apiOperations.value);
+
+    route.query.formId = data.value?.form?.id;
 
     // Only fetch these if needed for the current view
     // if (data.value?.paymentIntegration?.id) {
@@ -263,6 +265,30 @@ const cleanup = () => {
 };
 
 onBeforeUnmount(cleanup);
+
+// Add a computed property for filtered payment operations
+const filteredPaymentOperations = computed(() => {
+  const currentType = form.values.paymentOperationType;
+  return allPaymentOperations.value.filter(
+    (op) => op.paymentOperationType !== currentType
+  );
+});
+
+// Watch for changes in payment operation type
+watch(
+  () => form.values.paymentOperationType,
+  (newType) => {
+    // If the next payment operation has the same type as the new selection, clear it
+    if (form.values.nextPaymentOperation) {
+      const nextOp = allPaymentOperations.value.find(
+        (op) => op.id === form.values.nextPaymentOperation
+      );
+      if (nextOp?.paymentOperationType === newType) {
+        form.setFieldValue("nextPaymentOperation", null);
+      }
+    }
+  }
+);
 </script>
 
 <template>
@@ -428,7 +454,6 @@ onBeforeUnmount(cleanup);
                 </UiSelect>
               </FormItem>
             </FormField>
-
             <FormField
               :model-value="selectedApiIntegration"
               v-slot="{ componentField }"
@@ -540,11 +565,10 @@ onBeforeUnmount(cleanup);
                       />
                     </UiSelectTrigger>
                   </FormControl>
-                  <FormMessage />
                   <UiSelectContent>
                     <UiSelectGroup>
                       <UiSelectItem
-                        v-for="item in allPaymentOperations"
+                        v-for="item in filteredPaymentOperations"
                         :key="item.id"
                         :value="item.id"
                       >
@@ -553,6 +577,7 @@ onBeforeUnmount(cleanup);
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
+                <FormMessage />
               </FormItem>
             </FormField>
             <!-- <FormField

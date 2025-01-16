@@ -19,7 +19,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { DataType, TransferParams, MappingPathPrefix } from "@/global-types";
+import { DataType, TransferMapping, MappingPathPrefix } from "@/global-types";
 
 const route = useRoute();
 const {
@@ -33,7 +33,7 @@ const {
 
 const { getOperationById } = useOperations();
 
-const loading = ref(isLoading.value);
+const loading = ref(false);
 const isFetching = ref(false);
 const isDeleting = ref(false);
 const isError = ref(false);
@@ -158,7 +158,7 @@ const getApiOperationData = async () => {
       });
       return;
     }
-    isFetching.value = true;
+    loading.value = true;
     apiOperationData.value = await getOperationById(apiOperationId.value);
     apiOperationRequestInputName.value =
       apiOperationData.value?.requestInputs?.map((input) => input.inputName);
@@ -171,22 +171,26 @@ const getApiOperationData = async () => {
       variant: "destructive",
     });
   } finally {
-    isFetching.value = false;
+    loading.value = false;
   }
 };
 
 // Only fetch data if formId is available
-if (operationId.value) {
-  await useAsyncData("operationData", async () => {
-    await getOperationData();
-  });
-}
 
-if (apiOperationId.value) {
-  await useAsyncData("apiOperationData", async () => {
+onMounted(async () => {
+  if (operationId.value) {
+    await getOperationData();
+  }
+  if (apiOperationId.value) {
     await getApiOperationData();
-  });
-}
+  }
+});
+
+// if (apiOperationId.value) {
+//   await useAsyncData("apiOperationData", async () => {
+//     await getApiOperationData();
+//   });
+// }
 
 // Add this ref to store the original input name when editing
 const originalInputName = ref<string>("");
@@ -414,7 +418,7 @@ const getMappingPathValuesForPrefix = (prefix: string) => {
     </UiButton>
   </div>
 
-  <div v-if="isFetching" class="py-10 flex justify-center w-full">
+  <div v-if="isFetching || loading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
   <UiAccordion v-else type="single" collapsible defaultValue="newField">
