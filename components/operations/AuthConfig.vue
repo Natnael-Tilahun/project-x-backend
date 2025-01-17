@@ -35,9 +35,6 @@ const apiIntegrationProps = defineProps<{
 apiIntegration.value = apiIntegrationProps.apiIntegrationProps;
 const data = ref<AuthConfiguration>(apiIntegration.value.authConfig);
 
-console.log("apiIntegrationPropss:", apiIntegration.value);
-console.log("data:", data.value);
-
 const form = useForm({
   validationSchema: authConfigFormSchema,
 });
@@ -78,8 +75,6 @@ const refetch = async () => {
 };
 
 const onSubmit = form.handleSubmit(async (values: any) => {
-  console.log("values:", values);
-
   try {
     submitting.value = true;
     isError.value = false;
@@ -92,7 +87,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           : null),
       },
     };
-    console.log("updatedValues:", updatedValues);
     const updatedApiIntegration = await updateIntegration(
       apiIntegration.value.id,
       updatedValues

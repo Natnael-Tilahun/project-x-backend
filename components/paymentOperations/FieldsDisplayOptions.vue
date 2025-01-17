@@ -36,10 +36,6 @@ formFields.value = formFieldsProps.formFieldsProps;
 const data = ref<Partial<Field>>(formFieldsProps?.displayOptions);
 const display = ref<string>(formFieldsProps.formFieldsProps?.display);
 
-console.log("formFieldsPropss:", formFields.value);
-console.log("displayOptions:", data.value);
-console.log("display:", display.value);
-
 const form = useForm({
   validationSchema: formFieldsDisplayOptionsFormSchema,
 });
@@ -49,8 +45,6 @@ if (data.value) {
 }
 
 const onSubmit = form.handleSubmit(async (values: any) => {
-  console.log("valuess:", values);
-
   try {
     submitting.value = true;
     isError.value = false;
@@ -60,7 +54,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         ...values,
       },
     };
-    console.log("updatedValues:", updatedValues);
     const updatedField = await updateField(formFields.value.id, updatedValues);
     console.log("updatedValues: ", updatedField);
     form.setValues(updatedField.displayOptions);

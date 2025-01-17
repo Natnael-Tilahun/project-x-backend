@@ -173,7 +173,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         ? values.apiRequestMappingsRegistry
         : [],
     };
-    console.log("Payment Operation Values: ", paymentOperationData);
     const response = await createNewPaymentOperation(paymentOperationData); // Call your API function to fetch profile
     data.value = response;
     // formId.value = response.form.id;

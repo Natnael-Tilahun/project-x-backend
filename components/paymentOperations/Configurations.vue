@@ -49,8 +49,6 @@ const formId = ref<string>("");
 const selectedApiIntegration = ref<string>("");
 const selectedApiOperations = ref<string[]>([]);
 
-console.log("operationId: ", operationId);
-
 const form = useForm<PaymentOperation>({
   validationSchema: paymentOperationFormSchema,
 });
@@ -77,7 +75,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           ? { id: values.nextPaymentOperation }
           : values.nextPaymentOperation,
     };
-    console.log("formData: ", formData);
     const response = await updatePaymentOperation(operationId, formData);
     data.value = response;
     formId.value = response?.form?.id;
@@ -189,15 +186,11 @@ const fetchData = async () => {
       getIntegrations().catch(() => []),
     ]);
 
-    console.log("apiIntegrations: ", apiIntegrations.value);
     selectedApiIntegration.value = apiIntegrations.value[0].id;
     selectedApiOperations.value = apiOperations.value.filter(
       (operation) =>
         operation?.apiIntegration?.id === selectedApiIntegration.value
     );
-    console.log("data: ", data.value.apiOperation);
-    console.log("apiOperations: ", apiOperations.value);
-
     route.query.formId = data.value?.form?.id;
 
     // Only fetch these if needed for the current view

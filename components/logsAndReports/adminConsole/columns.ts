@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@tanstack/vue-table";
 
 import { Checkbox } from "../../ui/checkbox";
-import  LogsAndReportsAdminConsoleOtherInfoDetails  from "~/components/logsAndReports/adminConsole/OtherInfoDetails.vue";
+import LogsAndReportsAdminConsoleOtherInfoDetails from "~/components/logsAndReports/adminConsole/OtherInfoDetails.vue";
 import {
   DropdownMenu,
   DropdownMenuContent,

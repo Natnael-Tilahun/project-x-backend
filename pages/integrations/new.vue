@@ -67,7 +67,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     integrationName.value = data.value.name;
     // openItems.value = "newOperation";
     navigateTo({
-      path: `/integrations/integrationDetails/${data.value.id}`,
+      path: `/integrations/${data.value.id}`,
       query: {
         activeTab: "operations",
       },

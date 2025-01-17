@@ -22,7 +22,7 @@ const isLoading = ref(false);
 const isError = ref(false);
 
 const navigateToCustomerDetail = (id: string) => {
-  router.push(`/customers/customerDetails/${id}`);
+  router.push(`/customers/${id}`);
 };
 
 const getInitials = (name: string) =>

@@ -31,8 +31,19 @@ export const columns: ColumnDef<Role>[] = [
     cell: ({ row }) => {
       const route = useRoute();
       const roleName = row.getValue("name");
-      return roleName ? h(NuxtLink, {  class: "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full", to: `${route.path}/roleDetails/${roleName}` }, roleName) : h("p", "-");
-    },  },
+      return roleName
+        ? h(
+            NuxtLink,
+            {
+              class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `${route.path}/${roleName}`,
+            },
+            roleName
+          )
+        : h("p", "-");
+    },
+  },
   {
     accessorKey: "description",
     header: "Role Description",
@@ -44,8 +55,7 @@ export const columns: ColumnDef<Role>[] = [
       const enforce = row.getValue("enforce2fa");
       if (enforce) {
         return h("p", "True");
-      } else
-        return h("p", "False");
+      } else return h("p", "False");
     },
   },
   {
@@ -55,9 +65,7 @@ export const columns: ColumnDef<Role>[] = [
       const status = row.getValue("disabled");
       if (status) {
         return h(Badge, { class: "bg-red-500  " }, "Disabled");
-      } else
-        return h(Badge, { class: "bg-green-600 " }, "Enabled");
-
+      } else return h(Badge, { class: "bg-green-600 " }, "Enabled");
     },
   },
   {
@@ -70,7 +78,7 @@ export const columns: ColumnDef<Role>[] = [
       const isError = ref(false);
       const data = ref<Role[]>([]);
       const refetch = async () => {
-        alert("jkjk")
+        alert("jkjk");
         try {
           isError.value = false; // Reset isError flag
           loading.value = true; // Show loading indicator
@@ -87,7 +95,8 @@ export const columns: ColumnDef<Role>[] = [
         "div",
         { class: "relative" },
         h(UserRolesDataTableRowActionsVue, {
-          row, refetch
+          row,
+          refetch,
         })
       );
     },

@@ -56,7 +56,6 @@ const props = defineProps<{
 
 operationId.value =
   props?.operationIdProps || (route.query.operationId as string) || "";
-console.log("operationId: ", operationId.value);
 
 // if (props?.form) {
 //   data.value = props?.form;
@@ -73,7 +72,7 @@ const getFormData = async (operId: string) => {
       console.warn("Operation ID is not available");
       return;
     }
-    loading.value = true
+    loading.value = true;
     const response = await getPaymentOperationById(operId);
     if (response?.form) {
       data.value = response?.form;
@@ -89,17 +88,16 @@ const getFormData = async (operId: string) => {
       description: "Failed to fetch operation form",
       variant: "destructive",
     });
-  }finally{
-    loading.value = false
+  } finally {
+    loading.value = false;
   }
 };
 
 // Only fetch data if formId is available
 
-   onMounted(async() => {
-    await getFormData(operationId.value);
-  })
-
+onMounted(async () => {
+  await getFormData(operationId.value);
+});
 
 const onSubmit = formForm.handleSubmit(async (values: Form) => {
   try {
@@ -187,7 +185,7 @@ const handleDeleteForm = async () => {
 </script>
 
 <template>
-    <div v-if = "loading" class="py-10 flex justify-center w-full">
+  <div v-if="loading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
   <form v-else @submit="onSubmit">

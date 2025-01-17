@@ -35,8 +35,9 @@ export const columns: ColumnDef<PaymentIntegration>[] = [
         ? h(
             NuxtLink,
             {
-              class: "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}/paymentIntegrationDetails/${row.original.id}`,
+              class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `${route.path}/${row.original.id}`,
             },
             integrationName
           )
@@ -104,9 +105,7 @@ export const columns: ColumnDef<PaymentIntegration>[] = [
     header: "Confirm Recipient Identity",
     cell: ({ row }) => {
       const confirmRecipientIdentity = row.getValue("confirmRecipientIdentity");
-      return confirmRecipientIdentity
-        ? h("p", "Yes")
-        : h("p", "No");
+      return confirmRecipientIdentity ? h("p", "Yes") : h("p", "No");
     },
   },
   {
@@ -116,9 +115,7 @@ export const columns: ColumnDef<PaymentIntegration>[] = [
       const reEnquirePaymentDetailBeforePayment = row.getValue(
         "reEnquirePaymentDetailBeforePayment"
       );
-      return reEnquirePaymentDetailBeforePayment
-        ? h("p", "Yes")
-        : h("p", "No");
+      return reEnquirePaymentDetailBeforePayment ? h("p", "Yes") : h("p", "No");
     },
   },
   {

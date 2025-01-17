@@ -66,8 +66,6 @@ const form = useForm<PaymentOperation>({
   validationSchema: apiRequestMappingsRegistryFormSchema,
 });
 
-console.log("operationId: ", operationId.value);
-
 // Add back mappingPathPrefix for new field form
 const mappingPathPrefix = ref("");
 

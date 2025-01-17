@@ -35,8 +35,9 @@ export const columns: ColumnDef<Menu>[] = [
         ? h(
             NuxtLink,
             {
-              class: "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}/menuDetails/${row.original.id}`,
+              class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `${route.path}/${row.original.id}`,
             },
             name
           )
@@ -101,7 +102,7 @@ export const columns: ColumnDef<Menu>[] = [
   },
   {
     accessorKey: "defaultLanguageCode",
-    header: "Default Language Code", 
+    header: "Default Language Code",
     cell: ({ row }) => {
       const defaultLanguageCode = row.getValue("defaultLanguageCode");
       return defaultLanguageCode ? h("p", defaultLanguageCode) : h("p", "-");
@@ -112,12 +113,16 @@ export const columns: ColumnDef<Menu>[] = [
     header: "Children",
     cell: ({ row }) => {
       const children = row.getValue("children");
-      return children ? h(
-        "div",
-          { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-          children.length
-        )
-      : h("p", "-");
+      return children
+        ? h(
+            "div",
+            {
+              class:
+                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            children.length
+          )
+        : h("p", "-");
     },
   },
   {
@@ -125,7 +130,9 @@ export const columns: ColumnDef<Menu>[] = [
     header: "Dynamic Paymen t Menus",
     cell: ({ row }) => {
       const dynamicPaymentMenus = row.getValue("dynamicPaymentMenus");
-      return dynamicPaymentMenus ? h("p", dynamicPaymentMenus.length) : h("p", "-");
+      return dynamicPaymentMenus
+        ? h("p", dynamicPaymentMenus.length)
+        : h("p", "-");
     },
   },
   {

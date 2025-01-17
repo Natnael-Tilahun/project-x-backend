@@ -112,7 +112,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           : values.children,
     };
     data.value = await updateMenu(values.id, updatedValues); // Call your API function to fetch profile
-    navigateTo(`/menuCategories/menuDetails/${data.value.id}`);
+    navigateTo(`/menuCategories/${data.value.id}`);
     toast({
       title: "Menu Updated",
       description: "Menu updated successfully",

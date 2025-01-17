@@ -31,8 +31,17 @@ export const columns: ColumnDef<ApiIntegration>[] = [
     cell: ({ row }) => {
       const route = useRoute();
       const name = row.getValue("name");
-      return name ? h(NuxtLink, {  class: "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full", to: `${route.path}/integrationDetails/${row.original.id}` }, name) : h("p", "-");
-
+      return name
+        ? h(
+            NuxtLink,
+            {
+              class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `${route.path}/${row.original.id}`,
+            },
+            name
+          )
+        : h("p", "-");
     },
   },
   {
@@ -61,7 +70,7 @@ export const columns: ColumnDef<ApiIntegration>[] = [
   },
   {
     accessorKey: "auth",
-    header: "Auth", 
+    header: "Auth",
     cell: ({ row }) => {
       const auth = row.getValue("auth");
       return auth ? h("p", auth) : h("p", "-");
@@ -72,11 +81,16 @@ export const columns: ColumnDef<ApiIntegration>[] = [
     header: "Version",
     cell: ({ row }) => {
       const version = row.getValue("version");
-      return version ? h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("version")
-      ) : h("p", "-");
+      return version
+        ? h(
+            "div",
+            {
+              class:
+                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("version")
+          )
+        : h("p", "-");
     },
   },
   {

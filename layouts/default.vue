@@ -3,6 +3,14 @@ import { ref, onMounted } from "vue";
 import Sidebar from "~/components/layout/sidebar/Sidebar.vue";
 import OpenSidebarIcon from "~/components/layout/sidebar/OpenSidebarIcon.vue";
 import CloseSidebarIcon from "~/components/layout/sidebar/CloseSidebarIcon.vue";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 const LOCAL_STORAGE_THEME_KEY = "theme";
 const isDarkMode = ref(false);
@@ -105,24 +113,44 @@ const closeMenuNav = () => {
           <div class="flex items-center gap-3 md:gap-2">
             <OpenSidebarIcon v-if="isSidebarCollapsed" @click="toggleSidebar" />
             <CloseSidebarIcon v-else @click="toggleSidebar" />
-            <p class="text-lg font-thin hidden md:block space-x-2">
-              <template v-if="pathSegments.length == 0">
-                <router-link to="/">Dashboard</router-link>
-              </template>
-              <template v-if="pathSegments.length > 0">
-                <span v-for="(segment, index) in pathSegments" :key="index">
-                  <template v-if="index !== 0">
-                    <Icon name="mdi:chevron-double-right" class=""></Icon>
+            <div class="hidden md:block">
+              <Breadcrumb>
+                <BreadcrumbList>
+                  <template v-if="pathSegments.length === 0">
+                    <BreadcrumbItem>
+                      <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                    </BreadcrumbItem>
                   </template>
-
-                  <template v-if="segment">
-                    <NuxtLink :to="generateLink(index)">
-                      {{ capitalizeRouteName(segment) }}
-                    </NuxtLink>
+                  <template v-else>
+                    <BreadcrumbItem>
+                      <BreadcrumbLink>
+                        <NuxtLink to="/">Dashboard</NuxtLink>
+                      </BreadcrumbLink>
+                    </BreadcrumbItem>
+                    <template
+                      v-for="(segment, index) in pathSegments"
+                      :key="index"
+                    >
+                      <BreadcrumbSeparator />
+                      <BreadcrumbItem>
+                        <template v-if="index === pathSegments.length - 1">
+                          <BreadcrumbPage class="text-primary font-medium">
+                            {{ capitalizeRouteName(segment) }}</BreadcrumbPage
+                          >
+                        </template>
+                        <template v-else>
+                          <BreadcrumbLink>
+                            <NuxtLink :to="generateLink(index)">
+                              {{ capitalizeRouteName(segment) }}</NuxtLink
+                            >
+                          </BreadcrumbLink>
+                        </template>
+                      </BreadcrumbItem>
+                    </template>
                   </template>
-                </span>
-              </template>
-            </p>
+                </BreadcrumbList>
+              </Breadcrumb>
+            </div>
           </div>
 
           <div class="ml-auto flex items-center space-x-2 md:space-x-10">

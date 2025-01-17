@@ -166,8 +166,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         logicalOperator: values?.logicalOperator,
       },
     };
-    console.log("updatedValues: ", updatedValues);
-
     const updatedField = await updateField(formFields.value.id, updatedValues);
     // form.setValues(updatedField.validationConfig);
     // data.value = updatedField.validationConfig;

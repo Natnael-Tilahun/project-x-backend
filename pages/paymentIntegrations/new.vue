@@ -79,7 +79,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     paymentIntegrationName.value = data.value.companyName;
     // openItems.value = "newOperation";
     navigateTo({
-      path: `/paymentIntegrations/paymentIntegrationDetails/${data.value.id}`,
+      path: `/paymentIntegrations/${data.value.id}`,
       query: {
         activeTab: "paymentOperations",
       },

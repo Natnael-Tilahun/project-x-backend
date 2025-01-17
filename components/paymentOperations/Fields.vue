@@ -49,8 +49,6 @@ const form = useForm<Field>({
   validationSchema: formFieldsFormSchema,
 });
 
-console.log("fields: ", fields.value);
-console.log("formid: ", formId.value);
 // Modify getFormData to check for formId before making the request
 const getFormData = async () => {
   try {
@@ -88,7 +86,6 @@ onMounted(async () => {
 
 // Update existing parameter
 const onSubmit = form.handleSubmit(async (values: Field) => {
-  console.log("valuess: ", values);
   try {
     loading.value = true;
     const updatedField = await updateField(values.id, values);
@@ -130,7 +127,6 @@ const createNewFieldHandler = form.handleSubmit(async (values: any) => {
     };
 
     const createdField = await createNewField(data);
-    console.log("createdField: ", createdField);
     // Update the local state by adding the new request input
     fields.value.push(createdField);
     // Reset the newParameter state
