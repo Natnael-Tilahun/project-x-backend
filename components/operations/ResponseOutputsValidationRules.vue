@@ -109,7 +109,6 @@ const onSubmit = form.handleSubmit(async (values) => {
             const fieldCount = getOperatorAgainstFieldCount(rule.operator);
             return {
               operator: rule.operator,
-              // Convert back to string for single-value operators
               against:
                 fieldCount === 1 ? rule.against?.[0] || "" : rule.against || [],
               errorMessage: rule.errorMessage,
@@ -124,6 +123,9 @@ const onSubmit = form.handleSubmit(async (values) => {
       responseOutputId.value,
       updateData
     );
+
+    // Emit an event to notify parent components
+    emit("update:responseOutput", updatedResponseOutput);
 
     toast({
       title: "Validation Rules Updated",
@@ -140,6 +142,9 @@ const onSubmit = form.handleSubmit(async (values) => {
     loading.value = false;
   }
 });
+
+// Add emits definition
+const emit = defineEmits(["update:responseOutput"]);
 
 // Add helper function to check if a rule is filled
 const isValidationRuleFilled = (rule: ValidationRule) => {

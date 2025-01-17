@@ -19,7 +19,7 @@ interface DataTableRowActionsProps<TData> {
 const props = defineProps<DataTableRowActionsProps<any>>();
 
 function viewRollDetails(name: string) {
-  navigateTo(`/userRoles/roleDetails/${name}`);
+  navigateTo(`/userRoles/${name}`);
   navigator.clipboard.writeText(name);
 }
 

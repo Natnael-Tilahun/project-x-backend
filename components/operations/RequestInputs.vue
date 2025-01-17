@@ -44,19 +44,24 @@ const form = useForm<RequestInput>({
   validationSchema: apiOperationRequestInputFormSchema,
 });
 
+// Add emit definition
+const emit = defineEmits(["update:operation"]);
+
 // Update existing parameter
 const onSubmit = form.handleSubmit(async (values: RequestInput) => {
   try {
     loading.value = true;
     const updatedRequestInput = await updateRequestInput(values.id, values);
 
-    // Update the local state by replacing the updated item
     const index = requestInputs.value.findIndex(
       (item) => item.id === values.id
     );
     if (index !== -1) {
       requestInputs.value[index] = updatedRequestInput;
     }
+
+    // Emit event to trigger parent refresh
+    emit("update:operation");
 
     toast({
       title: "Request Input Updated",
@@ -69,6 +74,17 @@ const onSubmit = form.handleSubmit(async (values: RequestInput) => {
     loading.value = false;
   }
 });
+
+// Add handler for validation rules update
+const handleValidationRulesUpdate = (updatedInput: RequestInput) => {
+  const index = requestInputs.value.findIndex(
+    (item) => item.id === updatedInput.id
+  );
+  if (index !== -1) {
+    requestInputs.value[index] = updatedInput;
+    emit("update:operation");
+  }
+};
 
 // Submit new parameter
 const createNewParameter = form.handleSubmit(async (values: any) => {
@@ -823,7 +839,10 @@ watch(
               <UiSheetContent
                 class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
               >
-                <OperationsRequestInputsValidationRules :requestInput="item" />
+                <OperationsRequestInputsValidationRules
+                  :requestInput="item"
+                  @update:requestInput="handleValidationRulesUpdate"
+                />
               </UiSheetContent>
             </UiSheet>
             <UiButton

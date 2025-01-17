@@ -17,7 +17,7 @@ interface DataTableRowActionsProps<TData> {
 const props = defineProps<DataTableRowActionsProps<any>>();
 
 function viewPaymentIntegrationDetail(id: string) {
-  navigateTo(`/paymentIntegrations/paymentIntegrationDetails/${id}`);
+  navigateTo(`/paymentIntegrations/${id}`);
   navigator.clipboard.writeText(id);
 }
 

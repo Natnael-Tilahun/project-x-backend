@@ -32,7 +32,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     isLoading.value = true;
     data.value = await createNewRole(values); // Call your API function to fetch profile
-    navigateTo(`/userRoles/roleDetails/${data.value.name}`);
+    navigateTo(`/userRoles/${data.value.name}`);
     console.log("New role data; ", data.value);
     toast({
       title: "Role Created",

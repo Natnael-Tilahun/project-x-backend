@@ -25,7 +25,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     isLoading.value = true;
     data.value = await createNeweCustomer(values); // Call your API function to fetch profile
-    navigateTo(`/customers/customerDetails/${data.value.id}`);
+    navigateTo(`/customers/${data.value.id}`);
     console.log("New Customer data; ", data.value);
     toast({
       title: "Customer Created",

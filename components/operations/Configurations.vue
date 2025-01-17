@@ -21,7 +21,7 @@ const { getOperationById, updateOperation, isSubmitting, isLoading } =
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
 const integrationId = ref<string>("");
-const loading = ref(isLoading.value);
+const loading = ref(false);
 const isError = ref(false);
 const data = ref<ApiOperation>();
 const tooltipText = ref<string>("Copy to clipboard");
@@ -59,27 +59,30 @@ function splitPath(path: any) {
   return path.split("/").filter(Boolean);
 }
 
-const getOperationData = async () => {
+const fetchData = async () => {
+  isError.value = false;
   try {
-    isLoading.value = true;
     loading.value = true;
-    data.value = await getOperationById(operationId); // Call your API function to fetch roles
+    data.value = await getOperationById(operationId);
     form.setValues(data.value);
   } catch (err) {
-    console.error("Error fetching operations:", err);
+    console.error("Error fetching operation:", err);
     isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
   }
 };
 
+const handleOperationUpdate = async () => {
+  await fetchData();
+};
+
 onMounted(() => {
-  getOperationData();
+  fetchData();
 });
 
 const refetch = async () => {
-  await getOperationData();
+  await fetchData();
 };
 
 const copyToClipboard = (data: any) => {
@@ -323,14 +326,22 @@ const copyToClipboard = (data: any) => {
           class="text-base h-full p-6 space-y-4"
           value="requestInputs"
         >
-          <OperationsRequestInputs :requestInputs="data?.requestInputs" />
+          <OperationsRequestInputs
+            :requestInputs="data?.requestInputs"
+            :operationIdProps="operationId"
+            @update:operation="handleOperationUpdate"
+          />
         </UiTabsContent>
 
         <UiTabsContent
           class="text-base h-full p-6 space-y-4"
           value="responseOutputs"
         >
-          <OperationsResponseOutputs :responseOutputs="data?.responseOutputs" />
+          <OperationsResponseOutputs
+            :responseOutputs="data?.responseOutputs"
+            :operationIdProps="operationId"
+            @update:operation="handleOperationUpdate"
+          />
         </UiTabsContent>
       </UiTabs>
     </form>

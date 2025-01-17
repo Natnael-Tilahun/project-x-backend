@@ -99,6 +99,9 @@ watch(
   { deep: true, immediate: true }
 );
 
+// Add emit definition
+const emit = defineEmits(["update:requestInput"]);
+
 // Update the onSubmit function
 const onSubmit = form.handleSubmit(async (values) => {
   try {
@@ -112,7 +115,6 @@ const onSubmit = form.handleSubmit(async (values) => {
             const fieldCount = getOperatorAgainstFieldCount(rule.operator);
             return {
               operator: rule.operator,
-              // Convert back to string for single-value operators
               against:
                 fieldCount === 1 ? rule.against?.[0] || "" : rule.against || [],
               errorMessage: rule.errorMessage,
@@ -122,11 +124,13 @@ const onSubmit = form.handleSubmit(async (values) => {
       },
     };
 
-    console.log("Submitting values:", updateData);
     const updatedRequestInput = await updateRequestInput(
       requestInputId.value,
       updateData
     );
+
+    // Emit event to notify parent components
+    emit("update:requestInput", updatedRequestInput);
 
     toast({
       title: "Validation Rules Updated",

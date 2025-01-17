@@ -11,7 +11,7 @@ const props = defineProps<DataTableRowActionsProps<any>>();
 
 function viewCustomerDetail(id: string) {
   // alert(id);
-  navigateTo(`/customers/customerDetails/${id}`);
+  navigateTo(`/customers/${id}`);
   navigator.clipboard.writeText(id);
 }
 

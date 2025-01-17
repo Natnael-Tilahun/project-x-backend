@@ -32,7 +32,25 @@ export const columns: ColumnDef<Customer>[] = [
       const id = row.original.id;
       const route = useRoute();
       const fullName = row.getValue("fullName");
-      return fullName ? h(NuxtLink, {  class: "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full", to: `${route.path}/customerDetails/${id}` }, fullName) : h(NuxtLink, {  class: "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full", to: `${route.path}/customerDetails/${id}` }, "No Name");
+      return fullName
+        ? h(
+            NuxtLink,
+            {
+              class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `${route.path}/${id}`,
+            },
+            fullName
+          )
+        : h(
+            NuxtLink,
+            {
+              class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `${route.path}/${id}`,
+            },
+            "No Name"
+          );
     },
   },
   {
@@ -72,11 +90,16 @@ export const columns: ColumnDef<Customer>[] = [
     header: "Legacy Customer Id",
     cell: ({ row }) => {
       const legacyCustomerId = row.getValue("legacyCustomerId");
-      return legacyCustomerId ? h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("legacyCustomerId")
-      ) : h("p", "-");
+      return legacyCustomerId
+        ? h(
+            "div",
+            {
+              class:
+                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("legacyCustomerId")
+          )
+        : h("p", "-");
     },
   },
   {
@@ -96,28 +119,34 @@ export const columns: ColumnDef<Customer>[] = [
     },
   },
   {
-    accessorKey: "coreLinked", header: "Core Linked",
+    accessorKey: "coreLinked",
+    header: "Core Linked",
     cell: ({ row }) => {
       const coreLinked = row.getValue("coreLinked");
       return coreLinked != null ? h("p", coreLinked) : h("p", "-");
     },
   },
   {
-    accessorKey: "customerActivated", header: "Customer Activated",
+    accessorKey: "customerActivated",
+    header: "Customer Activated",
     cell: ({ row }) => {
       const customerActivated = row.getValue("customerActivated");
-      return customerActivated != null ? h("p", customerActivated) : h("p", "-");
+      return customerActivated != null
+        ? h("p", customerActivated)
+        : h("p", "-");
     },
   },
   {
-    accessorKey: "olbAllowed", header: "Olb Allowed",
+    accessorKey: "olbAllowed",
+    header: "Olb Allowed",
     cell: ({ row }) => {
       const olbAllowed = row.getValue("olbAllowed");
       return olbAllowed != null ? h("p", olbAllowed) : h("p", "-");
     },
   },
   {
-    accessorKey: "staffMember", header: "Staff Member",
+    accessorKey: "staffMember",
+    header: "Staff Member",
     cell: ({ row }) => {
       const staffMember = row.getValue("staffMember");
       return staffMember != null ? h("p", staffMember) : h("p", "-");

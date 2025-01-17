@@ -16,7 +16,7 @@ interface DataTableRowActionsProps<TData> {
 const props = defineProps<DataTableRowActionsProps<any>>();
 
 function viewCustomerDetail(id: string) {
-  navigateTo(`/merchants/merchantDetails/${id}`);
+  navigateTo(`/merchants/${id}`);
   navigator.clipboard.writeText(id);
 }
 

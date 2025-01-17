@@ -30,9 +30,6 @@ const formFieldsProps = defineProps<{
 formFields.value = formFieldsProps.formFieldsProps;
 const data = ref<Field>(formFields.value?.autoGenerateConfig);
 
-console.log("formFieldsPropss:", formFields.value);
-console.log("data:", data.value);
-
 const form = useForm({
   validationSchema: formFieldsAutoGenerateConfigFormSchema,
 });
@@ -73,8 +70,6 @@ if (data.value) {
 // };
 
 const onSubmit = form.handleSubmit(async (values: any) => {
-  console.log("valuess:", values);
-
   try {
     submitting.value = true;
     isError.value = false;
@@ -84,7 +79,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         ...values,
       },
     };
-    console.log("updatedValues:", updatedValues);
     const updatedField = await updateField(formFields.value.id, updatedValues);
     console.log("updatedValues: ", updatedField);
     form.setValues(updatedField.autoGenerateConfig);

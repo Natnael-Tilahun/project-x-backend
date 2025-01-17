@@ -42,6 +42,8 @@ const form = useForm<ResponseOutput>({
   validationSchema: apiOperationResponseOutputFormSchema,
 });
 
+const emit = defineEmits(["update:operation"]);
+
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     loading.value = true;
@@ -53,6 +55,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     if (index !== -1) {
       responseOutputs.value[index] = updatedResponseOutput;
     }
+
+    emit("update:operation");
 
     toast({
       title: "Response Output Updated",
@@ -143,6 +147,16 @@ const addNewParameter = () => {
 
 const isParameterFilled = (parameter: ResponseOutput) => {
   return parameter.outputName && parameter.dataType && parameter.responseScope;
+};
+
+const handleValidationRulesUpdate = (updatedOutput: ResponseOutput) => {
+  const index = responseOutputs.value.findIndex(
+    (item) => item.id === updatedOutput.id
+  );
+  if (index !== -1) {
+    responseOutputs.value[index] = updatedOutput;
+    emit("update:operation");
+  }
 };
 
 watch(
@@ -465,6 +479,7 @@ watch(
               >
                 <OperationsResponseOutputsValidationRules
                   :responseOutput="item"
+                  @update:responseOutput="handleValidationRulesUpdate"
                 />
               </UiSheetContent>
             </UiSheet>

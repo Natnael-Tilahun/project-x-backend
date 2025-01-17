@@ -54,6 +54,9 @@
                 :to="item.link"
                 @click="closeMenuNav"
                 class="w-full border-l-2 hover:rounded-r-lg group-hover:border-primary hover:bg-accent px-4 py-3 rounded-none hover:text-primary"
+                :class="{
+                  'text-primary bg-primary/10': isRouteActive(item.link),
+                }"
               >
                 {{ item.title }}
               </NuxtLink>
@@ -78,6 +81,8 @@
 </template>
 
 <script lang="ts" setup>
+import { useRoute } from "vue-router";
+
 const mainLinks = [
   {
     title: "Dashboard",
@@ -162,7 +167,7 @@ const mainLinks = [
       { title: "Api Integrations", link: "/integrations" },
       { title: "Payment Integrations", link: "/paymentIntegrations" },
       { title: "Menu Categories", link: "/menuCategories" },
-      { title: "Auth Configurations", link: "/authConfigurations" },
+      // { title: "Auth Configurations", link: "/authConfigurations" },
     ],
   },
   {
@@ -281,6 +286,14 @@ const emits = defineEmits(["closeMenuNav"]); // Define custom event
 const closeMenuNav = () => {
   emits("closeMenuNav"); // Emit the toggleTheme event to the parent
 };
+
+const route = useRoute();
+// Function to check if route is active, including parent routes
+function isRouteActive(path: string) {
+  // Check if the current route starts with the given path
+  // This will match both exact paths and their children
+  return route.path.startsWith(path);
+}
 </script>
 
 <style scoped>

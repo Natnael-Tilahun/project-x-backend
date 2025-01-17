@@ -12,7 +12,7 @@ const props = defineProps<DataTableRowActionsProps<any>>();
 
 function viewRollDetails(id: string) {
   // alert(id);
-  navigateTo(`/customerRoles/roleDetails/${id}`);
+  navigateTo(`/customerRoles/${id}`);
   navigator.clipboard.writeText(id);
 }
 

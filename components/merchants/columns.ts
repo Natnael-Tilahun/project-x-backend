@@ -32,7 +32,17 @@ export const columns: ColumnDef<Merchant>[] = [
       const merchantId = row.original.merchantId;
       const route = useRoute();
       const businessName = row.getValue("businessName");
-      return businessName ? h(NuxtLink, {  class: "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full", to: `${route.path}/merchantDetails/${merchantId}` }, businessName) : h("p", "-");
+      return businessName
+        ? h(
+            NuxtLink,
+            {
+              class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `${route.path}/${merchantId}`,
+            },
+            businessName
+          )
+        : h("p", "-");
     },
   },
   {
@@ -40,11 +50,16 @@ export const columns: ColumnDef<Merchant>[] = [
     header: "Business Number",
     cell: ({ row }) => {
       const businessNumber = row.getValue("businessNumber");
-      return businessNumber ? h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("businessNumber")
-      ) : h("p", "-");
+      return businessNumber
+        ? h(
+            "div",
+            {
+              class:
+                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("businessNumber")
+          )
+        : h("p", "-");
     },
   },
   {
@@ -52,11 +67,16 @@ export const columns: ColumnDef<Merchant>[] = [
     header: "Business Phone Number",
     cell: ({ row }) => {
       const businessPhoneNumber = row.getValue("businessPhoneNumber");
-      return businessPhoneNumber ? h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("businessPhoneNumber")
-      ) : h("p", "-");
+      return businessPhoneNumber
+        ? h(
+            "div",
+            {
+              class:
+                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("businessPhoneNumber")
+          )
+        : h("p", "-");
     },
   },
   {
@@ -88,11 +108,16 @@ export const columns: ColumnDef<Merchant>[] = [
     header: "Fax Number",
     cell: ({ row }) => {
       const faxNumber = row.getValue("faxNumber");
-      return faxNumber ? h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("faxNumber")
-      ) : h("p", "-");
+      return faxNumber
+        ? h(
+            "div",
+            {
+              class:
+                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("faxNumber")
+          )
+        : h("p", "-");
     },
   },
   {
@@ -100,11 +125,16 @@ export const columns: ColumnDef<Merchant>[] = [
     header: "Trade License Number",
     cell: ({ row }) => {
       const tradeLicenseNumber = row.getValue("tradeLicenseNumber");
-      return tradeLicenseNumber ? h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("tradeLicenseNumber")
-      ) : h("p", "-");
+      return tradeLicenseNumber
+        ? h(
+            "div",
+            {
+              class:
+                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("tradeLicenseNumber")
+          )
+        : h("p", "-");
     },
   },
   {
@@ -112,11 +142,16 @@ export const columns: ColumnDef<Merchant>[] = [
     header: "Trade License Expiry Date",
     cell: ({ row }) => {
       const tradeLicenseExpiryDate = row.getValue("tradeLicenseExpiryDate");
-      return tradeLicenseExpiryDate ? h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("tradeLicenseExpiryDate")
-      ) : h("p", "-");
+      return tradeLicenseExpiryDate
+        ? h(
+            "div",
+            {
+              class:
+                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("tradeLicenseExpiryDate")
+          )
+        : h("p", "-");
     },
   },
   {
@@ -124,11 +159,16 @@ export const columns: ColumnDef<Merchant>[] = [
     header: "Tax Payer Id Number",
     cell: ({ row }) => {
       const taxPayerIdNumber = row.getValue("taxPayerIdNumber");
-      return taxPayerIdNumber ? h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("taxPayerIdNumber")
-      ) : h("p", "-");
+      return taxPayerIdNumber
+        ? h(
+            "div",
+            {
+              class:
+                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("taxPayerIdNumber")
+          )
+        : h("p", "-");
     },
   },
   {
@@ -136,11 +176,16 @@ export const columns: ColumnDef<Merchant>[] = [
     header: "Tax Payer Issue Date",
     cell: ({ row }) => {
       const taxPayerIssueDate = row.getValue("taxPayerIssueDate");
-      return taxPayerIssueDate ? h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("taxPayerIssueDate")
-      ) : h("p", "-");
+      return taxPayerIssueDate
+        ? h(
+            "div",
+            {
+              class:
+                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("taxPayerIssueDate")
+          )
+        : h("p", "-");
     },
   },
   {
@@ -148,11 +193,16 @@ export const columns: ColumnDef<Merchant>[] = [
     header: "Tax Payer Expiry Date",
     cell: ({ row }) => {
       const taxPayerExpiryDate = row.getValue("taxPayerExpiryDate");
-      return taxPayerExpiryDate ? h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("taxPayerExpiryDate")
-      ) : h("p", "-");
+      return taxPayerExpiryDate
+        ? h(
+            "div",
+            {
+              class:
+                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("taxPayerExpiryDate")
+          )
+        : h("p", "-");
     },
   },
   {

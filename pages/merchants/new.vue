@@ -25,7 +25,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isLoading.value = true;
     console.log("values: ", values);
     data.value = await createNeweMerchant(values.customerId, values); // Call your API function to fetch profile
-    navigateTo(`/merchants/merchantDetails/${data.value.merchantId}`);
+    navigateTo(`/merchants/${data.value.merchantId}`);
     console.log("New Merchant data; ", data.value);
     toast({
       title: "Merchant Created",

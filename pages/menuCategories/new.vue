@@ -72,7 +72,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     };
     console.log("updatedValues: ", updatedValues);
     data.value = await createNewMenu(updatedValues); // Call your API function to fetch profile
-    navigateTo(`/menuCategories/menuDetails/${data.value.id}`);
+    navigateTo(`/menuCategories/${data.value.id}`);
     console.log("New Menu data; ", data.value);
     toast({
       title: "Menu Created",

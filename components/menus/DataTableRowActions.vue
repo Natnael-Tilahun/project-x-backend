@@ -18,7 +18,7 @@ const props = defineProps<DataTableRowActionsProps<any>>();
 
 function viewMenuDetail(id: string) {
   console.log("id: ", id);
-  navigateTo(`/menuCategories/menuDetails/${id}`);
+  navigateTo(`/menuCategories/${id}`);
   navigator.clipboard.writeText(id);
 }
 

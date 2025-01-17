@@ -44,8 +44,6 @@ const form = useForm({
 });
 
 const onSubmit = form.handleSubmit(async (values: any) => {
-  console.log("valuess:", values);
-
   try {
     submitting.value = true;
     isError.value = false;
@@ -55,7 +53,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         ...values,
       },
     };
-    console.log("updatedValues:", updatedValues);
     const updatedField = await updateField(formFields.value.id, updatedValues);
     console.log("updatedValues: ", updatedField);
     form.setValues(updatedField.options);
