@@ -434,8 +434,8 @@ watch(
                         v-for="item in data?.apiRequestMappingsRegistryOptions[
                           '$enquiryApiResponse.'
                         ]"
-                        :key="item.id"
-                        :value="item.id"
+                        :key="item"
+                        :value="item"
                       >
                         {{ item }}
                       </UiSelectItem>
@@ -623,7 +623,7 @@ watch(
                   class="mr-2 h-4 w-4 animate-spin"
                 ></Icon>
 
-                Update
+                Updatee
               </UiButton>
             </div>
           </div>

@@ -25,9 +25,12 @@ export const useOperations = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -42,7 +45,9 @@ export const useOperations = () => {
     }
   };
 
-  const getOperationById: (id: string) => Promise<ApiOperation> = async (id) => {
+  const getOperationById: (id: string) => Promise<ApiOperation> = async (
+    id
+  ) => {
     try {
       const { data, pending, error, status } = await useFetch<ApiOperation>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-operations/${id}`,
@@ -59,9 +64,12 @@ export const useOperations = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -76,7 +84,9 @@ export const useOperations = () => {
     }
   };
 
-  const createNewOperation: (operationData: any) => Promise<ApiOperation> = async (operationData) => {
+  const createNewOperation: (
+    operationData: any
+  ) => Promise<ApiOperation> = async (operationData) => {
     try {
       const { data, pending, error, status } = await useFetch<ApiOperation>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-operations`,
@@ -86,26 +96,33 @@ export const useOperations = () => {
             Authorization: `Bearer ${store.accessToken}`,
           },
           body: JSON.stringify(operationData),
-        },
+        }
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message || error.value?.data?.detail,
+          variant: "destructive",
+        });
 
-        console.log("Creating new operation error: ", error.value?.data.detail)
+        console.log("Creating new operation error: ", error.value?.data.detail);
 
         if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Creating new operation error: ", error.value?.data?.fieldErrors[0].message)
-        }
-        else {
-          console.log("Creating new operation errorrr: ", error.value?.data?.message)
+          console.log(
+            "Creating new operation error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Creating new operation errorrr: ",
+            error.value?.data?.message
+          );
         }
         throw new Error(error.value?.data.detail);
       }
@@ -121,7 +138,10 @@ export const useOperations = () => {
     }
   };
 
-  const updateOperation: (operationId: string, operationData: any) => Promise<ApiOperation> = async (operationId, operationData) => {
+  const updateOperation: (
+    operationId: string,
+    operationData: any
+  ) => Promise<ApiOperation> = async (operationId, operationData) => {
     try {
       const { data, pending, error, status } = await useFetch<ApiOperation>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-operations/${operationId}`,
@@ -131,24 +151,31 @@ export const useOperations = () => {
             Authorization: `Bearer ${store.accessToken}`,
           },
           body: JSON.stringify(operationData),
-        },
+        }
       );
 
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
 
         if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Updating operation error: ", error.value?.data?.fieldErrors[0].message)
-        }
-        else {
-          console.log("Updating operation errorrr: ", error.value?.data?.message)
+          console.log(
+            "Updating operation error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Updating operation errorrr: ",
+            error.value?.data?.message
+          );
         }
         throw new Error(error.value?.data);
       }
@@ -179,12 +206,15 @@ export const useOperations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-          console.log("Deleting operation error: ", error.value?.data?.message)
+        console.log("Deleting operation error: ", error.value?.data?.message);
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -195,6 +225,42 @@ export const useOperations = () => {
     }
   };
 
+  const testOperation: (id: string) => Promise<ApiOperation> = async (id) => {
+    try {
+      const { data, pending, error, status } = await useFetch<ApiOperation>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-operations/${id}/test`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No operation with this id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
 
   return {
     isLoading,
@@ -203,6 +269,7 @@ export const useOperations = () => {
     createNewOperation,
     deleteOperation,
     updateOperation,
-    isSubmitting
+    isSubmitting,
+    testOperation,
   };
 };
