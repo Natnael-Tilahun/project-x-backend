@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const openItems = ref("configuration");
 import { useForm } from "vee-validate";
-import { ref } from "vue";
+import { ref, watch, onMounted, computed } from "vue";
 import { toast } from "~/components/ui/toast";
 import { useIntegrations } from "~/composables/useIntegrations";
 import { apiOperationFormSchema } from "~/validations/apiOperationFormSchema";
@@ -13,10 +13,25 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { HttpMethod, BodyType } from "@/global-types";
+import { parseStringPromise } from "xml2js";
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer";
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from "@/components/ui/resizable";
 
 const route = useRoute();
-const { getOperationById, updateOperation, isSubmitting, isLoading } =
-  useOperations();
+const { getOperationById, updateOperation, testOperation } = useOperations();
 
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
@@ -32,6 +47,9 @@ integrationId.value = route.params.id;
 const activeTab = route.query.activeTab as string;
 const operationId = (route.query.operationId as string) || "";
 const isPreview = ref<boolean>(false);
+const isShowResponse = ref<boolean>(false);
+const testResponse = ref<any>(null);
+const isTestError = ref<boolean>(false);
 
 const form = useForm<ApiOperation>({
   validationSchema: apiOperationFormSchema,
@@ -94,10 +112,99 @@ const copyToClipboard = (data: any) => {
     tooltipText.value = "Copy to clipboard";
   }, 2000); // Reset the tooltip text after 2 seconds
 };
+
+function isJSON(data) {
+  try {
+    JSON.parse(data); // Attempt to parse the data
+    return true; // It's valid JSON
+  } catch (error) {
+    return false; // Parsing failed, not JSON
+  }
+}
+
+const formattedContent = ref(null);
+const isLoading = ref(false);
+
+async function updateFormattedContent() {
+  if (data.value?.requestBodyTemplate) {
+    isLoading.value = true;
+    try {
+      formattedContent.value = await formatContent(
+        data.value.requestBodyTemplate
+      );
+    } catch (error) {
+      console.error("Error formatting content:", error);
+      formattedContent.value = data.value.requestBodyTemplate;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+}
+
+watch(
+  () => data.value?.requestBodyTemplate,
+  async () => {
+    await updateFormattedContent();
+  }
+);
+
+onMounted(async () => {
+  await updateFormattedContent();
+});
+
+async function formatContent(content) {
+  if (!content) return "";
+
+  if (isJSON(content)) {
+    return JSON.parse(content);
+  } else {
+    try {
+      const result = await parseStringPromise(content, {
+        explicitArray: false,
+      });
+      return result;
+    } catch (err) {
+      console.log("Invalid XML");
+      return content;
+    }
+  }
+}
+
+const parsedResponse = computed(() => {
+  if (!testResponse.value?.operationResponse) return null;
+  try {
+    if (isJSON(testResponse.value.operationResponse)) {
+      return JSON.parse(testResponse.value.operationResponse);
+    } else {
+      return testResponse.value.operationResponse;
+    }
+  } catch (err) {
+    console.error("Error parsing response:", err);
+    return testResponse.value.operationResponse;
+  }
+});
+
+const testingOperation = async () => {
+  try {
+    loading.value = true;
+    const response = await testOperation(operationId);
+    testResponse.value = response;
+    isShowResponse.value = true;
+    toast({
+      title: "Operation Tested",
+      description: "Operation tested successfully",
+    });
+  } catch (err: any) {
+    console.error("Error testing operation:", err);
+    isTestError.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 <template>
-  <div class="flex flex-col gap-6 items-cente">
+  <div class="flex flex-col gap-6 items-cente" id="app" vaul-drawer-wrapper>
     <form @submit="onSubmit">
       <UiTabs defaultValue="info" class="w-full">
         <UiTabsList
@@ -123,6 +230,13 @@ const copyToClipboard = (data: any) => {
             value="responseOutputs"
             >Response Outputs</UiTabsTrigger
           >
+          <div class="flex items-center gap-2 ml-auto">
+            <UiLabel>Show Response</UiLabel>
+            <UiSwitch
+              :checked="isShowResponse"
+              @update:checked="isShowResponse = !isShowResponse"
+            ></UiSwitch>
+          </div>
         </UiTabsList>
         <UiTabsContent class="p-6" value="info">
           <div class="grid grid-cols-2 gap-6">
@@ -273,11 +387,11 @@ const copyToClipboard = (data: any) => {
                       </UiSwitch>
                     </div>
                   </div>
-                  <FormControl v-if="!isPreview" class="">
+                  <FormControl v-if="!isPreview" class="h-fit">
                     <UiTextarea
                       placeholder="Enter request body template"
                       class="resize-y"
-                      rows="15"
+                      rows="10"
                       v-bind="componentField"
                     />
                   </FormControl>
@@ -294,12 +408,28 @@ const copyToClipboard = (data: any) => {
                   @click="copyToClipboard(data?.requestBodyTemplate)"
                   class="h-6 w-6 absolute top-4 right-4 cursor-pointer text-primary"
                 ></Icon>
-                <pre
-                  class="w-full max-w-full leading-9 overflow-x-auto"
-                ><code>{{ data?.requestBodyTemplate }}</code></pre>
+                <pre class="bg-gray-100 rounded overflow-x-auto text-sm">
+                  <div v-if="isLoading">Loading...</div>
+                  <div v-else>{{ formattedContent }}</div>
+                </pre>
               </div>
             </div>
             <div class="col-span-full w-full py-4 flex justify-end gap-4">
+              <UiButton
+                type="button"
+                :disabled="loading"
+                size="sm"
+                variant="outline"
+                class="border-primary border-[0.5px]"
+                @click="testingOperation"
+              >
+                <Icon
+                  name="svg-spinners:8-dots-rotate"
+                  v-if="loading"
+                  class="mr-2 h-4 w-4 animate-spin"
+                ></Icon>
+                Test
+              </UiButton>
               <UiButton
                 :disabled="loading"
                 variant="outline"
@@ -343,6 +473,78 @@ const copyToClipboard = (data: any) => {
             @update:operation="handleOperationUpdate"
           />
         </UiTabsContent>
+        <Drawer :open="isShowResponse">
+          <DrawerContent class="p-4">
+            <div class="flex items-center justify-between gap-2">
+              <h1 class="text-lg font-bold">Api Operation Test Response</h1>
+              <UiButton
+                variant="outline"
+                size="sm"
+                @click="isShowResponse = false"
+                >Cancel</UiButton
+              >
+            </div>
+            <div v-if="isTestError">
+              <UiErrorMessage
+                :retry="testingOperation"
+                title="Something went wrong."
+              />
+            </div>
+            <ResizablePanelGroup
+              v-else
+              class="min-h-[450px] w-full rounded-lg border mt-2 relative"
+              direction="horizontal"
+            >
+              <ResizablePanel :default-size="25">
+                <div
+                  class="h-full w-full flex flex-col gap-2 p-2 overflow-y-auto"
+                >
+                  <h1 class="text-base font-semibold">Operation Request</h1>
+                  <div>
+                    <p>
+                      {{ testResponse?.operationRequest }}
+                    </p>
+                  </div>
+                  <UiSeparator />
+                </div>
+              </ResizablePanel>
+              <ResizableHandle with-handle />
+              <ResizablePanel :default-size="25">
+                <div
+                  class="h-full w-full flex flex-col gap-2 p-2 overflow-y-auto"
+                >
+                  <h1 class="text-base font-semibold">Operation Response</h1>
+                  <div class="h-full w-full">
+                    <pre
+                      class="bg-gray-100 rounded overflow-x-auto h-full text-sm p-2"
+                    >
+                      <div>{{ parsedResponse }}</div>
+                    </pre>
+                  </div>
+                  <UiSeparator />
+                </div>
+              </ResizablePanel>
+              <ResizableHandle with-handle />
+              <ResizablePanel :default-size="25">
+                <div
+                  class="h-full w-full flex flex-col gap-2 p-2 overflow-y-auto"
+                >
+                  <h1 class="text-base font-semibold">Raw Request</h1>
+                  <UiSeparator />
+                </div>
+              </ResizablePanel>
+              <ResizableHandle with-handle />
+              <ResizablePanel :default-size="25">
+                <div
+                  class="h-full w-full flex flex-col gap-2 p-2 overflow-y-auto"
+                >
+                  <h1 class="text-base font-semibold">Raw Response</h1>
+                  <UiSeparator />
+                </div>
+              </ResizablePanel>
+            </ResizablePanelGroup>
+          </DrawerContent>
+        </Drawer>
       </UiTabs>
     </form>
   </div>

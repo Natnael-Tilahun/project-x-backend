@@ -319,6 +319,40 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
               </FormItem>
             </FormField>
             <FormField
+              :model-value="data?.amountEnquiryPath"
+              v-slot="{ componentField }"
+              name="amountEnquiryPath"
+            >
+              <FormItem>
+                <FormLabel> Amount Enquiry Path </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Enter amount enquiry path" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <FormMessage />
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-if="data?.apiRequestMappingsRegistryOptions"
+                        v-for="item in data?.apiRequestMappingsRegistryOptions[
+                          '$enquiryApiResponse.'
+                        ]"
+                        :key="item"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                      <UiSelectItem disabled v-else
+                        >No amount enquiry path found</UiSelectItem
+                      >
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+              </FormItem>
+            </FormField>
+            <FormField
               :model-value="selectedApiIntegration"
               v-slot="{ componentField }"
               name="apiIntegration"

@@ -6,7 +6,6 @@ import { Badge } from "../ui/badge";
 import PaymentOperationsDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 
-
 export const columns: ColumnDef<PaymentOperation>[] = [
   {
     id: "select",
@@ -32,7 +31,17 @@ export const columns: ColumnDef<PaymentOperation>[] = [
     cell: ({ row }) => {
       const route = useRoute();
       const name = row.getValue("name");
-      return name ? h(NuxtLink, {  class: "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full", to: `${route.path}?activeTab=configurePaymentOperations&operationId=${row.original.id}` }, name) : h("p", "-");
+      return name
+        ? h(
+            NuxtLink,
+            {
+              class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `${route.path}?activeTab=configurePaymentOperations&operationId=${row.original.id}`,
+            },
+            name
+          )
+        : h("p", "-");
     },
   },
   {
@@ -56,11 +65,16 @@ export const columns: ColumnDef<PaymentOperation>[] = [
     header: "Previous Payment Operation",
     cell: ({ row }) => {
       const prevPaymentOperation = row.getValue("prevPaymentOperation");
-      return prevPaymentOperation ? h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("prevPaymentOperation").paymentOperationType
-      ) : h("p", "-");
+      return prevPaymentOperation
+        ? h(
+            "div",
+            {
+              class:
+                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("prevPaymentOperation").paymentOperationType
+          )
+        : h("p", "-");
     },
   },
   {
@@ -76,11 +90,16 @@ export const columns: ColumnDef<PaymentOperation>[] = [
     header: "API Operation",
     cell: ({ row }) => {
       const apiOperation = row.getValue("apiOperation");
-      return apiOperation ? h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium" },
-        row.getValue("apiOperation")
-      ) : h("p", "-");
+      return apiOperation
+        ? h(
+            "div",
+            {
+              class:
+                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("apiOperation")
+          )
+        : h("p", "-");
     },
   },
   {
