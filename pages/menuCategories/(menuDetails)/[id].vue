@@ -50,6 +50,8 @@ const getMenuDetails = async () => {
     isLoading.value = true;
     loading.value = true;
     data.value = await getMenuById(menuId.value);
+    selectedDynamicPaymentMenus.value = data.value?.dynamicPaymentMenus || [];
+    selectedChildren.value = data.value?.children || [];
     form.setValues(data.value);
   } catch (err) {
     console.error("Error fetching menu:", err);
@@ -63,7 +65,6 @@ const getMenuDetails = async () => {
 const getPaymentIntegrationData = async () => {
   try {
     allPaymentIntegrations.value = await getPaymentIntegrations();
-    selectedDynamicPaymentMenus.value = data.value?.dynamicPaymentMenus || [];
   } catch (err) {
     console.error("Error fetching payment integrations:", err);
   }
@@ -72,7 +73,6 @@ const getPaymentIntegrationData = async () => {
 const getMenusData = async () => {
   try {
     allMenus.value = await getMenus();
-    selectedChildren.value = data.value?.children || [];
   } catch (err) {
     console.error("Error fetching menus:", err);
   }

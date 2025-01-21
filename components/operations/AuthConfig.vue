@@ -139,7 +139,14 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           >
             <UiLoading />
           </div>
-          <UiCard v-else-if="data && !isError" class="w-full p-6">
+          <div v-else-if="isError">
+            <ErrorMessage
+              :retry="refetch"
+              class="w-full"
+              title="Something went wrong."
+            />
+          </div>
+          <UiCard v-else class="w-full p-6">
             <form @submit="onSubmit">
               <div class="grid grid-cols-2 gap-6 w-full">
                 <FormField v-slot="{ componentField }" name="id">
@@ -587,19 +594,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               </div>
             </form>
           </UiCard>
-          <div v-else-if="data == null || data == undefined">
-            <UiNoResultFound
-              class="w-full"
-              title="Sorry, No auth config found."
-            />
-          </div>
-          <div v-else-if="isError">
-            <ErrorMessage
-              :retry="refetch"
-              class="w-full"
-              title="Something went wrong."
-            />
-          </div>
         </div>
       </UiSheetDescription>
     </UiSheetHeader>
