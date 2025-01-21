@@ -124,6 +124,7 @@ const deleteRequestInputHandler = async (id: string) => {
 
     // Update the local state by filtering out the deleted item
     requestInputs.value = requestInputs.value.filter((item) => item.id !== id);
+    emit("update:operation");
 
     toast({
       title: "Request Input Deleted",
@@ -188,19 +189,12 @@ watch(
 </script>
 
 <template>
-  <div class="w-full flex justify-end pb-2">
-    <UiButton
-      :disabled="loading"
-      size="sm"
-      type="button"
-      @click="addNewParameter"
-    >
-      <Icon name="material-symbols:add-2" class="mr-2 h-4 w-4"></Icon>
-      Add Parameter
-    </UiButton>
-  </div>
-
-  <UiAccordion type="single" collapsible defaultValue="newParameter">
+  <UiAccordion
+    type="single"
+    class="w-full"
+    collapsible
+    defaultValue="newParameter"
+  >
     <UiAccordionItem
       class="my-2 border-b-0 space-y-2 text-sm"
       v-if="newParameter"
@@ -530,392 +524,446 @@ watch(
       </UiAccordionContent>
     </UiAccordionItem>
 
-    <!-- Existing accordion items for requestInputs -->
-    <UiAccordionItem
-      class="my-2 border-b-0 space-y-2"
-      v-for="item in requestInputs"
-      :value="item.id"
-    >
-      <UiAccordionTrigger
-        class="text-sm font-semibold border px-4 py-4 rounded-lg"
+    <!-- Tabs for categorizing parameters -->
+    <UiTabs defaultValue="header" class="w-full">
+      <UiTabsList class="w-full flex justify-start py-0 gap-2 border-b">
+        <UiTabsTrigger
+          v-for="type in ['HEADER', 'BODY', 'QUERY', 'PATH', 'NONE']"
+          :key="type"
+          :value="type.toLowerCase()"
+          class="text-sm font-medium"
+        >
+          {{ type }}
+          <span class="ml-2 text-xs text-muted-foreground">
+            ({{
+              requestInputs.filter((input) => input.inputType === type).length
+            }})
+          </span>
+        </UiTabsTrigger>
+        <div class="w-full flex justify-end">
+          <UiButton
+            :disabled="loading"
+            size="sm"
+            type="button"
+            variant="outline"
+            class="border-primary text-primary"
+            @click="addNewParameter"
+          >
+            <Icon name="material-symbols:add-2" class="mr-2 h-4 w-4"></Icon>
+            Add Parameter
+          </UiButton>
+        </div>
+      </UiTabsList>
+
+      <!-- Tab content for each input type -->
+      <UiTabsContent
+        v-for="type in ['HEADER', 'BODY', 'QUERY', 'PATH', 'NONE']"
+        :key="type"
+        :value="type.toLowerCase()"
+        class="px-0"
       >
-        {{ item.inputName }}
-      </UiAccordionTrigger>
-      <UiAccordionContent class="pt-4 px-4 bg-muted rounded-lg">
-        <form @submit="onSubmit">
-          <div
-            class="grid xl:grid-cols-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-2 text-sm"
+        <UiAccordion type="single" collapsible>
+          <UiAccordionItem
+            v-for="item in requestInputs.filter(
+              (input) => input.inputType === type
+            )"
+            :key="item.id"
+            :value="item.id"
+            class="my-2 border rounded-lg"
           >
-            <FormField
-              :model-value="item.id"
-              v-slot="{ componentField }"
-              name="id"
-            >
-              <FormItem>
-                <FormLabel> ID </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    disabled
-                    placeholder="id"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.inputName"
-              v-slot="{ componentField }"
-              name="inputName"
-            >
-              <FormItem>
-                <FormLabel> Input Name </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="input name"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.inputType"
-              v-slot="{ componentField }"
-              name="inputType"
-            >
-              <FormItem>
-                <FormLabel> Input Type </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a input type" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem value="HEADER"> HEADER </UiSelectItem>
-                      <UiSelectItem value="BODY"> BODY </UiSelectItem>
-                      <UiSelectItem value="QUERY"> QUERY </UiSelectItem>
-                      <UiSelectItem value="PATH"> PATH </UiSelectItem>
-                      <UiSelectItem value="NONE"> NONE </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.dataType"
-              v-slot="{ componentField }"
-              name="dataType"
-            >
-              <FormItem>
-                <FormLabel> Data Type </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a data type" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem value="STRING"> STRING </UiSelectItem>
-                      <UiSelectItem value="INT"> INT </UiSelectItem>
-                      <UiSelectItem value="LONG"> LONG </UiSelectItem>
-                      <UiSelectItem value="DOUBLE"> DOUBLE </UiSelectItem>
-                      <UiSelectItem value="BOOLEAN"> BOOLEAN </UiSelectItem>
-                      <UiSelectItem value="DATETIME"> DATETIME </UiSelectItem>
-                      <UiSelectItem value="COLLECTION">
-                        COLLECTION
-                      </UiSelectItem>
-                      <UiSelectItem value="NONE"> NONE </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.testValue"
-              v-slot="{ componentField }"
-              name="testValue"
-            >
-              <FormItem>
-                <FormLabel> Test Value </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="test value"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.defaultValue"
-              v-slot="{ componentField }"
-              name="defaultValue"
-            >
-              <FormItem>
-                <FormLabel> Default Value </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="default value"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.maxLength"
-              v-slot="{ componentField }"
-              name="maxLength"
-            >
-              <FormItem>
-                <FormLabel> Max Length </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="number"
-                    placeholder="max length"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.minLength"
-              v-slot="{ componentField }"
-              name="minLength"
-            >
-              <FormItem>
-                <FormLabel> Min Length </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="number"
-                    placeholder="min length"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.minValue"
-              v-slot="{ componentField }"
-              name="minValue"
-            >
-              <FormItem>
-                <FormLabel> Min Value </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="min value"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.maxValue"
-              v-slot="{ componentField }"
-              name="maxValue"
-            >
-              <FormItem>
-                <FormLabel> Max Value </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="max value"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.validationPattern"
-              v-slot="{ componentField }"
-              name="validationPattern"
-            >
-              <FormItem>
-                <FormLabel> Validation Pattern </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="validation pattern"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.transformationRule"
-              v-slot="{ componentField }"
-              name="transformationRule"
-            >
-              <FormItem>
-                <FormLabel> Transformation Rule </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="transformation rule"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.isRequired"
-              v-slot="{ componentField }"
-              name="isRequired"
-            >
-              <FormItem>
-                <FormLabel> Is Required </FormLabel>
-                <FormControl>
-                  <UiSwitch
-                    :checked="item.isRequired"
-                    @update:checked="item.isRequired = !item.isRequired"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.isHidden"
-              v-slot="{ componentField }"
-              name="isHidden"
-            >
-              <FormItem>
-                <FormLabel> Is Hidden </FormLabel>
-                <FormControl>
-                  <UiSwitch
-                    :checked="item.isHidden"
-                    @update:checked="item.isHidden = !item.isHidden"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="item.isEncoded"
-              v-slot="{ componentField }"
-              name="isEncoded"
-            >
-              <FormItem>
-                <FormLabel> Is Encoded </FormLabel>
-                <FormControl>
-                  <UiSwitch
-                    :checked="item.isEncoded"
-                    @update:checked="item.isEncoded = !item.isEncoded"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-            <!-- <UiButton
-              :disabled="loading"
-              size="sm"
-              type="button"
-              variant="outline"
-              class="self-center"
-              @click="addValidation(item.id)"
-            >
-              Add Validation
-            </UiButton> -->
-          </div>
-          <div
-            class="col-span-full w-full flex justify-end gap-4 pt-4 border-t"
-          >
-            <UiSheet>
-              <UiSheetTrigger>
-                <UiButton variant="outline" type="button" size="sm">
-                  Manage Validation Rules
-                </UiButton>
-              </UiSheetTrigger>
-              <UiSheetContent
-                class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
-              >
-                <OperationsRequestInputsValidationRules
-                  :requestInput="item"
-                  @update:requestInput="handleValidationRulesUpdate"
-                />
-              </UiSheetContent>
-            </UiSheet>
-            <UiButton
-              :disabled="loading"
-              variant="outline"
-              type="button"
-              size="sm"
-              @click="$router.go(-1)"
-            >
-              Cancel
-            </UiButton>
-
-            <UiAlertDialog>
-              <UiAlertDialogTrigger asChild>
-                <UiButton
-                  :disabled="isDeleting"
-                  size="sm"
-                  type="button"
-                  variant="destructive"
+            <UiAccordionTrigger class="px-4 py-3">
+              <div class="flex items-center justify-between w-full">
+                <span class="font-medium text-sm">{{ item.inputName }}</span>
+                <span class="text-xs text-muted-foreground">
+                  {{ item.dataType }}
+                </span>
+              </div>
+            </UiAccordionTrigger>
+            <UiAccordionContent class="p-4 bg-muted/50">
+              <form @submit="onSubmit">
+                <div
+                  class="grid xl:grid-cols-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-2 text-sm"
                 >
-                  <Icon
-                    name="svg-spinners:8-dots-rotate"
-                    v-if="isDeleting"
-                    class="mr-2 h-4 w-4 animate-spin"
-                  ></Icon>
-
-                  Delete
-                </UiButton>
-              </UiAlertDialogTrigger>
-              <UiAlertDialogContent>
-                <UiAlertDialogHeader>
-                  <UiAlertDialogTitle
-                    >Are you absolutely sure?</UiAlertDialogTitle
+                  <FormField
+                    :model-value="item.id"
+                    v-slot="{ componentField }"
+                    name="id"
                   >
-                  <UiAlertDialogDescription>
-                    This action cannot be undone. This will permanently delete
-                    the request input and remove your data from our servers.
-                  </UiAlertDialogDescription>
-                </UiAlertDialogHeader>
-                <UiAlertDialogFooter>
-                  <UiAlertDialogCancel>Cancel</UiAlertDialogCancel>
-                  <UiAlertDialogAction
-                    @click="deleteRequestInputHandler(item.id)"
-                    >Continue</UiAlertDialogAction
+                    <FormItem>
+                      <FormLabel> ID </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          disabled
+                          placeholder="id"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="item.inputName"
+                    v-slot="{ componentField }"
+                    name="inputName"
                   >
-                </UiAlertDialogFooter>
-              </UiAlertDialogContent>
-            </UiAlertDialog>
+                    <FormItem>
+                      <FormLabel> Input Name </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="input name"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="item.inputType"
+                    v-slot="{ componentField }"
+                    name="inputType"
+                  >
+                    <FormItem>
+                      <FormLabel> Input Type </FormLabel>
+                      <UiSelect v-bind="componentField">
+                        <FormControl>
+                          <UiSelectTrigger>
+                            <UiSelectValue placeholder="Select a input type" />
+                          </UiSelectTrigger>
+                        </FormControl>
+                        <UiSelectContent>
+                          <UiSelectGroup>
+                            <UiSelectItem value="HEADER"> HEADER </UiSelectItem>
+                            <UiSelectItem value="BODY"> BODY </UiSelectItem>
+                            <UiSelectItem value="QUERY"> QUERY </UiSelectItem>
+                            <UiSelectItem value="PATH"> PATH </UiSelectItem>
+                            <UiSelectItem value="NONE"> NONE </UiSelectItem>
+                          </UiSelectGroup>
+                        </UiSelectContent>
+                      </UiSelect>
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="item.dataType"
+                    v-slot="{ componentField }"
+                    name="dataType"
+                  >
+                    <FormItem>
+                      <FormLabel> Data Type </FormLabel>
+                      <UiSelect v-bind="componentField">
+                        <FormControl>
+                          <UiSelectTrigger>
+                            <UiSelectValue placeholder="Select a data type" />
+                          </UiSelectTrigger>
+                        </FormControl>
+                        <UiSelectContent>
+                          <UiSelectGroup>
+                            <UiSelectItem value="STRING"> STRING </UiSelectItem>
+                            <UiSelectItem value="INT"> INT </UiSelectItem>
+                            <UiSelectItem value="LONG"> LONG </UiSelectItem>
+                            <UiSelectItem value="DOUBLE"> DOUBLE </UiSelectItem>
+                            <UiSelectItem value="BOOLEAN">
+                              BOOLEAN
+                            </UiSelectItem>
+                            <UiSelectItem value="DATETIME">
+                              DATETIME
+                            </UiSelectItem>
+                            <UiSelectItem value="COLLECTION">
+                              COLLECTION
+                            </UiSelectItem>
+                            <UiSelectItem value="NONE"> NONE </UiSelectItem>
+                          </UiSelectGroup>
+                        </UiSelectContent>
+                      </UiSelect>
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="item.testValue"
+                    v-slot="{ componentField }"
+                    name="testValue"
+                  >
+                    <FormItem>
+                      <FormLabel> Test Value </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="test value"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="item.defaultValue"
+                    v-slot="{ componentField }"
+                    name="defaultValue"
+                  >
+                    <FormItem>
+                      <FormLabel> Default Value </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="default value"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="item.maxLength"
+                    v-slot="{ componentField }"
+                    name="maxLength"
+                  >
+                    <FormItem>
+                      <FormLabel> Max Length </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="number"
+                          placeholder="max length"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="item.minLength"
+                    v-slot="{ componentField }"
+                    name="minLength"
+                  >
+                    <FormItem>
+                      <FormLabel> Min Length </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="number"
+                          placeholder="min length"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="item.minValue"
+                    v-slot="{ componentField }"
+                    name="minValue"
+                  >
+                    <FormItem>
+                      <FormLabel> Min Value </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="min value"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="item.maxValue"
+                    v-slot="{ componentField }"
+                    name="maxValue"
+                  >
+                    <FormItem>
+                      <FormLabel> Max Value </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="max value"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="item.validationPattern"
+                    v-slot="{ componentField }"
+                    name="validationPattern"
+                  >
+                    <FormItem>
+                      <FormLabel> Validation Pattern </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="validation pattern"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="item.transformationRule"
+                    v-slot="{ componentField }"
+                    name="transformationRule"
+                  >
+                    <FormItem>
+                      <FormLabel> Transformation Rule </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="transformation rule"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="item.isRequired"
+                    v-slot="{ componentField }"
+                    name="isRequired"
+                  >
+                    <FormItem>
+                      <FormLabel> Is Required </FormLabel>
+                      <FormControl>
+                        <UiSwitch
+                          :checked="item.isRequired"
+                          @update:checked="item.isRequired = !item.isRequired"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="item.isHidden"
+                    v-slot="{ componentField }"
+                    name="isHidden"
+                  >
+                    <FormItem>
+                      <FormLabel> Is Hidden </FormLabel>
+                      <FormControl>
+                        <UiSwitch
+                          :checked="item.isHidden"
+                          @update:checked="item.isHidden = !item.isHidden"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="item.isEncoded"
+                    v-slot="{ componentField }"
+                    name="isEncoded"
+                  >
+                    <FormItem>
+                      <FormLabel> Is Encoded </FormLabel>
+                      <FormControl>
+                        <UiSwitch
+                          :checked="item.isEncoded"
+                          @update:checked="item.isEncoded = !item.isEncoded"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
+                <div
+                  class="col-span-full w-full flex justify-end gap-4 pt-4 border-t"
+                >
+                  <UiSheet>
+                    <UiSheetTrigger>
+                      <UiButton variant="outline" type="button" size="sm">
+                        Manage Validation Rules
+                      </UiButton>
+                    </UiSheetTrigger>
+                    <UiSheetContent
+                      class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+                    >
+                      <OperationsRequestInputsValidationRules
+                        :requestInput="item"
+                        @update:requestInput="handleValidationRulesUpdate"
+                      />
+                    </UiSheetContent>
+                  </UiSheet>
+                  <UiButton
+                    :disabled="loading"
+                    variant="outline"
+                    type="button"
+                    size="sm"
+                    @click="$router.go(-1)"
+                  >
+                    Cancel
+                  </UiButton>
 
-            <UiButton :disabled="loading" size="sm" type="submit">
-              <Icon
-                name="svg-spinners:8-dots-rotate"
-                v-if="loading"
-                class="mr-2 h-4 w-4 animate-spin"
-              ></Icon>
+                  <UiAlertDialog>
+                    <UiAlertDialogTrigger asChild>
+                      <UiButton
+                        :disabled="isDeleting"
+                        size="sm"
+                        type="button"
+                        variant="destructive"
+                      >
+                        <Icon
+                          name="svg-spinners:8-dots-rotate"
+                          v-if="isDeleting"
+                          class="mr-2 h-4 w-4 animate-spin"
+                        ></Icon>
 
-              Update
-            </UiButton>
-          </div>
-        </form>
-      </UiAccordionContent>
-    </UiAccordionItem>
+                        Delete
+                      </UiButton>
+                    </UiAlertDialogTrigger>
+                    <UiAlertDialogContent>
+                      <UiAlertDialogHeader>
+                        <UiAlertDialogTitle
+                          >Are you absolutely sure?</UiAlertDialogTitle
+                        >
+                        <UiAlertDialogDescription>
+                          This action cannot be undone. This will permanently
+                          delete the request input and remove your data from our
+                          servers.
+                        </UiAlertDialogDescription>
+                      </UiAlertDialogHeader>
+                      <UiAlertDialogFooter>
+                        <UiAlertDialogCancel>Cancel</UiAlertDialogCancel>
+                        <UiAlertDialogAction
+                          @click="deleteRequestInputHandler(item.id)"
+                          >Continue</UiAlertDialogAction
+                        >
+                      </UiAlertDialogFooter>
+                    </UiAlertDialogContent>
+                  </UiAlertDialog>
 
-    <div
-      class="w-full flex justify-center items-center h-20"
-      v-if="requestInputs.length === 0 && !newParameter"
-    >
-      No request inputs
-    </div>
+                  <UiButton :disabled="loading" size="sm" type="submit">
+                    <Icon
+                      name="svg-spinners:8-dots-rotate"
+                      v-if="loading"
+                      class="mr-2 h-4 w-4 animate-spin"
+                    ></Icon>
+
+                    Update
+                  </UiButton>
+                </div>
+              </form>
+            </UiAccordionContent>
+          </UiAccordionItem>
+        </UiAccordion>
+
+        <!-- Empty state for each tab -->
+        <div
+          v-if="
+            !requestInputs.filter((input) => input.inputType === type).length
+          "
+          class="flex flex-col items-center justify-center py-8 text-muted-foreground"
+        >
+          <p>No {{ type.toLowerCase() }} parameters</p>
+          <UiButton
+            variant="outline"
+            size="sm"
+            class="mt-2"
+            type="button"
+            :disabled="loading"
+            @click="addNewParameter"
+          >
+            Add New {{ type.toLowerCase() }} parameter
+          </UiButton>
+        </div>
+      </UiTabsContent>
+    </UiTabs>
   </UiAccordion>
 </template>
