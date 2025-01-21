@@ -123,11 +123,11 @@ const refetch = async () => {
 </script>
 
 <template>
-  <div class="flex flex-col gap-6 items-cente">
+  <div class="flex flex-col gap-3 items-cente text-sm">
     <div
-      class="flex flex-col justify-center items-center gap-3 border p-5 bg-background rounded-xl"
+      class="flex flex-col justify-center items-center gap-3 border p-2 bg-background rounded-xl"
     >
-      <h1 class="md:text- items-center font-bold">
+      <h1 class="md:text-sm items-center font-bold">
         {{ data?.name }}
       </h1>
     </div>
@@ -146,7 +146,7 @@ const refetch = async () => {
               },
             })
           "
-          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-2xl"
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
         >
           Service Definition
         </UiTabsTrigger>
@@ -160,7 +160,7 @@ const refetch = async () => {
               },
             })
           "
-          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-2xl"
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
         >
           Operations
         </UiTabsTrigger>
@@ -176,7 +176,7 @@ const refetch = async () => {
           "
           :disabled="openItems != 'configureOperations'"
           :class="openItems == 'configureOperations' ? '' : 'hidden'"
-          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-2xl"
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
         >
           {{ operationName }}
         </UiTabsTrigger>
@@ -192,7 +192,7 @@ const refetch = async () => {
           "
           :disabled="openItems != 'newOperation'"
           :class="openItems == 'newOperation' ? '' : 'hidden'"
-          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-2xl"
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
         >
           New Operation
         </UiTabsTrigger>
@@ -563,7 +563,7 @@ const refetch = async () => {
 
       <UiTabsContent
         value="newOperation"
-        class="text-base bg-background py-6 rounded-lg"
+        class="text-base bg-background py-2 rounded-lg"
       >
         <OperationsNewOperation :integrationId="integrationId" />
       </UiTabsContent>

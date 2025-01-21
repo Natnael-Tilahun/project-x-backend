@@ -1,13 +1,20 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
-import { PaymentIntegrationType, Visibility, TransactionAmountType, PaymentOperationType, FormType, } from "@/global-types";
+import {
+  PaymentIntegrationType,
+  Visibility,
+  TransactionAmountType,
+  PaymentOperationType,
+  FormType,
+} from "@/global-types";
 
-
-
-const IntegrationTypeSchema = z.nativeEnum(PaymentIntegrationType)
-const TransactionAmountTypeSchema = z.nativeEnum(TransactionAmountType)
-const VisibilitySchema = z.nativeEnum(Visibility)
-const PaymentOperationTypeSchema = z.nativeEnum(PaymentOperationType).nullable().optional();
+const IntegrationTypeSchema = z.nativeEnum(PaymentIntegrationType);
+const TransactionAmountTypeSchema = z.nativeEnum(TransactionAmountType);
+const VisibilitySchema = z.nativeEnum(Visibility);
+const PaymentOperationTypeSchema = z
+  .nativeEnum(PaymentOperationType)
+  .nullable()
+  .optional();
 const FormTypeSchema = z.nativeEnum(FormType).nullable().optional();
 
 export const paymentIntegrationFormSchema = toTypedSchema(
@@ -36,8 +43,12 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     transactionAmountType: TransactionAmountTypeSchema,
     visiblity: VisibilitySchema,
     confirmRecipientIdentity: z.boolean().optional().nullable().default(false),
-    reEnquirePaymentDetailBeforePayment: z.boolean().optional().nullable().default(false),
-    isSingleFormPayment: z.boolean().optional().nullable().default(false),
+    reEnquirePaymentDetailBeforePayment: z
+      .boolean()
+      .optional()
+      .nullable()
+      .default(false),
+    singleFormPayment: z.boolean().optional().nullable().default(false),
     defaultPaymentReason: z.string().optional().nullable(),
     categoryMenus: z.array(z.any()).optional().nullable(),
     locals: z.array(z.any()).optional().nullable(),
