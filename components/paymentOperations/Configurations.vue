@@ -78,13 +78,13 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     const response = await updatePaymentOperation(operationId, formData);
     data.value = response;
     formId.value = response?.form?.id;
-    form.setValues({
-      ...response,
-      paymentIntegration: response.paymentIntegration?.id,
-      prevPaymentOperation: response.prevPaymentOperation?.id,
-      nextPaymentOperation: response.nextPaymentOperation?.id,
-      apiOperation: response.apiOperation?.id,
-    });
+    // form.setValues({
+    //   ...response,
+    //   paymentIntegration: response.paymentIntegration?.id,
+    //   prevPaymentOperation: response.prevPaymentOperation?.id,
+    //   nextPaymentOperation: response.nextPaymentOperation?.id,
+    //   apiOperation: response.apiOperation?.id,
+    // });
     openItems.value = "form";
     toast({
       title: "Payment Operation Updated",
@@ -623,7 +623,7 @@ watch(
                   class="mr-2 h-4 w-4 animate-spin"
                 ></Icon>
 
-                Updatee
+                Update
               </UiButton>
             </div>
           </div>

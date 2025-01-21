@@ -90,17 +90,17 @@ function splitPath(path: any) {
   return path.split("/").filter(Boolean);
 }
 
-const getApiAuthConfigsData = async () => {
-  try {
-    allAuthConfigs.value = await getAuthConfigs();
-  } catch (err) {
-    console.error("Error fetching api auth configs:", err);
-  }
-};
+// const getApiAuthConfigsData = async () => {
+//   try {
+//     allAuthConfigs.value = await getAuthConfigs();
+//   } catch (err) {
+//     console.error("Error fetching api auth configs:", err);
+//   }
+// };
 
-onMounted(async () => {
-  getApiAuthConfigsData();
-});
+// onMounted(async () => {
+//   getApiAuthConfigsData();
+// });
 </script>
 
 <template>
@@ -362,7 +362,17 @@ onMounted(async () => {
             >
               <FormItem>
                 <FormLabel> Auth Config </FormLabel>
-                <UiSelect v-bind="componentField">
+                <UiInput
+                  type="text"
+                  disabled
+                  placeholder="Enter auth config"
+                  v-bind="componentField"
+                />
+                <FormDescription class="text-xs text-primary">
+                  Please create the integration first and then update this auth
+                  config in the integration details page later
+                </FormDescription>
+                <!-- <UiSelect v-bind="componentField">
                   <FormControl>
                     <UiSelectTrigger>
                       <UiSelectValue
@@ -385,7 +395,7 @@ onMounted(async () => {
                       </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
-                </UiSelect>
+                </UiSelect> -->
               </FormItem>
             </FormField>
             <div class="col-span-full">

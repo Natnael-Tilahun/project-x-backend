@@ -508,7 +508,7 @@ watch(
               <FormItem>
                 <FormLabel> Interface Type </FormLabel>
                 <UiSelect v-bind="componentField">
-                  <FormControl>
+                  <FormControl disabled>
                     <UiSelectTrigger>
                       <UiSelectValue placeholder="Select a interface type" />
                     </UiSelectTrigger>
@@ -524,6 +524,9 @@ watch(
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
+                <FormDescription class="text-xs text-primary">
+                  Please create the field first and then update this later
+                </FormDescription>
               </FormItem>
             </FormField>
             <FormField
@@ -534,7 +537,7 @@ watch(
               <FormItem>
                 <FormLabel> Display </FormLabel>
                 <UiSelect v-bind="componentField">
-                  <FormControl>
+                  <FormControl disabled>
                     <UiSelectTrigger>
                       <UiSelectValue placeholder="Select a display" />
                     </UiSelectTrigger>
@@ -550,6 +553,9 @@ watch(
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
+                <FormDescription class="text-xs text-primary">
+                  Please create the field first and then update this later
+                </FormDescription>
               </FormItem>
             </FormField>
             <FormField
