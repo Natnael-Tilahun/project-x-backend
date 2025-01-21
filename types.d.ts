@@ -393,7 +393,7 @@ interface PaymentIntegration {
   visibility?: Visibility | null;
   confirmRecipientIdentity?: boolean | null;
   reEnquirePaymentDetailBeforePayment?: boolean | null;
-  isSingleFormPayment?: boolean | null;
+  singleFormPayment?: boolean | null;
   defaultPaymentReason?: string | null;
   categoryMenus?: Menu[] | null;
 }

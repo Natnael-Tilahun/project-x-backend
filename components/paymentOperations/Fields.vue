@@ -244,10 +244,12 @@ watch(
       v-if="newField"
       value="newField"
     >
-      <UiAccordionTrigger class="text-lg font-semibold border px-6 rounded-lg">
+      <UiAccordionTrigger
+        class="text-base font-semibold border px-4 py-2 rounded-lg"
+      >
         New Field
       </UiAccordionTrigger>
-      <UiAccordionContent class="pt-6 px-6 rounded-lg bg-muted">
+      <UiAccordionContent class="pt-4 px-4 rounded-lg bg-muted">
         <form @submit="createNewFieldHandler">
           <div
             class="grid xl:grid-cols-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-2"
@@ -658,13 +660,15 @@ watch(
       v-for="item in fields"
       :value="item.id"
     >
-      <UiAccordionTrigger class="text-lg font-semibold border px-6 rounded-lg">
+      <UiAccordionTrigger
+        class="text-base font-semibold border px-4 py-2 rounded-lg"
+      >
         {{ item.name }}
       </UiAccordionTrigger>
-      <UiAccordionContent class="pt-6 px-6 bg-muted rounded-lg">
+      <UiAccordionContent class="pt-4 px-4 bg-muted rounded-lg">
         <form @submit="onSubmit">
           <div
-            class="grid xl:grid-cols-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-4"
+            class="grid xl:grid-cols-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-2"
           >
             <FormField
               :model-value="item?.id"

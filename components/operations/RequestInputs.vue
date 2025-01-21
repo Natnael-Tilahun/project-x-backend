@@ -188,7 +188,7 @@ watch(
 </script>
 
 <template>
-  <div class="w-full flex justify-end">
+  <div class="w-full flex justify-end pb-2">
     <UiButton
       :disabled="loading"
       size="sm"
@@ -202,17 +202,19 @@ watch(
 
   <UiAccordion type="single" collapsible defaultValue="newParameter">
     <UiAccordionItem
-      class="my-2 border-b-0 space-y-2"
+      class="my-2 border-b-0 space-y-2 text-sm"
       v-if="newParameter"
       value="newParameter"
     >
-      <UiAccordionTrigger class="text-lg font-semibold border px-6 rounded-lg">
+      <UiAccordionTrigger
+        class="text-sm font-semibold border px-4 py-4 rounded-lg"
+      >
         New Parameter
       </UiAccordionTrigger>
-      <UiAccordionContent class="pt-6 px-6 rounded-lg bg-muted">
+      <UiAccordionContent class="pt-4 px-4 rounded-lg bg-muted">
         <form @submit="createNewParameter">
           <div
-            class="grid xl:grid-cols-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-2"
+            class="grid xl:grid-cols-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-2 text-sm"
           >
             <FormField
               :model-value="newParameter?.inputName"
@@ -527,19 +529,22 @@ watch(
         </form>
       </UiAccordionContent>
     </UiAccordionItem>
+
     <!-- Existing accordion items for requestInputs -->
     <UiAccordionItem
       class="my-2 border-b-0 space-y-2"
       v-for="item in requestInputs"
       :value="item.id"
     >
-      <UiAccordionTrigger class="text-lg font-semibold border px-6 rounded-lg">
+      <UiAccordionTrigger
+        class="text-sm font-semibold border px-4 py-4 rounded-lg"
+      >
         {{ item.inputName }}
       </UiAccordionTrigger>
-      <UiAccordionContent class="pt-6 px-6 bg-muted rounded-lg">
+      <UiAccordionContent class="pt-4 px-4 bg-muted rounded-lg">
         <form @submit="onSubmit">
           <div
-            class="grid xl:grid-cols-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-4"
+            class="grid xl:grid-cols-6 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pb-2 text-sm"
           >
             <FormField
               :model-value="item.id"
