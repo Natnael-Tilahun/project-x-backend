@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const openItems = ref("configuration");
+import { copyToClipboard } from "~/lib/utils";
 import { useForm } from "vee-validate";
 import { ref, watch, onMounted, computed } from "vue";
 import { toast } from "~/components/ui/toast";
@@ -29,6 +29,18 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import JSONTree from "@/components/JSONTree.vue";
+
+const openItems = ref("configuration");
+const jsonData = {
+  name: "John Doe",
+  age: 30,
+  skills: ["Vue.js", "Node.js", "MongoDB"],
+  address: {
+    city: "New York",
+    zip: 10001,
+  },
+};
 
 const route = useRoute();
 const { getOperationById, updateOperation, testOperation } = useOperations();
@@ -101,19 +113,6 @@ onMounted(() => {
 
 const refetch = async () => {
   await fetchData();
-};
-
-const copyToClipboard = (data: any) => {
-  // Convert object to formatted JSON string if it's an object
-  const textToCopy =
-    typeof data === "object" ? JSON.stringify(data, null, 2) : String(data);
-
-  navigator.clipboard.writeText(textToCopy);
-  tooltipText.value = "Copied to clipboard";
-  tooltipOpen.value = true;
-  toast({
-    title: "Copied to clipboard",
-  });
 };
 
 function isJSON(data) {
@@ -575,12 +574,17 @@ const testingOperation = async () => {
                   <pre
                     class="bg-muted rounded-lg p-4 text-sm overflow-x-auto h-full w-full flex justify-center"
                   >
-                    <code>{{ testResponse?.operationRequest ? formattedOperationRequest : 'No content' }}</code>
+                    <JSONTree v-if="testResponse?.operationRequest" :jsonData="formattedOperationRequest" /> 
+                    <div v-else>
+                      No content
+                    </div>
+                    <!-- <code>{{ testResponse?.operationRequest ? formattedOperationRequest : 'No content' }}</code> -->
                   </pre>
                 </div>
               </ResizablePanel>
               <ResizableHandle with-handle />
               <ResizablePanel :min-size="10" :default-size="25">
+                <!-- <JSONTree :jsonData="jsonData" /> -->
                 <div
                   class="h-full w-full flex flex-col gap-2 p-2 overflow-y-auto"
                 >
@@ -600,9 +604,13 @@ const testingOperation = async () => {
                   <pre
                     class="bg-muted rounded-lg p-4 text-sm overflow-x-auto h-full w-full flex"
                   >
-                    <div>
+                  <JSONTree v-if="testResponse?.operationResponse" :jsonData="formattedOperationResponse" />
+                  <div v-else>
+                      No content
+                    </div>
+                    <!-- <div>
                       {{ testResponse?.operationResponse ? formattedOperationResponse : 'No content' }}
-                     </div>
+                     </div> -->
                   </pre>
                 </div>
               </ResizablePanel>
@@ -627,7 +635,9 @@ const testingOperation = async () => {
                   <pre
                     class="bg-muted rounded-lg p-4 text-sm overflow-x-auto h-full w-full flex"
                   >
-                    <code>{{ formattedRawRequest || 'No content' }}</code>
+                  <JSONTree v-if="testResponse?.rawRequest" :jsonData="formattedRawRequest" />
+                  <div v-else> No content</div>
+                    <!-- <code>{{ formattedRawRequest || 'No content' }}</code> -->
                   </pre>
                 </div>
               </ResizablePanel>
@@ -652,7 +662,9 @@ const testingOperation = async () => {
                   <pre
                     class="bg-muted rounded-lg p-4 text-sm overflow-x-auto h-full w-full flex justify-cente"
                   >
-                    <code>{{ testResponse?.rawResponse ? formattedRawResponse : 'No content' }}</code>
+                  <JSONTree v-if="testResponse?.rawResponse" :jsonData="formattedRawResponse" />
+                  <div v-else> No content</div>
+                    <!-- <code>{{ testResponse?.rawResponse ? formattedRawResponse : 'No content' }}</code> -->
                   </pre>
                 </div>
               </ResizablePanel>
