@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const openItems = ref("configuration");
+import { copyToClipboard } from "~/lib/utils";
 import { useForm } from "vee-validate";
 import { ref, watch, onMounted, computed } from "vue";
 import { toast } from "~/components/ui/toast";
@@ -29,6 +29,18 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import JSONTree from "@/components/JSONTree.vue";
+
+const openItems = ref("configuration");
+const jsonData = {
+  name: "John Doe",
+  age: 30,
+  skills: ["Vue.js", "Node.js", "MongoDB"],
+  address: {
+    city: "New York",
+    zip: 10001,
+  },
+};
 
 const route = useRoute();
 const { getOperationById, updateOperation, testOperation } = useOperations();
@@ -103,16 +115,6 @@ const refetch = async () => {
   await fetchData();
 };
 
-const copyToClipboard = (data: any) => {
-  navigator.clipboard.writeText(data);
-  tooltipText.value = "Copied to clipboard";
-  tooltipOpen.value = true;
-  setTimeout(() => {
-    tooltipOpen.value = false;
-    tooltipText.value = "Copy to clipboard";
-  }, 2000); // Reset the tooltip text after 2 seconds
-};
-
 function isJSON(data) {
   try {
     JSON.parse(data); // Attempt to parse the data
@@ -162,6 +164,7 @@ async function formatContent(content) {
       const result = await parseStringPromise(content, {
         explicitArray: false,
       });
+      console.log(result);
       return result;
     } catch (err) {
       console.log("Invalid XML");
@@ -170,19 +173,67 @@ async function formatContent(content) {
   }
 }
 
-const parsedResponse = computed(() => {
-  if (!testResponse.value?.operationResponse) return null;
+const parseResponseData = (data: string) => {
+  if (!data) return null;
   try {
-    if (isJSON(testResponse.value.operationResponse)) {
-      return JSON.parse(testResponse.value.operationResponse);
+    if (isJSON(data)) {
+      return JSON.parse(data);
     } else {
-      return testResponse.value.operationResponse;
+      return data;
     }
   } catch (err) {
     console.error("Error parsing response:", err);
-    return testResponse.value.operationResponse;
+    return data;
   }
-});
+};
+
+const formattedRawRequest = ref(null);
+const formattedRawResponse = ref(null);
+const formattedOperationResponse = ref(null);
+const formattedOperationRequest = ref(null);
+watch(
+  () => testResponse.value,
+  async (newResponse) => {
+    console.log("newRequest", newResponse);
+    if (!newResponse) {
+      formattedRawRequest.value = null;
+      formattedRawResponse.value = null;
+      formattedOperationResponse.value = null;
+      formattedOperationRequest.value = null;
+      return;
+    }
+
+    try {
+      const formattedPayload = await formatContent(
+        newResponse.rawRequest.payload
+      );
+      formattedRawRequest.value = {
+        ...newResponse.rawRequest,
+        payload: formattedPayload,
+      };
+      const formattedDataResponse = await formatContent(
+        newResponse.rawResponse.data
+      );
+      formattedRawResponse.value = {
+        ...newResponse.rawResponse,
+        data: formattedDataResponse,
+      };
+      formattedOperationResponse.value = await formatContent(
+        newResponse.operationResponse
+      );
+      formattedOperationRequest.value = await formatContent(
+        newResponse.operationRequest
+      );
+    } catch (err) {
+      console.error("Error formatting raw request:", err);
+      formattedRawRequest.value = newResponse.rawRequest;
+      formattedRawResponse.value = newResponse.rawResponse;
+      formattedOperationResponse.value = newResponse.operationResponse;
+      formattedOperationRequest.value = newResponse.operationRequest;
+    }
+  },
+  { immediate: true }
+);
 
 const testingOperation = async () => {
   try {
@@ -471,12 +522,26 @@ const testingOperation = async () => {
           <DrawerContent class="p-4">
             <div class="flex items-center justify-between gap-2">
               <h1 class="text-lg font-bold">Api Operation Test Response</h1>
-              <UiButton
-                variant="outline"
-                size="sm"
-                @click="isShowResponse = false"
-                >Cancel</UiButton
-              >
+              <div class="flex items-center gap-2">
+                <UiButton
+                  size="sm"
+                  :disabled="loading"
+                  @click="testingOperation"
+                >
+                  <Icon
+                    name="svg-spinners:8-dots-rotate"
+                    v-if="loading"
+                    class="mr-2 h-4 w-4 animate-spin"
+                  ></Icon>
+                  Re-Test</UiButton
+                >
+                <UiButton
+                  variant="outline"
+                  size="sm"
+                  @click="isShowResponse = false"
+                  >Cancel</UiButton
+                >
+              </div>
             </div>
             <div v-if="isTestError">
               <UiErrorMessage
@@ -486,54 +551,121 @@ const testingOperation = async () => {
             </div>
             <ResizablePanelGroup
               v-else
-              class="min-h-[450px] w-full rounded-lg border mt-2 relative"
+              class="min-h-[60vh] max-h-[80vh] w-full rounded-lg border mt-2 relative"
               direction="horizontal"
             >
-              <ResizablePanel :default-size="25">
+              <ResizablePanel :min-size="10" :default-size="25">
                 <div
                   class="h-full w-full flex flex-col gap-2 p-2 overflow-y-auto"
                 >
-                  <h1 class="text-base font-semibold">Operation Request</h1>
-                  <div>
-                    <p>
-                      {{ testResponse?.operationRequest }}
-                    </p>
-                  </div>
-                  <UiSeparator />
-                </div>
-              </ResizablePanel>
-              <ResizableHandle with-handle />
-              <ResizablePanel :default-size="25">
-                <div
-                  class="h-full w-full flex flex-col gap-2 p-2 overflow-y-auto"
-                >
-                  <h1 class="text-base font-semibold">Operation Response</h1>
-                  <div class="h-full w-full">
-                    <pre
-                      class="bg-gray-100 rounded overflow-x-auto h-full text-sm p-2"
+                  <div class="flex items-center justify-between">
+                    <h1 class="text-base font-semibold">Operation Request</h1>
+                    <UiButton
+                      variant="ghost"
+                      size="sm"
+                      @click="copyToClipboard(testResponse?.operationRequest)"
                     >
-                      <div>{{ parsedResponse }}</div>
-                    </pre>
+                      <Icon
+                        name="material-symbols:content-copy"
+                        class="h-4 w-4"
+                      />
+                    </UiButton>
                   </div>
-                  <UiSeparator />
+                  <pre
+                    class="bg-muted rounded-lg p-4 text-sm overflow-x-auto h-full w-full flex justify-center"
+                  >
+                    <JSONTree v-if="testResponse?.operationRequest" :jsonData="formattedOperationRequest" /> 
+                    <div v-else>
+                      No content
+                    </div>
+                    <!-- <code>{{ testResponse?.operationRequest ? formattedOperationRequest : 'No content' }}</code> -->
+                  </pre>
                 </div>
               </ResizablePanel>
               <ResizableHandle with-handle />
-              <ResizablePanel :default-size="25">
+              <ResizablePanel :min-size="10" :default-size="25">
+                <!-- <JSONTree :jsonData="jsonData" /> -->
                 <div
                   class="h-full w-full flex flex-col gap-2 p-2 overflow-y-auto"
                 >
-                  <h1 class="text-base font-semibold">Raw Request</h1>
-                  <UiSeparator />
+                  <div class="flex items-center justify-between">
+                    <h1 class="text-base font-semibold">Operation Response</h1>
+                    <UiButton
+                      variant="ghost"
+                      size="sm"
+                      @click="copyToClipboard(testResponse?.operationResponse)"
+                    >
+                      <Icon
+                        name="material-symbols:content-copy"
+                        class="h-4 w-4"
+                      />
+                    </UiButton>
+                  </div>
+                  <pre
+                    class="bg-muted rounded-lg p-4 text-sm overflow-x-auto h-full w-full flex"
+                  >
+                  <JSONTree v-if="testResponse?.operationResponse" :jsonData="formattedOperationResponse" />
+                  <div v-else>
+                      No content
+                    </div>
+                    <!-- <div>
+                      {{ testResponse?.operationResponse ? formattedOperationResponse : 'No content' }}
+                     </div> -->
+                  </pre>
                 </div>
               </ResizablePanel>
               <ResizableHandle with-handle />
-              <ResizablePanel :default-size="25">
+              <ResizablePanel :min-size="10" :default-size="25">
                 <div
                   class="h-full w-full flex flex-col gap-2 p-2 overflow-y-auto"
                 >
-                  <h1 class="text-base font-semibold">Raw Response</h1>
-                  <UiSeparator />
+                  <div class="flex items-center justify-between">
+                    <h1 class="text-base font-semibold">Raw Request</h1>
+                    <UiButton
+                      variant="ghost"
+                      size="sm"
+                      @click="copyToClipboard(testResponse?.rawRequest)"
+                    >
+                      <Icon
+                        name="material-symbols:content-copy"
+                        class="h-4 w-4"
+                      />
+                    </UiButton>
+                  </div>
+                  <pre
+                    class="bg-muted rounded-lg p-4 text-sm overflow-x-auto h-full w-full flex"
+                  >
+                  <JSONTree v-if="testResponse?.rawRequest" :jsonData="formattedRawRequest" />
+                  <div v-else> No content</div>
+                    <!-- <code>{{ formattedRawRequest || 'No content' }}</code> -->
+                  </pre>
+                </div>
+              </ResizablePanel>
+              <ResizableHandle with-handle />
+              <ResizablePanel :min-size="10" :default-size="25">
+                <div
+                  class="h-full w-full flex flex-col gap-2 p-2 overflow-y-auto"
+                >
+                  <div class="flex items-center justify-between">
+                    <h1 class="text-base font-semibold">Raw Response</h1>
+                    <UiButton
+                      variant="ghost"
+                      size="sm"
+                      @click="copyToClipboard(testResponse?.rawResponse)"
+                    >
+                      <Icon
+                        name="material-symbols:content-copy"
+                        class="h-4 w-4"
+                      />
+                    </UiButton>
+                  </div>
+                  <pre
+                    class="bg-muted rounded-lg p-4 text-sm overflow-x-auto h-full w-full flex justify-cente"
+                  >
+                  <JSONTree v-if="testResponse?.rawResponse" :jsonData="formattedRawResponse" />
+                  <div v-else> No content</div>
+                    <!-- <code>{{ testResponse?.rawResponse ? formattedRawResponse : 'No content' }}</code> -->
+                  </pre>
                 </div>
               </ResizablePanel>
             </ResizablePanelGroup>

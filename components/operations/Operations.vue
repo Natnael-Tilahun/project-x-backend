@@ -55,7 +55,10 @@ onMounted(() => {
   <div v-if="isLoading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
-  <div v-else-if="data" class="py-5 flex flex-col space-y-10 mx-auto">
+  <div
+    v-else-if="data && !isError"
+    class="py-5 flex flex-col space-y-10 mx-auto"
+  >
     <UiButton
       @click="
         navigateTo({
