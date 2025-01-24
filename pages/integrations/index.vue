@@ -13,7 +13,7 @@ const router = useRouter(); // {{ edit_2 }}
 
 const fetchData = async () => {
   try {
-    data.value = await getIntegrations();
+    data.value = await getIntegrations(0, 100);
   } catch (error) {
     console.error("Error fetching integrations:", error);
     isError.value = true;

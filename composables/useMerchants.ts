@@ -1,5 +1,6 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
+import type { Merchant } from "~/types";
 
 export const useMerchants = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -8,10 +9,13 @@ export const useMerchants = () => {
 
   const store = useAuthStore();
 
-  const getMerchants: () => Promise<Merchant[]> = async () => {
+  const getMerchants: (
+    page?: number,
+    size?: number
+  ) => Promise<Merchant[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await useFetch<Merchant[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/merchants`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/merchants?page=${page}&size=${size}`,
         {
           method: "GET",
           headers: {
@@ -25,9 +29,12 @@ export const useMerchants = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -59,9 +66,12 @@ export const useMerchants = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -76,7 +86,10 @@ export const useMerchants = () => {
     }
   };
 
-  const createNeweMerchant: (customerId: string, merchantData: any) => Promise<Merchant> = async (customerId, merchantData) => {
+  const createNeweMerchant: (
+    customerId: string,
+    merchantData: any
+  ) => Promise<Merchant> = async (customerId, merchantData) => {
     try {
       const { data, pending, error, status } = await useFetch<Merchant>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/merchants/${customerId}`,
@@ -86,26 +99,33 @@ export const useMerchants = () => {
             Authorization: `Bearer ${store.accessToken}`,
           },
           body: JSON.stringify(merchantData),
-        },
+        }
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message || error.value?.data?.detail,
+          variant: "destructive",
+        });
 
-        console.log("Creating new merchant error: ", error.value?.data.detail)
+        console.log("Creating new merchant error: ", error.value?.data.detail);
 
         if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Creating new merchant error: ", error.value?.data?.fieldErrors[0].message)
-        }
-        else {
-          console.log("Creating new merchant errorrr: ", error.value?.data?.message)
+          console.log(
+            "Creating new merchant error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Creating new merchant errorrr: ",
+            error.value?.data?.message
+          );
         }
         throw new Error(error.value?.data.detail);
       }
@@ -121,7 +141,10 @@ export const useMerchants = () => {
     }
   };
 
-  const updateMerchant: (customerId: string, merchantData: any) => Promise<Merchant> = async (customerId, merchantData) => {
+  const updateMerchant: (
+    customerId: string,
+    merchantData: any
+  ) => Promise<Merchant> = async (customerId, merchantData) => {
     try {
       const { data, pending, error, status } = await useFetch<Merchant>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/merchants/${customerId}`,
@@ -131,24 +154,31 @@ export const useMerchants = () => {
             Authorization: `Bearer ${store.accessToken}`,
           },
           body: JSON.stringify(merchantData),
-        },
+        }
       );
 
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
 
         if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Updating merchant error: ", error.value?.data?.fieldErrors[0].message)
-        }
-        else {
-          console.log("Updating merchant errorrr: ", error.value?.data?.message)
+          console.log(
+            "Updating merchant error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Updating merchant errorrr: ",
+            error.value?.data?.message
+          );
         }
         throw new Error(error.value?.data);
       }
@@ -179,12 +209,15 @@ export const useMerchants = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        console.log("Deleting merchant error: ", error.value?.data?.message)
+        console.log("Deleting merchant error: ", error.value?.data?.message);
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -195,7 +228,6 @@ export const useMerchants = () => {
     }
   };
 
-
   return {
     isLoading,
     getMerchants,
@@ -203,6 +235,6 @@ export const useMerchants = () => {
     createNeweMerchant,
     deleteMerchant,
     updateMerchant,
-    isSubmitting
+    isSubmitting,
   };
 };

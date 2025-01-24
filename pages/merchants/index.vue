@@ -13,7 +13,7 @@ const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    data.value = await getMerchants(); // Call your API function to fetch roles
+    data.value = await getMerchants(0, 100); // Call your API function to fetch roles
   } catch (err: any) {
     console.error("Error fetching merchants:", err);
     isError.value = true;

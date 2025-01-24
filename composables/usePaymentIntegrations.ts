@@ -1,5 +1,6 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
+import type { PaymentIntegration } from "~/types";
 
 export const usePaymentIntegrations = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -8,14 +9,15 @@ export const usePaymentIntegrations = () => {
 
   const store = useAuthStore();
 
-  const getPaymentIntegrations: () => Promise<
-    PaymentIntegration[]
-  > = async () => {
+  const getPaymentIntegrations: (
+    page?: number,
+    size?: number
+  ) => Promise<PaymentIntegration[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await useFetch<
         PaymentIntegration[]
       >(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations?page=${page}&size=${size}`,
         {
           method: "GET",
           headers: {

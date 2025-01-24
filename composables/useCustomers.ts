@@ -1,20 +1,35 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
+import type { Customer } from "~/types";
 
 export const useCustomers = () => {
   const runtimeConfig = useRuntimeConfig();
   const isLoading = ref<boolean>(false);
   const store = useAuthStore();
+  const { pageNumber, pageSize } = usePagesInfoStore();
+  const pageNumbers = ref<number>(pageNumber);
+  const pageSizes = ref<number>(pageSize);
 
-  const getCustomers: () => Promise<Customer[]> = async () => {
+  const getCustomers: () => Promise<any> = async () => {
     try {
-      const { data, pending, error, status } = await useFetch<Customer[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/list`,
+      const { data, pending, error, status } = await useAsyncData<Customer[]>(
+        "",
+        () =>
+          $fetch(
+            `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/list`,
+            {
+              params: {
+                page: pageNumbers.value,
+                size: pageSizes.value,
+              },
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${store.accessToken}`,
+              },
+            }
+          ),
         {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
+          watch: [pageNumbers, pageSizes],
         }
       );
 
@@ -23,9 +38,12 @@ export const useCustomers = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -57,9 +75,12 @@ export const useCustomers = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -74,7 +95,9 @@ export const useCustomers = () => {
     }
   };
 
-  const getCoreCustomerByAccountNumber: (accountNumber: string) => Promise<Customer> = async (accountNumber) => {
+  const getCoreCustomerByAccountNumber: (
+    accountNumber: string
+  ) => Promise<Customer> = async (accountNumber) => {
     try {
       const { data, pending, error, status } = await useFetch<Customer>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/core/${accountNumber}`,
@@ -91,9 +114,12 @@ export const useCustomers = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -108,7 +134,9 @@ export const useCustomers = () => {
     }
   };
 
-  const searchCustomers: (keyword: string) => Promise<any> = async (keyword) => {
+  const searchCustomers: (keyword: string) => Promise<any> = async (
+    keyword
+  ) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/search?keyword=${keyword}`,
@@ -125,9 +153,12 @@ export const useCustomers = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -138,7 +169,9 @@ export const useCustomers = () => {
     }
   };
 
-  const activateCustomerById: (id: string) => Promise<Customer> = async (id) => {
+  const activateCustomerById: (id: string) => Promise<Customer> = async (
+    id
+  ) => {
     try {
       const { data, pending, error, status } = await useFetch<Customer>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/${id}/activate-customer`,
@@ -155,9 +188,12 @@ export const useCustomers = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -172,7 +208,9 @@ export const useCustomers = () => {
     }
   };
 
-  const deActivateCustomerById: (id: string) => Promise<Customer> = async (id) => {
+  const deActivateCustomerById: (id: string) => Promise<Customer> = async (
+    id
+  ) => {
     try {
       const { data, pending, error, status } = await useFetch<Customer>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/${id}/deactivate-customer`,
@@ -189,9 +227,12 @@ export const useCustomers = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -206,7 +247,9 @@ export const useCustomers = () => {
     }
   };
 
-  const linkCoreBankCustomer: (id: string) => Promise<Customer> = async (id) => {
+  const linkCoreBankCustomer: (id: string) => Promise<Customer> = async (
+    id
+  ) => {
     try {
       const { data, pending, error, status } = await useFetch<Customer>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/${id}/link-core-bank-customer`,
@@ -223,9 +266,12 @@ export const useCustomers = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -240,7 +286,9 @@ export const useCustomers = () => {
     }
   };
 
-  const createNeweCustomer: (customerData: any) => Promise<Customer> = async (customerData) => {
+  const createNeweCustomer: (customerData: any) => Promise<Customer> = async (
+    customerData
+  ) => {
     try {
       const { data, pending, error, status } = await useFetch<Customer>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/create`,
@@ -250,24 +298,31 @@ export const useCustomers = () => {
             Authorization: `Bearer ${store.accessToken}`,
           },
           body: JSON.stringify(customerData),
-        },
+        }
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
 
         if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Creating new customer error: ", error.value?.data?.fieldErrors[0].message)
-        }
-        else {
-          console.log("Creating new customer errorrr: ", error.value?.data?.message)
+          console.log(
+            "Creating new customer error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Creating new customer errorrr: ",
+            error.value?.data?.message
+          );
         }
         throw new Error(error.value?.data);
       }
@@ -298,12 +353,15 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        console.log("Deleting customer error: ", error.value?.data?.message)
+        console.log("Deleting customer error: ", error.value?.data?.message);
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -313,7 +371,6 @@ export const useCustomers = () => {
       throw err;
     }
   };
-
 
   return {
     isLoading,
