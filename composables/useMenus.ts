@@ -1,5 +1,6 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
+import type { Menu } from "~/types";
 
 export const useMenus = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -8,10 +9,13 @@ export const useMenus = () => {
 
   const store = useAuthStore();
 
-  const getMenus: () => Promise<Menu[]> = async () => {
+  const getMenus: (page?: number, size?: number) => Promise<Menu[]> = async (
+    page,
+    size
+  ) => {
     try {
       const { data, pending, error, status } = await useFetch<Menu[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus?page=${page}&size=${size}`,
         {
           method: "GET",
           headers: {
@@ -25,9 +29,12 @@ export const useMenus = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -59,9 +66,12 @@ export const useMenus = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -79,33 +89,40 @@ export const useMenus = () => {
   const createNewMenu: (menuData: any) => Promise<Menu> = async (menuData) => {
     try {
       const { data, pending, error, status } = await useFetch<Menu>(
-          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus`,
         {
           method: "POST",
           headers: {
             Authorization: `Bearer ${store.accessToken}`,
           },
           body: JSON.stringify(menuData),
-        },
+        }
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message || error.value?.data?.detail,
+          variant: "destructive",
+        });
 
-        console.log("Creating new menu error: ", error.value?.data.detail)
+        console.log("Creating new menu error: ", error.value?.data.detail);
 
         if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Creating new menu error: ", error.value?.data?.fieldErrors[0].message)
-        }
-        else {
-          console.log("Creating new menu errorrr: ", error.value?.data?.message)
+          console.log(
+            "Creating new menu error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Creating new menu errorrr: ",
+            error.value?.data?.message
+          );
         }
         throw new Error(error.value?.data.detail);
       }
@@ -121,7 +138,10 @@ export const useMenus = () => {
     }
   };
 
-  const updateMenu: (menuId: string, menuData: any) => Promise<Menu> = async (menuId, menuData) => {
+  const updateMenu: (menuId: string, menuData: any) => Promise<Menu> = async (
+    menuId,
+    menuData
+  ) => {
     try {
       const { data, pending, error, status } = await useFetch<Menu>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus/${menuId}`,
@@ -131,24 +151,28 @@ export const useMenus = () => {
             Authorization: `Bearer ${store.accessToken}`,
           },
           body: JSON.stringify(menuData),
-        },
+        }
       );
 
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
 
         if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Updating menu error: ", error.value?.data?.fieldErrors[0].message)
-        }
-        else {
-          console.log("Updating menu errorrr: ", error.value?.data?.message)
+          console.log(
+            "Updating menu error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log("Updating menu errorrr: ", error.value?.data?.message);
         }
         throw new Error(error.value?.data);
       }
@@ -167,7 +191,7 @@ export const useMenus = () => {
   const deleteMenu: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -179,12 +203,15 @@ export const useMenus = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        console.log("Deleting menu error: ", error.value?.data?.message)
+        console.log("Deleting menu error: ", error.value?.data?.message);
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -195,7 +222,6 @@ export const useMenus = () => {
     }
   };
 
-
   return {
     isLoading,
     getMenus,
@@ -203,6 +229,6 @@ export const useMenus = () => {
     createNewMenu,
     deleteMenu,
     updateMenu,
-    isSubmitting
+    isSubmitting,
   };
 };

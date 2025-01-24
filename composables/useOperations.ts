@@ -8,10 +8,13 @@ export const useOperations = () => {
 
   const store = useAuthStore();
 
-  const getOperations: () => Promise<ApiOperation[]> = async () => {
+  const getOperations: (
+    page?: number,
+    size?: number
+  ) => Promise<ApiOperation[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await useFetch<ApiOperation[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-operations`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-operations?page=${page}&size=${size}`,
         {
           method: "GET",
           headers: {

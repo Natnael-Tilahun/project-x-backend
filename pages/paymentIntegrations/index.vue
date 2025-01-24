@@ -13,7 +13,7 @@ const router = useRouter(); // {{ edit_2 }}
 
 const fetchData = async () => {
   try {
-    data.value = await getPaymentIntegrations();
+    data.value = await getPaymentIntegrations(0, 100);
   } catch (error) {
     console.error("Error fetching payment integrations:", error);
     isError.value = true;

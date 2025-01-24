@@ -1,5 +1,6 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
+import type { PaymentOperation } from "~/types";
 
 export const usePaymentOperations = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -8,10 +9,15 @@ export const usePaymentOperations = () => {
 
   const store = useAuthStore();
 
-  const getPaymentOperations: () => Promise<PaymentOperation[]> = async () => {
+  const getPaymentOperations: (
+    page?: number,
+    size?: number
+  ) => Promise<PaymentOperation[]> = async (page, size) => {
     try {
-      const { data, pending, error, status } = await useFetch<PaymentOperation[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-operations`,
+      const { data, pending, error, status } = await useFetch<
+        PaymentOperation[]
+      >(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-operations?page=${page}&size=${size}`,
         {
           method: "GET",
           headers: {
@@ -25,9 +31,12 @@ export const usePaymentOperations = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -42,7 +51,9 @@ export const usePaymentOperations = () => {
     }
   };
 
-  const getPaymentOperationById: (id: string) => Promise<PaymentOperation> = async (id) => {
+  const getPaymentOperationById: (
+    id: string
+  ) => Promise<PaymentOperation> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<PaymentOperation>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-operations/${id}`,
@@ -59,9 +70,12 @@ export const usePaymentOperations = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -76,7 +90,9 @@ export const usePaymentOperations = () => {
     }
   };
 
-  const createNewPaymentOperation: (operationData: any) => Promise<PaymentOperation> = async (operationData) => {
+  const createNewPaymentOperation: (
+    operationData: any
+  ) => Promise<PaymentOperation> = async (operationData) => {
     try {
       const { data, pending, error, status } = await useFetch<PaymentOperation>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-operations`,
@@ -86,26 +102,33 @@ export const usePaymentOperations = () => {
             Authorization: `Bearer ${store.accessToken}`,
           },
           body: JSON.stringify(operationData),
-        },
+        }
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message || error.value?.data?.detail,
+          variant: "destructive",
+        });
 
-        console.log("Creating new payment operation error: ", error.value?.data.detail)
+        console.log(
+          "Creating new payment operation error: ",
+          error.value?.data.detail
+        );
 
         if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Creating new payment operation error: ", error.value?.data?.fieldErrors[0].message)
-        }
-        else {
-          console.log("Creating new payment operation errorrr: ", error.value)
+          console.log(
+            "Creating new payment operation error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log("Creating new payment operation errorrr: ", error.value);
         }
         throw new Error(error.value?.data.detail);
       }
@@ -121,7 +144,10 @@ export const usePaymentOperations = () => {
     }
   };
 
-  const updatePaymentOperation: (operationId: string, operationData: any) => Promise<PaymentOperation> = async (operationId, operationData) => {
+  const updatePaymentOperation: (
+    operationId: string,
+    operationData: any
+  ) => Promise<PaymentOperation> = async (operationId, operationData) => {
     try {
       const { data, pending, error, status } = await useFetch<PaymentOperation>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-operations/${operationId}`,
@@ -131,24 +157,28 @@ export const usePaymentOperations = () => {
             Authorization: `Bearer ${store.accessToken}`,
           },
           body: JSON.stringify(operationData),
-        },
+        }
       );
 
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
 
         if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Updating payment operation error: ", error.value?.data?.fieldErrors[0].message)
-        }
-        else {
-          console.log("Updating payment operation errorrr: ", error.value)
+          console.log(
+            "Updating payment operation error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log("Updating payment operation errorrr: ", error.value);
         }
         throw new Error(error.value?.data?.detail);
       }
@@ -159,7 +189,7 @@ export const usePaymentOperations = () => {
 
       return data.value;
     } catch (err) {
-      console.log("Updating payment operation error: ", err)
+      console.log("Updating payment operation error: ", err);
       // Throw the error to be caught and handled by the caller
       throw err;
     }
@@ -182,9 +212,12 @@ export const usePaymentOperations = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -195,7 +228,6 @@ export const usePaymentOperations = () => {
     }
   };
 
-
   return {
     isLoading,
     getPaymentOperations,
@@ -203,6 +235,6 @@ export const usePaymentOperations = () => {
     createNewPaymentOperation,
     deletePaymentOperation,
     updatePaymentOperation,
-    isSubmitting
+    isSubmitting,
   };
 };

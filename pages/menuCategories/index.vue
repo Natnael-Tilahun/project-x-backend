@@ -16,7 +16,7 @@ const getMenuData = async () => {
     isLoading.value = true;
     loading.value = true;
     isError.value = false;
-    data.value = await getMenus();
+    data.value = await getMenus(0, 100);
   } catch (error) {
     console.error("Error fetching menu categories:", error);
     isError.value = true;

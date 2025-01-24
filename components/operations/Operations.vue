@@ -4,12 +4,11 @@ import { ref } from "vue";
 import { columns } from "~/components/operations/columns";
 
 const route = useRoute();
-const { getOperations } = useOperations();
+const { getIntegrationOperations } = useIntegrations();
 
 const isLoading = ref(false);
-const isDeleting = ref(false);
 const isError = ref(false);
-const operationId = ref<string>("");
+const integrationId = ref<string>("");
 const data = ref<ApiOperation[]>([]);
 const locals = ref<Local[]>([
   {
@@ -30,14 +29,15 @@ const props = defineProps<{
   apiIntegrationIdProps?: string;
 }>();
 
+if (props?.apiIntegrationIdProps) {
+  integrationId.value = props?.apiIntegrationIdProps;
+}
+
 const getApiOperationsData = async () => {
   try {
     isLoading.value = true;
-    const apiOperations = await getOperations();
-    data.value = apiOperations.filter(
-      (operation) =>
-        operation?.apiIntegration?.id === props?.apiIntegrationIdProps
-    );
+    const apiOperations = await getIntegrationOperations(integrationId.value);
+    data.value = apiOperations;
   } catch (err) {
     console.error("Error fetching api operations:", err);
     isError.value = true;
