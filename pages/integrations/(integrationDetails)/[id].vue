@@ -516,7 +516,10 @@ const refetch = async () => {
                 <UiSheetContent
                   class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
                 >
-                  <AuthConfig :apiIntegrationProps="data" />
+                  <AuthConfig
+                    :apiIntegrationProps="data"
+                    @refresh="getIntegrationData"
+                  />
                 </UiSheetContent>
               </UiSheet>
               <div class="col-span-full w-full py-4 flex justify-between">

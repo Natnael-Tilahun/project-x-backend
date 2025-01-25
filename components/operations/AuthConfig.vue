@@ -74,6 +74,9 @@ const refetch = async () => {
   await getApiOperationsData();
 };
 
+// Add emits definition
+const emit = defineEmits(["refresh"]);
+
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     submitting.value = true;
@@ -90,9 +93,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     const updatedApiIntegration = await updateIntegration(
       apiIntegration.value.id,
       updatedValues
-    ); // Call your API function to fetch profile
+    );
     form.setValues(updatedApiIntegration.authConfig);
-    console.log("updatedValues: ", updatedApiIntegration);
 
     //   data.value = await updateAuthConfig(values.id, updatedValues); // Call your API function to fetch profile
     //   navigateTo(`/authConfigurations/authConfigDetails/${data.value.id}`);
@@ -100,6 +102,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       title: "Auth Config Updated",
       description: "Auth Config updated successfully",
     });
+
+    // Emit refresh event after successful update
+    emit("refresh");
   } catch (err: any) {
     console.error("Error updating auth config:", err);
     isError.value = true;
