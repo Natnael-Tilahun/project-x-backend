@@ -4,7 +4,7 @@ import { DataType, GenerationType, DateStepUnit } from "@/global-types";
 
 const DataTypeSchema = z.nativeEnum(DataType).optional().nullable();
 const DateStepUnitSchema = z.nativeEnum(DateStepUnit).optional().nullable();
-const GenerationTypeSchema = z.nativeEnum(GenerationType).optional().nullable();
+const GenerationTypeSchema = z.nativeEnum(GenerationType).nullable();
 
 export const formFieldsAutoGenerateConfigFormSchema = toTypedSchema(
   z.object({

@@ -259,309 +259,403 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField v-slot="{ componentField }" name="minValue">
-                  <FormItem>
-                    <FormLabel> Min Value </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="number"
-                        placeholder="Enter min value"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="maxValue">
-                  <FormItem>
-                    <FormLabel> Max Value </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="number"
-                        placeholder="Enter max value"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="step">
-                  <FormItem>
-                    <FormLabel> Step </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="number"
-                        placeholder="Enter min step"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField
-                  :model-value="data?.padding"
-                  v-slot="{ value, handleChange }"
-                  name="padding"
+                <div
+                  class="w-full border p-4 rounded-lg col-span-full grid grid-cols-2 gap-6"
+                  v-if="form.values.generationType === 'SEQUENTIAL'"
                 >
-                  <FormItem>
-                    <FormLabel> Padding </FormLabel>
-                    <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="paddingLength">
-                  <FormItem>
-                    <FormLabel> Padding Length </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="number"
-                        placeholder="Enter padding length "
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField
-                  v-model="form.values.reservedValues"
-                  v-slot="{ field }"
-                  name="reservedValues"
-                >
-                  <FormItem>
-                    <FormLabel>Reserved Values</FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter comma separated reserved values"
-                        :value="
-                          Array.isArray(field.value)
-                            ? field.value.join(',')
-                            : ''
-                        "
-                        @input="
-                          (e) => {
-                            const inputValue = e.target.value;
-                            const values = inputValue
-                              .split(',')
-                              .map((v) => v.trim())
-                              .filter(Boolean)
-                              .map((v) => Number(v))
-                              .filter((v) => !isNaN(v)); // Filter out invalid numbers
-                            form.setFieldValue('reservedValues', values);
-                          }
-                        "
-                      />
-                    </FormControl>
-                    <FormMessage />
-                    <FormDescription>
-                      Enter comma separated numbers (e.g., 1,2,3)
-                    </FormDescription>
-                  </FormItem>
-                </FormField>
-                <FormField
-                  v-model="form.values.excludePatterns"
-                  v-slot="{ field }"
-                  name="excludePatterns"
-                >
-                  <FormItem>
-                    <FormLabel>Exclude Patterns</FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter comma separated patterns"
-                        :value="
-                          Array.isArray(field.value)
-                            ? field.value.join(',')
-                            : ''
-                        "
-                        @input="
-                          (e) => {
-                            const inputValue = e.target.value;
-                            const patterns = inputValue
-                              .split(',')
-                              .map((v) => v.trim())
-                              .filter(Boolean);
-                            form.setFieldValue('excludePatterns', patterns);
-                          }
-                        "
-                      />
-                    </FormControl>
-                    <FormMessage />
-                    <FormDescription>
-                      Enter comma separated patterns (e.g.,
-                      pattern1,pattern2,pattern3)
-                    </FormDescription>
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="pattern">
-                  <FormItem>
-                    <FormLabel> pattern </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter pattern"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="allowedChars">
-                  <FormItem>
-                    <FormLabel> Allowed Chars </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter allowed chars"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="uuidVersion">
-                  <FormItem>
-                    <FormLabel> Uuid Version </FormLabel>
-                    <FormControl>
+                  <h1 class="col-span-full font-bold">Sequential</h1>
+                  <FormField v-slot="{ componentField }" name="minValue">
+                    <FormItem>
+                      <FormLabel> Min Value </FormLabel>
                       <FormControl>
                         <UiInput
                           type="number"
-                          placeholder="Enter uuid version"
+                          placeholder="Enter min value"
                           v-bind="componentField"
                         />
                       </FormControl>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="uuidNamespace">
-                  <FormItem>
-                    <FormLabel> Uuid Namespace </FormLabel>
-                    <FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="maxValue">
+                    <FormItem>
+                      <FormLabel> Max Value </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="number"
+                          placeholder="Enter max value"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="step">
+                    <FormItem>
+                      <FormLabel> Step </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="number"
+                          placeholder="Enter min step"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.padding"
+                    v-slot="{ value, handleChange }"
+                    name="padding"
+                  >
+                    <FormItem>
+                      <FormLabel> Padding </FormLabel>
+                      <FormControl>
+                        <UiSwitch
+                          :checked="value"
+                          @update:checked="handleChange"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="paddingLength">
+                    <FormItem>
+                      <FormLabel> Padding Length </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="number"
+                          placeholder="Enter padding length "
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    v-model="form.values.reservedValues"
+                    v-slot="{ field }"
+                    name="reservedValues"
+                  >
+                    <FormItem>
+                      <FormLabel>Reserved Values</FormLabel>
                       <FormControl>
                         <UiInput
                           type="text"
-                          placeholder="Enter uuid namespace"
+                          placeholder="Enter comma separated reserved values"
+                          :value="
+                            Array.isArray(field.value)
+                              ? field.value.join(',')
+                              : ''
+                          "
+                          @input="
+                            (e) => {
+                              const inputValue = e.target.value;
+                              const values = inputValue
+                                .split(',')
+                                .map((v) => v.trim())
+                                .filter(Boolean)
+                                .map((v) => Number(v))
+                                .filter((v) => !isNaN(v)); // Filter out invalid numbers
+                              form.setFieldValue('reservedValues', values);
+                            }
+                          "
+                        />
+                      </FormControl>
+                      <FormMessage />
+                      <FormDescription>
+                        Enter comma separated numbers (e.g., 1,2,3)
+                      </FormDescription>
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ field }" name="excludePatterns">
+                    <FormItem>
+                      <FormLabel>Exclude Patterns</FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter comma separated patterns"
+                          :value="
+                            Array.isArray(field.value)
+                              ? field.value.join(',')
+                              : ''
+                          "
+                          @input="
+                            (e) => {
+                              const inputValue = e.target.value;
+                              const patterns = inputValue
+                                .split(',')
+                                .map((v) => v.trim())
+                                .filter(Boolean);
+                              form.setFieldValue('excludePatterns', patterns);
+                            }
+                          "
+                        />
+                      </FormControl>
+                      <FormMessage />
+                      <FormDescription>
+                        Enter comma separated patterns (e.g.,
+                        pattern1,pattern2,pattern3)
+                      </FormDescription>
+                    </FormItem>
+                  </FormField>
+                </div>
+                <div
+                  class="w-full border p-4 rounded-lg col-span-full grid grid-cols-2 gap-6"
+                  v-if="form.values.generationType === 'PATTERN_BASED'"
+                >
+                  <h1 class="col-span-full font-bold">Pattern Based</h1>
+                  <FormField v-slot="{ componentField }" name="pattern">
+                    <FormItem>
+                      <FormLabel> pattern </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter pattern"
                           v-bind="componentField"
                         />
                       </FormControl>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="startDate">
-                  <FormItem>
-                    <FormLabel> Start Date </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter start date"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="startDateTime">
-                  <FormItem>
-                    <FormLabel> Start Date Time </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter start date time"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="dateFormat">
-                  <FormItem>
-                    <FormLabel> Date Format </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter date format"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="dateTimeFormat">
-                  <FormItem>
-                    <FormLabel> Date Time Format </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter date time format"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="timezone">
-                  <FormItem>
-                    <FormLabel> Timezone </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter timezone"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="dateStep">
-                  <FormItem>
-                    <FormLabel> Date Step </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="number"
-                        placeholder="Enter date step"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField
-                  :model-value="data?.dateStepUnit"
-                  v-slot="{ componentField }"
-                  name="dateStepUnit"
-                >
-                  <FormItem>
-                    <FormLabel> Date Step Unit </FormLabel>
-                    <UiSelect v-bind="componentField">
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="allowedChars">
+                    <FormItem>
+                      <FormLabel> Allowed Chars </FormLabel>
                       <FormControl>
-                        <UiSelectTrigger>
-                          <UiSelectValue
-                            placeholder="Select an date step unit"
-                          />
-                        </UiSelectTrigger>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter allowed chars"
+                          v-bind="componentField"
+                        />
                       </FormControl>
-                      <UiSelectContent>
-                        <UiSelectGroup>
-                          <UiSelectItem
-                            v-for="item in Object.values(DateStepUnit)"
-                            :key="item"
-                            :value="item"
-                          >
-                            {{ item }}
-                          </UiSelectItem>
-                        </UiSelectGroup>
-                      </UiSelectContent>
-                    </UiSelect>
-                  </FormItem>
-                </FormField>
-                <FormField
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
+                <div
+                  class="w-full border p-4 rounded-lg col-span-full grid grid-cols-2 gap-6"
+                  v-if="form.values.generationType === 'UUID'"
+                >
+                  <h1 class="col-span-full font-bold">UUID</h1>
+                  <FormField v-slot="{ componentField }" name="uuidVersion">
+                    <FormItem>
+                      <FormLabel> Uuid Version </FormLabel>
+                      <FormControl>
+                        <FormControl>
+                          <UiInput
+                            type="number"
+                            placeholder="Enter uuid version"
+                            v-bind="componentField"
+                          />
+                        </FormControl>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="uuidNamespace">
+                    <FormItem>
+                      <FormLabel> Uuid Namespace </FormLabel>
+                      <FormControl>
+                        <FormControl>
+                          <UiInput
+                            type="text"
+                            placeholder="Enter uuid namespace"
+                            v-bind="componentField"
+                          />
+                        </FormControl>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
+                <div
+                  class="w-full border p-4 rounded-lg col-span-full grid grid-cols-2 gap-6"
+                  v-if="form.values.generationType === 'DATE_TIME'"
+                >
+                  <h1 class="col-span-full font-bold">Date</h1>
+                  <FormField v-slot="{ componentField }" name="startDate">
+                    <FormItem>
+                      <FormLabel> Start Date </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter start date"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="startDateTime">
+                    <FormItem>
+                      <FormLabel> Start Date Time </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter start date time"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="dateFormat">
+                    <FormItem>
+                      <FormLabel> Date Format </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter date format"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="dateTimeFormat">
+                    <FormItem>
+                      <FormLabel> Date Time Format </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter date time format"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="timezone">
+                    <FormItem>
+                      <FormLabel> Timezone </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter timezone"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="dateStep">
+                    <FormItem>
+                      <FormLabel> Date Step </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="number"
+                          placeholder="Enter date step"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.dateStepUnit"
+                    v-slot="{ componentField }"
+                    name="dateStepUnit"
+                  >
+                    <FormItem>
+                      <FormLabel> Date Step Unit </FormLabel>
+                      <UiSelect v-bind="componentField">
+                        <FormControl>
+                          <UiSelectTrigger>
+                            <UiSelectValue
+                              placeholder="Select an date step unit"
+                            />
+                          </UiSelectTrigger>
+                        </FormControl>
+                        <UiSelectContent>
+                          <UiSelectGroup>
+                            <UiSelectItem
+                              v-for="item in Object.values(DateStepUnit)"
+                              :key="item"
+                              :value="item"
+                            >
+                              {{ item }}
+                            </UiSelectItem>
+                          </UiSelectGroup>
+                        </UiSelectContent>
+                      </UiSelect>
+                    </FormItem>
+                  </FormField>
+                </div>
+                <div
+                  class="w-full border p-4 rounded-lg col-span-full grid grid-cols-2 gap-6"
+                  v-if="form.values.generationType === 'DATE'"
+                >
+                  <h1 class="col-span-full font-bold">Date</h1>
+                  <FormField v-slot="{ componentField }" name="startDate">
+                    <FormItem>
+                      <FormLabel> Start Date </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter start date"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="dateFormat">
+                    <FormItem>
+                      <FormLabel> Date Format </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter date format"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="dateStep">
+                    <FormItem>
+                      <FormLabel> Date Step </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="number"
+                          placeholder="Enter date step"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.dateStepUnit"
+                    v-slot="{ componentField }"
+                    name="dateStepUnit"
+                  >
+                    <FormItem>
+                      <FormLabel> Date Step Unit </FormLabel>
+                      <UiSelect v-bind="componentField">
+                        <FormControl>
+                          <UiSelectTrigger>
+                            <UiSelectValue
+                              placeholder="Select an date step unit"
+                            />
+                          </UiSelectTrigger>
+                        </FormControl>
+                        <UiSelectContent>
+                          <UiSelectGroup>
+                            <UiSelectItem
+                              v-for="item in Object.values(DateStepUnit)"
+                              :key="item"
+                              :value="item"
+                            >
+                              {{ item }}
+                            </UiSelectItem>
+                          </UiSelectGroup>
+                        </UiSelectContent>
+                      </UiSelect>
+                    </FormItem>
+                  </FormField>
+                </div>
+                <!-- <FormField
                   :model-value="data?.unique"
                   v-slot="{ value, handleChange }"
                   name="unique"
@@ -747,7 +841,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                     </FormControl>
                     <FormMessage />
                   </FormItem>
-                </FormField>
+                </FormField> -->
                 <div class="col-span-full w-full py-4 flex justify-between">
                   <UiButton
                     :disabled="submitting"
