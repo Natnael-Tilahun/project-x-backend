@@ -54,6 +54,8 @@ const props = defineProps<{
   operationIdProps?: string;
 }>();
 
+const emit = defineEmits(["refresh"]);
+
 operationId.value =
   props?.operationIdProps || (route.query.operationId as string) || "";
 
@@ -171,7 +173,8 @@ const handleDeleteForm = async () => {
       description: "Form deleted successfully",
     });
     formForm.resetForm();
-    window.location.reload();
+    emit("refresh");
+    // window.location.reload();
   } catch (err: any) {
     console.error("Error deleting form:", err);
     toast({

@@ -14,6 +14,7 @@ import {
 import { BodyType, HttpMethod } from "@/global-types";
 const openItems = ref("info");
 const route = useRoute();
+const router = useRouter();
 const { getOperationById, updateOperation, createNewOperation, isLoading } =
   useOperations();
 
@@ -67,6 +68,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     data.value = await createNewOperation(operationData); // Call your API function to fetch profile
     form.setValues(data.value);
     operationId.value = data.value.id;
+    router.push(
+      `${route.path}?activeTab=configureOperations&operationId=${data.value.id}`
+    );
     openItems.value = "requestInputs";
     toast({
       title: "Operation Created",
@@ -89,7 +93,182 @@ function splitPath(path: any) {
   <div class="flex flex-col gap-6 items-cente">
     <form @submit="onSubmit">
       <UiTabs v-model="openItems" defaultValue="info" class="w-full">
-        <UiTabsList
+        <!-- <UiTabsContent class="p-6" value="info"> -->
+        <div class="grid grid-cols-2 gap-6 p-6">
+          <FormField
+            :model-value="data?.operationName"
+            v-slot="{ componentField }"
+            name="operationName"
+          >
+            <FormItem>
+              <FormLabel> Name </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="text"
+                  placeholder="Enter name"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField
+            :model-value="data?.httpMethod"
+            v-slot="{ componentField }"
+            name="httpMethod"
+          >
+            <FormItem>
+              <FormLabel> HTTP Method </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue placeholder="Select a service type" />
+                  </UiSelectTrigger>
+                </FormControl>
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-for="item in Object.values(HttpMethod)"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField>
+          <FormField
+            :model-value="data?.bodyType"
+            v-slot="{ componentField }"
+            name="bodyType"
+          >
+            <FormItem>
+              <FormLabel> Body Type</FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue placeholder="Select a body type" />
+                  </UiSelectTrigger>
+                </FormControl>
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-for="item in Object.values(BodyType)"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField>
+          <FormField
+            :model-value="data?.endpointPath"
+            v-slot="{ componentField }"
+            name="endpointPath"
+          >
+            <FormItem>
+              <FormLabel> Endpoint Path </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="text"
+                  placeholder="Enter endpoint path"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField
+            :model-value="data?.apiOperationPath"
+            v-slot="{ componentField }"
+            name="apiOperationPath"
+          >
+            <FormItem>
+              <FormLabel> Api Operation Path </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="text"
+                  placeholder="Enter api operation path"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <div class="col-span-full w-full">
+            <FormField
+              :model-value="data?.requestBodyTemplate"
+              v-slot="{ componentField }"
+              name="requestBodyTemplate"
+            >
+              <FormItem>
+                <div class="flex items-center justify-between gap-2">
+                  <FormLabel>
+                    Request Body Template
+                    <span v-if="isPreview" class="text-xs text-muted-foreground"
+                      >(Preview)</span
+                    >
+                  </FormLabel>
+                  <div className="flex items-center space-x-2">
+                    <UiLabel htmlFor="airplane-mode">Preview</UiLabel>
+                    <UiSwitch
+                      :checked="isPreview"
+                      @update:checked="isPreview = !isPreview"
+                    >
+                    </UiSwitch>
+                  </div>
+                </div>
+                <FormControl v-if="!isPreview" class="">
+                  <UiTextarea
+                    placeholder="Enter request body template"
+                    class="resize-y"
+                    rows="10"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <!-- New code block display for Request Body Template -->
+            <div
+              v-if="isPreview"
+              class="col-span-full mt-4 rounded-lg bg-gray-100 p-6 h-fit min-h-[120px] relative border"
+            >
+              <Icon
+                name="material-symbols:content-copy"
+                class="h-6 w-6 absolute top-4 right-4 cursor-pointer"
+              ></Icon>
+              <pre
+                class="h-fit leading-9"
+              ><code>{{ data?.requestBodyTemplate }}</code></pre>
+            </div>
+          </div>
+          <div class="col-span-full w-full py-4 flex justify-end gap-4">
+            <UiButton
+              :disabled="loading"
+              variant="outline"
+              type="button"
+              size="sm"
+              @click="$router.go(-1)"
+            >
+              Cancel
+            </UiButton>
+            <UiButton :disabled="loading" size="sm" type="submit">
+              <Icon
+                name="svg-spinners:8-dots-rotate"
+                v-if="loading"
+                class="mr-2 h-4 w-4 animate-spin"
+              ></Icon>
+
+              Save
+            </UiButton>
+          </div>
+        </div>
+        <!-- </UiTabsContent> -->
+        <!-- <UiTabsList
           class="w-full flex justify-start px-0 pb-0 h-fit gap-2 border-b rounded-none border-primary bg-transparent"
         >
           <UiTabsTrigger
@@ -118,184 +297,6 @@ function splitPath(path: any) {
             >Response Outputs</UiTabsTrigger
           >
         </UiTabsList>
-        <UiTabsContent class="p-6" value="info">
-          <div class="grid grid-cols-2 gap-6">
-            <FormField
-              :model-value="data?.operationName"
-              v-slot="{ componentField }"
-              name="operationName"
-            >
-              <FormItem>
-                <FormLabel> Name </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter name"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.httpMethod"
-              v-slot="{ componentField }"
-              name="httpMethod"
-            >
-              <FormItem>
-                <FormLabel> HTTP Method </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a service type" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in Object.values(HttpMethod)"
-                        :value="item"
-                      >
-                        {{ item }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.bodyType"
-              v-slot="{ componentField }"
-              name="bodyType"
-            >
-              <FormItem>
-                <FormLabel> Body Type</FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a body type" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in Object.values(BodyType)"
-                        :value="item"
-                      >
-                        {{ item }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.endpointPath"
-              v-slot="{ componentField }"
-              name="endpointPath"
-            >
-              <FormItem>
-                <FormLabel> Endpoint Path </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter endpoint path"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.apiOperationPath"
-              v-slot="{ componentField }"
-              name="apiOperationPath"
-            >
-              <FormItem>
-                <FormLabel> Api Operation Path </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter api operation path"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <div class="col-span-full w-full">
-              <FormField
-                :model-value="data?.requestBodyTemplate"
-                v-slot="{ componentField }"
-                name="requestBodyTemplate"
-              >
-                <FormItem>
-                  <div class="flex items-center justify-between gap-2">
-                    <FormLabel>
-                      Request Body Template
-                      <span
-                        v-if="isPreview"
-                        class="text-xs text-muted-foreground"
-                        >(Preview)</span
-                      >
-                    </FormLabel>
-                    <div className="flex items-center space-x-2">
-                      <UiLabel htmlFor="airplane-mode">Preview</UiLabel>
-                      <UiSwitch
-                        :checked="isPreview"
-                        @update:checked="isPreview = !isPreview"
-                      >
-                      </UiSwitch>
-                    </div>
-                  </div>
-                  <FormControl v-if="!isPreview" class="">
-                    <UiTextarea
-                      placeholder="Enter request body template"
-                      class="resize-y"
-                      rows="10"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <!-- New code block display for Request Body Template -->
-              <div
-                v-if="isPreview"
-                class="col-span-full mt-4 rounded-lg bg-gray-100 p-6 h-fit min-h-[120px] relative border"
-              >
-                <Icon
-                  name="material-symbols:content-copy"
-                  class="h-6 w-6 absolute top-4 right-4 cursor-pointer"
-                ></Icon>
-                <pre
-                  class="h-fit leading-9"
-                ><code>{{ data?.requestBodyTemplate }}</code></pre>
-              </div>
-            </div>
-            <div class="col-span-full w-full py-4 flex justify-end gap-4">
-              <UiButton
-                :disabled="loading"
-                variant="outline"
-                type="button"
-                size="sm"
-                @click="$router.go(-1)"
-              >
-                Cancel
-              </UiButton>
-              <UiButton :disabled="loading" size="sm" type="submit">
-                <Icon
-                  name="svg-spinners:8-dots-rotate"
-                  v-if="loading"
-                  class="mr-2 h-4 w-4 animate-spin"
-                ></Icon>
-
-                Save
-              </UiButton>
-            </div>
-          </div>
-        </UiTabsContent>
-
         <UiTabsContent
           class="text-base h-full p-6 space-y-4"
           value="requestInputs"
@@ -305,7 +306,6 @@ function splitPath(path: any) {
             :operationIdProps="operationId"
           />
         </UiTabsContent>
-
         <UiTabsContent
           class="text-base h-full p-6 space-y-4"
           value="responseOutputs"
@@ -314,7 +314,7 @@ function splitPath(path: any) {
             :responseOutputs="[]"
             :operationIdProps="operationId"
           />
-        </UiTabsContent>
+        </UiTabsContent> -->
       </UiTabs>
     </form>
   </div>

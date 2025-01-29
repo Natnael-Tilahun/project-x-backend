@@ -226,7 +226,7 @@ watch(
 <template>
   <div class="w-full flex justify-end">
     <UiButton
-      :disabled="loading"
+      :disabled="loading || !formId"
       size="sm"
       type="button"
       @click="addNewParameter"
@@ -1193,10 +1193,13 @@ watch(
     </UiAccordionItem>
 
     <div
-      class="w-full flex justify-center items-center h-20"
+      class="w-full flex flex-col justify-center items-center h-20"
       v-if="fields?.length == 0 && !newField"
     >
-      No fields
+      <h1 class="text-lg font-bold">No fields</h1>
+      <p class="text-muted-foreground">
+        {{ !formId ? "Please create a form first" : "" }}
+      </p>
     </div>
   </UiAccordion>
 </template>
