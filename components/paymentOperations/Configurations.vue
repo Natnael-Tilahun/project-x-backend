@@ -12,7 +12,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { PaymentOperationType } from "@/global-types";
+import {
+  PaymentOperationType,
+  TransactionAmountType,
+  MaximumAmountVariableType,
+  MinimumAmountVariableType,
+  CreditAccountNumberVariableType,
+} from "@/global-types";
 
 const route = useRoute();
 const {
@@ -49,6 +55,12 @@ const formId = ref<string>("");
 const selectedApiIntegration = ref<string>("");
 const selectedApiOperations = ref<string[]>([]);
 
+const props = defineProps<{
+  integrationDataProps?: PaymentIntegration;
+}>();
+const integrationData = ref<PaymentIntegration>(props?.integrationDataProps);
+console.log("integrationData::", integrationData.value);
+
 const form = useForm<PaymentOperation>({
   validationSchema: paymentOperationFormSchema,
 });
@@ -58,6 +70,20 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     loading.value = true;
     const formData = {
       ...values,
+      maximumAmountEnquiryPath:
+        integrationData?.maximumAmountVariableType ==
+          MaximumAmountVariableType.FIXED &&
+        integrationData?.transactionAmountType ==
+          TransactionAmountType.USER_DEFINED
+          ? values?.maximumAmountEnquiryPath
+          : null,
+      minimumAmountEnquiryPath:
+        integrationData?.minimumAmountVariableType ==
+          MinimumAmountVariableType.FIXED &&
+        integrationData?.transactionAmountType ==
+          TransactionAmountType.USER_DEFINED
+          ? values?.minimumAmountEnquiryPath
+          : null,
       apiOperation:
         typeof values.apiOperation === "string"
           ? { id: values.apiOperation }
@@ -75,9 +101,11 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           ? { id: values.nextPaymentOperation }
           : values.nextPaymentOperation,
     };
+    console.log("formData::", formData);
     const response = await updatePaymentOperation(operationId, formData);
     data.value = response;
     formId.value = response?.form?.id;
+    console.log("response::", response);
     // form.setValues({
     //   ...response,
     //   paymentIntegration: response.paymentIntegration?.id,
@@ -379,6 +407,10 @@ watch(
             </FormItem>
           </FormField>
           <FormField
+            v-if="
+              integrationData?.transactionAmountType ==
+              TransactionAmountType.PREDEFINED
+            "
             :model-value="data?.amountEnquiryPath"
             v-slot="{ componentField }"
             name="amountEnquiryPath"
@@ -406,6 +438,130 @@ watch(
                     </UiSelectItem>
                     <UiSelectItem v-else
                       >No amount enquiry path found</UiSelectItem
+                    >
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField>
+
+          <FormField
+            v-if="
+              integrationData?.transactionAmountType ==
+                TransactionAmountType.USER_DEFINED &&
+              integrationData?.maximumAmountVariableType ==
+                MaximumAmountVariableType.DYNAMIC
+            "
+            :model-value="data?.maximumAmountEnquiryPath"
+            v-slot="{ componentField }"
+            name="maximumAmountEnquiryPath"
+          >
+            <FormItem>
+              <FormLabel> Maximum Amount Enquiry Path </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue placeholder="Enter amount enquiry path" />
+                  </UiSelectTrigger>
+                </FormControl>
+                <FormMessage />
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-if="data?.apiRequestMappingsRegistryOptions"
+                      v-for="item in data?.apiRequestMappingsRegistryOptions[
+                        '$enquiryApiResponse.'
+                      ]"
+                      :key="item"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                    <UiSelectItem v-else
+                      >No maximum amount enquiry path found</UiSelectItem
+                    >
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField>
+          <FormField
+            v-if="
+              integrationData?.transactionAmountType ==
+                TransactionAmountType.USER_DEFINED &&
+              integrationData?.minimumAmountVariableType ==
+                MinimumAmountVariableType.DYNAMIC
+            "
+            :model-value="data?.minimumAmountEnquiryPath"
+            v-slot="{ componentField }"
+            name="minimumAmountEnquiryPath"
+          >
+            <FormItem>
+              <FormLabel> Minimum Amount Enquiry Path </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue
+                      placeholder="Enter minimum amount enquiry path"
+                    />
+                  </UiSelectTrigger>
+                </FormControl>
+                <FormMessage />
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-if="data?.apiRequestMappingsRegistryOptions"
+                      v-for="item in data?.apiRequestMappingsRegistryOptions[
+                        '$enquiryApiResponse.'
+                      ]"
+                      :key="item"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                    <UiSelectItem v-else
+                      >No minimum amount enquiry path found</UiSelectItem
+                    >
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField>
+
+          <FormField
+            v-if="
+              integrationData?.creditAccountNumberVariableType ===
+              CreditAccountNumberVariableType.DYNAMIC
+            "
+            :model-value="data?.creditAccountNumberEnquiryPath"
+            v-slot="{ componentField }"
+            name="creditAccountNumberEnquiryPath"
+          >
+            <FormItem>
+              <FormLabel> Credit Account Number Enquiry Path </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue
+                      placeholder="Enter credit account number enquiry path"
+                    />
+                  </UiSelectTrigger>
+                </FormControl>
+                <FormMessage />
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-if="data?.apiRequestMappingsRegistryOptions"
+                      v-for="item in data?.apiRequestMappingsRegistryOptions[
+                        '$enquiryApiResponse.'
+                      ]"
+                      :key="item"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                    <UiSelectItem v-else
+                      >No credit account number enquiry path found</UiSelectItem
                     >
                   </UiSelectGroup>
                 </UiSelectContent>
@@ -534,7 +690,7 @@ watch(
               <FormMessage />
             </FormItem>
           </FormField>
-          <!-- <FormField
+          <!-- <FormPropsField
               :model-value="data?.paymentIntegration?.id"
               v-slot="{ componentField }"
               name="paymentIntegration"
@@ -545,12 +701,7 @@ watch(
                   <FormControl>
                     <UiSelectTrigger>
                       <UiSelectValue
-                        placeholder="Select a next payment operation"
-                      />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <FormMessage />
-                  <UiSelectContent>
+                        placeholderPropstent>
                     <UiSelectGroup>
                       <UiSelectItem
                         v-for="item in allPaymentIntegrations"
@@ -565,7 +716,7 @@ watch(
                 </UiSelect>
                 <FormMessage />
               </FormItem>
-            </FormField> -->
+            </FormPropsField> -->
 
           <div class="col-span-full w-full py-4 flex justify-end gap-4">
             <UiButton

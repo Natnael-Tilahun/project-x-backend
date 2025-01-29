@@ -15,6 +15,9 @@ import {
 import {
   PaymentIntegrationType,
   TransactionAmountType,
+  MaximumAmountVariableType,
+  MinimumAmountVariableType,
+  CreditAccountNumberVariableType,
   Visibility,
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
@@ -61,10 +64,21 @@ const form = useForm<PaymentIntegration>({
 });
 
 const onSubmit = form.handleSubmit(async (values: any) => {
+  console.log("values: ", values);
   try {
     loading.value = true;
     const data = {
       ...values,
+      maximumAmount:
+        values?.maximumAmountVariableType == MaximumAmountVariableType.FIXED &&
+        values?.transactionAmountType == TransactionAmountType.USER_DEFINED
+          ? values?.maximumAmount
+          : null,
+      minimumAmount:
+        values?.minimumAmountVariableType == MinimumAmountVariableType.FIXED &&
+        values?.transactionAmountType == TransactionAmountType.USER_DEFINED
+          ? values?.minimumAmount
+          : null,
       categoryMenus: values?.categoryMenus
         ? values?.categoryMenus?.map((menu: any) => ({ id: menu }))
         : [],
@@ -328,23 +342,6 @@ const refetch = async () => {
                 </FormItem>
               </FormField>
               <FormField
-                :model-value="data?.accountNumber"
-                v-slot="{ componentField }"
-                name="accountNumber"
-              >
-                <FormItem>
-                  <FormLabel> Account Number </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="text"
-                      placeholder="Enter account number"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
                 :model-value="data?.currencyCode"
                 v-slot="{ componentField }"
                 name="currencyCode"
@@ -355,40 +352,6 @@ const refetch = async () => {
                     <UiInput
                       type="text"
                       placeholder="Enter currency code"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.minimumAmount"
-                v-slot="{ componentField }"
-                name="minimumAmount"
-              >
-                <FormItem>
-                  <FormLabel> Minimum Amount </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="number"
-                      placeholder="Enter minimum amount"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.maximumAmount"
-                v-slot="{ componentField }"
-                name="maximumAmount"
-              >
-                <FormItem>
-                  <FormLabel> Maximum Amount </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="number"
-                      placeholder="Enter maximum amount"
                       v-bind="componentField"
                     />
                   </FormControl>
@@ -463,6 +426,190 @@ const refetch = async () => {
                   <FormMessage />
                 </FormItem>
               </FormField>
+              <FormField
+                v-if="
+                  form.values.transactionAmountType ==
+                  TransactionAmountType.USER_DEFINED
+                "
+                :model-value="data?.maximumAmountVariableType"
+                v-slot="{ componentField }"
+                name="maximumAmountVariableType"
+              >
+                <FormItem>
+                  <FormLabel> Maximum Amount Variable Type </FormLabel>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue
+                          :placeholder="
+                            data?.maximumAmountVariableType
+                              ? data?.maximumAmountVariableType
+                              : 'Select a maximum amount variable type'
+                          "
+                        />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem
+                          v-for="item in Object.values(
+                            MaximumAmountVariableType
+                          )"
+                          :key="item"
+                          :value="item"
+                        >
+                          {{ item }}
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                v-if="
+                  form.values.maximumAmountVariableType ==
+                    MaximumAmountVariableType.FIXED &&
+                  form.values.transactionAmountType ==
+                    TransactionAmountType.USER_DEFINED
+                "
+                :model-value="data?.maximumAmount"
+                v-slot="{ componentField }"
+                name="maximumAmount"
+              >
+                <FormItem>
+                  <FormLabel> Maximum Amount </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter maximum amount"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                v-if="
+                  form.values.transactionAmountType ==
+                  TransactionAmountType.USER_DEFINED
+                "
+                :model-value="data?.minimumAmountVariableType"
+                v-slot="{ componentField }"
+                name="minimumAmountVariableType"
+              >
+                <FormItem>
+                  <FormLabel> Minimum Amount Variable Type </FormLabel>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue
+                          :placeholder="
+                            data?.minimumAmountVariableType
+                              ? data?.minimumAmountVariableType
+                              : 'Select a minimum amount variable type'
+                          "
+                        />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem
+                          v-for="item in Object.values(
+                            MinimumAmountVariableType
+                          )"
+                          :key="item"
+                          :value="item"
+                        >
+                          {{ item }}
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                v-if="
+                  form.values.minimumAmountVariableType ==
+                    MinimumAmountVariableType.FIXED &&
+                  form.values.transactionAmountType ==
+                    TransactionAmountType.USER_DEFINED
+                "
+                :model-value="data?.minimumAmount"
+                v-slot="{ componentField }"
+                name="minimumAmount"
+              >
+                <FormItem>
+                  <FormLabel> Minimum Amount </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter minimum amount"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.creditAccountNumberVariableType"
+                v-slot="{ componentField }"
+                name="creditAccountNumberVariableType"
+              >
+                <FormItem>
+                  <FormLabel> Credit Account Number Variable Type </FormLabel>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue
+                          :placeholder="
+                            data?.creditAccountNumberVariableType
+                              ? data?.creditAccountNumberVariableType
+                              : 'Select a credit account number variable type'
+                          "
+                        />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem
+                          v-for="item in Object.values(
+                            CreditAccountNumberVariableType
+                          )"
+                          :key="item"
+                          :value="item"
+                        >
+                          {{ item }}
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                v-if="
+                  form.values.creditAccountNumberVariableType ==
+                  CreditAccountNumberVariableType.FIXED
+                "
+                :model-value="data?.accountNumber"
+                v-slot="{ componentField }"
+                name="accountNumber"
+              >
+                <FormItem>
+                  <FormLabel> Account Number </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="text"
+                      placeholder="Enter account number"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+
               <FormField
                 :model-value="data?.visiblity"
                 v-slot="{ componentField }"
@@ -864,7 +1011,7 @@ const refetch = async () => {
         value="configurePaymentOperations"
         class="text-base bg-background py-0 rounded-lg"
       >
-        <PaymentOperationsConfigurations />
+        <PaymentOperationsConfigurations :integrationDataProps="data" />
       </UiTabsContent>
 
       <UiTabsContent

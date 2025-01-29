@@ -20,7 +20,18 @@ import {
   AutoCompleteTrigger,
   InterfaceType,
 } from "@/global-types";
+import IconPicker from "~/components/IconPicker.vue";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { fas } from "@fortawesome/free-solid-svg-icons";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
+const showPicker = ref(false);
 const route = useRoute();
 const { updateField } = useFields();
 
@@ -132,7 +143,7 @@ watch(
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField v-slot="{ componentField }" name="iconLeft">
+                <!-- <FormField v-slot="{ componentField }" name="iconLeft">
                   <FormItem>
                     <FormLabel> Icon Left </FormLabel>
                     <FormControl>
@@ -144,7 +155,48 @@ watch(
                     </FormControl>
                     <FormMessage />
                   </FormItem>
+                </FormField> -->
+
+                <FormField v-slot="{ field }" name="iconLeft">
+                  <FormItem>
+                    <FormLabel>Icon Left</FormLabel>
+                    <FormControl>
+                      <div class="relative">
+                        <UiInput
+                          type="text"
+                          placeholder="Select icon"
+                          :model-value="field.value"
+                          readonly
+                          class="cursor-pointer"
+                          @click="showPicker = true"
+                        />
+                        <FontAwesomeIcon
+                          v-if="field.value"
+                          :icon="['fas', field.value.replace('fa-', '')]"
+                          class="absolute right-3 top-3 w-5 h-5 text-gray-700"
+                        />
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+
+                  <Dialog v-model:open="showPicker">
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Select Icon</DialogTitle>
+                      </DialogHeader>
+                      <IconPicker
+                        @select="
+                          (icon) => {
+                            field.onChange(icon);
+                            showPicker = false;
+                          }
+                        "
+                      />
+                    </DialogContent>
+                  </Dialog>
                 </FormField>
+
                 <FormField
                   :model-value="data?.clear"
                   v-slot="{ value, handleChange }"

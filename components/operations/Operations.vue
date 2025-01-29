@@ -38,6 +38,7 @@ const getApiOperationsData = async () => {
     isLoading.value = true;
     const apiOperations = await getIntegrationOperations(integrationId.value);
     data.value = apiOperations;
+    console.log("data::", data.value);
   } catch (err) {
     console.error("Error fetching api operations:", err);
     isError.value = true;
