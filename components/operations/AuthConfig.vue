@@ -2,7 +2,7 @@
 const openItems = ref(["item-1"]);
 
 import { useForm } from "vee-validate";
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { toast } from "~/components/ui/toast";
 import { authConfigFormSchema } from "~/validations/authConfigFormSchema";
 import {
@@ -78,6 +78,7 @@ const refetch = async () => {
 const emit = defineEmits(["refresh"]);
 
 const onSubmit = form.handleSubmit(async (values: any) => {
+  console.log("values: ", values);
   try {
     submitting.value = true;
     isError.value = false;
@@ -113,23 +114,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isError.value = false;
   }
 });
-
-// const paramKeys = ref<string[]>([]);
-
-// In your getAuthConfigDetails function, after setting form values:
-// watch(
-//   () => form.values.additionalParams,
-//   (newValue) => {
-//     if (
-//       newValue &&
-//       Object.keys(newValue).length > 0 &&
-//       paramKeys.value.length === 0
-//     ) {
-//       paramKeys.value = Object.keys(newValue);
-//     }
-//   },
-//   { immediate: true }
-// );
 </script>
 
 <template>
@@ -230,239 +214,398 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                     </UiSelect>
                   </FormItem>
                 </FormField>
-                <FormField v-slot="{ componentField }" name="username">
-                  <FormItem>
-                    <FormLabel> Username </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter username"
-                        autocomplete="new-username"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="password">
-                  <FormItem>
-                    <FormLabel> Password </FormLabel>
-                    <div
-                      className="relative flex items-center bg-input rounded-lg  focus-within:ring-1 focus-within:ring-primary"
-                    >
+
+                <!-- Basic Auth Fields -->
+                <div
+                  class="w-full border p-4 rounded-lg col-span-full grid grid-cols-2 gap-6"
+                  v-if="form.values.authType === 'BASIC'"
+                >
+                  <h1 class="col-span-full font-bold">Basic Auth</h1>
+                  <FormField v-slot="{ componentField }" name="username">
+                    <FormItem>
+                      <FormLabel> Username </FormLabel>
                       <FormControl>
                         <UiInput
-                          :type="[showPassword ? 'text' : 'password']"
-                          placeholder="Enter password"
-                          autocomplete="new-password"
+                          type="text"
+                          placeholder="Enter username"
+                          autocomplete="new-username"
                           v-bind="componentField"
                         />
-                        <Icon
-                          v-if="showPassword"
-                          name="material-symbols:visibility-off-rounded"
-                          class="absolute flex right-0 pr-3 items-center w-8 h-8"
-                          @Click="showPassword = !showPassword"
-                        ></Icon>
-                        <Icon
-                          v-else
-                          name="material-symbols:visibility-rounded"
-                          class="absolute flex right-0 pr-3 items-center w-8 h-8"
-                          @Click="showPassword = !showPassword"
-                        ></Icon>
                       </FormControl>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="clientId">
-                  <FormItem>
-                    <FormLabel> Client Id </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter client id"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="clientSecret">
-                  <FormItem>
-                    <FormLabel> Client Secret </FormLabel>
-                    <div
-                      className="relative flex items-center bg-input rounded-lg pl- focus-within:ring-1 focus-within:ring-primary"
-                    >
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="password">
+                    <FormItem>
+                      <FormLabel> Password </FormLabel>
+                      <div
+                        className="relative flex items-center bg-input rounded-lg  focus-within:ring-1 focus-within:ring-primary"
+                      >
+                        <FormControl>
+                          <UiInput
+                            :type="[showPassword ? 'text' : 'password']"
+                            placeholder="Enter password"
+                            autocomplete="new-password"
+                            v-bind="componentField"
+                          />
+                          <Icon
+                            v-if="showPassword"
+                            name="material-symbols:visibility-off-rounded"
+                            class="absolute flex right-0 pr-3 items-center w-8 h-8"
+                            @Click="showPassword = !showPassword"
+                          ></Icon>
+                          <Icon
+                            v-else
+                            name="material-symbols:visibility-rounded"
+                            class="absolute flex right-0 pr-3 items-center w-8 h-8"
+                            @Click="showPassword = !showPassword"
+                          ></Icon>
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
+
+                <!-- OAuth1 Fields -->
+                <div
+                  class="w-full border p-4 rounded-lg col-span-full grid grid-cols-2 gap-6"
+                  v-if="form.values.authType === 'OAUTH1'"
+                >
+                  <h1 class="col-span-full font-bold">OAUTH1</h1>
+                  <FormField v-slot="{ componentField }" name="clientId">
+                    <FormItem>
+                      <FormLabel> Client Id </FormLabel>
                       <FormControl>
                         <UiInput
-                          :type="[showClientSecret ? 'text' : 'password']"
-                          placeholder="Enter client secret"
+                          type="text"
+                          placeholder="Enter client id"
                           v-bind="componentField"
                         />
-                        <Icon
-                          v-if="showClientSecret"
-                          name="material-symbols:visibility-off-rounded"
-                          class="absolute flex right-0 pr-3 items-center w-8 h-8"
-                          @Click="showClientSecret = !showClientSecret"
-                        ></Icon>
-                        <Icon
-                          v-else
-                          name="material-symbols:visibility-rounded"
-                          class="absolute flex right-0 pr-3 items-center w-8 h-8"
-                          @Click="showClientSecret = !showClientSecret"
-                        ></Icon>
                       </FormControl>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="tokenUrl">
-                  <FormItem>
-                    <FormLabel> Token Url </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter token url"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="redirectUri">
-                  <FormItem>
-                    <FormLabel> Redirect Uri </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter redirect uri"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="codeVerifier">
-                  <FormItem>
-                    <FormLabel> Code Verifier </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter code verifier"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="codeChallenge">
-                  <FormItem>
-                    <FormLabel> Code Challenge </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter code challenge"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="grantType">
-                  <FormItem>
-                    <FormLabel> Grant Type </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter grant type"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="scope">
-                  <FormItem>
-                    <FormLabel> Scope </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter scope"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="apiKey">
-                  <FormItem>
-                    <FormLabel> Api Key </FormLabel>
-                    <div
-                      className="relative flex items-center bg-input rounded-lg pl- focus-within:ring-1 focus-within:ring-primary"
-                    >
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="clientSecret">
+                    <FormItem>
+                      <FormLabel> Client Secret </FormLabel>
+                      <div
+                        className="relative flex items-center bg-input rounded-lg pl- focus-within:ring-1 focus-within:ring-primary"
+                      >
+                        <FormControl>
+                          <UiInput
+                            :type="[showClientSecret ? 'text' : 'password']"
+                            placeholder="Enter client secret"
+                            v-bind="componentField"
+                          />
+                          <Icon
+                            v-if="showClientSecret"
+                            name="material-symbols:visibility-off-rounded"
+                            class="absolute flex right-0 pr-3 items-center w-8 h-8"
+                            @Click="showClientSecret = !showClientSecret"
+                          ></Icon>
+                          <Icon
+                            v-else
+                            name="material-symbols:visibility-rounded"
+                            class="absolute flex right-0 pr-3 items-center w-8 h-8"
+                            @Click="showClientSecret = !showClientSecret"
+                          ></Icon>
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="tokenUrl">
+                    <FormItem>
+                      <FormLabel> Token Url </FormLabel>
                       <FormControl>
                         <UiInput
-                          :type="[showApiKey ? 'text' : 'password']"
-                          placeholder="Enter api key"
-                          autocomplete="new-api-key"
+                          type="text"
+                          placeholder="Enter token url"
                           v-bind="componentField"
                         />
-                        <Icon
-                          v-if="showApiKey"
-                          name="material-symbols:visibility-off-rounded"
-                          class="absolute flex right-0 pr-3 items-center w-8 h-8"
-                          @Click="showApiKey = !showApiKey"
-                        ></Icon>
-                        <Icon
-                          v-else
-                          name="material-symbols:visibility-rounded"
-                          class="absolute flex right-0 pr-3 items-center w-8 h-8"
-                          @Click="showApiKey = !showApiKey"
-                        ></Icon>
                       </FormControl>
-                    </div>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="jwtToken">
-                  <FormItem>
-                    <FormLabel> Jwt Token </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter jwt token"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="currentToken">
-                  <FormItem>
-                    <FormLabel> Current Token </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter current token"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="sessionCookie">
-                  <FormItem>
-                    <FormLabel> Session Cookie </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter session cookie"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="currentToken">
+                    <FormItem>
+                      <FormLabel> Current Token </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter current token"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
+
+                <!-- OAuth2 Fields -->
+                <div
+                  class="w-full border p-4 rounded-lg col-span-full grid grid-cols-2 gap-6"
+                  v-if="form.values.authType === 'OAUTH2'"
+                >
+                  <h1 class="col-span-full font-bold">OAUTH2</h1>
+                  <FormField v-slot="{ componentField }" name="clientId">
+                    <FormItem>
+                      <FormLabel> Client Id </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter client id"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="clientSecret">
+                    <FormItem>
+                      <FormLabel> Client Secret </FormLabel>
+                      <div
+                        className="relative flex items-center bg-input rounded-lg pl- focus-within:ring-1 focus-within:ring-primary"
+                      >
+                        <FormControl>
+                          <UiInput
+                            :type="[showClientSecret ? 'text' : 'password']"
+                            placeholder="Enter client secret"
+                            v-bind="componentField"
+                          />
+                          <Icon
+                            v-if="showClientSecret"
+                            name="material-symbols:visibility-off-rounded"
+                            class="absolute flex right-0 pr-3 items-center w-8 h-8"
+                            @Click="showClientSecret = !showClientSecret"
+                          ></Icon>
+                          <Icon
+                            v-else
+                            name="material-symbols:visibility-rounded"
+                            class="absolute flex right-0 pr-3 items-center w-8 h-8"
+                            @Click="showClientSecret = !showClientSecret"
+                          ></Icon>
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="tokenUrl">
+                    <FormItem>
+                      <FormLabel> Token Url </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter token url"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="redirectUri">
+                    <FormItem>
+                      <FormLabel> Redirect Uri </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter redirect uri"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="grantType">
+                    <FormItem>
+                      <FormLabel> Grant Type </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter grant type"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="scope">
+                    <FormItem>
+                      <FormLabel> Scope </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter scope"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
+
+                <!-- PKCE -->
+                <div
+                  class="w-full border p-4 rounded-lg col-span-full grid grid-cols-2 gap-6"
+                  v-if="form.values.authType === 'PKCE'"
+                >
+                  <h1 class="col-span-full font-bold">PKCE</h1>
+                  <FormField v-slot="{ componentField }" name="codeVerifier">
+                    <FormItem>
+                      <FormLabel> Code Verifier </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter code verifier"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="codeChallenge">
+                    <FormItem>
+                      <FormLabel> Code Challenge </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter code challenge"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
+
+                <!-- API Key Fields -->
+                <div
+                  class="w-full border p-4 rounded-lg col-span-full grid grid-cols-2 gap-6"
+                  v-if="form.values.authType === 'API_KEY'"
+                >
+                  <h1 class="col-span-full font-bold">API_KEY</h1>
+                  <FormField v-slot="{ componentField }" name="clientId">
+                    <FormItem>
+                      <FormLabel> Client Id </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter client id"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="apiKey">
+                    <FormItem>
+                      <FormLabel> Api Key </FormLabel>
+                      <div
+                        className="relative flex items-center bg-input rounded-lg pl- focus-within:ring-1 focus-within:ring-primary"
+                      >
+                        <FormControl>
+                          <UiInput
+                            :type="[showApiKey ? 'text' : 'password']"
+                            placeholder="Enter api key"
+                            autocomplete="new-api-key"
+                            v-bind="componentField"
+                          />
+                          <Icon
+                            v-if="showApiKey"
+                            name="material-symbols:visibility-off-rounded"
+                            class="absolute flex right-0 pr-3 items-center w-8 h-8"
+                            @Click="showApiKey = !showApiKey"
+                          ></Icon>
+                          <Icon
+                            v-else
+                            name="material-symbols:visibility-rounded"
+                            class="absolute flex right-0 pr-3 items-center w-8 h-8"
+                            @Click="showApiKey = !showApiKey"
+                          ></Icon>
+                        </FormControl>
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
+
+                <!-- JWT Fields -->
+                <div
+                  class="w-full border p-4 rounded-lg col-span-full grid grid-cols-2 gap-6"
+                  v-if="form.values.authType === 'JWT'"
+                >
+                  <h1 class="col-span-full font-bold">JWT</h1>
+                  <FormField v-slot="{ componentField }" name="jwtToken">
+                    <FormItem>
+                      <FormLabel> Jwt Token </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter jwt token"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ componentField }" name="currentToken">
+                    <FormItem>
+                      <FormLabel> Current Token </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter current token"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
+
+                <!-- Bearer Token Fields -->
+                <div
+                  class="w-full border p-4 rounded-lg col-span-full grid grid-cols-2 gap-6"
+                  v-if="form.values.authType === 'BEARER'"
+                >
+                  <h1 class="col-span-full font-bold">BEARER</h1>
+                  <FormField v-slot="{ componentField }" name="currentToken">
+                    <FormItem>
+                      <FormLabel> Current Token </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter current token"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
+
+                <!-- Session Cookie Fields -->
+                <div
+                  class="w-full border p-4 rounded-lg col-span-full grid grid-cols-2 gap-6"
+                  v-if="form.values.authType === 'SESSION_COOKIE'"
+                >
+                  <h1 class="col-span-full font-bold">SESSION_COOKIE</h1>
+                  <FormField v-slot="{ componentField }" name="sessionCookie">
+                    <FormItem>
+                      <FormLabel> Session Cookie </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter session cookie"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
+
                 <FormField
                   :model-value="data?.customAuthOperation?.id"
                   v-slot="{ componentField }"
@@ -496,87 +639,106 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                     </UiSelect>
                   </FormItem>
                 </FormField>
-                <!-- <FormField v-slot="{ value, handleChange }" name="additionalParams">
-            <FormItem>
-              <FormLabel>Additional Params</FormLabel>
-              <FormControl>
-                <div class="space-y-2">
-                  <div
-                    v-for="paramKey in paramKeys"
-                    :key="paramKey"
-                    class="flex gap-2 mb-2"
-                  >
-                    <UiInput
-                      type="text"
-                      placeholder="Parameter Name"
-                      :value="paramKey"
-                      @input="
-                        (e) => {
-                          const newValue = { ...value };
-                          const oldValue = newValue[paramKey];
-                          delete newValue[paramKey];
-                          newValue[e.target.value] = oldValue;
-                          // Update the key in our order array
-                          const keyIndex = paramKeys.indexOf(paramKey);
-                          paramKeys[keyIndex] = e.target.value;
-                          handleChange(newValue);
-                        }
-                      "
-                    />
-                    <UiInput
-                      type="text"
-                      placeholder="Parameter Value"
-                      :value="value?.[paramKey]"
-                      @input="
-                        (e) =>
-                          handleChange({
-                            ...value,
-                            [paramKey]: e.target.value,
-                          })
-                      "
-                    />
-                    <UiButton
-                      type="button"
-                      variant="destructive"
-                      @click="
-                        () => {
-                          const newValue = { ...value };
-                          delete newValue[paramKey];
-                          // Remove the key from our order array
-                          const keyIndex = paramKeys.indexOf(paramKey);
-                          paramKeys.splice(keyIndex, 1);
-                          handleChange(newValue);
-                        }
-                      "
-                    >
-                      Remove
-                    </UiButton>
-                  </div>
-                  <UiButton
-                    type="button"
-                    variant=""
-                    size="sm"
-                    class="mt-2 w-fit"
-                    @click="
-                      () => {
-                        const newKey = `newParam${
-                          Object.keys(value || {}).length + 1
-                        }`;
-                        paramKeys.push(newKey);
-                        handleChange({
-                          ...value,
-                          [newKey]: '',
-                        });
-                      }
-                    "
-                  >
-                    Add Parameter
-                  </UiButton>
-                </div>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField> -->
+
+                <!-- Replace the existing additionalParams FormField with this new implementation -->
+                <!-- <FormField
+                  v-slot="{ value, handleChange }"
+                  name="additionalParams"
+                >
+                  <FormItem class="col-span-full">
+                    <FormLabel>Additional Parameters</FormLabel>
+                    <FormControl>
+                      <div class="space-y-4">
+                        <div class="flex justify-between items-center">
+                          <h1 class="text-lg font-semibold">Parameters</h1>
+                          <UiButton
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            @click="
+                              () => {
+                                const params = value || {};
+                                const newKey = `param${
+                                  Object.keys(params).length + 1
+                                }`;
+                                handleChange({ ...params, [newKey]: '' });
+                              }
+                            "
+                          >
+                            Add Parameter
+                          </UiButton>
+                        </div>
+
+                        <div
+                          v-for="(paramValue, paramKey) in value || {}"
+                          :key="paramKey"
+                          class="grid grid-cols-2 gap-4 px-4 py-6 border rounded-md relative"
+                        >
+                          <UiButton
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            class="absolute right-1 top-1"
+                            @click="
+                              () => {
+                                const params = { ...value };
+                                delete params[paramKey];
+                                handleChange(params);
+                              }
+                            "
+                          >
+                            <Icon
+                              name="lucide:x"
+                              class="h-5 text-red-500 border border-red-500 rounded-md w-5"
+                            />
+                          </UiButton>
+
+                          <FormItem>
+                            <FormLabel>Parameter Name</FormLabel>
+                            <FormControl>
+                              <UiInput
+                                type="text"
+                                :value="paramKey"
+                                placeholder="Enter parameter name"
+                                @blur="
+                                  (e) => {
+                                    if (e.target.value !== paramKey) {
+                                      const params = { ...value };
+                                      const newValue = params[paramKey];
+                                      delete params[paramKey];
+                                      params[e.target.value] = newValue;
+                                      handleChange(params);
+                                    }
+                                  }
+                                "
+                              />
+                            </FormControl>
+                          </FormItem>
+
+                          <FormItem>
+                            <FormLabel>Parameter Value</FormLabel>
+                            <FormControl>
+                              <UiInput
+                                type="text"
+                                :value="paramValue"
+                                placeholder="Enter parameter value"
+                                @input="
+                                  (e) => {
+                                    const params = { ...value };
+                                    params[paramKey] = e.target.value;
+                                    handleChange(params);
+                                  }
+                                "
+                              />
+                            </FormControl>
+                          </FormItem>
+                        </div>
+                      </div>
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField> -->
+
                 <div class="col-span-full w-full py-4 flex justify-between">
                   <UiButton
                     :disabled="submitting"

@@ -15,6 +15,7 @@ import { PaymentOperationType } from "@/global-types";
 
 const openItems = ref("info");
 const route = useRoute();
+const router = useRouter();
 const { createNewPaymentOperation, isLoading } = usePaymentOperations();
 const { getIntegrations } = useIntegrations();
 
@@ -183,6 +184,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       apiOperation: response.apiOperation?.id,
     });
     operationId.value = data.value.id;
+    router.push(
+      `${route.path}?activeTab=configurePaymentOperations&operationId=${operationId.value}`
+    );
     openItems.value = "form";
     toast({
       title: "Payment Operation Created",
@@ -215,14 +219,245 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
   <div v-else-if="!loading && !isError" class="flex flex-col gap-6 items-cente">
     <form @submit="onSubmit">
       <UiTabs v-model="openItems" defaultValue="info" class="w-full">
-        <UiTabsList
+        <div class="grid grid-cols-2 gap-6 p-6">
+          <FormField
+            :model-value="data?.name"
+            v-slot="{ componentField }"
+            name="name"
+          >
+            <FormItem>
+              <FormLabel> Name </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="text"
+                  placeholder="Enter name"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField
+            :model-value="data?.description"
+            v-slot="{ componentField }"
+            name="description"
+          >
+            <FormItem>
+              <FormLabel> Description </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="text"
+                  placeholder="Enter description"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField
+            :model-value="data?.paymentOperationType"
+            v-slot="{ componentField }"
+            name="paymentOperationType"
+          >
+            <FormItem>
+              <FormLabel> Payment Operation Type </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue
+                      placeholder="Select a payment operation type"
+                    />
+                  </UiSelectTrigger>
+                </FormControl>
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-for="item in Object.values(PaymentOperationType)"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField>
+          <FormField
+            :model-value="data?.amountEnquiryPath"
+            v-slot="{ componentField }"
+            name="amountEnquiryPath"
+          >
+            <FormItem>
+              <FormLabel> Amount Enquiry Path </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue placeholder="Enter amount enquiry path" />
+                  </UiSelectTrigger>
+                </FormControl>
+                <FormMessage />
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-if="data?.apiRequestMappingsRegistryOptions"
+                      v-for="item in data?.apiRequestMappingsRegistryOptions[
+                        '$enquiryApiResponse.'
+                      ]"
+                      :key="item"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                    <UiSelectItem disabled v-else
+                      >No amount enquiry path found</UiSelectItem
+                    >
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField>
+          <FormField
+            :model-value="selectedApiIntegration"
+            v-slot="{ componentField }"
+            name="apiIntegration"
+          >
+            <FormItem>
+              <FormLabel> API Integration </FormLabel>
+              <UiSelect
+                v-bind="componentField"
+                @update:modelValue="(value) => (selectedApiIntegration = value)"
+              >
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue placeholder="Select an API integration" />
+                  </UiSelectTrigger>
+                </FormControl>
+                <FormMessage />
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-for="item in apiIntegrations"
+                      :key="item.id"
+                      :value="item.id"
+                    >
+                      {{ item.name }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField>
+          <FormField
+            :model-value="data?.apiOperation?.id"
+            v-slot="{ componentField }"
+            name="apiOperation"
+          >
+            <FormItem>
+              <FormLabel> API Operation </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue placeholder="Select an API operation" />
+                  </UiSelectTrigger>
+                </FormControl>
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-for="item in selectedApiOperations"
+                      :value="item.id"
+                      :key="item.id"
+                    >
+                      {{ item.operationName }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField>
+          <FormField
+            :model-value="data?.prevPaymentOperation?.id"
+            v-slot="{ componentField }"
+            name="prevPaymentOperation"
+          >
+            <FormItem>
+              <FormLabel> Previous Payment Operation </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue
+                      placeholder="Select a previous payment operation"
+                    />
+                  </UiSelectTrigger>
+                </FormControl>
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-for="item in allPaymentOperations"
+                      :value="item.id"
+                      :key="item.id"
+                      :disabled="true"
+                    >
+                      {{ item.paymentOperationType }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField>
+          <FormField
+            :model-value="data?.nextPaymentOperation?.id"
+            v-slot="{ componentField }"
+            name="nextPaymentOperation"
+          >
+            <FormItem>
+              <FormLabel> Next Payment Operation </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue
+                      placeholder="Select a next payment operation"
+                    />
+                  </UiSelectTrigger>
+                </FormControl>
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-for="item in allPaymentOperations"
+                      :value="item.id"
+                      :key="item.id"
+                    >
+                      {{ item.paymentOperationType }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField>
+
+          <div class="col-span-full w-full py-4 flex justify-end gap-4">
+            <UiButton
+              :disabled="loading"
+              variant="outline"
+              type="button"
+              size="sm"
+              @click="$router.go(-1)"
+            >
+              Cancel
+            </UiButton>
+            <UiButton :disabled="loading" size="sm" type="submit">
+              <Icon
+                name="svg-spinners:8-dots-rotate"
+                v-if="loading"
+                class="mr-2 h-4 w-4 animate-spin"
+              ></Icon>
+
+              Save
+            </UiButton>
+          </div>
+        </div>
+        <!-- <UiTabsList
           class="w-full flex justify-start px-0 pb-0 h-fit gap-2 border-b rounded-none border-primary bg-transparent"
         >
-          <UiTabsTrigger
-            class="text-lg w-fit min-w-[150px] data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-2 data-[state=inactive]:border rounded-t-2xl data-[state=inactive]:bg-muted data-[state=inactive]:text-muted-foreground"
-            value="info"
-            >Info</UiTabsTrigger
-          >
           <UiTabsTrigger
             class="text-lg data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-2 data-[state=inactive]:border rounded-t-2xl data-[state=inactive]:bg-muted data-[state=inactive]:text-muted-foreground"
             value="form"
@@ -254,247 +489,6 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
             >Mapping</UiTabsTrigger
           >
         </UiTabsList>
-        <UiTabsContent class="p-6" value="info">
-          <div class="grid grid-cols-2 gap-6">
-            <FormField
-              :model-value="data?.name"
-              v-slot="{ componentField }"
-              name="name"
-            >
-              <FormItem>
-                <FormLabel> Name </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter name"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.description"
-              v-slot="{ componentField }"
-              name="description"
-            >
-              <FormItem>
-                <FormLabel> Description </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter description"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.paymentOperationType"
-              v-slot="{ componentField }"
-              name="paymentOperationType"
-            >
-              <FormItem>
-                <FormLabel> Payment Operation Type </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue
-                        placeholder="Select a payment operation type"
-                      />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in Object.values(PaymentOperationType)"
-                        :value="item"
-                      >
-                        {{ item }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.amountEnquiryPath"
-              v-slot="{ componentField }"
-              name="amountEnquiryPath"
-            >
-              <FormItem>
-                <FormLabel> Amount Enquiry Path </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Enter amount enquiry path" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <FormMessage />
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-if="data?.apiRequestMappingsRegistryOptions"
-                        v-for="item in data?.apiRequestMappingsRegistryOptions[
-                          '$enquiryApiResponse.'
-                        ]"
-                        :key="item"
-                        :value="item"
-                      >
-                        {{ item }}
-                      </UiSelectItem>
-                      <UiSelectItem disabled v-else
-                        >No amount enquiry path found</UiSelectItem
-                      >
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="selectedApiIntegration"
-              v-slot="{ componentField }"
-              name="apiIntegration"
-            >
-              <FormItem>
-                <FormLabel> API Integration </FormLabel>
-                <UiSelect
-                  v-bind="componentField"
-                  @update:modelValue="
-                    (value) => (selectedApiIntegration = value)
-                  "
-                >
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select an API integration" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <FormMessage />
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in apiIntegrations"
-                        :key="item.id"
-                        :value="item.id"
-                      >
-                        {{ item.name }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.apiOperation?.id"
-              v-slot="{ componentField }"
-              name="apiOperation"
-            >
-              <FormItem>
-                <FormLabel> API Operation </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select an API operation" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in selectedApiOperations"
-                        :value="item.id"
-                        :key="item.id"
-                      >
-                        {{ item.operationName }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.prevPaymentOperation?.id"
-              v-slot="{ componentField }"
-              name="prevPaymentOperation"
-            >
-              <FormItem>
-                <FormLabel> Previous Payment Operation </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue
-                        placeholder="Select a previous payment operation"
-                      />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in allPaymentOperations"
-                        :value="item.id"
-                        :key="item.id"
-                        :disabled="true"
-                      >
-                        {{ item.paymentOperationType }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.nextPaymentOperation?.id"
-              v-slot="{ componentField }"
-              name="nextPaymentOperation"
-            >
-              <FormItem>
-                <FormLabel> Next Payment Operation </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue
-                        placeholder="Select a next payment operation"
-                      />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in allPaymentOperations"
-                        :value="item.id"
-                        :key="item.id"
-                      >
-                        {{ item.paymentOperationType }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-              </FormItem>
-            </FormField>
-
-            <div class="col-span-full w-full py-4 flex justify-end gap-4">
-              <UiButton
-                :disabled="loading"
-                variant="outline"
-                type="button"
-                size="sm"
-                @click="$router.go(-1)"
-              >
-                Cancel
-              </UiButton>
-              <UiButton :disabled="loading" size="sm" type="submit">
-                <Icon
-                  name="svg-spinners:8-dots-rotate"
-                  v-if="loading"
-                  class="mr-2 h-4 w-4 animate-spin"
-                ></Icon>
-
-                Save
-              </UiButton>
-            </div>
-          </div>
-        </UiTabsContent>
-
         <UiTabsContent class="p-6" value="mapping">
           <PaymentOperationsMapping
             :operationIdProps="operationId"
@@ -508,7 +502,7 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
 
         <UiTabsContent class="text-base h-full p-6 space-y-4" value="fields">
           <PaymentOperationsFields />
-        </UiTabsContent>
+        </UiTabsContent> -->
       </UiTabs>
     </form>
   </div>

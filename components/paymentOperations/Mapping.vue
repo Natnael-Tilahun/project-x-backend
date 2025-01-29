@@ -399,7 +399,9 @@ watch(
 
 // Add a function to get mapping path values for a specific prefix
 const getMappingPathValuesForPrefix = (prefix: string) => {
-  return apiRequestMappingsRegistryOptions.value?.[prefix] || [];
+  return (apiRequestMappingsRegistryOptions.value?.[prefix] || []).sort(
+    (a, b) => a.localeCompare(b, undefined, { sensitivity: "base" })
+  );
 };
 </script>
 

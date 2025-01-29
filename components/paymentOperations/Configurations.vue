@@ -192,6 +192,7 @@ const fetchData = async () => {
         operation?.apiIntegration?.id === selectedApiIntegration.value
     );
     route.query.formId = data.value?.form?.id;
+    formId.value = data.value?.form?.id;
 
     // Only fetch these if needed for the current view
     // if (data.value?.paymentIntegration?.id) {
@@ -634,7 +635,10 @@ watch(
           />
         </UiTabsContent>
         <UiTabsContent class="p-6" value="form">
-          <PaymentOperationsForms :operationIdProps="operationId" />
+          <PaymentOperationsForms
+            @refresh="refetch"
+            :operationIdProps="operationId"
+          />
         </UiTabsContent>
         <UiTabsContent
           class="text-base h-full px-6 py-4 space-y-2"
