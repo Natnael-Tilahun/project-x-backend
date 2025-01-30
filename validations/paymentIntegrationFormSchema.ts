@@ -58,14 +58,10 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     transactionAmountType: TransactionAmountTypeSchema,
     visiblity: VisibilitySchema,
     confirmRecipientIdentity: z.boolean().optional().nullable().default(false),
-    reEnquirePaymentDetailBeforePayment: z
-      .boolean()
-      .optional()
-      .nullable()
-      .default(false),
+    reEnquirePaymentDetailBeforePayment: z.boolean().optional().nullable(),
     singleFormPayment: z.boolean().optional().nullable().default(false),
     defaultPaymentReason: z.string().optional().nullable(),
-    categoryMenus: z.array(z.any()).optional().nullable(),
+    // categoryMenus: z.array(z.any()).optional().nullable(),
     locals: z.array(z.any()).optional().nullable(),
     forms: z.array(z.any()).optional().nullable(),
     paymentOperations: z.array(z.any()).optional().nullable(),
