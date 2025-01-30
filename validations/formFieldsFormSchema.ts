@@ -51,6 +51,8 @@ export const formFieldsFormSchema = toTypedSchema(
     validationConfig: z.any().optional().nullable(),
     validationMessage: z.string().optional().nullable(),
     form: z.any().optional().nullable(),
+    rememberValue: z.boolean().optional().nullable(),
+    rememberExpiryDays: z.number().optional().nullable(),
   })
 );
 

@@ -203,6 +203,8 @@ const addNewParameter = () => {
     validationPattern: null,
     autoGenerateConfig: null,
     isHidden: false,
+    rememberValue: false,
+    rememberExpiryDays: null,
     interfaceType: InterfaceType.NONE,
     options: null,
     display: null,
@@ -625,6 +627,37 @@ watch(
                 <FormLabel> Is Hidden </FormLabel>
                 <FormControl>
                   <UiSwitch :checked="value" @update:checked="handleChange" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="data?.rememberValue"
+              v-slot="{ value, handleChange }"
+              name="rememberValue"
+            >
+              <FormItem>
+                <FormLabel> Remember Value </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value" @update:checked="handleChange" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              v-if="form.values?.rememberValue"
+              :model-value="data?.rememberExpiryDays"
+              v-slot="{ componentField }"
+              name="rememberExpiryDays"
+            >
+              <FormItem>
+                <FormLabel> Remember Expiry Days </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="number"
+                    placeholder="Enter expiry days"
+                    v-bind="componentField"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -1054,6 +1087,37 @@ watch(
                 <FormLabel> Is Hidden </FormLabel>
                 <FormControl>
                   <UiSwitch :checked="value" @update:checked="handleChange" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="item?.rememberValue"
+              v-slot="{ value, handleChange }"
+              name="rememberValue"
+            >
+              <FormItem>
+                <FormLabel> Remember Value </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value" @update:checked="handleChange" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              v-if="form.values?.rememberValue"
+              :model-value="item?.rememberExpiryDays"
+              v-slot="{ componentField }"
+              name="rememberExpiryDays"
+            >
+              <FormItem>
+                <FormLabel> Remember Expiry Days </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="number"
+                    placeholder="Enter expiry days"
+                    v-bind="componentField"
+                  />
                 </FormControl>
                 <FormMessage />
               </FormItem>

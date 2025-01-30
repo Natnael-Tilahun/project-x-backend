@@ -478,6 +478,8 @@ interface Field {
   validationConfig?: ValidationConfig | null;
   validationMessage?: string | null;
   form?: Form | null;
+  rememberValue?: boolean | null;
+  rememberExpiryDays?: number | null;
 }
 
 interface AutoGenerateConfig {
