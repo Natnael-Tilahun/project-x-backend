@@ -113,6 +113,16 @@ watch(
 //   },
 //   { immediate: true }
 // );
+
+// Create code-to-icon map
+const codeMap = Object.values(fas).reduce((acc, icon) => {
+  acc[icon.icon[3]] = ["fas", icon.iconName];
+  return acc;
+}, {});
+
+const getIconFromCode = (code) => {
+  return codeMap[code] || ["fas", "question-circle"];
+};
 </script>
 
 <template>
@@ -172,7 +182,7 @@ watch(
                         />
                         <FontAwesomeIcon
                           v-if="field.value"
-                          :icon="['fas', field.value.replace('fa-', '')]"
+                          :icon="getIconFromCode(field.value)"
                           class="absolute right-3 top-3 w-5 h-5 text-gray-700"
                         />
                       </div>
@@ -187,8 +197,8 @@ watch(
                       </DialogHeader>
                       <IconPicker
                         @select="
-                          (icon) => {
-                            field.onChange(icon);
+                          (code) => {
+                            field.onChange(code);
                             showPicker = false;
                           }
                         "

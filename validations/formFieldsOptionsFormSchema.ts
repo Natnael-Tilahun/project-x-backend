@@ -18,7 +18,7 @@ const AutoCompleteTriggerSchema = z
 export const formFieldsOptionsFormSchema = toTypedSchema(
   z.object({
     placeholder: z.string().optional().nullable(),
-    iconLeft: z.string().optional().nullable(),
+    iconLeft: z.any().optional().nullable(),
     clear: z.boolean().optional().nullable(),
     font: z.string().optional().nullable(),
     trim: z.boolean().optional().nullable(),
