@@ -13,7 +13,11 @@ const router = useRouter(); // {{ edit_2 }}
 
 const fetchData = async () => {
   try {
-    data.value = await getIntegrations(0, 100);
+    const integrations = await getIntegrations(0, 100);
+    // Sort integrations by name alphabetically
+    data.value = integrations.sort((a, b) =>
+      a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+    );
   } catch (error) {
     console.error("Error fetching integrations:", error);
     isError.value = true;

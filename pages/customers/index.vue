@@ -18,7 +18,14 @@ const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    data.value = await getCustomers(); // Call your API function to fetch roles
+    const customers = await getCustomers(); // Call your API function to fetch roles
+    // Sort integrations by name alphabetically, handling null values
+    data.value = customers.sort((a, b) => {
+      // Handle cases where fullName might be null
+      const nameA = a.fullName?.toLowerCase() || "";
+      const nameB = b.fullName?.toLowerCase() || "";
+      return nameA.localeCompare(nameB);
+    });
   } catch (err: any) {
     console.error("Error fetching customers:", err);
     isError.value = true;
@@ -28,7 +35,7 @@ const fetchData = async () => {
   }
 };
 
-await useAsyncData("customersData", async () => {
+onMounted(async () => {
   await fetchData();
 });
 

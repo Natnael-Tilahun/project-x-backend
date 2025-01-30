@@ -17,7 +17,11 @@ const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    data.value = await getPermissions(); // Call your API function to fetch profile
+    const permissions = await getPermissions();
+    // Sort integrations by name alphabetically
+    data.value = permissions.sort((a, b) =>
+      a.code.toLowerCase().localeCompare(b.code.toLowerCase())
+    );
     // console.log("Permission data; ", data.value);
     // formData.value = profileData; // Store the profile data in a reactive variable
   } catch (err) {
