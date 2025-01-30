@@ -2,7 +2,7 @@
 const openItems = ref(["item-1"]);
 
 import { useForm } from "vee-validate";
-import { ref, watch } from "vue";
+import { ref, watch, onMounted, onBeforeUnmount } from "vue";
 import { toast } from "~/components/ui/toast";
 import { formFieldsOptionsFormSchema } from "~/validations/formFieldsOptionsFormSchema";
 import {
@@ -123,6 +123,26 @@ const codeMap = Object.values(fas).reduce((acc, icon) => {
 const getIconFromCode = (code) => {
   return codeMap[code] || ["fas", "question-circle"];
 };
+
+const pickerContainer = ref(null);
+
+const togglePicker = () => {
+  showPicker.value = !showPicker.value;
+};
+
+const handleClickOutside = (event) => {
+  if (pickerContainer.value && !pickerContainer.value.contains(event.target)) {
+    showPicker.value = false;
+  }
+};
+
+onMounted(() => {
+  document.addEventListener("click", handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener("click", handleClickOutside);
+});
 </script>
 
 <template>
@@ -153,6 +173,19 @@ const getIconFromCode = (code) => {
                     <FormMessage />
                   </FormItem>
                 </FormField>
+                <FormField v-slot="{ componentField }" name="font">
+                  <FormItem>
+                    <FormLabel> Font </FormLabel>
+                    <FormControl>
+                      <UiInput
+                        type="text"
+                        placeholder="Enter font"
+                        v-bind="componentField"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
                 <!-- <FormField v-slot="{ componentField }" name="iconLeft">
                   <FormItem>
                     <FormLabel> Icon Left </FormLabel>
@@ -167,45 +200,47 @@ const getIconFromCode = (code) => {
                   </FormItem>
                 </FormField> -->
 
-                <FormField v-slot="{ field }" name="iconLeft">
-                  <FormItem>
-                    <FormLabel>Icon Left</FormLabel>
-                    <FormControl>
-                      <div class="relative">
-                        <UiInput
-                          type="text"
-                          placeholder="Select icon"
-                          :model-value="field.value"
-                          readonly
-                          class="cursor-pointer"
-                          @click="showPicker = true"
-                        />
-                        <FontAwesomeIcon
-                          v-if="field.value"
-                          :icon="getIconFromCode(field.value)"
-                          class="absolute right-3 top-3 w-5 h-5 text-gray-700"
-                        />
-                      </div>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
+                <div class="col-span-full">
+                  <FormField v-slot="{ field }" name="iconLeft">
+                    <FormItem>
+                      <FormLabel>Icon Left</FormLabel>
+                      <FormControl>
+                        <div class="relative" ref="pickerContainer">
+                          <UiInput
+                            type="text"
+                            placeholder="Select icon"
+                            :model-value="field.value"
+                            readonly
+                            class="cursor-pointer"
+                            @click="togglePicker"
+                          />
+                          <FontAwesomeIcon
+                            v-if="field.value"
+                            :icon="getIconFromCode(field.value)"
+                            class="absolute right-3 top-3 w-5 h-5 text-gray-700"
+                          />
 
-                  <Dialog v-model:open="showPicker">
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Select Icon</DialogTitle>
-                      </DialogHeader>
-                      <IconPicker
-                        @select="
-                          (code) => {
-                            field.onChange(code);
-                            showPicker = false;
-                          }
-                        "
-                      />
-                    </DialogContent>
-                  </Dialog>
-                </FormField>
+                          <!-- Icon Picker Container -->
+                          <div
+                            v-if="showPicker"
+                            class="absolute top-full left-0 w-full z-50 mt-2 bg-white rounded-lg border p-2"
+                          >
+                            <IconPicker
+                              @select="
+                                (code) => {
+                                  field.onChange(code);
+                                  showPicker = false;
+                                }
+                              "
+                              @close="showPicker = false"
+                            />
+                          </div>
+                        </div>
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
 
                 <FormField
                   :model-value="data?.clear"
@@ -223,19 +258,7 @@ const getIconFromCode = (code) => {
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField v-slot="{ componentField }" name="font">
-                  <FormItem>
-                    <FormLabel> Font </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter font"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
+
                 <FormField
                   :model-value="data?.trim"
                   v-slot="{ value, handleChange }"
@@ -641,4 +664,28 @@ const getIconFromCode = (code) => {
   </UiSheet>
 </template>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+.absolute > .icon-picker {
+  max-height: 100%;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.absolute > .icon-picker::-webkit-scrollbar {
+  width: 6px;
+}
+
+.absolute > .icon-picker::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.absolute > .icon-picker::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.absolute > .icon-picker::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+</style>

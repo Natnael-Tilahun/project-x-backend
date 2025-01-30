@@ -42,7 +42,7 @@ const handleSelect = (icon) => {
 </script>
 
 <template>
-  <div class="icon-picker">
+  <div class="icon-picker w-full">
     <UiInput
       v-model="searchQuery"
       placeholder="Search icons..."
@@ -50,11 +50,13 @@ const handleSelect = (icon) => {
       @keydown.esc="searchQuery = ''"
     />
 
-    <div class="grid grid-cols-8 gap-4 max-h-96 overflow-y-auto">
+    <div
+      class="grid grid-cols-6 gap-4 max-h-[60vh] overflow-y-auto border rounded-lg"
+    >
       <div
         v-for="icon in filteredIcons"
         :key="icon.iconName"
-        class="cursor-pointer p-2 hover:bg-gray-100 rounded flex flex-col items-center"
+        class="cursor-pointer p-4 hover:bg-gray-100 rounded-lg flex flex-col items-center"
         @click="handleSelect(icon)"
       >
         <font-awesome-icon
