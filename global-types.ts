@@ -321,3 +321,21 @@ export enum Width {
   HALF = "HALF",
   NONE = "NONE",
 }
+
+export enum MaximumAmountVariableType {
+  NONE = "NONE",
+  FIXED = "FIXED",
+  DYNAMIC = "DYNAMIC",
+}
+
+export enum MinimumAmountVariableType {
+  NONE = "NONE",
+  FIXED = "FIXED",
+  DYNAMIC = "DYNAMIC",
+}
+
+export enum CreditAccountNumberVariableType {
+  NONE = "NONE",
+  FIXED = "FIXED",
+  DYNAMIC = "DYNAMIC",
+}

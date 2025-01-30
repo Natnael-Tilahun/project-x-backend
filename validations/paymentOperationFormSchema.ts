@@ -41,5 +41,8 @@ export const paymentOperationFormSchema = toTypedSchema(
       .optional()
       .nullable(),
     amountEnquiryPath: z.string().optional().nullable(),
+    maximumAmountEnquiryPath: z.string().optional().nullable(),
+    minimumAmountEnquiryPath: z.string().optional().nullable(),
+    creditAccountNumberEnquiryPath: z.string().optional().nullable(),
   })
 );

@@ -30,6 +30,9 @@ import {
   AutoCompleteTrigger,
   Display,
   Width,
+  MaximumAmountVariableType,
+  MinimumAmountVariableType,
+  CreditAccountNumberVariableType,
 } from "@/global-types";
 
 interface User {
@@ -379,6 +382,14 @@ interface PaymentIntegration {
   accountNumber?: string | null;
   minimumAmount?: number | null;
   maximumAmount?: number | null;
+  maximumAmountVariableType?: MaximumAmountVariableType | null;
+  minimumAmountVariableType?: MinimumAmountVariableType | null;
+  creditAccountNumberVariableType?: CreditAccountNumberVariableType | null;
+  transactionAmountType?: TransactionAmountType | null;
+  // amountEnquiryPath?: string | null;
+  // maximumAmountEnquiryPath?: string | null;
+  // minimumAmountEnquiryPath?: string | null;
+  // creditAccountNumberEnquiryPath?: string | null;
   currencyCode?: string | null;
   paymentConfirmationTemplate?: string | null;
   paymentDetailTemplate?: string | null;
@@ -388,14 +399,12 @@ interface PaymentIntegration {
   paymentDetailTemplateShort?: string | null;
   paymentSuccessTemplateShort?: string | null;
   paymentErrorTemplateShort?: string | null;
+  defaultPaymentReason?: string | null;
   integrationType?: PaymentIntegrationType | null;
-  transactionAmountType?: TransactionAmountType | null;
   visibility?: Visibility | null;
   confirmRecipientIdentity?: boolean | null;
   reEnquirePaymentDetailBeforePayment?: boolean | null;
   singleFormPayment?: boolean | null;
-  defaultPaymentReason?: string | null;
-  categoryMenus?: Menu[] | null;
 }
 
 interface Menu {
@@ -436,6 +445,10 @@ interface PaymentOperation {
   apiOperation?: ApiOperation | null;
   form?: Form | null;
   apiRequestMappingsRegistry?: ApiRequestMappingsRegistry[] | null;
+  amountEnquiryPath?: string | null;
+  maximumAmountEnquiryPath?: string | null;
+  minimumAmountEnquiryPath?: string | null;
+  creditAccountNumberEnquiryPath?: string | null;
 }
 
 interface Field {

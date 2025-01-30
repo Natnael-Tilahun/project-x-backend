@@ -58,7 +58,7 @@ definePageMeta({
           </p> -->
         </div>
         <LoginForm />
-        <p class="px-8 text-center text-sm text-muted-foreground">
+        <!-- <p class="px-8 text-center text-sm text-muted-foreground">
           By clicking continue, you agree to our
           <a
             href="/terms"
@@ -74,7 +74,7 @@ definePageMeta({
             Privacy Policy
           </a>
           .
-        </p>
+        </p> -->
         <UiCopyright />
       </div>
     </div>

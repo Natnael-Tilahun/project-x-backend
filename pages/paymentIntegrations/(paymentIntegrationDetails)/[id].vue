@@ -15,6 +15,9 @@ import {
 import {
   PaymentIntegrationType,
   TransactionAmountType,
+  MaximumAmountVariableType,
+  MinimumAmountVariableType,
+  CreditAccountNumberVariableType,
   Visibility,
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
@@ -42,9 +45,6 @@ const activeTab = route.query.activeTab as string;
 openItems.value = activeTab || "IntegrationDetails";
 
 const operationName = ref<string>("Configure Payment Operations");
-const categoryMenus = ref<Menu[]>([]);
-const selectedCategoryMenus = ref<Menu[]>([]);
-const { getMenus } = useMenus();
 
 // Watch for changes in the route's query parameters
 watch(
@@ -61,13 +61,21 @@ const form = useForm<PaymentIntegration>({
 });
 
 const onSubmit = form.handleSubmit(async (values: any) => {
+  console.log("values: ", values);
   try {
     loading.value = true;
     const data = {
       ...values,
-      categoryMenus: values?.categoryMenus
-        ? values?.categoryMenus?.map((menu: any) => ({ id: menu }))
-        : [],
+      maximumAmount:
+        values?.maximumAmountVariableType == MaximumAmountVariableType.FIXED &&
+        values?.transactionAmountType == TransactionAmountType.USER_DEFINED
+          ? values?.maximumAmount
+          : null,
+      minimumAmount:
+        values?.minimumAmountVariableType == MinimumAmountVariableType.FIXED &&
+        values?.transactionAmountType == TransactionAmountType.USER_DEFINED
+          ? values?.minimumAmount
+          : null,
     };
     console.log("values: ", data);
     data.value = await updatePaymentIntegration(values.id, data); // Call your API function to fetch profile
@@ -77,6 +85,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       title: "Payment Integration Updated",
       description: "Payment Integration updated successfully",
     });
+    await refetch();
   } catch (err: any) {
     console.error("Error updating payment integration:", err);
     isError.value = true;
@@ -107,7 +116,6 @@ const getPaymentIntegrationData = async () => {
     loading.value = true;
     data.value = await getPaymentIntegrationById(integrationId.value);
     form.setValues(data.value);
-    selectedCategoryMenus.value = data.value?.categoryMenus || [];
     console.log("data.value: ", data.value);
   } catch (err) {
     console.error("Error fetching payment integrations:", err);
@@ -117,21 +125,12 @@ const getPaymentIntegrationData = async () => {
   }
 };
 
-const fetchMenus = async () => {
-  try {
-    categoryMenus.value = await getMenus();
-  } catch (err) {
-    console.error("Error fetching menus:", err);
-  }
-};
 onMounted(async () => {
   await getPaymentIntegrationData();
-  await fetchMenus();
 });
 
 const refetch = async () => {
   await getPaymentIntegrationData();
-  await fetchMenus();
 };
 </script>
 
@@ -328,23 +327,6 @@ const refetch = async () => {
                 </FormItem>
               </FormField>
               <FormField
-                :model-value="data?.accountNumber"
-                v-slot="{ componentField }"
-                name="accountNumber"
-              >
-                <FormItem>
-                  <FormLabel> Account Number </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="text"
-                      placeholder="Enter account number"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
                 :model-value="data?.currencyCode"
                 v-slot="{ componentField }"
                 name="currencyCode"
@@ -355,40 +337,6 @@ const refetch = async () => {
                     <UiInput
                       type="text"
                       placeholder="Enter currency code"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.minimumAmount"
-                v-slot="{ componentField }"
-                name="minimumAmount"
-              >
-                <FormItem>
-                  <FormLabel> Minimum Amount </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="number"
-                      placeholder="Enter minimum amount"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.maximumAmount"
-                v-slot="{ componentField }"
-                name="maximumAmount"
-              >
-                <FormItem>
-                  <FormLabel> Maximum Amount </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="number"
-                      placeholder="Enter maximum amount"
                       v-bind="componentField"
                     />
                   </FormControl>
@@ -464,6 +412,190 @@ const refetch = async () => {
                 </FormItem>
               </FormField>
               <FormField
+                v-if="
+                  form.values.transactionAmountType ==
+                  TransactionAmountType.USER_DEFINED
+                "
+                :model-value="data?.maximumAmountVariableType"
+                v-slot="{ componentField }"
+                name="maximumAmountVariableType"
+              >
+                <FormItem>
+                  <FormLabel> Maximum Amount Variable Type </FormLabel>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue
+                          :placeholder="
+                            data?.maximumAmountVariableType
+                              ? data?.maximumAmountVariableType
+                              : 'Select a maximum amount variable type'
+                          "
+                        />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem
+                          v-for="item in Object.values(
+                            MaximumAmountVariableType
+                          )"
+                          :key="item"
+                          :value="item"
+                        >
+                          {{ item }}
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                v-if="
+                  form.values.maximumAmountVariableType ==
+                    MaximumAmountVariableType.FIXED &&
+                  form.values.transactionAmountType ==
+                    TransactionAmountType.USER_DEFINED
+                "
+                :model-value="data?.maximumAmount"
+                v-slot="{ componentField }"
+                name="maximumAmount"
+              >
+                <FormItem>
+                  <FormLabel> Maximum Amount </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter maximum amount"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                v-if="
+                  form.values.transactionAmountType ==
+                  TransactionAmountType.USER_DEFINED
+                "
+                :model-value="data?.minimumAmountVariableType"
+                v-slot="{ componentField }"
+                name="minimumAmountVariableType"
+              >
+                <FormItem>
+                  <FormLabel> Minimum Amount Variable Type </FormLabel>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue
+                          :placeholder="
+                            data?.minimumAmountVariableType
+                              ? data?.minimumAmountVariableType
+                              : 'Select a minimum amount variable type'
+                          "
+                        />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem
+                          v-for="item in Object.values(
+                            MinimumAmountVariableType
+                          )"
+                          :key="item"
+                          :value="item"
+                        >
+                          {{ item }}
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                v-if="
+                  form.values.minimumAmountVariableType ==
+                    MinimumAmountVariableType.FIXED &&
+                  form.values.transactionAmountType ==
+                    TransactionAmountType.USER_DEFINED
+                "
+                :model-value="data?.minimumAmount"
+                v-slot="{ componentField }"
+                name="minimumAmount"
+              >
+                <FormItem>
+                  <FormLabel> Minimum Amount </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter minimum amount"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.creditAccountNumberVariableType"
+                v-slot="{ componentField }"
+                name="creditAccountNumberVariableType"
+              >
+                <FormItem>
+                  <FormLabel> Credit Account Number Variable Type </FormLabel>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue
+                          :placeholder="
+                            data?.creditAccountNumberVariableType
+                              ? data?.creditAccountNumberVariableType
+                              : 'Select a credit account number variable type'
+                          "
+                        />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem
+                          v-for="item in Object.values(
+                            CreditAccountNumberVariableType
+                          )"
+                          :key="item"
+                          :value="item"
+                        >
+                          {{ item }}
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                v-if="
+                  form.values.creditAccountNumberVariableType ==
+                  CreditAccountNumberVariableType.FIXED
+                "
+                :model-value="data?.accountNumber"
+                v-slot="{ componentField }"
+                name="accountNumber"
+              >
+                <FormItem>
+                  <FormLabel> Account Number </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="text"
+                      placeholder="Enter account number"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+
+              <FormField
                 :model-value="data?.visiblity"
                 v-slot="{ componentField }"
                 name="visiblity"
@@ -497,94 +629,7 @@ const refetch = async () => {
                   </UiSelect>
                 </FormItem>
               </FormField>
-              <FormField
-                :model-value="data?.categoryMenus"
-                v-slot="{ componentField, errorMessage }"
-                name="categoryMenus"
-              >
-                <FormItem>
-                  <FormLabel> Category Menus </FormLabel>
-                  <UiPopover>
-                    <UiPopoverTrigger asChild>
-                      <FormControl>
-                        <div
-                          variant="outline"
-                          role="combobox"
-                          class="w-full text-sm text-left border h-10 flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
-                          :class="{
-                            'text-muted-foreground':
-                              !selectedCategoryMenus?.length,
-                          }"
-                        >
-                          {{
-                            selectedCategoryMenus?.length
-                              ? selectedCategoryMenus
-                                  .map((menu) => menu.menuName)
-                                  .join(", ")
-                              : "Select category menus"
-                          }}
-                          <Icon
-                            name="material-symbols:unfold-more-rounded"
-                            class="ml-2 h-4 w-4 shrink-0 opacity-50"
-                          ></Icon>
-                        </div>
-                      </FormControl>
-                    </UiPopoverTrigger>
-                    <UiPopoverContent class="w-[200px] p-0">
-                      <UiCommand>
-                        <UiCommandInput placeholder="Search category menu..." />
-                        <UiCommandList>
-                          <UiCommandEmpty>
-                            No category menu found.
-                          </UiCommandEmpty>
-                          <UiCommandGroup>
-                            <UiCommandItem
-                              :disabled="true"
-                              v-for="menu in categoryMenus"
-                              :key="menu.id"
-                              :value="menu.menuName"
-                              @select="
-                                () => {
-                                  const isSelected = selectedCategoryMenus.some(
-                                    (selected) => selected.id === menu.id
-                                  );
 
-                                  if (isSelected) {
-                                    selectedCategoryMenus =
-                                      selectedCategoryMenus.filter(
-                                        (selected) => selected.id !== menu.id
-                                      );
-                                  } else {
-                                    selectedCategoryMenus.push(menu);
-                                  }
-
-                                  // Update the form value with the array of menu IDs
-                                  form.setFieldValue(
-                                    'categoryMenus',
-                                    selectedCategoryMenus.map((menu) => menu.id)
-                                  );
-                                }
-                              "
-                            >
-                              {{ menu.menuName }}
-                              <UiCheckbox
-                                :disabled="true"
-                                :checked="
-                                  selectedCategoryMenus.some(
-                                    (selected) => selected.id === menu.id
-                                  )
-                                "
-                                class="ml-auto"
-                              />
-                            </UiCommandItem>
-                          </UiCommandGroup>
-                        </UiCommandList>
-                      </UiCommand>
-                    </UiPopoverContent>
-                  </UiPopover>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
               <FormField
                 :model-value="data?.defaultPaymentReason"
                 v-slot="{ componentField }"
@@ -864,7 +909,7 @@ const refetch = async () => {
         value="configurePaymentOperations"
         class="text-base bg-background py-0 rounded-lg"
       >
-        <PaymentOperationsConfigurations />
+        <PaymentOperationsConfigurations :integrationDataProps="data" />
       </UiTabsContent>
 
       <UiTabsContent

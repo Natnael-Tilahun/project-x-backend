@@ -11,7 +11,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { PaymentOperationType } from "@/global-types";
+import {
+  PaymentOperationType,
+  TransactionAmountType,
+  MaximumAmountVariableType,
+  MinimumAmountVariableType,
+  CreditAccountNumberVariableType,
+} from "@/global-types";
 
 const openItems = ref("info");
 const route = useRoute();
@@ -44,6 +50,7 @@ const props = defineProps<{
   integrationId: string;
 }>();
 const selectedApiIntegration = ref<string>("");
+const paymentIntegrationData = ref<PaymentIntegration>();
 const selectedApiOperations = ref<string[]>([]);
 
 if (props?.integrationId) {
@@ -123,11 +130,14 @@ const fetchData = async () => {
       getIntegrations().catch(() => []),
     ]);
     selectedApiIntegration.value = apiIntegrations.value[0].id;
-
     selectedApiOperations.value = apiOperations.value.filter(
       (operation) =>
         operation?.apiIntegration?.id === selectedApiIntegration.value
     );
+    paymentIntegrationData.value = allPaymentIntegrations.value.filter(
+      (integration) => integration.id === integrationId.value
+    );
+    console.log("selectedPaymentIntegrationData", paymentIntegrationData.value);
   } catch (error) {
     isError.value = true;
     console.error("Error fetching data:", error);
@@ -282,7 +292,7 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
               </UiSelect>
             </FormItem>
           </FormField>
-          <FormField
+          <!-- <FormField
             :model-value="data?.amountEnquiryPath"
             v-slot="{ componentField }"
             name="amountEnquiryPath"
@@ -310,6 +320,168 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
                     </UiSelectItem>
                     <UiSelectItem disabled v-else
                       >No amount enquiry path found</UiSelectItem
+                    >
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField> -->
+          <FormField
+            v-if="
+              paymentIntegrationData?.transactionAmountType ==
+              TransactionAmountType.PREDEFINED
+            "
+            :model-value="data?.amountEnquiryPath"
+            v-slot="{ componentField }"
+            name="amountEnquiryPath"
+          >
+            <FormItem>
+              <FormLabel> Amount Enquiry Path </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue placeholder="Enter amount enquiry path" />
+                  </UiSelectTrigger>
+                </FormControl>
+                <FormMessage />
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-if="data?.apiRequestMappingsRegistryOptions"
+                      v-for="item in data?.apiRequestMappingsRegistryOptions[
+                        '$enquiryApiResponse.'
+                      ]"
+                      :key="item"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                    <UiSelectItem v-else
+                      >No amount enquiry path found</UiSelectItem
+                    >
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField>
+
+          <FormField
+            v-if="
+              paymentIntegrationData?.transactionAmountType ==
+                TransactionAmountType.USER_DEFINED &&
+              paymentIntegrationData?.maximumAmountVariableType ==
+                MaximumAmountVariableType.DYNAMIC
+            "
+            :model-value="data?.maximumAmountEnquiryPath"
+            v-slot="{ componentField }"
+            name="maximumAmountEnquiryPath"
+          >
+            <FormItem>
+              <FormLabel> Maximum Amount Enquiry Path </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue placeholder="Enter amount enquiry path" />
+                  </UiSelectTrigger>
+                </FormControl>
+                <FormMessage />
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-if="data?.apiRequestMappingsRegistryOptions"
+                      v-for="item in data?.apiRequestMappingsRegistryOptions[
+                        '$enquiryApiResponse.'
+                      ]"
+                      :key="item"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                    <UiSelectItem v-else
+                      >No maximum amount enquiry path found</UiSelectItem
+                    >
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField>
+          <FormField
+            v-if="
+              paymentIntegrationData?.transactionAmountType ==
+                TransactionAmountType.USER_DEFINED &&
+              paymentIntegrationData?.minimumAmountVariableType ==
+                MinimumAmountVariableType.DYNAMIC
+            "
+            :model-value="data?.minimumAmountEnquiryPath"
+            v-slot="{ componentField }"
+            name="minimumAmountEnquiryPath"
+          >
+            <FormItem>
+              <FormLabel> Minimum Amount Enquiry Path </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue
+                      placeholder="Enter minimum amount enquiry path"
+                    />
+                  </UiSelectTrigger>
+                </FormControl>
+                <FormMessage />
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-if="data?.apiRequestMappingsRegistryOptions"
+                      v-for="item in data?.apiRequestMappingsRegistryOptions[
+                        '$enquiryApiResponse.'
+                      ]"
+                      :key="item"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                    <UiSelectItem v-else
+                      >No minimum amount enquiry path found</UiSelectItem
+                    >
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+            </FormItem>
+          </FormField>
+
+          <FormField
+            v-if="
+              paymentIntegrationData?.creditAccountNumberVariableType ===
+              CreditAccountNumberVariableType.DYNAMIC
+            "
+            :model-value="data?.creditAccountNumberEnquiryPath"
+            v-slot="{ componentField }"
+            name="creditAccountNumberEnquiryPath"
+          >
+            <FormItem>
+              <FormLabel> Credit Account Number Enquiry Path </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue
+                      placeholder="Enter credit account number enquiry path"
+                    />
+                  </UiSelectTrigger>
+                </FormControl>
+                <FormMessage />
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-if="data?.apiRequestMappingsRegistryOptions"
+                      v-for="item in data?.apiRequestMappingsRegistryOptions[
+                        '$enquiryApiResponse.'
+                      ]"
+                      :key="item"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                    <UiSelectItem v-else
+                      >No credit account number enquiry path found</UiSelectItem
                     >
                   </UiSelectGroup>
                 </UiSelectContent>

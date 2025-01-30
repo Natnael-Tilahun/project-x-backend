@@ -6,6 +6,9 @@ import {
   TransactionAmountType,
   PaymentOperationType,
   FormType,
+  MaximumAmountVariableType,
+  MinimumAmountVariableType,
+  CreditAccountNumberVariableType,
 } from "@/global-types";
 
 const IntegrationTypeSchema = z.nativeEnum(PaymentIntegrationType);
@@ -16,6 +19,18 @@ const PaymentOperationTypeSchema = z
   .nullable()
   .optional();
 const FormTypeSchema = z.nativeEnum(FormType).nullable().optional();
+const MaximumAmountVariableTypeSchema = z
+  .nativeEnum(MaximumAmountVariableType)
+  .nullable()
+  .optional();
+const MinimumAmountVariableTypeSchema = z
+  .nativeEnum(MinimumAmountVariableType)
+  .nullable()
+  .optional();
+const CreditAccountNumberVariableTypeSchema = z
+  .nativeEnum(CreditAccountNumberVariableType)
+  .nullable()
+  .optional();
 
 export const paymentIntegrationFormSchema = toTypedSchema(
   z.object({
@@ -43,17 +58,16 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     transactionAmountType: TransactionAmountTypeSchema,
     visiblity: VisibilitySchema,
     confirmRecipientIdentity: z.boolean().optional().nullable().default(false),
-    reEnquirePaymentDetailBeforePayment: z
-      .boolean()
-      .optional()
-      .nullable()
-      .default(false),
+    reEnquirePaymentDetailBeforePayment: z.boolean().optional().nullable(),
     singleFormPayment: z.boolean().optional().nullable().default(false),
     defaultPaymentReason: z.string().optional().nullable(),
-    categoryMenus: z.array(z.any()).optional().nullable(),
+    // categoryMenus: z.array(z.any()).optional().nullable(),
     locals: z.array(z.any()).optional().nullable(),
     forms: z.array(z.any()).optional().nullable(),
     paymentOperations: z.array(z.any()).optional().nullable(),
+    maximumAmountVariableType: MaximumAmountVariableTypeSchema,
+    minimumAmountVariableType: MinimumAmountVariableTypeSchema,
+    creditAccountNumberVariableType: CreditAccountNumberVariableTypeSchema,
   })
 );
 

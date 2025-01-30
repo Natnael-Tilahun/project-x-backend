@@ -76,7 +76,12 @@ export default defineNuxtConfig({
 
   experimental: {
     modern: true,
-   },
+  },
+
+  plugins: ["~/plugins/fontawesome.ts"],
+  build: {
+    transpile: ["@fortawesome/vue-fontawesome", "lodash-es"],
+  },
 
   compatibilityDate: "2024-12-16",
 });
