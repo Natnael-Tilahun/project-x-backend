@@ -16,7 +16,11 @@ const getMenuData = async () => {
     isLoading.value = true;
     loading.value = true;
     isError.value = false;
-    data.value = await getMenus(0, 100);
+    const menus = await getMenus(0, 100);
+    // Sort integrations by name alphabetically
+    data.value = menus.sort((a, b) =>
+      a.menuName.toLowerCase().localeCompare(b.menuName.toLowerCase())
+    );
   } catch (error) {
     console.error("Error fetching menu categories:", error);
     isError.value = true;

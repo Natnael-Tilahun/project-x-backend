@@ -13,7 +13,11 @@ const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    data.value = await getMerchants(0, 100); // Call your API function to fetch roles
+    const merchants = await getMerchants(0, 100);
+    // Sort integrations by name alphabetically
+    data.value = merchants.sort((a, b) =>
+      a.businessName.toLowerCase().localeCompare(b.businessName.toLowerCase())
+    );
   } catch (err: any) {
     console.error("Error fetching merchants:", err);
     isError.value = true;
