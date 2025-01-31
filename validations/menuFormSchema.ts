@@ -2,9 +2,9 @@ import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
 import { MenuLayoutType, PaginationType } from "@/global-types";
 
-const MenuLayoutTypeSchema = z.nativeEnum(MenuLayoutType).optional().nullable()
-const PaginationTypeSchema = z.nativeEnum(PaginationType).optional().nullable()
-  
+const MenuLayoutTypeSchema = z.nativeEnum(MenuLayoutType).optional().nullable();
+const PaginationTypeSchema = z.nativeEnum(PaginationType).optional().nullable();
+
 export const menuFormSchema = toTypedSchema(
   z.object({
     id: z.string().optional(),
@@ -20,5 +20,6 @@ export const menuFormSchema = toTypedSchema(
     sortOrder: z.number().optional().nullable(),
     paginationType: PaginationTypeSchema,
     paginationSize: z.number().optional().nullable(),
+    isSuperParent: z.boolean().optional().nullable(),
   })
 );

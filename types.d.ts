@@ -422,6 +422,7 @@ interface Menu {
   sortOrder?: number | null;
   paginationType?: PaginationType | null;
   paginationSize?: number | null;
+  isSuperParent?: boolean | null;
 }
 
 interface Local {
