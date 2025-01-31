@@ -478,6 +478,19 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
+          <FormField
+            :model-value="data?.isSuperParent"
+            v-slot="{ value, handleChange }"
+            name="isSuperParent"
+          >
+            <FormItem>
+              <FormLabel> Is Super Parent </FormLabel>
+              <FormControl>
+                <UiSwitch :checked="value" @update:checked="handleChange" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"

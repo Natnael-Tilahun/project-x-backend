@@ -122,12 +122,12 @@ const fetchData = async () => {
       allPaymentIntegrations.value,
       apiIntegrations.value,
     ] = await Promise.all([
-      getOperations().catch(() => []),
+      getOperations(0, 1000).catch(() => []),
       getPaymentIntegrationPaymentOperations(integrationId.value).catch(
         () => []
       ),
       getPaymentIntegrations().catch(() => []),
-      getIntegrations().catch(() => []),
+      getIntegrations(0, 1000).catch(() => []),
     ]);
     selectedApiIntegration.value = apiIntegrations.value[0].id;
     selectedApiOperations.value = apiOperations.value.filter(
