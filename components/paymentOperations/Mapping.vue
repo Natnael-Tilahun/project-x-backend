@@ -400,9 +400,7 @@ watch(
 
 // Add a function to get mapping path values for a specific prefix
 const getMappingPathValuesForPrefix = (prefix: string) => {
-  return (apiRequestMappingsRegistryOptions.value?.[prefix] || []).sort(
-    (a, b) => a.localeCompare(b, undefined, { sensitivity: "base" })
-  );
+  return apiRequestMappingsRegistryOptions.value?.[prefix] || [];
 };
 </script>
 
@@ -520,7 +518,11 @@ const getMappingPathValuesForPrefix = (prefix: string) => {
                       <UiSelectContent>
                         <UiSelectGroup>
                           <UiSelectItem
-                            v-for="value in mappingPathValues"
+                            v-for="value in mappingPathValues.sort((a, b) =>
+                              a.localeCompare(b, undefined, {
+                                sensitivity: 'base',
+                              })
+                            )"
                             :value="value"
                             >{{ value }}</UiSelectItem
                           >
@@ -671,6 +673,10 @@ const getMappingPathValuesForPrefix = (prefix: string) => {
                           <UiSelectItem
                             v-for="value in getMappingPathValuesForPrefix(
                               getMappingPathParts(item.mappingPath).prefix
+                            ).sort((a, b) =>
+                              a.localeCompare(b, undefined, {
+                                sensitivity: 'base',
+                              })
                             )"
                             :value="value"
                             >{{ value }}</UiSelectItem
