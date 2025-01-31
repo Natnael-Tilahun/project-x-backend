@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { watch } from "vue"; // Import watch from Vue
+import { watch, onBeforeUnmount } from "vue"; // Import watch and onBeforeUnmount from Vue
 import { useForm } from "vee-validate";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
@@ -21,6 +21,7 @@ import {
   Visibility,
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import { useDocuments } from "~/composables/useDocuments";
 
 const route = useRoute();
 const {
@@ -29,6 +30,7 @@ const {
   isSubmitting,
   isLoading,
 } = usePaymentIntegrations();
+const { uploadFile, getFile } = useDocuments(); // Get the upload function
 
 const openItems = ref("IntegrationDetails");
 const fullPath = ref(route.fullPath);
@@ -43,8 +45,16 @@ const pathLength = pathSegments.value.length;
 integrationId.value = route.params.id;
 const activeTab = route.query.activeTab as string;
 openItems.value = activeTab || "IntegrationDetails";
-
 const operationName = ref<string>("Configure Payment Operations");
+// Add this ref for the preview
+const imagePreview = ref(null);
+const selectedFile = ref(null);
+const uploadLoading = ref(false);
+
+// Add a ref for the file input
+const fileInput = ref(null);
+
+const fileInputKey = ref(0); // Add this ref for forcing input recreation
 
 // Watch for changes in the route's query parameters
 watch(
@@ -117,6 +127,9 @@ const getPaymentIntegrationData = async () => {
     data.value = await getPaymentIntegrationById(integrationId.value);
     form.setValues(data.value);
     console.log("data.value: ", data.value);
+    if (data.value?.iconPath && data.value.isImage) {
+      await getUploadedImage(data.value?.iconPath);
+    }
   } catch (err) {
     console.error("Error fetching payment integrations:", err);
     isError.value = true;
@@ -132,6 +145,109 @@ onMounted(async () => {
 const refetch = async () => {
   await getPaymentIntegrationData();
 };
+
+// Modified file selection handler
+const handleFileSelect = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    selectedFile.value = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imagePreview.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+// Add upload handler
+const handleUpload = async () => {
+  if (!selectedFile.value) {
+    toast({
+      title: "No file selected",
+      description: "Please select an image to upload",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  try {
+    uploadLoading.value = true;
+    const response = await uploadFile(
+      selectedFile.value,
+      integrationId.value,
+      "PAYMENT_INTEGRATION"
+    );
+    console.log("response: ", response);
+    // Update the form's iconPath with the uploaded file's ID/path
+    form.setFieldValue("iconPath", response.id); // Adjust according to your API response structure
+    toast({
+      title: "Success",
+      description: "Image uploaded successfully",
+    });
+
+    // Clear the file input
+    selectedFile.value = null;
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    toast({
+      title: "Error",
+      description: "Failed to upload image",
+      variant: "destructive",
+    });
+  } finally {
+    uploadLoading.value = false;
+  }
+};
+
+const getUploadedImage = async (iconPath) => {
+  console.log("iconPathaa: ", iconPath);
+  try {
+    const response = await getFile(iconPath, "PAYMENT_INTEGRATION");
+
+    // Handle blob response
+    if (response instanceof Blob) {
+      imagePreview.value = URL.createObjectURL(response);
+    }
+    // Handle base64 response
+    else if (typeof response === "string" && response.startsWith("data:")) {
+      imagePreview.value = response;
+    }
+    // Handle raw base64 (without data URI prefix)
+    else if (typeof response === "string") {
+      imagePreview.value = `data:image/jpeg;base64,${response}`;
+    }
+  } catch (error) {
+    console.error("Error fetching file:", error);
+  }
+};
+
+// Modify remove handler to also revoke object URL if it exists
+const handleRemoveImage = () => {
+  if (imagePreview.value?.startsWith("blob:")) {
+    URL.revokeObjectURL(imagePreview.value);
+  }
+  imagePreview.value = null;
+  selectedFile.value = null;
+  fileInputKey.value++;
+  form.setFieldValue("iconPath", ""); // Adjust according to your API response structure
+};
+
+// Clean up object URL when component is unmounted
+onBeforeUnmount(() => {
+  if (imagePreview.value?.startsWith("blob:")) {
+    URL.revokeObjectURL(imagePreview.value);
+  }
+});
+
+// Call getUploadedImage when component mounts or when data changes
+watch(
+  () => data.value?.iconPath,
+  (newIconPath) => {
+    if (newIconPath) {
+      getUploadedImage(newIconPath);
+    }
+  }
+);
 </script>
 
 <template>
@@ -272,23 +388,79 @@ const refetch = async () => {
                   <FormMessage />
                 </FormItem>
               </FormField>
-              <FormField
-                :model-value="data?.iconPath"
-                v-slot="{ componentField }"
-                name="iconPath"
-              >
-                <FormItem>
-                  <FormLabel> Icon Path </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="text"
-                      placeholder="Enter icon path"
-                      v-bind="componentField"
+              <div class="w-full grid grid-cols-5 gap-2">
+                <div class="col-span-2 w-full">
+                  <FormField
+                    :model-value="data?.iconPath"
+                    v-slot="{ componentField }"
+                    name="iconPath"
+                  >
+                    <FormItem>
+                      <FormLabel> Icon Path </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          v-bind="componentField"
+                          type="text"
+                          :disabled="form.values.isImage"
+                          placeholder="Enter icon path"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
+                <div
+                  v-if="form.values.isImage"
+                  class="w-full flex gap-2 col-span-3"
+                >
+                  <div>
+                    <FormField name="uploadIcon">
+                      <FormItem>
+                        <FormLabel> Upload Icon </FormLabel>
+                        <FormControl>
+                          <UiInput
+                            :key="fileInputKey"
+                            class="w-full"
+                            type="file"
+                            accept="image/*"
+                            @change="handleFileSelect"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    </FormField>
+                    <!-- Image Preview with Remove Button -->
+                    <div v-if="imagePreview" class="mt-2 relative group">
+                      <button
+                        @click="handleRemoveImage"
+                        class="group-hover:flex hidden absolute top-2 right-2 bg-red-500 rounded-lg p-1 items-center justify-center shadow-sm"
+                      >
+                        <Icon name="lucide:x" class="h-6 w-6 text-white" />
+                      </button>
+                      <img
+                        :src="imagePreview"
+                        alt="Preview"
+                        class="w-full h-60 object-contain rounded-md border"
+                      />
+                    </div>
+                  </div>
+                  <UiButton
+                    size="sm"
+                    type="button"
+                    class="self-en mt-7"
+                    :disabled="!selectedFile || uploadLoading"
+                    @click="handleUpload"
+                  >
+                    <Icon
+                      v-if="uploadLoading"
+                      name="svg-spinners:8-dots-rotate"
+                      class="mr-2 h-4 w-4 animate-spin"
                     />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
+                    Upload
+                  </UiButton>
+                </div>
+              </div>
+
               <div class="col-span-full">
                 <FormField
                   :model-value="data?.description"
@@ -829,6 +1001,20 @@ const refetch = async () => {
               </FormField>
 
               <FormField
+                :model-value="data?.isImage"
+                v-slot="{ value, handleChange }"
+                name="isImage"
+              >
+                <FormItem>
+                  <FormLabel> Is Image </FormLabel>
+                  <FormControl>
+                    <UiSwitch :checked="value" @update:checked="handleChange" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+
+              <FormField
                 :model-value="data?.confirmRecipientIdentity"
                 v-slot="{ value, handleChange }"
                 name="confirmRecipientIdentity"
@@ -893,7 +1079,7 @@ const refetch = async () => {
             </div>
           </form>
         </div>
-        <div v-if="isError">
+        <div v-if="!loading && isError">
           <ErrorMessage :retry="refetch" title="Something went wrong." />
         </div>
       </UiTabsContent>
