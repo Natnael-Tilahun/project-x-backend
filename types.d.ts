@@ -405,6 +405,7 @@ interface PaymentIntegration {
   confirmRecipientIdentity?: boolean | null;
   reEnquirePaymentDetailBeforePayment?: boolean | null;
   singleFormPayment?: boolean | null;
+  isImage?: boolean | null;
 }
 
 interface Menu {
@@ -423,6 +424,7 @@ interface Menu {
   paginationType?: PaginationType | null;
   paginationSize?: number | null;
   isSuperParent?: boolean | null;
+  isImage?: boolean | null;
 }
 
 interface Local {

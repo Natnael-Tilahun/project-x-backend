@@ -21,5 +21,6 @@ export const menuFormSchema = toTypedSchema(
     paginationType: PaginationTypeSchema,
     paginationSize: z.number().optional().nullable(),
     isSuperParent: z.boolean().optional().nullable(),
+    isImage: z.boolean().optional().nullable(),
   })
 );

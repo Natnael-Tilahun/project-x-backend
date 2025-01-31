@@ -432,6 +432,19 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               </FormItem>
             </FormField>
             <FormField
+              :model-value="data?.isImage"
+              v-slot="{ value, handleChange }"
+              name="isImage"
+            >
+              <FormItem>
+                <FormLabel> Is Image </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value" @update:checked="handleChange" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
               :model-value="data?.isSuperParent"
               v-slot="{ value, handleChange }"
               name="isSuperParent"

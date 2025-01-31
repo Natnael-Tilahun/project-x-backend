@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 const openItems = ref(["item-1"]);
-
+import { watch, onBeforeUnmount } from "vue"; // Import watch and onBeforeUnmount from Vue
 import { useForm } from "vee-validate";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
@@ -14,11 +14,13 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { MenuLayoutType, PaginationType } from "@/global-types";
+import { useDocuments } from "~/composables/useDocuments";
 
 const route = useRoute();
 const { getMenuById, getMenus, updateMenu, isLoading, isSubmitting } =
   useMenus();
 const { getPaymentIntegrations } = usePaymentIntegrations();
+const { uploadFile, getFile } = useDocuments(); // Get the upload function
 
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
@@ -29,9 +31,17 @@ const allPaymentIntegrations = ref<PaymentIntegration[]>([]);
 const allMenus = ref<Menu[]>([]);
 const selectedDynamicPaymentMenus = ref<PaymentIntegration[]>([]);
 const selectedChildren = ref<Menu[]>([]);
-
 const isError = ref(false);
 const data = ref<Menu>();
+// Add this ref for the preview
+const imagePreview = ref(null);
+const selectedFile = ref(null);
+const uploadLoading = ref(false);
+
+// Add a ref for the file input
+const fileInput = ref(null);
+
+const fileInputKey = ref(0); // Add this ref for forcing input recreation
 
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
@@ -50,6 +60,10 @@ const getMenuDetails = async () => {
     isLoading.value = true;
     loading.value = true;
     data.value = await getMenuById(menuId.value);
+    console.log("muenu data.value: ", data.value);
+    if (data.value?.iconPath && data.value.isImage) {
+      await getUploadedImage(data.value?.iconPath);
+    }
     selectedDynamicPaymentMenus.value = data.value?.dynamicPaymentMenus || [];
     selectedChildren.value = data.value?.children || [];
     form.setValues(data.value);
@@ -64,7 +78,7 @@ const getMenuDetails = async () => {
 
 const getPaymentIntegrationData = async () => {
   try {
-    allPaymentIntegrations.value = await getPaymentIntegrations();
+    allPaymentIntegrations.value = await getPaymentIntegrations(0, 1000);
   } catch (err) {
     console.error("Error fetching payment integrations:", err);
   }
@@ -72,7 +86,7 @@ const getPaymentIntegrationData = async () => {
 
 const getMenusData = async () => {
   try {
-    allMenus.value = await getMenus();
+    allMenus.value = await getMenus(0, 1000);
   } catch (err) {
     console.error("Error fetching menus:", err);
   }
@@ -125,6 +139,105 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = false;
   }
 });
+
+// Modified file selection handler
+const handleFileSelect = (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    selectedFile.value = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      imagePreview.value = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+};
+
+// Add upload handler
+const handleUpload = async () => {
+  if (!selectedFile.value) {
+    toast({
+      title: "No file selected",
+      description: "Please select an image to upload",
+      variant: "destructive",
+    });
+    return;
+  }
+
+  try {
+    uploadLoading.value = true;
+    const response = await uploadFile(selectedFile.value, menuId.value, "MENU");
+    console.log("response: ", response);
+    // Update the form's iconPath with the uploaded file's ID/path
+    form.setFieldValue("iconPath", response.id); // Adjust according to your API response structure
+    toast({
+      title: "Success",
+      description: "Image uploaded successfully",
+    });
+
+    // Clear the file input
+    selectedFile.value = null;
+  } catch (error) {
+    console.error("Error uploading file:", error);
+    toast({
+      title: "Error",
+      description: "Failed to upload image",
+      variant: "destructive",
+    });
+  } finally {
+    uploadLoading.value = false;
+  }
+};
+
+const getUploadedImage = async (iconPath) => {
+  console.log("iconPathaa: ", iconPath);
+  try {
+    const response = await getFile(iconPath, "MENU");
+
+    // Handle blob response
+    if (response instanceof Blob) {
+      imagePreview.value = URL.createObjectURL(response);
+    }
+    // Handle base64 response
+    else if (typeof response === "string" && response.startsWith("data:")) {
+      imagePreview.value = response;
+    }
+    // Handle raw base64 (without data URI prefix)
+    else if (typeof response === "string") {
+      imagePreview.value = `data:image/jpeg;base64,${response}`;
+    }
+  } catch (error) {
+    console.error("Error fetching file:", error);
+  }
+};
+
+// Modify remove handler to also revoke object URL if it exists
+const handleRemoveImage = () => {
+  if (imagePreview.value?.startsWith("blob:")) {
+    URL.revokeObjectURL(imagePreview.value);
+  }
+  imagePreview.value = null;
+  selectedFile.value = null;
+  fileInputKey.value++;
+  form.setFieldValue("iconPath", ""); // Adjust according to your API response structure
+};
+
+// Clean up object URL when component is unmounted
+onBeforeUnmount(() => {
+  if (imagePreview.value?.startsWith("blob:")) {
+    URL.revokeObjectURL(imagePreview.value);
+  }
+});
+
+// Call getUploadedImage when component mounts or when data changes
+watch(
+  () => data.value?.iconPath,
+  (newIconPath) => {
+    if (newIconPath) {
+      getUploadedImage(newIconPath);
+    }
+  }
+);
 </script>
 
 <template>
@@ -178,7 +291,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="iconPath">
+          <!-- <FormField v-slot="{ componentField }" name="iconPath">
             <FormItem>
               <FormLabel> Icon Path </FormLabel>
               <FormControl>
@@ -190,7 +303,81 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               </FormControl>
               <FormMessage />
             </FormItem>
-          </FormField>
+          </FormField> -->
+
+          <div class="w-full grid grid-cols-5 gap-2">
+            <div class="col-span-2 w-full">
+              <FormField
+                :model-value="data?.iconPath"
+                v-slot="{ componentField }"
+                name="iconPath"
+              >
+                <FormItem>
+                  <FormLabel> Icon Path </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      v-bind="componentField"
+                      type="text"
+                      :disabled="form.values.isImage"
+                      placeholder="Enter icon path"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+            </div>
+            <div
+              v-if="form.values.isImage"
+              class="w-full flex gap-2 col-span-3"
+            >
+              <div>
+                <FormField name="uploadIcon">
+                  <FormItem>
+                    <FormLabel> Upload Icon </FormLabel>
+                    <FormControl>
+                      <UiInput
+                        :key="fileInputKey"
+                        class="w-full"
+                        type="file"
+                        accept="image/*"
+                        @change="handleFileSelect"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                <!-- Image Preview with Remove Button -->
+                <div v-if="imagePreview" class="mt-2 relative group">
+                  <button
+                    @click="handleRemoveImage"
+                    class="group-hover:flex hidden absolute top-2 right-2 bg-red-500 rounded-lg p-1 items-center justify-center shadow-sm"
+                  >
+                    <Icon name="lucide:x" class="h-6 w-6 text-white" />
+                  </button>
+                  <img
+                    :src="imagePreview"
+                    alt="Preview"
+                    class="w-full h-60 object-contain rounded-md border"
+                  />
+                </div>
+              </div>
+              <UiButton
+                size="sm"
+                type="button"
+                class="self-en mt-7"
+                :disabled="!selectedFile || uploadLoading"
+                @click="handleUpload"
+              >
+                <Icon
+                  v-if="uploadLoading"
+                  name="svg-spinners:8-dots-rotate"
+                  class="mr-2 h-4 w-4 animate-spin"
+                />
+                Upload
+              </UiButton>
+            </div>
+          </div>
+
           <FormField v-slot="{ componentField }" name="defaultLanguageCode">
             <FormItem>
               <FormLabel> Default Language Code </FormLabel>
@@ -472,6 +659,19 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           >
             <FormItem>
               <FormLabel> Enabled </FormLabel>
+              <FormControl>
+                <UiSwitch :checked="value" @update:checked="handleChange" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField
+            :model-value="data?.isImage"
+            v-slot="{ value, handleChange }"
+            name="isImage"
+          >
+            <FormItem>
+              <FormLabel> Is Image </FormLabel>
               <FormControl>
                 <UiSwitch :checked="value" @update:checked="handleChange" />
               </FormControl>
