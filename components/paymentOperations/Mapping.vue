@@ -158,8 +158,9 @@ const getApiOperationData = async () => {
     }
     loading.value = true;
     apiOperationData.value = await getOperationById(apiOperationId.value);
-    apiOperationRequestInputName.value =
-      apiOperationData.value?.requestInputs?.map((input) => input.inputName);
+    apiOperationRequestInputName.value = apiOperationData.value?.requestInputs
+      ?.filter((input) => !input.isHidden)
+      ?.map((input) => input.inputName);
     isFetching.value = false;
   } catch (err) {
     console.error("Error fetching api operation request inputs:", err);
