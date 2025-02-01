@@ -401,7 +401,6 @@ watch(
                         <UiInput
                           v-bind="componentField"
                           type="text"
-                          :disabled="form.values.isImage"
                           placeholder="Enter icon path"
                         />
                       </FormControl>
