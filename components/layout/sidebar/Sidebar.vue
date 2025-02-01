@@ -221,28 +221,28 @@ const mainLinks = [
   //     { title: "Sequrity Questions", link: "/security-questions" },
   //   ],
   // },
-  {
-    title: "Configurations",
-    icon: "material-symbols:settings",
-    size: "22",
-    showDropdown: false,
-    dropdown: [
-      { title: "System Configurations", link: "/system-configurations" },
-      { title: "Business Configurations", link: "/business-configurations" },
-    ],
-  },
-  {
-    title: "Security & Authentication",
-    icon: "material-symbols:shield-lock-outline-rounded",
-    size: "22",
-    showDropdown: false,
-    dropdown: [
-      { title: "Credential Policy", link: "/credential-policy" },
-      { title: "Password Settings", link: "/password-settings" },
-      { title: "MFA Configurations", link: "/mfa-configurations" },
-      { title: "MFA Scenarios", link: "/mfa-scenarios" },
-    ],
-  },
+  // {
+  //   title: "Configurations",
+  //   icon: "material-symbols:settings",
+  //   size: "22",
+  //   showDropdown: false,
+  //   dropdown: [
+  //     { title: "System Configurations", link: "/system-configurations" },
+  //     { title: "Business Configurations", link: "/business-configurations" },
+  //   ],
+  // },
+  // {
+  //   title: "Security & Authentication",
+  //   icon: "material-symbols:shield-lock-outline-rounded",
+  //   size: "22",
+  //   showDropdown: false,
+  //   dropdown: [
+  //     { title: "Credential Policy", link: "/credential-policy" },
+  //     { title: "Password Settings", link: "/password-settings" },
+  //     { title: "MFA Configurations", link: "/mfa-configurations" },
+  //     { title: "MFA Scenarios", link: "/mfa-scenarios" },
+  //   ],
+  // },
   // {
   //   title: "Transactions",
   //   icon: "uil:transaction",
