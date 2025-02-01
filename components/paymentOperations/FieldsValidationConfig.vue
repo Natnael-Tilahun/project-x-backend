@@ -30,6 +30,8 @@ const formFieldsProps = defineProps<{
   formFieldsProps: Field;
 }>();
 
+const emit = defineEmits(["refresh"]);
+
 formFields.value = formFieldsProps.formFieldsProps;
 const data = ref<Partial<Field>>(formFields.value?.validationConfig);
 
@@ -174,6 +176,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       title: "Validation Config Updated",
       description: "Validation config updated successfully",
     });
+    emit("refresh");
   } catch (err: any) {
     console.error("Error updating validation config:", err);
     isError.value = true;

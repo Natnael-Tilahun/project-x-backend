@@ -32,6 +32,9 @@ const formFieldsProps = defineProps<{
   formFieldsProps: Field;
   displayOptions?: Partial<Field>;
 }>();
+
+const emit = defineEmits(["refresh"]);
+
 formFields.value = formFieldsProps.formFieldsProps;
 const data = ref<Partial<Field>>(formFieldsProps?.displayOptions);
 const display = ref<string>(formFieldsProps.formFieldsProps?.display);
@@ -65,6 +68,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       title: "Display Options Updated",
       description: "Display Options updated successfully",
     });
+    emit("refresh");
   } catch (err: any) {
     console.error("Error updating display options:", err);
     isError.value = true;
