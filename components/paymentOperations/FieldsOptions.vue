@@ -44,6 +44,9 @@ const formFieldsProps = defineProps<{
   formFieldsProps: Field;
   options?: Partial<Field>;
 }>();
+
+const emit = defineEmits(["refresh"]);
+
 formFields.value = formFieldsProps.formFieldsProps;
 const data = ref<Partial<Field>>(formFieldsProps.options);
 const interfaceType = ref<string>(
@@ -68,13 +71,13 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     console.log("updatedValues: ", updatedField);
     form.setValues(updatedField.options);
     data.value = updatedField.options;
-
     //   data.value = await updateAuthConfig(values.id, updatedValues); // Call your API function to fetch profile
     //   navigateTo(`/authConfigurations/authConfigDetails/${data.value.id}`);
     toast({
       title: "Options Updated",
       description: "Options updated successfully",
     });
+    emit("refresh");
   } catch (err: any) {
     console.error("Error updating options:", err);
     isError.value = true;
@@ -206,19 +209,31 @@ onBeforeUnmount(() => {
                       <FormLabel>Icon Left</FormLabel>
                       <FormControl>
                         <div class="relative" ref="pickerContainer">
-                          <UiInput
-                            type="text"
-                            placeholder="Select icon"
-                            :model-value="field.value"
-                            readonly
-                            class="cursor-pointer"
-                            @click="togglePicker"
-                          />
-                          <FontAwesomeIcon
-                            v-if="field.value"
-                            :icon="getIconFromCode(field.value)"
-                            class="absolute right-3 top-3 w-5 h-5 text-gray-700"
-                          />
+                          <div class="relative flex gap-2 items-center">
+                            <UiInput
+                              type="text"
+                              placeholder="Select icon"
+                              :model-value="field.value"
+                              readonly
+                              class="cursor-pointer"
+                              @click="togglePicker"
+                            />
+
+                            <FontAwesomeIcon
+                              v-if="field.value"
+                              :icon="getIconFromCode(field.value)"
+                              class="absolute right-12 top-3 w-5 h-5 text-gray-700"
+                            />
+                            <!-- Clear Button -->
+                            <button
+                              v-if="field.value"
+                              @click.stop="field.onChange(null)"
+                              class="text-red-400 hover:text-red-600 border p-1 rounded-lg border-red-400 flex items-center justify-center"
+                              title="Clear icon"
+                            >
+                              <Icon name="lucide:x" class="h-4 w-4" />
+                            </button>
+                          </div>
 
                           <!-- Icon Picker Container -->
                           <div

@@ -1137,6 +1137,7 @@ watch(
                 <PaymentOperationsFieldsOptions
                   :formFieldsProps="form.values"
                   :options="item?.options"
+                  @refresh="getFormData"
                 />
               </UiSheetContent>
             </UiSheet>
@@ -1155,6 +1156,7 @@ watch(
                 <PaymentOperationsFieldsDisplayOptions
                   :formFieldsProps="form.values"
                   :displayOptions="item?.displayOptions"
+                  @refresh="getFormData"
                 />
               </UiSheetContent>
             </UiSheet>
@@ -1172,6 +1174,7 @@ watch(
               >
                 <PaymentOperationsFieldsAutoGenerateConfig
                   :formFieldsProps="item"
+                  @refresh="getFormData"
                 />
               </UiSheetContent>
             </UiSheet>
@@ -1189,6 +1192,7 @@ watch(
               >
                 <PaymentOperationsFieldsValidationConfig
                   :formFieldsProps="item"
+                  @refresh="getFormData"
                 />
               </UiSheetContent>
             </UiSheet>

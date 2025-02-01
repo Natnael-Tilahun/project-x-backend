@@ -27,6 +27,9 @@ const isError = ref(false);
 const formFieldsProps = defineProps<{
   formFieldsProps: Field;
 }>();
+
+const emit = defineEmits(["refresh"]);
+
 formFields.value = formFieldsProps.formFieldsProps;
 const data = ref<Field>(formFields.value?.autoGenerateConfig);
 
@@ -90,6 +93,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       title: "Auto Generate Config Updated",
       description: "Auto Generate Config updated successfully",
     });
+    emit("refresh");
   } catch (err: any) {
     console.error("Error updating auto generate config:", err);
     isError.value = true;
