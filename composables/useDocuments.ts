@@ -70,14 +70,14 @@ export const useDocuments = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
+        // toast({
+        //   title: error.value?.data?.type || "Something went wrong!",
+        //   description:
+        //     error.value?.data?.type == "/constraint-violation"
+        //       ? error.value?.data?.fieldErrors[0]?.message
+        //       : error.value?.data?.message,
+        //   variant: "destructive",
+        // });
         throw new Error(error.value?.data?.detail);
       }
 

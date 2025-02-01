@@ -190,7 +190,6 @@ const handleUpload = async () => {
 };
 
 const getUploadedImage = async (iconPath) => {
-  console.log("iconPathaa: ", iconPath);
   try {
     const response = await getFile(iconPath, "MENU");
 
