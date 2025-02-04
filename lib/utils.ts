@@ -45,3 +45,7 @@ export const copyToClipboard = async (data: any) => {
     return false;
   }
 };
+
+export function splitPath(path: any) {
+  return path.split("/").filter(Boolean);
+}

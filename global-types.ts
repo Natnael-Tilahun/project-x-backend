@@ -339,3 +339,22 @@ export enum CreditAccountNumberVariableType {
   FIXED = "FIXED",
   DYNAMIC = "DYNAMIC",
 }
+
+export enum Platform {
+  IOS = "IOS",
+  ANDROID = "ANDROID",
+  USSD = "USSD",
+  WEB = "WEB",
+}
+
+export enum UpdatePolicy {
+  MANDATORY = "MANDATORY",
+  SEMI_MANDATORY = "SEMI_MANDATORY",
+  OPTIONAL = "OPTIONAL",
+}
+
+export enum AppVersionStatus {
+  DRAFT = "DRAFT",
+  PUBLISHED = "PUBLISHED",
+  ARCHIVED = "ARCHIVED",
+}

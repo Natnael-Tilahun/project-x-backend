@@ -210,6 +210,13 @@ const mainLinks = [
       // { title: "Reports", link: "/reports" },
     ],
   },
+  {
+    title: "Application Management",
+    icon: "iconoir:reports-solid",
+    size: "22",
+    showDropdown: false,
+    dropdown: [{ title: "Applications", link: "/applications" }],
+  },
   // {
   //   title: "Master Data Management",
   //   icon: "icon-park-solid:category-management",
