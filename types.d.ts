@@ -33,6 +33,9 @@ import {
   MaximumAmountVariableType,
   MinimumAmountVariableType,
   CreditAccountNumberVariableType,
+  Platform,
+  UpdatePolicy,
+  AppVersionStatus,
 } from "@/global-types";
 
 interface User {
@@ -618,4 +621,42 @@ interface AuthConfiguration {
   } | null;
   customAuthOperation?: ApiOperation | null;
   apiIntegration?: ApiIntegration | null;
+}
+
+interface Application {
+  createdBy: string;
+  createdDate: string;
+  lastModifiedBy: string;
+  lastModifiedDate: string;
+  id: string;
+  name: string;
+  platform: Platform;
+  downloadUrl: string;
+  bundleId: string;
+  appStoreId: string;
+  description: string;
+  iconUrl: string;
+  enabled: boolean;
+  versions: AppVersion[];
+}
+
+interface AppVersion {
+  createdBy: string;
+  createdDate: string;
+  lastModifiedBy: string;
+  lastModifiedDate: string;
+  id: string;
+  application: Application;
+  versionName: string;
+  versionNumber: string;
+  buildNumber: string;
+  minRequiredVersion: string;
+  apiKeyHash: string;
+  allowedChecksum: string;
+  releaseNotes: string;
+  releaseDate: string;
+  updatePolicy: UpdatePolicy;
+  isRevoked: boolean;
+  enabled: boolean;
+  status: AppVersionStatus;
 }
