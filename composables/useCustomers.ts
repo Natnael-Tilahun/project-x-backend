@@ -247,9 +247,10 @@ export const useCustomers = () => {
     }
   };
 
-  const linkCoreBankCustomer: (id: string) => Promise<Customer> = async (
-    id
-  ) => {
+  const linkCoreBankCustomer: (
+    id: string,
+    coreCustomerId: string
+  ) => Promise<Customer> = async (id, coreCustomerId) => {
     try {
       const { data, pending, error, status } = await useFetch<Customer>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/${id}/link-core-bank-customer`,
@@ -258,6 +259,7 @@ export const useCustomers = () => {
           headers: {
             Authorization: `Bearer ${store.accessToken}`,
           },
+          body: { coreCustomerId },
         }
       );
 

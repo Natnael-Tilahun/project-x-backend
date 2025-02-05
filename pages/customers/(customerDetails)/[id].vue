@@ -110,7 +110,10 @@ const handleLinkCoreBankCustomer = async () => {
     try {
       isLoading.value = true;
       loading.value = true;
-      data.value = await linkCoreBankCustomer(accountCustomerId.value); // Call your API function to fetch roles
+      data.value = await linkCoreBankCustomer(
+        customerId.value,
+        accountCustomerId.value
+      );
       toast({
         title: "Customer linked with core bank successfully. ",
       });
@@ -141,7 +144,7 @@ const searchCoreAccountHandler = async () => {
       coreData.value = await getCoreCustomerByAccountNumber(
         accountNumber.value
       ); // Call your API function to fetch roles
-      console.log("cusomer data by account number: ", coreData.value);
+      accountCustomerId.value = coreData.value?.customerId;
     } else {
       return true;
     }
