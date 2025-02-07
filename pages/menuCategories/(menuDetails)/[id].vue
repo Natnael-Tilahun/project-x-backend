@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import { MenuLayoutType, PaginationType } from "@/global-types";
+import { MenuLayoutType, PaginationType, SystemMenuType } from "@/global-types";
 import { useDocuments } from "~/composables/useDocuments";
 
 const route = useRoute();
@@ -651,6 +651,33 @@ watch(
             </FormItem>
           </FormField>
           <FormField
+            v-if="form.values.isSystemMenu"
+            v-slot="{ componentField }"
+            name="systemMenuType"
+          >
+            <FormItem>
+              <FormLabel> System Menu Type </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue placeholder="Select a system menu type" />
+                  </UiSelectTrigger>
+                </FormControl>
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-for="item in Object.values(SystemMenuType)"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField
             :model-value="data?.enabled"
             v-slot="{ value, handleChange }"
             name="enabled"
@@ -683,6 +710,19 @@ watch(
           >
             <FormItem>
               <FormLabel> Is Super Parent </FormLabel>
+              <FormControl>
+                <UiSwitch :checked="value" @update:checked="handleChange" />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField
+            :model-value="data?.isSystemMenu"
+            v-slot="{ value, handleChange }"
+            name="isSystemMenu"
+          >
+            <FormItem>
+              <FormLabel> Is System Menu </FormLabel>
               <FormControl>
                 <UiSwitch :checked="value" @update:checked="handleChange" />
               </FormControl>

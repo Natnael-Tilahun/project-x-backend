@@ -36,6 +36,7 @@ import {
   Platform,
   UpdatePolicy,
   AppVersionStatus,
+  SystemMenuType,
 } from "@/global-types";
 
 interface User {
@@ -428,6 +429,8 @@ interface Menu {
   paginationSize?: number | null;
   isSuperParent?: boolean | null;
   isImage?: boolean | null;
+  isSystemMenu?: boolean | null;
+  systemMenuType?: SystemMenuType | null;
 }
 
 interface Local {
