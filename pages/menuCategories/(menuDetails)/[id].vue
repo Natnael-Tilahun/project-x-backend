@@ -15,6 +15,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { MenuLayoutType, PaginationType, SystemMenuType } from "@/global-types";
 import { useDocuments } from "~/composables/useDocuments";
+import IconPicker from "~/components/IconPicker.vue";
 
 const route = useRoute();
 const { getMenuById, getMenus, updateMenu, isLoading, isSubmitting } =
@@ -304,7 +305,31 @@ watch(
             </FormItem>
           </FormField> -->
 
-          <div class="w-full grid grid-cols-5 gap-2">
+          <!-- <div class="col-span-2 w-full">
+              <FormField
+                :model-value="data?.iconPath"
+                v-slot="{ componentField }"
+                name="iconPath"
+              >
+                <FormItem>
+                  <FormLabel> Icon Path </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      v-bind="componentField"
+                      type="text"
+                      placeholder="Enter icon path"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+            </div> -->
+          
+          
+          <div
+            v-if="form.values.isImage"
+            class="w-full gap-2 grid grid-cols-5"
+          >
             <div class="col-span-2 w-full">
               <FormField
                 :model-value="data?.iconPath"
@@ -324,10 +349,7 @@ watch(
                 </FormItem>
               </FormField>
             </div>
-            <div
-              v-if="form.values.isImage"
-              class="w-full flex gap-2 col-span-3"
-            >
+            <div class="col-span-3 flex gap-2 w-full">
               <div>
                 <FormField name="uploadIcon">
                   <FormItem>
@@ -374,6 +396,22 @@ watch(
                 Upload
               </UiButton>
             </div>
+          </div>
+
+          <div v-else class="w-full">
+            <FormField v-slot="{ field }" name="iconPath">
+              <FormItem>
+                <FormLabel>Icon Path</FormLabel>
+                <FormControl>
+                  <IconPicker
+                    :model-value="field.value"
+                    @update:modelValue="field.onChange"
+                    @select="field.onChange"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
           </div>
 
           <FormField v-slot="{ componentField }" name="defaultLanguageCode">
@@ -764,4 +802,28 @@ watch(
   </div>
 </template>
 
-<style lang="css" scoped></style>
+<style lang="css" scoped>
+.absolute > .icon-picker {
+  max-height: 100%;
+  width: 100%;
+  overflow-y: auto;
+}
+
+.absolute > .icon-picker::-webkit-scrollbar {
+  width: 6px;
+}
+
+.absolute > .icon-picker::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.absolute > .icon-picker::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.absolute > .icon-picker::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+</style>

@@ -128,7 +128,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="iconPath">
+            <!-- <FormField v-slot="{ componentField }" name="iconPath">
               <FormItem>
                 <FormLabel> Icon Path </FormLabel>
                 <FormControl>
@@ -140,7 +140,96 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            </FormField>
+            </FormField> -->
+
+            <div
+              v-if="form.values.isImage"
+              class="w-full gap-2 grid grid-cols-5"
+            >
+              <div class="col-span-2 w-full">
+                <FormField
+                  :model-value="data?.iconPath"
+                  v-slot="{ componentField }"
+                  name="iconPath"
+                >
+                  <FormItem>
+                    <FormLabel> Icon Path </FormLabel>
+                    <FormControl>
+                      <UiInput
+                        v-bind="componentField"
+                        type="text"
+                        placeholder="Enter icon path"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+              </div>
+              <div class="col-span-3 flex gap-2 w-full">
+                <div>
+                  <FormField name="uploadIcon">
+                    <FormItem>
+                      <FormLabel> Upload Icon </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          :key="fileInputKey"
+                          class="w-full"
+                          type="file"
+                          accept="image/*"
+                          @change="handleFileSelect"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <!-- Image Preview with Remove Button -->
+                  <div v-if="imagePreview" class="mt-2 relative group">
+                    <button
+                      @click="handleRemoveImage"
+                      class="group-hover:flex hidden absolute top-2 right-2 bg-red-500 rounded-lg p-1 items-center justify-center shadow-sm"
+                    >
+                      <Icon name="lucide:x" class="h-6 w-6 text-white" />
+                    </button>
+                    <img
+                      :src="imagePreview"
+                      alt="Preview"
+                      class="w-full h-60 object-contain rounded-md border"
+                    />
+                  </div>
+                </div>
+                <UiButton
+                  size="sm"
+                  type="button"
+                  class="self-en mt-7"
+                  :disabled="!selectedFile || uploadLoading"
+                  @click="handleUpload"
+                >
+                  <Icon
+                    v-if="uploadLoading"
+                    name="svg-spinners:8-dots-rotate"
+                    class="mr-2 h-4 w-4 animate-spin"
+                  />
+                  Upload
+                </UiButton>
+              </div>
+            </div>
+
+            <div v-else class="w-full">
+              <FormField v-slot="{ field }" name="iconPath">
+                <FormItem>
+                  <FormLabel>Icon Path</FormLabel>
+                  <FormControl>
+                    <IconPicker
+                      :model-value="field.value"
+                      @update:modelValue="field.onChange"
+                      @select="field.onChange"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+            </div>
+
             <FormField v-slot="{ componentField }" name="defaultLanguageCode">
               <FormItem>
                 <FormLabel> Default Language Code </FormLabel>
