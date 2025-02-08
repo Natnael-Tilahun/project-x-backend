@@ -21,15 +21,7 @@ import {
   InterfaceType,
 } from "@/global-types";
 import IconPicker from "~/components/IconPicker.vue";
-import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { library } from "@fortawesome/fontawesome-svg-core";
-import { fas } from "@fortawesome/free-solid-svg-icons";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+
 
 const showPicker = ref(false);
 const route = useRoute();
@@ -117,35 +109,8 @@ watch(
 //   { immediate: true }
 // );
 
-// Create code-to-icon map
-const codeMap = Object.values(fas).reduce((acc, icon) => {
-  acc[icon.icon[3]] = ["fas", icon.iconName];
-  return acc;
-}, {});
 
-const getIconFromCode = (code) => {
-  return codeMap[code] || ["fas", "question-circle"];
-};
 
-const pickerContainer = ref(null);
-
-const togglePicker = () => {
-  showPicker.value = !showPicker.value;
-};
-
-const handleClickOutside = (event) => {
-  if (pickerContainer.value && !pickerContainer.value.contains(event.target)) {
-    showPicker.value = false;
-  }
-};
-
-onMounted(() => {
-  document.addEventListener("click", handleClickOutside);
-});
-
-onBeforeUnmount(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
 </script>
 
 <template>
@@ -208,49 +173,11 @@ onBeforeUnmount(() => {
                     <FormItem>
                       <FormLabel>Icon Left</FormLabel>
                       <FormControl>
-                        <div class="relative" ref="pickerContainer">
-                          <div class="relative flex gap-2 items-center">
-                            <UiInput
-                              type="text"
-                              placeholder="Select icon"
-                              :model-value="field.value"
-                              readonly
-                              class="cursor-pointer"
-                              @click="togglePicker"
-                            />
-
-                            <FontAwesomeIcon
-                              v-if="field.value"
-                              :icon="getIconFromCode(field.value)"
-                              class="absolute right-12 top-3 w-5 h-5 text-gray-700"
-                            />
-                            <!-- Clear Button -->
-                            <button
-                              v-if="field.value"
-                              @click.stop="field.onChange(null)"
-                              class="text-red-400 hover:text-red-600 border p-1 rounded-lg border-red-400 flex items-center justify-center"
-                              title="Clear icon"
-                            >
-                              <Icon name="lucide:x" class="h-4 w-4" />
-                            </button>
-                          </div>
-
-                          <!-- Icon Picker Container -->
-                          <div
-                            v-if="showPicker"
-                            class="absolute top-full left-0 w-full z-50 mt-2 bg-white rounded-lg border p-2"
-                          >
-                            <IconPicker
-                              @select="
-                                (code) => {
-                                  field.onChange(code);
-                                  showPicker = false;
-                                }
-                              "
-                              @close="showPicker = false"
-                            />
-                          </div>
-                        </div>
+                        <IconPicker
+                          :model-value="field.value"
+                          @update:modelValue="field.onChange"
+                          @select="field.onChange"
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

@@ -388,7 +388,10 @@ watch(
                   <FormMessage />
                 </FormItem>
               </FormField>
-              <div class="w-full grid grid-cols-5 gap-2">
+              <div
+                v-if="form.values.isImage"
+                class="w-full gap-2 grid grid-cols-5"
+              >
                 <div class="col-span-2 w-full">
                   <FormField
                     :model-value="data?.iconPath"
@@ -408,10 +411,7 @@ watch(
                     </FormItem>
                   </FormField>
                 </div>
-                <div
-                  v-if="form.values.isImage"
-                  class="w-full flex gap-2 col-span-3"
-                >
+                <div class="col-span-3 flex gap-2 w-full">
                   <div>
                     <FormField name="uploadIcon">
                       <FormItem>
@@ -458,6 +458,22 @@ watch(
                     Upload
                   </UiButton>
                 </div>
+              </div>
+
+              <div v-else class="w-full">
+                <FormField v-slot="{ field }" name="iconPath">
+                  <FormItem>
+                    <FormLabel>Icon Path</FormLabel>
+                    <FormControl>
+                      <IconPicker
+                        :model-value="field.value"
+                        @update:modelValue="field.onChange"
+                        @select="field.onChange"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
               </div>
 
               <div class="col-span-full">
