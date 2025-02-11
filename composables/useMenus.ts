@@ -188,6 +188,112 @@ export const useMenus = () => {
     }
   };
 
+  const updateProductMenus: (
+    menuId: string,
+    menuData: any
+  ) => Promise<Menu> = async (menuId, menuData) => {
+    try {
+      const { data, pending, error, status } = await useFetch<Menu>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus/${menuId}/products`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+          body: JSON.stringify(menuData),
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+
+        if (error.value?.data?.type == "/constraint-violation") {
+          console.log(
+            "Updating menu products error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Updating menu products errorrr: ",
+            error.value?.data?.message
+          );
+        }
+        throw new Error(error.value?.data);
+      }
+
+      if (!data.value) {
+        throw new Error("No menu products with this menu id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
+  const updateChildrenMenus: (
+    menuId: string,
+    menuData: any
+  ) => Promise<Menu> = async (menuId, menuData) => {
+    try {
+      const { data, pending, error, status } = await useFetch<Menu>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus/${menuId}/children`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+          body: JSON.stringify(menuData),
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+
+        if (error.value?.data?.type == "/constraint-violation") {
+          console.log(
+            "Updating menu children error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Updating menu children errorrr: ",
+            error.value?.data?.message
+          );
+        }
+        throw new Error(error.value?.data);
+      }
+
+      if (!data.value) {
+        throw new Error("No menu children with this menu id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
   const deleteMenu: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
@@ -229,6 +335,8 @@ export const useMenus = () => {
     createNewMenu,
     deleteMenu,
     updateMenu,
+    updateProductMenus,
+    updateChildrenMenus,
     isSubmitting,
   };
 };
