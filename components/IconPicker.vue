@@ -1,16 +1,19 @@
 <!-- IconPicker.vue -->
 <script setup>
-import { ref, watch, onBeforeUnmount, onMounted } from "vue";
+import {
+  ref,
+  watch,
+  onBeforeUnmount,
+  onMounted,
+  computed,
+  nextTick,
+} from "vue"; // Import nextTick
 import { fas } from "@fortawesome/free-solid-svg-icons";
-import { debounce } from "lodash-es";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
 
 // Initialize FontAwesome library
 library.add(fas);
-
-// Add console log to check icons loading
-console.log('Icons loaded:', Object.keys(fas).length);
 
 const props = defineProps({
   modelValue: {
@@ -25,7 +28,6 @@ const searchQuery = ref("");
 const showPicker = ref(false);
 const pickerContainer = ref(null);
 const icons = Object.values(fas);
-const filteredIcons = ref(icons);
 
 // Create code-to-icon map
 const codeMap = Object.values(fas).reduce((acc, icon) => {
@@ -40,33 +42,41 @@ const getIconFromCode = (code) => {
 // Precompute lowercase names for faster search
 const searchIndex = icons.map((icon) => ({
   ...icon,
+  code: icon.icon[3], // Add the icon's code to the searchIndex
   searchTerm: icon.iconName.toLowerCase(),
 }));
 
-// Optimized debounced filter
-const debouncedFilter = debounce((query) => {
-  const q = query.toLowerCase().trim();
-  filteredIcons.value = q
-    ? searchIndex.filter(({ searchTerm }) => searchTerm.includes(q))
-    : icons;
-}, 200);
-
-// Immediate response to clear
-watch(searchQuery, (newQuery) => {
-  if (!newQuery) {
-    filteredIcons.value = icons;
-    debouncedFilter.cancel();
-  } else {
-    debouncedFilter(newQuery);
+// Using Computed Property for Filtered Icons
+const filteredIcons = computed(() => {
+  const q = searchQuery.value.toLowerCase().trim();
+  if (!q) {
+    return icons;
   }
+  return searchIndex.filter(({ searchTerm }) => searchTerm.includes(q));
 });
 
+// // Watch the computed property to log its changes
+// watch(filteredIcons, (newFilteredIcons) => {
+//   console.log("filteredIcons (watch): ", newFilteredIcons); // Log the value after it changes
+// });
+
 const handleSelect = (icon) => {
-  const code = icon.icon[3];
+  const code = icon.icon ? icon.icon[3] : icon.code; // Use the code from searchIndex if available
   emit("update:modelValue", code);
   emit("select", code);
   showPicker.value = false;
   searchQuery.value = "";
+
+  nextTick(() => {
+    searchQuery.value = "";
+    showPicker.value = false;
+  });
+};
+
+const handleInput = (event) => {
+  const input = event.target.value.toLowerCase();
+  emit("update:modelValue", input);
+  emit("select", input);
 };
 
 const clearIcon = () => {
@@ -75,9 +85,11 @@ const clearIcon = () => {
 };
 
 const togglePicker = () => {
-  console.log('Toggle picker called, current state:', showPicker.value);
   showPicker.value = !showPicker.value;
-  console.log('New picker state:', showPicker.value);
+  // Force searchQuery to be empty after the DOM updates
+  nextTick(() => {
+    searchQuery.value = "";
+  });
 };
 
 const handleClickOutside = (event) => {
@@ -92,14 +104,8 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-  debouncedFilter.cancel();
   document.removeEventListener("click", handleClickOutside);
 });
-
-// Add console log to check filtered icons
-watch(filteredIcons, (newValue) => {
-  console.log('Filtered icons count:', newValue.length);
-}, { immediate: true });
 </script>
 
 <template>
@@ -107,10 +113,11 @@ watch(filteredIcons, (newValue) => {
     <div class="relative flex gap-2 items-center">
       <UiInput
         type="text"
-        placeholder="Select icon"
+        placeholder="Select or type icon name"
         :model-value="modelValue"
         class="cursor-pointer"
         @click.prevent="togglePicker"
+        @input="handleInput"
       />
 
       <FontAwesomeIcon
@@ -118,7 +125,7 @@ watch(filteredIcons, (newValue) => {
         :icon="getIconFromCode(modelValue)"
         class="absolute right-12 top-3 w-5 h-5 text-gray-700"
       />
-      
+
       <!-- Clear Button -->
       <button
         v-if="modelValue"
@@ -147,16 +154,16 @@ watch(filteredIcons, (newValue) => {
       >
         <div
           v-for="icon in filteredIcons"
-          :key="icon.iconName"
+          :key="icon.code || icon.iconName"
           class="cursor-pointer p-4 hover:bg-gray-100 rounded-lg flex flex-col items-center"
           @click="handleSelect(icon)"
         >
           <font-awesome-icon
-            :icon="['fas', icon.iconName]"
+            :icon="['fas', icon.iconName || icon.searchTerm]"
             class="text-2xl mb-1"
           />
           <span class="text-xs text-gray-500 text-center line-clamp-1">
-            {{ icon.iconName }}
+            {{ icon.iconName || icon.searchTerm }}
           </span>
         </div>
       </div>
