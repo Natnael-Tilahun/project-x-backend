@@ -134,6 +134,45 @@ export const useCustomers = () => {
     }
   };
 
+  const getCoreAccountsByCustomerId: (
+    customerId: string
+  ) => Promise<Customer> = async (customerId) => {
+    try {
+      const { data, pending, error, status } = await useFetch<Customer>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/core/accounts/customer/${customerId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No account with this customer id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
   const searchCustomers: (keyword: string) => Promise<any> = async (
     keyword
   ) => {
@@ -379,6 +418,7 @@ export const useCustomers = () => {
     getCustomers,
     getCustomerById,
     getCoreCustomerByAccountNumber,
+    getCoreAccountsByCustomerId,
     activateCustomerById,
     deActivateCustomerById,
     linkCoreBankCustomer,

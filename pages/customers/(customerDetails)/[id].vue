@@ -11,6 +11,7 @@ const {
   activateCustomerById,
   deActivateCustomerById,
   linkCoreBankCustomer,
+  getCoreAccountsByCustomerId,
   isLoading,
 } = useCustomers();
 const fullPath = ref(route.fullPath);
@@ -20,10 +21,16 @@ const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<Customer>();
 const coreData = ref<any>();
+const accountsData = ref<any>();
 const accountNumber = ref<string>();
 const accountCustomerId = ref<string>();
+const coreCustomerId = ref<string>();
 const tooltipText = ref<string>("Copy to clipboard");
 const tooltipOpen = ref<boolean>(true);
+const openEditModal = ref(false);
+const setOpenEditModal = (value: boolean) => {
+  openEditModal.value = value;
+};
 
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
@@ -135,6 +142,37 @@ const handleLinkCoreBankCustomer = async () => {
   }
 };
 
+const handleUnlinkCoreBankCustomer = async () => {
+  console.log("accountCustomerId.value: ", accountCustomerId.value);
+  if (accountCustomerId.value) {
+    try {
+      isLoading.value = true;
+      loading.value = true;
+      data.value = await unlinkCoreBankCustomer(
+        customerId.value,
+        accountCustomerId.value
+      );
+      toast({
+        title: "Customer unlinked with core bank successfully. ",
+      });
+    } catch (err: any) {
+      console.error("Error unlinking customer with core bank:", err);
+      toast({
+        title: "Uh oh! Something went wrong.",
+        description: `${err.message}`,
+        variant: "destructive",
+      });
+
+      isError.value = true;
+    } finally {
+      isLoading.value = false;
+      loading.value = false;
+    }
+  } else {
+    return true;
+  }
+};
+
 const searchCoreAccountHandler = async () => {
   try {
     isLoading.value = true;
@@ -163,6 +201,33 @@ const searchCoreAccountHandler = async () => {
     loading.value = false;
   }
 };
+
+const searchCoreAccountsByCustomerIdHandler = async () => {
+  try {
+    loading.value = true;
+    console.log("coreCustomerId.value: ", coreCustomerId.value);
+    if (coreCustomerId.value) {
+      const response = await getCoreAccountsByCustomerId(coreCustomerId.value); // Call your API function to fetch roles
+      console.log("response: ", response);
+      accountsData.value = response;
+      // accountCustomerId.value = coreData.value?.customerId;
+    } else {
+      return true;
+    }
+  } catch (err: any) {
+    console.error("Error fetching accounts:", err);
+    toast({
+      title: "Uh oh! Something went wrong.",
+      description: `${
+        err.message == "404 NOT_FOUND" ? "Account not found." : err.message
+      }`,
+      variant: "destructive",
+    });
+    isError.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 <template>
@@ -185,11 +250,11 @@ const searchCoreAccountHandler = async () => {
         <UiButton
           size="sm"
           @click="handleCustomerActivation"
-          :disabled="isLoading || !data?.coreLinked"
+          :disabled="loading || !data?.coreLinked"
           :class="data?.customerActivated ? 'bg-red-600' : 'bg-green-600'"
         >
           <Icon
-            v-if="isLoading"
+            v-if="loading"
             name="svg-spinners:8-dots-rotate"
             class="mr-2 h-4 w-4 animate-spin"
           ></Icon>
@@ -201,19 +266,31 @@ const searchCoreAccountHandler = async () => {
     <UiCard class="w-full p-6">
       <UiTabs default-value="profile" class="space-y-0 w-full">
         <UiTabsList
-          class="w-full bg-backgroung flex justify-start py-7 px-0 border-[1px]"
+          class="w-full bg-backgroung flex justify-start py- px-0 border-[1px]"
         >
           <UiTabsTrigger
             value="profile"
-            class="md:text-xl py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Profile
           </UiTabsTrigger>
           <UiTabsTrigger
             value="linkWithCoreBank"
-            class="md:text-xl py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Link with core bank
+          </UiTabsTrigger>
+          <UiTabsTrigger
+            value="manageAccounts"
+            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+          >
+            Manage Account
+          </UiTabsTrigger>
+          <UiTabsTrigger
+            value="pinReset"
+            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+          >
+            PIN Reset
           </UiTabsTrigger>
         </UiTabsList>
 
@@ -489,7 +566,7 @@ const searchCoreAccountHandler = async () => {
                 <UiLabel for="search" class="font-normal text-muted-foreground"
                   >Find customer by account number</UiLabel
                 >
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
                   <UiInput
                     id="search"
                     type="search"
@@ -514,7 +591,7 @@ const searchCoreAccountHandler = async () => {
                 <UiLabel for="search" class="font-normal text-muted-foreground"
                   >Link with core bank</UiLabel
                 >
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-2">
                   <UiInput
                     id="linkWithCore"
                     type="test"
@@ -525,10 +602,35 @@ const searchCoreAccountHandler = async () => {
                   <UiButton @click="handleLinkCoreBankCustomer">
                     <Icon
                       name="svg-spinners:8-dots-rotate"
-                      v-if="isLoading"
+                      v-if="loading"
+                      :disabled="loading"
                       class="mr-2 h-4 w-4 animate-spin"
                     ></Icon>
                     Link
+                  </UiButton>
+                </div>
+              </div>
+
+              <div class="grid w-full max-w-sm items-center gap-2">
+                <UiLabel for="search" class="font-normal text-muted-foreground"
+                  >Unlink with core bank</UiLabel
+                >
+                <div class="flex items-center gap-2">
+                  <UiInput
+                    id="linkWithCore"
+                    type="test"
+                    placeholder="Enter Customer Id "
+                    class="md:w-[100px] lg:w-[300px]"
+                    v-model="accountCustomerId"
+                  />
+                  <UiButton @click="setOpenEditModal(true)">
+                    <Icon
+                      name="svg-spinners:8-dots-rotate"
+                      v-if="loading"
+                      :disabled="loading"
+                      class="mr-2 h-4 w-4 animate-spin"
+                    ></Icon>
+                    Unlink
                   </UiButton>
                 </div>
               </div>
@@ -721,9 +823,43 @@ const searchCoreAccountHandler = async () => {
             </UiCard>
           </div>
         </UiTabsContent>
+
+        <UiTabsContent value="manageAccounts" class="space-y-4 py-8">
+          <CustomersManageAccounts />
+        </UiTabsContent>
+
+        <UiTabsContent value="pinReset" class="space-y-4 py-8">
+          <CustomersPinReset />
+        </UiTabsContent>
       </UiTabs>
     </UiCard>
   </div>
+
+  <UiAlertDialog :open="openEditModal" :onOpenChange="setOpenEditModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          This action cannot be undone. This will permanently unlink the
+          customer from core bank.
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenEditModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction @click="handleUnlinkCoreBankCustomer">
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="loading"
+            :disabled="loading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
 </template>
 
 <style lang="css" scoped></style>
