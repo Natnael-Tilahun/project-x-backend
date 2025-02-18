@@ -376,6 +376,7 @@ interface RequestInput {
 
 interface PaymentIntegration {
   id?: string;
+  alternateId?: string;
   defaultLanguageCode?: string | null;
   integrationName?: string | null;
   companyName?: string | null;

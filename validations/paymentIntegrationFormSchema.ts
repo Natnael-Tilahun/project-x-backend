@@ -35,6 +35,7 @@ const CreditAccountNumberVariableTypeSchema = z
 export const paymentIntegrationFormSchema = toTypedSchema(
   z.object({
     id: z.string().optional().nullable(),
+    alternateId: z.string().optional().nullable(),
     defaultLanguageCode: z.string().optional().nullable(),
     integrationName: z.string(),
     companyName: z.string(),

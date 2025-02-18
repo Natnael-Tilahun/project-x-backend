@@ -355,6 +355,24 @@ watch(
                 </FormItem>
               </FormField>
               <FormField
+                :model-value="data?.alternateId"
+                v-slot="{ componentField }"
+                name="alternateId"
+              >
+                <FormItem>
+                  <FormLabel> Alternate ID </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="text"
+                      disabled
+                      placeholder="Enter alternate id"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
                 :model-value="data?.integrationName"
                 v-slot="{ componentField }"
                 name="integrationName"
