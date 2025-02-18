@@ -78,7 +78,7 @@ export const columns: ColumnDef<ApiIntegration>[] = [
   },
   {
     accessorKey: "version",
-    header: "Versions",
+    header: "Version",
     cell: ({ row }) => {
       const version = row.getValue("version");
       return version
