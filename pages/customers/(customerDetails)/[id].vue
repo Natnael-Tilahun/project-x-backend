@@ -280,7 +280,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
           >
             Link with core bank
           </UiTabsTrigger>
-          <UiTabsTrigger
+          <!-- <UiTabsTrigger
             value="manageAccounts"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
@@ -291,7 +291,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             PIN Reset
-          </UiTabsTrigger>
+          </UiTabsTrigger> -->
         </UiTabsList>
 
         <UiTabsContent
