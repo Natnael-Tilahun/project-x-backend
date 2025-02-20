@@ -3,7 +3,6 @@ import { ref, onMounted } from "vue";
 import { columns } from "~/components/customers/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 
-
 const { getCustomers, searchCustomers, isLoading } = useCustomers();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -35,7 +34,7 @@ const fetchData = async () => {
   }
 };
 
-onMounted(async () => {
+await useAsyncData("customersData", async () => {
   await fetchData();
 });
 
