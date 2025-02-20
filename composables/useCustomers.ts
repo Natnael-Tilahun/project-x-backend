@@ -327,6 +327,47 @@ export const useCustomers = () => {
     }
   };
 
+  const unLinkCoreBankCustomer: (
+    id: string,
+    coreCustomerId: string
+  ) => Promise<Customer> = async (id, coreCustomerId) => {
+    try {
+      const { data, pending, error, status } = await useFetch<Customer>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/${id}/unlink-core-bank-customer`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+          body: { coreCustomerId },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No customer with this id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
   const createNeweCustomer: (customerData: any) => Promise<Customer> = async (
     customerData
   ) => {
@@ -422,6 +463,7 @@ export const useCustomers = () => {
     activateCustomerById,
     deActivateCustomerById,
     linkCoreBankCustomer,
+    unLinkCoreBankCustomer,
     createNeweCustomer,
     deleteCustomerById,
     searchCustomers,

@@ -11,6 +11,7 @@ const {
   activateCustomerById,
   deActivateCustomerById,
   linkCoreBankCustomer,
+  unLinkCoreBankCustomer,
   getCoreAccountsByCustomerId,
   isLoading,
 } = useCustomers();
@@ -148,7 +149,7 @@ const handleUnlinkCoreBankCustomer = async () => {
     try {
       isLoading.value = true;
       loading.value = true;
-      data.value = await unlinkCoreBankCustomer(
+      data.value = await unLinkCoreBankCustomer(
         customerId.value,
         accountCustomerId.value
       );
@@ -167,6 +168,7 @@ const handleUnlinkCoreBankCustomer = async () => {
     } finally {
       isLoading.value = false;
       loading.value = false;
+      openEditModal.value = false;
     }
   } else {
     return true;
