@@ -4,7 +4,7 @@ const openItems = ref(["item-1"]);
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 
-const { getCoreAccountsByCustomerId, isLoading } = useCustomers();
+const { getCoreAccountsByCustomerId, resetPin, isLoading } = useCustomers();
 
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -15,13 +15,23 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
+const customerId = ref<string>();
+
+const props = defineProps<{
+  customerId: string;
+}>();
+
+customerId.value = props.customerId;
 const handlePinReset = async () => {
   try {
     loading.value = true;
-    console.log("coreCustomerId.value: ", coreCustomerId.value);
-    if (coreCustomerId.value) {
-      const response = await getCoreAccountsByCustomerId(coreCustomerId.value); // Call your API function to fetch roles
+    if (customerId.value) {
+      const response = await resetPin(customerId.value); // Call your API function to fetch roles
       console.log("response: ", response);
+      toast({
+        title: "Pin reset successful",
+        description: "The pin has been reset successfully.",
+      });
     } else {
       return true;
     }
@@ -37,6 +47,7 @@ const handlePinReset = async () => {
     isError.value = true;
   } finally {
     loading.value = false;
+    setOpenEditModal(false);
   }
 };
 </script>
@@ -54,10 +65,10 @@ const handlePinReset = async () => {
             type="search"
             placeholder="Enter customer id"
             class="md:w-[100px] lg:w-[300px]"
-            v-model="coreCustomerId"
+            v-model="customerId"
           />
           <UiButton
-            :disabled="coreCustomerId == '' || loading"
+            :disabled="customerId == '' || loading"
             @click="setOpenEditModal(true)"
             class="w-fit whitespace-nowrap"
           >

@@ -17,7 +17,7 @@ const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    const customers = await getCustomers(); // Call your API function to fetch roles
+    const customers = await getCustomers(0, 10000000000); // Call your API function to fetch roles
     // Sort integrations by name alphabetically, handling null values
     data.value = customers.sort((a, b) => {
       // Handle cases where fullName might be null
