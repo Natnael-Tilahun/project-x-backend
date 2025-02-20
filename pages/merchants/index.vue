@@ -13,7 +13,7 @@ const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    const merchants = await getMerchants(0, 100);
+    const merchants = await getMerchants(0, 100000000);
     // Sort integrations by name alphabetically
     data.value = merchants.sort((a, b) =>
       a.businessName.toLowerCase().localeCompare(b.businessName.toLowerCase())

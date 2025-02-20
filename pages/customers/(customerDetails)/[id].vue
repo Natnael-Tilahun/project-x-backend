@@ -29,8 +29,12 @@ const coreCustomerId = ref<string>();
 const tooltipText = ref<string>("Copy to clipboard");
 const tooltipOpen = ref<boolean>(true);
 const openEditModal = ref(false);
+const openLinkModal = ref(false);
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
+};
+const setOpenLinkModal = (value: boolean) => {
+  openLinkModal.value = value;
 };
 
 pathSegments.value = splitPath(fullPath.value);
@@ -58,6 +62,9 @@ const copyToClipboard = (data: any) => {
   navigator.clipboard.writeText(data);
   tooltipText.value = "Copied to clipboard";
   tooltipOpen.value = true;
+  toast({
+    title: "Copied to clipboard",
+  });
   setTimeout(() => {
     tooltipOpen.value = false;
     tooltipText.value = "Copy to clipboard";
@@ -69,6 +76,7 @@ try {
   loading.value = true;
   data.value = await getCustomerById(customerId.value); // Call your API function to fetch roles
   console.log("customerId.value data: ", data.value);
+  accountCustomerId.value = data.value?.coreCustomerId;
 } catch (err) {
   console.error("Error fetching customers:", err);
   isError.value = true;
@@ -137,6 +145,7 @@ const handleLinkCoreBankCustomer = async () => {
     } finally {
       isLoading.value = false;
       loading.value = false;
+      setOpenLinkModal(false);
     }
   } else {
     return true;
@@ -144,15 +153,11 @@ const handleLinkCoreBankCustomer = async () => {
 };
 
 const handleUnlinkCoreBankCustomer = async () => {
-  console.log("accountCustomerId.value: ", accountCustomerId.value);
-  if (accountCustomerId.value) {
+  if (customerId.value) {
     try {
       isLoading.value = true;
       loading.value = true;
-      data.value = await unLinkCoreBankCustomer(
-        customerId.value,
-        accountCustomerId.value
-      );
+      data.value = await unLinkCoreBankCustomer(customerId.value);
       toast({
         title: "Customer unlinked with core bank successfully. ",
       });
@@ -287,13 +292,13 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Manage Account
-          </UiTabsTrigger>
+          </UiTabsTrigger> -->
           <UiTabsTrigger
             value="pinReset"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             PIN Reset
-          </UiTabsTrigger> -->
+          </UiTabsTrigger>
         </UiTabsList>
 
         <UiTabsContent
@@ -319,33 +324,50 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                       <h1 class="text-muted-foreground uppercase">
                         Phone Number
                       </h1>
-                      <p>{{ data?.phone || "Not Setted" }}</p>
+                      <p class="border p-2 bg-muted rounded-md">
+                        {{ data?.phone || "Not Setted" }}
+                      </p>
                     </div>
                     <div class="space-y-1">
                       <h1 class="text-muted-foreground uppercase">Gender</h1>
-                      <p>{{ data?.gender }}</p>
+                      <p class="border p-2 bg-muted rounded-md">
+                        {{ data?.gender }}
+                      </p>
                     </div>
                     <div class="space-y-1">
                       <h1 class="text-muted-foreground uppercase">
                         Core CustomerId ID
                       </h1>
-                      <p>{{ data?.coreCustomerId || "Not Setted" }}</p>
+                      <div
+                        @click="copyToClipboard(data?.coreCustomerId)"
+                        class="flex items-center gap-4 cursor-pointer justify-between border p-2 bg-muted rounded-md"
+                      >
+                        <p>{{ data?.coreCustomerId || "Not Setted" }}</p>
+                        <Icon
+                          name="material-symbols:content-copy"
+                          class="h-5 w-5 text-primary"
+                        ></Icon>
+                      </div>
                     </div>
                     <div class="space-y-0">
                       <h1 class="text-muted-foreground uppercase">Country</h1>
-                      <p>{{ data?.country || "Not Setted" }}</p>
+                      <p class="border p-2 bg-muted rounded-md">
+                        {{ data?.country || "Not Setted" }}
+                      </p>
                     </div>
                     <div class="space-y-0">
                       <h1 class="text-muted-foreground uppercase">
                         National Id
                       </h1>
-                      <p>{{ data?.nationalId || "Not Setted" }}</p>
+                      <p class="border p-2 bg-muted rounded-md">
+                        {{ data?.nationalId || "Not Setted" }}
+                      </p>
                     </div>
                     <div class="space-y-0">
                       <h1 class="text-muted-foreground uppercase">
                         Customer Activated
                       </h1>
-                      <p>
+                      <p class="border p-2 bg-muted rounded-md">
                         {{
                           data?.customerActivated != null
                             ? data?.customerActivated
@@ -355,25 +377,29 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                     </div>
                     <div class="space-y-0">
                       <h1 class="text-muted-foreground uppercase">Verified</h1>
-                      <p>{{ data?.verified != null ? data?.verified : "-" }}</p>
+                      <p class="border p-2 bg-muted rounded-md">
+                        {{ data?.verified != null ? data?.verified : "-" }}
+                      </p>
                     </div>
                     <div class="space-y-0">
                       <h1 class="text-muted-foreground uppercase">
                         IsEnrolled
                       </h1>
-                      <p>
+                      <p class="border p-2 bg-muted rounded-md">
                         {{ data?.isEnrolled != null ? data.isEnrolled : "-" }}
                       </p>
                     </div>
                     <div class="space-y-0">
                       <h1 class="text-muted-foreground uppercase">Status</h1>
-                      <p>{{ data?.status != null ? data?.status : "-" }}</p>
+                      <p class="border p-2 bg-muted rounded-md">
+                        {{ data?.status != null ? data?.status : "-" }}
+                      </p>
                     </div>
                     <div class="space-y-0">
                       <h1 class="text-muted-foreground uppercase">
                         Core Linked
                       </h1>
-                      <p>
+                      <p class="border p-2 bg-muted rounded-md">
                         {{ data?.coreLinked != null ? data.coreLinked : "-" }}
                       </p>
                     </div>
@@ -381,7 +407,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                       <h1 class="text-muted-foreground uppercase">
                         Vip customer
                       </h1>
-                      <p>
+                      <p class="border p-2 bg-muted rounded-md">
                         {{ data?.vipcustomer != null ? data.vipcustomer : "-" }}
                       </p>
                     </div>
@@ -389,13 +415,13 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                       <h1 class="text-muted-foreground uppercase">
                         Olb Allowed
                       </h1>
-                      <p>
+                      <p class="border p-2 bg-muted rounded-md">
                         {{ data?.olbAllowed != null ? data.olbAllowed : "-" }}
                       </p>
                     </div>
                     <div class="space-y-0">
                       <h1 class="text-muted-foreground uppercase">Roles</h1>
-                      <ul class="px-3 pt-1">
+                      <ul class="border py-3 px-6 bg-muted rounded-md">
                         <li
                           class="list-disc"
                           v-for="(item, index) in data?.roles"
@@ -409,7 +435,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                       <h1 class="text-muted-foreground uppercase">
                         Staff Member
                       </h1>
-                      <p>
+                      <p class="border p-2 bg-muted rounded-md">
                         {{ data?.staffMember != null ? data.staffMember : "-" }}
                       </p>
                     </div>
@@ -424,7 +450,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                   <div
                     class="flex flex-col md:gap-4 w-full space-y-4 text-sm md:text-base p-6"
                   >
-                    <div class="space-y-6 md:space-y-0 border-b-2">
+                    <div class="space-y-6 md:space-y-0 border-b-2 pb-4">
                       <div class="flex items-center justify-between">
                         <h1 class="text-base">Communication</h1>
                       </div>
@@ -601,7 +627,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                     class="md:w-[100px] lg:w-[300px]"
                     v-model="accountCustomerId"
                   />
-                  <UiButton @click="handleLinkCoreBankCustomer">
+                  <UiButton @click="setOpenLinkModal(true)">
                     <Icon
                       name="svg-spinners:8-dots-rotate"
                       v-if="loading"
@@ -615,7 +641,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
 
               <div class="grid w-full max-w-sm items-center gap-2">
                 <UiLabel for="search" class="font-normal text-muted-foreground"
-                  >Unlink with core bank</UiLabel
+                  >Unlink</UiLabel
                 >
                 <div class="flex items-center gap-2">
                   <UiInput
@@ -623,7 +649,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                     type="test"
                     placeholder="Enter Customer Id "
                     class="md:w-[100px] lg:w-[300px]"
-                    v-model="accountCustomerId"
+                    v-model="customerId"
                   />
                   <UiButton @click="setOpenEditModal(true)">
                     <Icon
@@ -831,11 +857,36 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
         </UiTabsContent>
 
         <UiTabsContent value="pinReset" class="space-y-4 py-8">
-          <CustomersPinReset />
+          <CustomersPinReset :customerId="customerId" />
         </UiTabsContent>
       </UiTabs>
     </UiCard>
   </div>
+
+  <UiAlertDialog :open="openLinkModal" :onOpenChange="setOpenLinkModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          This will permanently link the customer with core bank.
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenLinkModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction @click="handleLinkCoreBankCustomer">
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="loading"
+            :disabled="loading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
 
   <UiAlertDialog :open="openEditModal" :onOpenChange="setOpenEditModal">
     <UiAlertDialogContent>
