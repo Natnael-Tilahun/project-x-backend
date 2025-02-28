@@ -377,3 +377,20 @@ export enum SystemMenuType {
   PAYMENT_REQUEST = "PAYMENT_REQUEST",
   NONE = "NONE",
 }
+
+export enum PermissionType {
+  SYSTEM = "SYSTEM",
+  MONETARY = "MONETARY",
+  NON_MONETARY = "NON_MONETARY",
+}
+
+export enum ServiceType {
+  RETAIL = "RETAIL",
+  BUSINESS = "BUSINESS",
+}
+
+export enum ServiceDefinitionStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+}
+  

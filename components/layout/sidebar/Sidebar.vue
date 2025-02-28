@@ -212,10 +212,22 @@ const mainLinks = [
   },
   {
     title: "Application Management",
-    icon: "iconoir:reports-solid",
+    icon: "material-symbols:phone-android",
     size: "22",
     showDropdown: false,
     dropdown: [{ title: "Applications", link: "/applications" }],
+  },
+  {
+    title: "Contract Management",
+    icon: "material-symbols:contract",
+    size: "22",
+    showDropdown: false,
+    dropdown: [
+      { title: "Contracts", link: "/contracts" },
+      // { title: "Payment Integrations", link: "/paymentIntegrations" },
+      // { title: "Menu Categories", link: "/menuCategories" },
+      // { title: "Auth Configurations", link: "/authConfigurations" },
+    ],
   },
   // {
   //   title: "Master Data Management",

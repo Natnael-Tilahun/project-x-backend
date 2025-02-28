@@ -1,6 +1,6 @@
 import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-
+import type { Role } from "~/types";
 export const useRoles = () => {
   const runtimeConfig = useRuntimeConfig();
   const authUser = useAuthUser();

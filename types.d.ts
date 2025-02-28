@@ -37,6 +37,9 @@ import {
   UpdatePolicy,
   AppVersionStatus,
   SystemMenuType,
+  PermissionType,
+  ServiceType,
+  ServiceDefinitionStatus,
 } from "@/global-types";
 
 interface User {
@@ -83,6 +86,7 @@ interface Permission {
     min: 0;
     max: 50;
   };
+  type: PermissionType;
   selected?: boolean;
 }
 
@@ -663,4 +667,32 @@ interface AppVersion {
   isRevoked: boolean;
   enabled: boolean;
   status: AppVersionStatus;
+}
+
+interface Contract {
+  id?: string | null;
+  name?: string | null;
+  serviceType?: ServiceType | null;
+  serviceDefinition?: ServiceDefinition | null;
+  permissions?: Permission[] | null;
+}
+
+interface ServiceDefinition {
+  id?: string | null;
+  name?: string | null;
+  description?: string | null;
+  serviceType?: ServiceType | null;
+  defaultGroup?: string | null;
+  numberOfFeatures?: number | null;
+  numberOfActiveRoles?: number | null;
+  numberOfRoles?: number | null;
+  numberOfContracts?: number | null;
+  status?: ServiceDefinitionStatus | null;
+  service?: BankingService | null;
+  permissions?: Permission[] | null;
+}
+
+interface BankingService {
+  id: string;
+  serviceType: ServiceType;
 }
