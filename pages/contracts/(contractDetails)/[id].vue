@@ -58,8 +58,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     submitting.value = true;
     isSubmitting.value = true;
+    console.log("values: ", values);
     data.value = await updateContract(contractId.value, values); // Call your API function to fetch profile
-    navigateTo(`/contracts/${data.value.contractId}`);
+    navigateTo(`/contracts/${data.value.id}`);
     console.log("New Contract data; ", data.value);
     toast({
       title: "Contract Created",
