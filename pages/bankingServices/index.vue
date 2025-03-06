@@ -1,23 +1,23 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/contracts/columns";
+import { columns } from "@/components/bankingServices/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import type { Contract } from "~/types";
+import type { BankingService } from "~/types";
 
-const { getContracts, getContractById, isLoading } = useContracts();
+const { getBankingServices, getBankingServiceById, isLoading } = useBankingServices();
 const loading = ref(isLoading.value);
 const isError = ref(false);
-const data = ref<Contract[]>([]);
+const data = ref<BankingService[]>([]);
 const keyword = ref<string>("");
 
 const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    const contracts = await getContracts(0, 100000000);
-    data.value = contracts;
+    const bankingServices = await getBankingServices(0, 100000000);
+    data.value = bankingServices;
   } catch (err: any) {
-    console.error("Error fetching contracts:", err);
+    console.error("Error fetching banking services:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
@@ -29,7 +29,7 @@ const refetch = async () => {
   await fetchData();
 };
 
-await useAsyncData("contractsData", async () => {
+await useAsyncData("bankingServicesData", async () => {
   await fetchData();
 });
 
@@ -37,9 +37,9 @@ const searchHandler = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    data.value[0] = await getContractById(keyword.value); // Call your API function to fetch roles
+    data.value[0] = await getBankingServiceById(keyword.value); // Call your API function to fetch roles
   } catch (err: any) {
-    console.error("Error fetching contracts:", err);
+    console.error("Error fetching banking services:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
@@ -57,32 +57,14 @@ const searchHandler = async () => {
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <NuxtLink to="/contracts/new" class="w-fit self-end">
+    <NuxtLink to="/bankingServices/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
-        Contract</UiButton
+        Banking Service</UiButton
       >
     </NuxtLink>
     <UiDataTable :columns="columns" :data="data">
-      <template v-slot:toolbar="{ table }">
-        <!-- <CustomersDataTableSearchbar :table="table" /> -->
-        <div class="flex items-center gap-4">
-          <UiInput
-            type="search"
-            placeholder="Search by contract id"
-            class="md:w-[100px] lg:w-[300px]"
-            v-model="keyword"
-          />
-          <UiButton @click="searchHandler">
-            <Icon
-              name="svg-spinners:8-dots-rotate"
-              v-if="isLoading"
-              class="mr-2 h-4 w-4 animate-spin"
-            ></Icon>
-            Search</UiButton
-          >
-        </div>
-      </template>
+
     </UiDataTable>
   </div>
   <!-- <div v-else-if="data && !isError && data?.length <= 0">

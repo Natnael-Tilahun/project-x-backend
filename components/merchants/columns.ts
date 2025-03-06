@@ -5,7 +5,7 @@ import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import MerchantsDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
-
+import type { Merchant } from "~/types";
 export const columns: ColumnDef<Merchant>[] = [
   {
     id: "select",
@@ -40,7 +40,7 @@ export const columns: ColumnDef<Merchant>[] = [
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `${route.path}/${merchantId}`,
             },
-            businessName
+            row.getValue("businessName")
           )
         : h("p", "-");
     },

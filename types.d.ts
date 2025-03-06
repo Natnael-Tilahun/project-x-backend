@@ -679,9 +679,9 @@ interface Contract {
 
 interface ServiceDefinition {
   id?: string | null;
-  name?: string | null;
+  name: string;
   description?: string | null;
-  serviceType?: ServiceType | null;
+  serviceType: ServiceType;
   defaultGroup?: string | null;
   numberOfFeatures?: number | null;
   numberOfActiveRoles?: number | null;
@@ -695,4 +695,28 @@ interface ServiceDefinition {
 interface BankingService {
   id: string;
   serviceType: ServiceType;
+  serviceName?: string;
+  description?: string | null;
 }
+
+interface ServiceDefinition {
+  id?: string;
+  name: string;
+  description: string;
+  serviceType: ServiceType;
+  defaultGroup: string;
+  numberOfFeatures: number;
+  numberOfActiveRoles: number;
+  numberOfRoles: number;
+  numberOfContracts: number;
+  status: ServiceDefinitionStatus;
+  service: BankingService;
+  permissions: Permission[];
+}
+
+// interface ServiceDefinitionRole {
+//   id?: string
+//   isDefault	[...]
+//   serviceDefinition	ServiceDefinitionDTO{...}
+//   role	RoleDTO{...}
+// }

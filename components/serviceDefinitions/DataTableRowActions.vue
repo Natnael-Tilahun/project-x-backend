@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
-const { deleteMerchant, isLoading } = useMerchants();
+const { deleteServiceDefinition, isLoading } = useServiceDefinitions();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const openEditModal = ref(false);
@@ -15,24 +15,24 @@ interface DataTableRowActionsProps<TData> {
 }
 const props = defineProps<DataTableRowActionsProps<any>>();
 
-function viewCustomerDetail(id: string) {
-  navigateTo(`/merchants/${id}`);
+function viewServiceDefinitionDetail(id: string) {
+  navigateTo(`/serviceDefinitions/${id}`);
   navigator.clipboard.writeText(id);
 }
 
-async function deleteMerchants(id: string) {
+async function deleteServiceDefinitions(id: string) {
   try {
     isLoading.value = true;
     loading.value = true;
-    await deleteMerchant(id); // Call your API function to fetch roles
-    console.log("Merchant deleted successfully");
+    await deleteServiceDefinition(id); // Call your API function to fetch roles
+    console.log("Service definition deleted successfully");
     toast({
-      title: "Merchant deleted successfully",
+      title: "Service definition deleted successfully",
     });
     // Reload the window after deleting the role
     window.location.reload();
   } catch (err) {
-    console.error("Error deleting merchant:", err);
+    console.error("Error deleting service definition:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
@@ -54,7 +54,7 @@ async function deleteMerchants(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiDropdownMenuItem @click="viewCustomerDetail(row.original.merchantId)"
+      <UiDropdownMenuItem @click="viewServiceDefinitionDetail(row.original.id)"
         >View</UiDropdownMenuItem
       >
       <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
@@ -73,14 +73,14 @@ async function deleteMerchants(id: string) {
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
           This action cannot be undone. This will permanently delete the
-          merchant and remove your data from our servers.
+          service definition and remove your data from our servers.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>
         <UiAlertDialogCancel @click="setOpenEditModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="deleteMerchants(row.original.merchantId)">
+        <UiAlertDialogAction @click="deleteServiceDefinitions(row.original.id)">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"

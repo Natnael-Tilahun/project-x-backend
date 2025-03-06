@@ -3,11 +3,11 @@ import type { ColumnDef } from "@tanstack/vue-table";
 import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
-import ContractsDataTableRowActionsVue from "./DataTableRowActions.vue";
+import BankingServicesDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
-import type { Contract } from "~/types";
+import type { BankingService } from "~/types";
 
-export const columns: ColumnDef<Contract>[] = [
+export const columns: ColumnDef<BankingService>[] = [
   {
     id: "select",
     header: ({ table }) =>
@@ -27,21 +27,21 @@ export const columns: ColumnDef<Contract>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "name",
+    accessorKey: "serviceName",
     header: "Name",
     cell: ({ row }) => {
-      const contractId = row.original.id;
+      const bankingServiceId = row.original.id;
       const route = useRoute();
-      const name = row.getValue("name");
+      const name = row.getValue("serviceName");
       return name
         ? h(
             NuxtLink,
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}/${contractId}`,
+              to: `${route.path}/${bankingServiceId}`,
             },
-            row.getValue("name")
+            row.getValue("serviceName")
           )
         : h("p", "-");
     },
@@ -64,18 +64,18 @@ export const columns: ColumnDef<Contract>[] = [
     },
   },
   {
-    accessorKey: "serviceDefinition",
-    header: "Service Definition",
+    accessorKey: "description",
+    header: "Description",
     cell: ({ row }) => {
-      const serviceDefinition = row.getValue("serviceDefinition")?.name;
-      return serviceDefinition
+      const description = row.getValue("description");
+      return description
         ? h(
             "div",
             {
               class:
                 "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
             },
-            row.getValue("serviceDefinition")?.name
+            row.getValue("description")
           )
         : h("p", "-");
     },
@@ -88,7 +88,7 @@ export const columns: ColumnDef<Contract>[] = [
       return h(
         "div",
         { class: "relative" },
-        h(ContractsDataTableRowActionsVue, {
+        h(BankingServicesDataTableRowActionsVue, {
           row,
         })
       );

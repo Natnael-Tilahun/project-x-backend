@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { columns } from "../../components/userPermissions/columns";
 import { usePermissions } from "~/composables/usePermissions";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import type { Permission } from "~/types";
 
 const { getPermissions, isLoading } = usePermissions();
 const loading = ref(isLoading.value);
@@ -19,8 +20,8 @@ const fetchData = async () => {
     loading.value = true;
     const permissions = await getPermissions();
     // Sort integrations by name alphabetically
-    data.value = permissions.sort((a, b) =>
-      a.code.toLowerCase().localeCompare(b.code.toLowerCase())
+    data.value = permissions.sort((a: string, b: string) =>
+      a?.toLowerCase().localeCompare(b?.toLowerCase())
     );
     // console.log("Permission data; ", data.value);
     // formData.value = profileData; // Store the profile data in a reactive variable

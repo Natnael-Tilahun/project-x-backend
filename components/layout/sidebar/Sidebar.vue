@@ -224,8 +224,20 @@ const mainLinks = [
     showDropdown: false,
     dropdown: [
       { title: "Contracts", link: "/contracts" },
-      // { title: "Payment Integrations", link: "/paymentIntegrations" },
-      // { title: "Menu Categories", link: "/menuCategories" },
+      // { title: "Banking Services", link: "/bankingServices" },
+      // { title: "Service Definitions", link: "/serviceDefinitions" },
+      // { title: "Auth Configurations", link: "/authConfigurations" },
+    ],
+  },
+  {
+    title: "Service Management",
+    icon: "material-symbols:contract",
+    size: "22",
+    showDropdown: false,
+    dropdown: [
+      { title: "Banking Services", link: "/bankingServices" },
+      { title: "Service Definitions", link: "/serviceDefinitions" },
+      { title: "Service Definition Roles", link: "/ServiceDefinitionRoles" },
       // { title: "Auth Configurations", link: "/authConfigurations" },
     ],
   },
