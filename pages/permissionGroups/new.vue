@@ -7,117 +7,100 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { newUserRoleformSchema } from "~/validations/newUserRoleformSchema";
-import { ref } from "vue";
+import { ref, onBeforeUnmount } from "vue";
 import { toast } from "~/components/ui/toast";
-import { RoleScope } from "~/global-types";
-import type { Role } from "~/types";
+import { permissionGroupFormSchema } from "~/validations/permissionGroupFormSchema";
+import { PermissionGroupStatus, RoleScope } from "@/global-types";
+import type { PermissionGroup } from "~/types";
 
-const { createNewRole, isLoading } = await useRoles();
+const { createNewPermissionGroup, isLoading } = usePermissionGroups();
 const isError = ref(false);
-const data = ref<Role>();
-
+const data = ref<PermissionGroup>();
 const isSubmitting = ref(false);
-const activeTab = ref<string>("roleDetails"); // Reactive variable to manage active tab
 
 const form = useForm({
-  validationSchema: newUserRoleformSchema,
-  initialValues: {
-    name: "",
-    description: "",
-    disabled: false,
-    enforce2fa: false,
-  },
+  validationSchema: permissionGroupFormSchema,
 });
 
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     isSubmitting.value = true;
     isLoading.value = true;
-    data.value = await createNewRole(values); // Call your API function to fetch profile
-    navigateTo(`/userRoles`);
-    console.log("New role data; ", data.value);
+    data.value = await createNewPermissionGroup(values); // Call your API function to fetch profile
+    navigateTo(`/permissionGroups`);
     toast({
-      title: "Role Created",
-      description: "Role created successfully",
+      title: "Permission Group Created",
+      description: "Permission Group created successfully",
     });
   } catch (err: any) {
-    console.error("Error creating new role:", err);
+    console.error("Error creating new permission group:", err.message);
     isError.value = true;
   } finally {
     isLoading.value = false;
     isSubmitting.value = false;
   }
 });
+
+onBeforeUnmount(() => {
+  isError.value = false;
+  data.value = undefined;
+  isSubmitting.value = false;
+});
 </script>
 
 <template>
-  <div class="w-full flex flex-col gap-8">
-    <div class="pb-4">
-      <h1 class="md:text-2xl text-lg font-medium">Add New Role</h1>
+  <div class="w-full h-full flex flex-col gap-8">
+    <div class="">
+      <h1 class="md:text-2xl text-lg font-medium">Create New Permission Group</h1>
       <p class="text-sm text-muted-foreground">
-        Create new user role, role access and system permissions
+        Create new permission group by including name, service type, permissions, and
+        service definition
       </p>
     </div>
 
-    <UiCard
-      default-value="roleDetails"
-      :model-value="activeTab"
-      class="w-full flex border-[1px] rounded-lg h-full"
-    >
+    <UiCard class="w-full flex border-[1px] rounded-lg h-full">
       <div value="roleDetails" class="text-sm md:text-base p-6 basis-full">
         <form @submit="onSubmit">
           <div class="grid grid-cols-2 gap-6">
-            <FormField v-slot="{ componentField }" name="name">
-              <FormItem class="w-full">
-                <FormLabel> Role Name </FormLabel>
+            <FormField v-slot="{ componentField }" name="groupCode">
+              <FormItem>
+                <FormLabel>Group Code </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
-                    placeholder="Enter Role Name"
+                    placeholder="Enter permission group code"
                     v-bind="componentField"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             </FormField>
-
+            <FormField v-slot="{ componentField }" name="name">
+              <FormItem>
+                <FormLabel>Group Name </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter permission group name"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
             <FormField v-slot="{ componentField }" name="description">
-              <FormItem class="w-full">
-                <FormLabel>Description</FormLabel>
+              <FormItem>
+                <FormLabel>Description </FormLabel>
                 <FormControl>
-                  <UiTextarea
-                    placeholder="Enter Description"
-                    class="resize-y"
+                  <UiInput
+                    type="text"
+                    placeholder="Enter permission group description"
                     v-bind="componentField"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             </FormField>
-
-            <FormField v-slot="{ value, handleChange }" name="disabled">
-              <FormItem
-                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
-              >
-                <FormLabel class="text-base"> Disabled </FormLabel>
-                <FormControl>
-                  <UiSwitch :checked="value" @update:checked="handleChange" />
-                </FormControl>
-              </FormItem>
-            </FormField>
-
-            <FormField v-slot="{ value, handleChange }" name="enforce2fa">
-              <FormItem
-                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
-              >
-                <FormLabel class="text-base"> Enforce 2fa </FormLabel>
-                <FormControl>
-                  <UiSwitch :checked="value" @update:checked="handleChange" />
-                </FormControl>
-              </FormItem>
-            </FormField>
-
             <FormField v-slot="{ componentField }" name="scope">
               <FormItem>
                 <FormLabel> Scope </FormLabel>
@@ -141,37 +124,29 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
-
-            <!-- <FormField v-slot="{ componentField }" name="permission">
+            <FormField v-slot="{ componentField }" name="status">
               <FormItem>
-                <FormLabel>Permissions</FormLabel>
-
-                <UiSelect
-                  multiple
-                  v-model="selectedPermissions"
-                  v-bind="componentField"
-                >
+                <FormLabel> Status </FormLabel>
+                <UiSelect v-bind="componentField">
                   <FormControl>
                     <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select permissions" />
+                      <UiSelectValue placeholder="Select a status" />
                     </UiSelectTrigger>
                   </FormControl>
                   <UiSelectContent>
                     <UiSelectGroup>
                       <UiSelectItem
-                        v-for="item in data"
-                        :key="item.code"
-                        :value="item.code"
+                        v-for="item in Object.values(PermissionGroupStatus)"
+                        :value="item"
                       >
-                        {{ item.code }}
+                        {{ item }}
                       </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
                 <FormMessage />
               </FormItem>
-            </FormField> -->
-
+            </FormField>
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="isSubmitting"

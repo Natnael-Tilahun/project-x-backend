@@ -7,6 +7,7 @@ export const newUserRoleformSchema = toTypedSchema(
     disabled: z.boolean().default(false).optional(),
     enforce2fa: z.boolean().default(false).optional(),
     description: z.string().min(4).max(200),
+    scope: z.string(),
     // permission: z.array(z.string()).optional()
   })
 );

@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
-import { computed } from "vue";
 import { toast } from "../ui/toast";
-const { deleteRoleById, getRoles, isLoading } = useRoles();
+const { deletePermissionGroupById, isLoading } = usePermissionGroups();
 const loading = ref(isLoading.value);
 const isError = ref(false);
-const { setIsUpdated } = usePagesInfoStore();
 const openEditModal = ref(false);
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
@@ -14,29 +12,27 @@ const setOpenEditModal = (value: boolean) => {
 const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
-  refetch: () => Promise<void>; // Accept refetch as a prop
 }
 const props = defineProps<DataTableRowActionsProps<any>>();
 
-function viewRollDetails(name: string) {
-  navigateTo(`/userRoles/${name}`);
-  navigator.clipboard.writeText(name);
+function viewPermissionGroupDetail(id: string) {
+  navigateTo(`/permissionGroups/${id}`);
+  navigator.clipboard.writeText(id);
 }
 
-async function deleteRole(id: string) {
+async function deletePermissionGroup(id: string) {
   try {
     isLoading.value = true;
     loading.value = true;
-    await deleteRoleById(id); // Call your API function to fetch roles
-    console.log("Role deleted successfully");
+    await deletePermissionGroupById(id); // Call your API function to fetch roles
+    console.log("Permission group deleted successfully");
     toast({
-      title: "Role deleted successfully",
+      title: "Permission group deleted successfully",
     });
-    setIsUpdated({ isUpdated: true });
     // Reload the window after deleting the role
     window.location.reload();
   } catch (err) {
-    console.error("Error deleting role:", err);
+    console.error("Error deleting permission group:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
@@ -58,14 +54,13 @@ async function deleteRole(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiDropdownMenuItem @click="viewRollDetails(row.original.name)"
+      <UiDropdownMenuItem @click="viewPermissionGroupDetail(row.original.groupCode)"
         >View</UiDropdownMenuItem
       >
       <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
-      <UiDropdownMenuItem>Deactivate</UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
       <UiDropdownMenuSeparator />
-      <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-500">
+      <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>
@@ -77,15 +72,15 @@ async function deleteRole(id: string) {
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
-          This action cannot be undone. This will permanently delete the role
-          and remove your data from our servers.
+          This action cannot be undone. This will permanently delete the
+          permission group and remove your data from our servers.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>
         <UiAlertDialogCancel @click="setOpenEditModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="deleteRole(row.original.name)">
+        <UiAlertDialogAction @click="deletePermissionGroup(row.original.groupCode)">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"

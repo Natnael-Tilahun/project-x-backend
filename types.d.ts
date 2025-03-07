@@ -40,6 +40,8 @@ import {
   PermissionType,
   ServiceType,
   ServiceDefinitionStatus,
+  PermissionGroupStatus,
+  RoleScope,
 } from "@/global-types";
 
 interface User {
@@ -71,6 +73,7 @@ interface Role {
   disabled: boolean;
   enforce2fa: boolean;
   permissionUsageData?: Permission[];
+  scope: RoleScope;
 }
 
 interface Permission {
@@ -720,4 +723,12 @@ interface ServiceDefinitionRole {
   isDefault?: boolean
   serviceDefinition: ServiceDefinition
   role?: Role
+}
+
+interface PermissionGroup {
+  groupCode: string;
+  name?: string;
+  description?: string;
+  scope: RoleScope;
+  status?: PermissionGroupStatus;
 }

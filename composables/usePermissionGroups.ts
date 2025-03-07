@@ -1,7 +1,8 @@
 import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { Role } from "~/types";
-export const useRoles = () => {
+import type { PermissionGroup } from "~/types";
+
+export const usePermissionGroups = () => {
   const runtimeConfig = useRuntimeConfig();
   const authUser = useAuthUser();
   const userAdmin = useState<boolean>("userAdmin", () => false);
@@ -12,10 +13,10 @@ export const useRoles = () => {
   const store = useAuthStore();
   const { toast } = useToast();
 
-  const getRoles: () => Promise<Role[]> = async () => {
+  const getPermissionGroups: () => Promise<PermissionGroup[]> = async () => {
     try {
-      const { data, pending, error, status } = await useFetch<Role[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/list`,
+      const { data, pending, error, status } = await useFetch<PermissionGroup[]>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/permission-groups`,
         {
           method: "GET",
           headers: {
@@ -27,10 +28,10 @@ export const useRoles = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Getting user error: " + error.value);
+        throw new Error("Getting permission groups error: " + error.value);
       }
       if (!data.value) {
-        throw new Error("No roles data received");
+        throw new Error("No permission groups data received");
       }
       return data.value;
     } catch (err) {
@@ -39,10 +40,10 @@ export const useRoles = () => {
     }
   };
 
-  const deleteRoleById: (id: string) => Promise<any> = async (id) => {
+  const deletePermissionGroupById: (groupCode: string) => Promise<any> = async (groupCode) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/delete/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/permission-groups/${groupCode}`,
         {
           method: "DELETE",
           headers: {
@@ -54,13 +55,13 @@ export const useRoles = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        console.log("Deleting role error: ", error.value?.data?.message)
+        console.log("Deleting permission group error: ", error.value?.data?.message)
         toast({
           title: error.value?.data?.type || "Something went wrong!",
           description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
           variant: "destructive"
         })
-        throw new Error("Deleting role error: " + error.value);
+        throw new Error("Deleting permission group error: " + error.value);
       }
 
       return data;
@@ -70,11 +71,10 @@ export const useRoles = () => {
     }
   };
 
-  const getRolePermissions: (name: string) => Promise<Role> = async (name) => {
-    console.log("name: ", name)
+  const getPermissionGroupById: (groupCode: string) => Promise<PermissionGroup> = async (groupCode) => {
     try {
-      const { data, pending, error, status } = await useFetch<Role>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/${name}/permissions`,
+      const { data, pending, error, status } = await useFetch<PermissionGroup>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/permission-groups/${groupCode}`,
         {
           method: "GET",
           headers: {
@@ -92,10 +92,10 @@ export const useRoles = () => {
             navigateTo('/login')
           })
         }
-        throw new Error("Getting user error: " + error);
+        throw new Error("Getting permission group error: " + error);
       }
       if (!data.value) {
-        throw new Error("No roles data received");
+        throw new Error("No permission group data received");
       }
       return data.value;
     } catch (err) {
@@ -104,16 +104,16 @@ export const useRoles = () => {
     }
   };
 
-  const createNewRole: (roleDetail: Role) => Promise<Role> = async (roleDetail) => {
+  const createNewPermissionGroup: (permissionGroupDetail: PermissionGroup) => Promise<PermissionGroup> = async (permissionGroupDetail) => {
     try {
-      const { data, pending, error, status } = await useFetch<Role>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/create`,
+      const { data, pending, error, status } = await useFetch<PermissionGroup>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/permission-groups`,
         {
           method: "POST",
           headers: {
             Authorization: `Bearer ${store.accessToken}`,
           },
-          body: JSON.stringify(roleDetail),
+          body: JSON.stringify(permissionGroupDetail),
         }
       );
       isLoading.value = pending.value;
@@ -126,15 +126,15 @@ export const useRoles = () => {
         })
 
         if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Creating new customer error: ", error.value?.data?.fieldErrors[0].message)
+          console.log("Creating new permission group error: ", error.value?.data?.fieldErrors[0].message)
         }
         else {
-          console.log("Creating new customer errorrr: ", error.value?.data?.message)
+          console.log("Creating new permission group errorrr: ", error.value?.data?.message)
         }
         throw new Error(error.value?.data);
       }
       if (!data.value) {
-        throw new Error("No roles data received");
+        throw new Error("No permission group data received");
       }
       return data.value;
     } catch (err) {
@@ -143,21 +143,21 @@ export const useRoles = () => {
     }
   };
 
-  const updateRolePermissions: (roleName: string, roleDetail: any) => Promise<Role> = async (roleName, roleDetail) => {
+  const updatePermissionGroup: (groupCode: string, permissionGroupDetail: any) => Promise<PermissionGroup> = async (groupCode, permissionGroupDetail) => {
     try {
-      const { data, pending, error, status } = await useFetch<Role>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/${roleName}/permissions/update`,
+      const { data, pending, error, status } = await useFetch<PermissionGroup>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/permission-groups/${groupCode}`,
         {
-          method: "POST",
+          method: "PATCH",
           headers: {
             Authorization: `Bearer ${store.accessToken}`,
           },
-          body: JSON.stringify(roleDetail),
+          body: JSON.stringify(permissionGroupDetail),
         }
       );
       isUpdating.value = pending.value;
       if (status.value === "error") {
-        console.log("Updating role permissions error: ", error.value?.data?.message)
+        console.log("Updating permission group permissions error: ", error.value?.data?.message)
         toast({
           title: error.value?.data?.type || "Something went wrong!",
           description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
@@ -166,7 +166,7 @@ export const useRoles = () => {
         throw new Error(error.value?.data);
       }
       if (!data.value) {
-        throw new Error("No roles data received");
+        throw new Error("No permission group data received");
       }
       return data.value;
     } catch (err) {
@@ -175,45 +175,14 @@ export const useRoles = () => {
     }
   };
 
-  const updateRoleStatus: (roleName: string, roleStatus: boolean) => Promise<Role> = async (roleName, roleStatus) => {
-    try {
-      const { data, pending, error, status } = await useFetch<Role>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/${roleName}?action=${roleStatus ? "enable" : "disable"}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
-      );
-      isUpdating.value = pending.value;
-      if (status.value === "error") {
-        console.log("Updating role status error: ", error.value?.data?.message)
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
-          variant: "destructive"
-        })
-        throw new Error(error.value?.data);
-      }
-      if (!data.value) {
-        throw new Error("No roles data received");
-      }
-      return data.value;
-    } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
-    }
-  };
 
   return {
     isLoading,
     isUpdating,
-    getRoles,
-    getRolePermissions,
-    deleteRoleById,
-    createNewRole,
-    updateRolePermissions,
-    updateRoleStatus,
+    getPermissionGroups,
+    getPermissionGroupById,
+    deletePermissionGroupById,
+    createNewPermissionGroup,
+    updatePermissionGroup,
   };
 };

@@ -393,4 +393,13 @@ export enum ServiceDefinitionStatus {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",
 }
-  
+
+export enum PermissionGroupStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+}
+
+export enum RoleScope {
+  SYSTEM = "SYSTEM",
+  CUSTOMER = "CUSTOMER",
+}

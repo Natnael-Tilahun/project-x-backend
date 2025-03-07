@@ -19,8 +19,8 @@ const fetchData = async () => {
     isLoading.value = true;
     loading.value = true;
     const permissions = await getPermissions();
-    data.value = permissions.sort((a: string, b: string) =>
-      a?.toLowerCase().localeCompare(b?.toLowerCase())
+    data.value = permissions.sort((a: Permission, b: Permission) =>
+      a?.code?.toLowerCase().localeCompare(b?.code?.toLowerCase())
     );
   } catch (err) {
     console.error("Error fetching users:", err);

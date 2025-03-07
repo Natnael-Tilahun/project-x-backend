@@ -1,10 +1,10 @@
 import type { ColumnDef } from "@tanstack/vue-table";
 
 import { Checkbox } from "../ui/checkbox";
-import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import UserRolesDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
+import type { Role } from "~/types";
 
 export const columns: ColumnDef<Role>[] = [
   {
@@ -39,7 +39,7 @@ export const columns: ColumnDef<Role>[] = [
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `${route.path}/${roleName}`,
             },
-            roleName
+            row.getValue("name")
           )
         : h("p", "-");
     },
@@ -56,6 +56,16 @@ export const columns: ColumnDef<Role>[] = [
       if (enforce) {
         return h("p", "True");
       } else return h("p", "False");
+    },
+  },
+  {
+    accessorKey: "scope",
+    header: "Scope",
+    cell: ({ row }) => {
+      const scope = row.getValue("scope");
+      if (scope) {
+        return h("p", scope);
+      } else return h("p", "None");
     },
   },
   {
