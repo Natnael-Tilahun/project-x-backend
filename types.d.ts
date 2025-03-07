@@ -67,7 +67,7 @@ interface Role {
   lastModifiedBy?: string;
   lastModifiedDate?: Date;
   name: string;
-  description: string;
+  description?: string;
   disabled: boolean;
   enforce2fa: boolean;
   permissionUsageData?: Permission[];
@@ -671,7 +671,8 @@ interface AppVersion {
 
 interface Contract {
   id?: string | null;
-  name?: string | null;
+  name: string | null;
+  description?: string | null;
   serviceType?: ServiceType | null;
   serviceDefinition?: ServiceDefinition | null;
   permissions?: Permission[] | null;
@@ -714,9 +715,9 @@ interface ServiceDefinition {
   permissions: Permission[];
 }
 
-// interface ServiceDefinitionRole {
-//   id?: string
-//   isDefault	[...]
-//   serviceDefinition	ServiceDefinitionDTO{...}
-//   role	RoleDTO{...}
-// }
+interface ServiceDefinitionRole {
+  id?: string
+  isDefault?: boolean
+  serviceDefinition: ServiceDefinition
+  role?: Role
+}

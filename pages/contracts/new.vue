@@ -11,11 +11,17 @@ import { ref, onBeforeUnmount } from "vue";
 import { toast } from "~/components/ui/toast";
 import { newContractFormSchema } from "~/validations/newContractFormSchema";
 import { ServiceType } from "@/global-types";
-
+import type { Contract, Permission, ServiceDefinition } from "~/types";
 const { createNewContract, isLoading } = useContracts();
+const { getServiceDefinitions } = useServiceDefinitions();
+const { getPermissions } = usePermissions();
+
 const isError = ref(false);
 const data = ref<Contract>();
 const isSubmitting = ref(false);
+const permissionsData = ref<Permission[]>([]);
+const serviceDefinitionsData = ref<ServiceDefinition[]>([]);
+const selectedPermissions = ref<Permission[]>([]);
 
 const form = useForm({
   validationSchema: newContractFormSchema,
@@ -25,10 +31,12 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     isSubmitting.value = true;
     isLoading.value = true;
-    console.log("values: ", values);
-    data.value = await createNewContract(values); // Call your API function to fetch profile
+    const newValues = {
+      ...values,
+      serviceDefinition: serviceDefinitionsData.value.find((service: ServiceDefinition) => service.id === values.serviceDefinition),
+    }
+    data.value = await createNewContract(newValues); // Call your API function to fetch profile
     navigateTo(`/contracts/${data.value.id}`);
-    console.log("New Contract data; ", data.value);
     toast({
       title: "Contract Created",
       description: "Contract created successfully",
@@ -40,6 +48,24 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isLoading.value = false;
     isSubmitting.value = false;
   }
+});
+
+const fetchData = async () => {
+  try {
+    const permissions = await getPermissions();
+    permissionsData.value = permissions.sort((a: Permission, b: Permission) =>
+      a?.code?.toLowerCase().localeCompare(b?.code?.toLowerCase())
+    );
+    const serviceDefinitions = await getServiceDefinitions();
+    serviceDefinitionsData.value = serviceDefinitions;
+  } catch (err) {
+    console.error("Error fetching permissions:", err);
+    isError.value = true;
+  } 
+};
+
+await useAsyncData("permissionsData", async () => {
+  await fetchData();
 });
 
 onBeforeUnmount(() => {
@@ -99,27 +125,106 @@ onBeforeUnmount(() => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="permissions">
+            <FormField v-slot="{ componentField }" name="description">
+            <FormItem>
+              <FormLabel>Contract Description </FormLabel>
+              <FormControl>
+                <UiTextarea
+                  type="text"
+                  placeholder="Enter contract Description"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField
+              :model-value="data?.permissions"
+              v-slot="{ componentField, errorMessage }"
+              name="permissions"
+            >
               <FormItem>
-                <FormLabel> Permissions </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a permissions" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in Permissions"
-                        :value="item"
+                <FormLabel>Select Permissions</FormLabel>
+                <UiPopover>
+                  <UiPopoverTrigger asChild>
+                    <FormControl>
+                      <div
+                        variant="outline"
+                        role="combobox"
+                        class="w-full text-sm text-left border flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
+                        :class="{
+                          'text-muted-foreground':
+                            !data?.permissions?.length,
+                        }"
                       >
-                        {{ item }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
+                        {{
+                          selectedPermissions?.length
+                            ? selectedPermissions
+                                .map(
+                                  (permission: Permission) => permission.code
+                                )
+                                .join(", ")
+                            : "Select permissions"
+                        }}
+                        <Icon
+                          name="material-symbols:unfold-more-rounded"
+                          class="ml-2 h-4 w-4 shrink-0 opacity-50"
+                        />
+                      </div>
+                    </FormControl>
+                  </UiPopoverTrigger>
+                  <UiPopoverContent class="w-full self-start p-0">
+                    <UiCommand>
+                      <UiCommandInput placeholder="Search product menus..." />
+                      <UiCommandList>
+                        <UiCommandEmpty>No permissions found.</UiCommandEmpty>
+                        <UiCommandGroup>
+                          <UiCommandItem
+                            v-for="permission in permissionsData"
+                            :key="permission.code"
+                            :value="permission.code"
+                            @select="
+                              () => {
+                                const isSelected =
+                                  selectedPermissions.some(
+                                    (selected: Permission) => selected.code === permission.code
+                                  );
+
+                                if (isSelected) {
+                                  selectedPermissions =
+                                      selectedPermissions.filter(
+                                      (selected: Permission) =>
+                                        selected.code !== permission.code
+                                    );
+                                } else {
+                                  selectedPermissions.push(permission);
+                                }
+
+                                form.setFieldValue(
+                                  'permissions',
+                                  selectedPermissions.map(
+                                    (permission: Permission) => permission
+                                  )
+                                );
+                              }
+                            "
+                          >
+                            {{ permission.code }}
+                            <UiCheckbox
+                              :checked="
+                                selectedPermissions.some(
+                                  (selected: Permission) => selected.code === permission.code
+                                )
+                              "
+                              class="ml-auto"
+                            />
+                          </UiCommandItem>
+                        </UiCommandGroup>
+                      </UiCommandList>
+                    </UiCommand>
+                  </UiPopoverContent>
+                </UiPopover>
+                <FormMessage>{{ errorMessage }}</FormMessage>
               </FormItem>
             </FormField>
             <FormField v-slot="{ componentField }" name="serviceDefinition">
@@ -134,10 +239,10 @@ onBeforeUnmount(() => {
                   <UiSelectContent>
                     <UiSelectGroup>
                       <UiSelectItem
-                        v-for="item in ServiceDefinition"
-                        :value="item"
+                        v-for="item in serviceDefinitionsData"
+                        :value="item?.id || ''"
                       >
-                        {{ item }}
+                        {{ item.name }}
                       </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>

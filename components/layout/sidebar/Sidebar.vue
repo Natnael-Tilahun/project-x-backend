@@ -171,6 +171,32 @@ const mainLinks = [
     ],
   },
   {
+    title: "Application Management",
+    icon: "material-symbols:phone-android",
+    size: "22",
+    showDropdown: false,
+    dropdown: [{ title: "Applications", link: "/applications" }],
+  },
+  {
+    title: "Contract Management",
+    icon: "material-symbols:contract",
+    size: "22",
+    showDropdown: false,
+    dropdown: [
+      { title: "Contracts", link: "/contracts" },
+    ],
+  },
+  {
+    title: "Service Management",
+    icon: "material-symbols:work",
+    size: "22",
+    showDropdown: false,
+    dropdown: [
+      { title: "Banking Services", link: "/bankingServices" },
+      { title: "Service Definitions", link: "/serviceDefinitions" },
+    ],
+  },
+  {
     title: "Application Content Management",
     icon: "material-symbols:create-new-folder",
     size: "22",
@@ -208,37 +234,6 @@ const mainLinks = [
     dropdown: [
       { title: "Logs", link: "/log" },
       // { title: "Reports", link: "/reports" },
-    ],
-  },
-  {
-    title: "Application Management",
-    icon: "material-symbols:phone-android",
-    size: "22",
-    showDropdown: false,
-    dropdown: [{ title: "Applications", link: "/applications" }],
-  },
-  {
-    title: "Contract Management",
-    icon: "material-symbols:contract",
-    size: "22",
-    showDropdown: false,
-    dropdown: [
-      { title: "Contracts", link: "/contracts" },
-      // { title: "Banking Services", link: "/bankingServices" },
-      // { title: "Service Definitions", link: "/serviceDefinitions" },
-      // { title: "Auth Configurations", link: "/authConfigurations" },
-    ],
-  },
-  {
-    title: "Service Management",
-    icon: "material-symbols:contract",
-    size: "22",
-    showDropdown: false,
-    dropdown: [
-      { title: "Banking Services", link: "/bankingServices" },
-      { title: "Service Definitions", link: "/serviceDefinitions" },
-      { title: "Service Definition Roles", link: "/ServiceDefinitionRoles" },
-      // { title: "Auth Configurations", link: "/authConfigurations" },
     ],
   },
   // {

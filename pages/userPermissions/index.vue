@@ -19,16 +19,12 @@ const fetchData = async () => {
     isLoading.value = true;
     loading.value = true;
     const permissions = await getPermissions();
-    // Sort integrations by name alphabetically
     data.value = permissions.sort((a: string, b: string) =>
       a?.toLowerCase().localeCompare(b?.toLowerCase())
     );
-    // console.log("Permission data; ", data.value);
-    // formData.value = profileData; // Store the profile data in a reactive variable
   } catch (err) {
     console.error("Error fetching users:", err);
     isError.value = true;
-    // Handle error fetching profile data
   } finally {
     isLoading.value = false;
     loading.value = false;

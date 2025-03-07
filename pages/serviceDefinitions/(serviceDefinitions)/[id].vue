@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const openItems = ref(["item-1"]);
+const openItems = ref("serviceDefinitionDetails");
 
 import { useForm } from "vee-validate";
 import { ref } from "vue";
@@ -19,6 +19,7 @@ import { ServiceType, ServiceDefinitionStatus } from "@/global-types";
 const route = useRoute();
 const { getServiceDefinitionById, updateServiceDefinition, isLoading, isSubmitting } =
   useServiceDefinitions();
+
 const { getPermissions } = usePermissions();
 const { getBankingServices } = useBankingServices();
 
@@ -45,20 +46,20 @@ const form = useForm({
   validationSchema: newServiceDefinitionFormSchema,
 });
 
+const fetchServiceDefinitions = async() => {
 try {
   isLoading.value = true;
   loading.value = true;
     data.value = await getServiceDefinitionById(serviceDefinitionId.value);
-  console.log("data: ", data.value);
   const permissions = await getPermissions();
   permissionsData.value = permissions.sort((a: Permission, b: Permission) =>
       a?.code?.toLowerCase().localeCompare(b?.code?.toLowerCase())
     );
-      console.log("permissions: ", permissionsData.value);
+  selectedPermissions.value = data.value?.permissions || []
   bankingServices.value = await getBankingServices();
-  console.log("bankingServices: ", bankingServices.value);
   let a = {
         ...data.value,
+        service: data.value?.service?.id
   };
   form.setValues(a);
 } catch (err) {
@@ -67,6 +68,7 @@ try {
 } finally {
   isLoading.value = false;
   loading.value = false;
+}
 }
 
 const onSubmit = form.handleSubmit(async (values: any) => {
@@ -77,10 +79,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       ...values,
       service: bankingServices.value.find((service: BankingService) => service.id === values.service),
     }
-    console.log("values: ", newValues);
     data.value = await updateServiceDefinition(serviceDefinitionId.value, newValues); // Call your API function to fetch profile
       navigateTo(`/serviceDefinitions/${data.value.id}`);
-    console.log("New Service Definition data; ", data.value);
     toast({
       title: "Service Definition Created",
       description: "Service Definition created successfully",
@@ -93,6 +93,29 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = false;
   }
 });
+
+onMounted(() => {
+  fetchServiceDefinitions();
+});
+
+onBeforeUnmount(() => {
+  isError.value = false;
+  data.value = undefined;
+  isSubmitting.value = false;
+});
+
+// Watch for changes in the route's query parameters
+watch(
+  () => route.query.activeTab,
+  (newActiveTab) => {
+    if (newActiveTab) {
+      openItems.value = newActiveTab as string; // Update the active tab when the query param
+    if (newActiveTab == "serviceDefinitionDetails") {
+      fetchServiceDefinitions();
+    }
+  }
+  }
+);
 </script>
 
 <template>
@@ -100,7 +123,83 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     <div v-if="loading" class="py-10 flex justify-center w-full">
       <UiLoading />
     </div>
-    <UiCard v-else-if="data && !isError" class="w-full p-6">
+    <UiTabs
+      v-else-if="data && !isError"
+      v-model="openItems"
+      class="w-full space-y-0"
+    >
+      <UiTabsList
+        class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
+      >
+        <UiTabsTrigger
+          value="serviceDefinitionDetails"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'serviceDefinitionDetails',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Service Definition Details
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="serviceDefinitionRoles"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'serviceDefinitionRoles',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Service Definition Roles
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="serviceDefinitionRoleDetails"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'serviceDefinitionRoleDetails',
+              },
+            })
+          "
+          :class="{
+            hidden: openItems != 'serviceDefinitionRoleDetails'
+          }"
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Service Definition Role Details
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="newServiceDefinitionRole"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'newServiceDefinitionRole',
+              },
+            })
+          "
+          :class="{
+            hidden: openItems != 'newServiceDefinitionRole'
+          }"
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          New Service Definition Role
+        </UiTabsTrigger>
+
+      </UiTabsList>
+      <UiTabsContent
+        value="serviceDefinitionDetails"
+        class="text-base bg-background rounded-lg"
+      >
+    <UiCard class="w-full p-6">
       <form @submit="onSubmit">
         <div class="grid grid-cols-2 gap-6">
           <FormField v-slot="{ componentField }" name="id">
@@ -256,7 +355,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
             </FormField>
             <FormField v-slot="{ componentField }" name="service">
               <FormItem>
-                <FormLabel> Service </FormLabel>
+                <FormLabel> Banking Services </FormLabel>
                 <UiSelect v-bind="componentField">
                   <FormControl>
                     <UiSelectTrigger>
@@ -388,6 +487,27 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         </div>
       </form>
     </UiCard>
+
+    </UiTabsContent>
+    <UiTabsContent
+    value="serviceDefinitionRoles"
+    class="text-base bg-background rounded-lg"
+    >
+    <ServiceDefinitionsRoles :serviceDefinitionProps="data" />
+    </UiTabsContent>
+    <UiTabsContent
+    value="serviceDefinitionRoleDetails"
+    class="text-base bg-background rounded-lg"
+    >
+    <ServiceDefinitionsRolesDetails :serviceDefinitionProps="data" />
+    </UiTabsContent>
+    <UiTabsContent
+    value="newServiceDefinitionRole"
+    class="text-base bg-background rounded-lg"
+    >
+    <ServiceDefinitionsRolesNew :serviceDefinitionProps="data" />
+    </UiTabsContent>
+    </UiTabs>
     <div v-else-if="data == null || data == undefined">
       <UiNoResultFound title="Sorry, No contract found." />
     </div>

@@ -54,9 +54,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       ...values,
       service: services.value.find((service: BankingService) => service.id === values.service),
     }
-    console.log("values: ", newValues);
     data.value = await createNewServiceDefinition(newValues); // Call your API function to fetch profile
-    navigateTo(`/serviceDefinitions/${data.value?.id}`);
+    navigateTo(`/serviceDefinitionsRolesDetails/${data.value?.id}`);
     toast({
       title: "Service Definition Created",
       description: "Service Definition created successfully",
@@ -230,7 +229,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="service">
               <FormItem>
-                <FormLabel> Service </FormLabel>
+                <FormLabel>Banking Services </FormLabel>
                 <UiSelect v-bind="componentField">
                   <FormControl>
                     <UiSelectTrigger>
