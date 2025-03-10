@@ -732,3 +732,19 @@ interface PermissionGroup {
   scope: RoleScope;
   status?: PermissionGroupStatus;
 }
+
+interface ContractCoreCustomer {
+  id?: string;
+  enable: boolean;
+  coreCustomerId: string;
+  contract: Contract;
+  permissions?: Permission[];
+}
+
+interface ContractAccount {
+  id?: string;
+  enable: boolean;
+  coreCustomer: CoreCustomer;
+  contract: Contract;
+  permissions?: Permission[];
+}

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const openItems = ref(["item-1"]);
+const openItems = ref("contractDetails");
 
 import { useForm } from "vee-validate";
 import { ref } from "vue";
@@ -13,22 +13,19 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import type { Contract, Permission, ServiceDefinition } from "~/types";
+import type { Contract, ServiceDefinition } from "~/types";
 import { ServiceType } from "~/global-types";
 
 const route = useRoute();
 const { getContractById, updateContract, isLoading, isSubmitting } =
   useContracts();
-const { getPermissions } = usePermissions();
 const { getServiceDefinitions } = useServiceDefinitions();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
 const contractId = ref<string>("");
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
-const permissionsData = ref<Permission[]>([]);
 const serviceDefinitionsData = ref<ServiceDefinition[]>([]);
-const selectedPermissions = ref<Permission[]>([]);
 
 const isError = ref(false);
 const data = ref<Contract>();
@@ -45,15 +42,12 @@ const form = useForm({
   validationSchema: newContractFormSchema,
 });
 
+const fetchContract = async() => {
+
 try {
   isLoading.value = true;
   loading.value = true;
   data.value = await getContractById(contractId.value);
-  const permissions = await getPermissions();
-  permissionsData.value = permissions.sort((a: Permission, b: Permission) =>
-      a?.code?.toLowerCase().localeCompare(b?.code?.toLowerCase())
-    );
-  selectedPermissions.value = data.value?.permissions || []
   serviceDefinitionsData.value = await getServiceDefinitions();
   let a = {
         ...data.value,
@@ -68,6 +62,11 @@ try {
   isLoading.value = false;
   loading.value = false;
 }
+}
+
+onMounted(() => {
+  fetchContract();
+});
 
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
@@ -91,6 +90,19 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = false;
   }
 });
+
+// Watch for changes in the route's query parameters
+watch(
+  () => route.query.activeTab,
+  (newActiveTab) => {
+    if (newActiveTab) {
+      openItems.value = newActiveTab as string; // Update the active tab when the query param
+    if (newActiveTab == "contractDetails" || newActiveTab == "contractPermissions" || newActiveTab == "contractCoreCustomers" || newActiveTab == "contractRoleDetails" || newActiveTab == "newContractRole") {
+      fetchContract();
+    }
+  }
+  }
+);
 </script>
 
 <template>
@@ -98,7 +110,97 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     <div v-if="loading" class="py-10 flex justify-center w-full">
       <UiLoading />
     </div>
-    <UiCard v-else-if="data && !isError" class="w-full p-6">
+    <UiTabs
+      v-else-if="data && !isError"
+      v-model="openItems"
+      class="w-full space-y-0"
+    >
+      <UiTabsList
+        class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
+      >
+        <UiTabsTrigger
+          value="contractDetails"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'contractDetails',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Contract Details
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="contractPermissions"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'contractPermissions',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Contract Permissions
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="contractCoreCustomers"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'contractCoreCustomers',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Contract Core Customers
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="newCoreCustomer"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'newCoreCustomer',
+              },
+            })
+          "
+          :class="{
+            hidden: openItems != 'newCoreCustomer'
+          }"
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          New Contract Core Customer
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="contractCoreCustomerDetails"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'contractCoreCustomerDetails',
+              },
+            })
+          "
+          :class="{
+            hidden: openItems != 'contractCoreCustomerDetails'
+          }"
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Contract Core Customer Details
+        </UiTabsTrigger>
+
+      </UiTabsList>
+      <UiTabsContent
+        value="contractDetails"
+        class="text-base bg-background rounded-lg"
+      >
+    <UiCard  class="w-full p-6">
       <form @submit="onSubmit">
         <div class="grid grid-cols-2 gap-6">
           <FormField v-slot="{ componentField }" name="id">
@@ -164,96 +266,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
-
-            <FormField
-              :model-value="data?.permissions"
-              v-slot="{ componentField, errorMessage }"
-              name="permissions"
-            >
-              <FormItem>
-                <FormLabel>Select Permissions</FormLabel>
-                <UiPopover>
-                  <UiPopoverTrigger asChild>
-                    <FormControl>
-                      <div
-                        variant="outline"
-                        role="combobox"
-                        class="w-full text-sm text-left border flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
-                        :class="{
-                          'text-muted-foreground':
-                            !data?.permissions?.length,
-                        }"
-                      >
-                        {{
-                          selectedPermissions?.length
-                            ? selectedPermissions
-                                .map(
-                                  (permission: Permission) => permission.code
-                                )
-                                .join(", ")
-                            : "Select permissions"
-                        }}
-                        <Icon
-                          name="material-symbols:unfold-more-rounded"
-                          class="ml-2 h-4 w-4 shrink-0 opacity-50"
-                        />
-                      </div>
-                    </FormControl>
-                  </UiPopoverTrigger>
-                  <UiPopoverContent class="w-full self-start p-0">
-                    <UiCommand>
-                      <UiCommandInput placeholder="Search product menus..." />
-                      <UiCommandList>
-                        <UiCommandEmpty>No permissions found.</UiCommandEmpty>
-                        <UiCommandGroup>
-                          <UiCommandItem
-                            v-for="permission in permissionsData"
-                            :key="permission.code"
-                            :value="permission.code"
-                            @select="
-                              () => {
-                                const isSelected =
-                                  selectedPermissions.some(
-                                    (selected: Permission) => selected.code === permission.code
-                                  );
-
-                                if (isSelected) {
-                                  selectedPermissions =
-                                      selectedPermissions.filter(
-                                      (selected: Permission) =>
-                                        selected.code !== permission.code
-                                    );
-                                } else {
-                                  selectedPermissions.push(permission);
-                                }
-
-                                form.setFieldValue(
-                                  'permissions',
-                                  selectedPermissions.map(
-                                    (permission: Permission) => permission
-                                  )
-                                );
-                              }
-                            "
-                          >
-                            {{ permission.code }}
-                            <UiCheckbox
-                              :checked="
-                                selectedPermissions.some(
-                                  (selected: Permission) => selected.code === permission.code
-                                )
-                              "
-                              class="ml-auto"
-                            />
-                          </UiCommandItem>
-                        </UiCommandGroup>
-                      </UiCommandList>
-                    </UiCommand>
-                  </UiPopoverContent>
-                </UiPopover>
-                <FormMessage>{{ errorMessage }}</FormMessage>
-              </FormItem>
-            </FormField>
             <FormField v-slot="{ componentField }" name="serviceDefinition">
               <FormItem>
                 <FormLabel> Service Definition </FormLabel>
@@ -299,6 +311,33 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         </div>
       </form>
     </UiCard>
+    </UiTabsContent>
+    <UiTabsContent
+    value="contractPermissions"
+    class="text-base bg-background rounded-lg"
+    >
+    <ContractPermissions :contractProps="data" />
+    </UiTabsContent>
+    <UiTabsContent
+    value="contractCoreCustomers"
+    class="text-base bg-background rounded-lg p-6"
+    >
+    <ContractsCoreCustomers :contractProps="data" />
+    </UiTabsContent>
+    <UiTabsContent
+    value="newCoreCustomer"
+    class="text-base bg-background rounded-lg p-6"
+    >
+    <ContractsNewCoreCustomers :contractProps="data" />
+    </UiTabsContent>
+
+    <UiTabsContent
+    value="contractCoreCustomerDetails"
+    class="text-base bg-background rounded-lg p-6"
+    >
+    <ContractsContractCoreCustomerDetails :contractProps="data" />
+    </UiTabsContent>
+    </UiTabs>
     <div v-else-if="data == null || data == undefined">
       <UiNoResultFound title="Sorry, No contract found." />
     </div>

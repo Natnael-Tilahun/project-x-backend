@@ -110,7 +110,7 @@ watch(
   (newActiveTab) => {
     if (newActiveTab) {
       openItems.value = newActiveTab as string; // Update the active tab when the query param
-    if (newActiveTab == "serviceDefinitionDetails") {
+    if (newActiveTab == "serviceDefinitionDetails" || newActiveTab == "serviceDefinitionPermissions" || newActiveTab == "serviceDefinitionRoles" || newActiveTab == "serviceDefinitionRoleDetails" || newActiveTab == "newServiceDefinitionRole") {
       fetchServiceDefinitions();
     }
   }
@@ -144,6 +144,20 @@ watch(
           class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
         >
           Service Definition Details
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="serviceDefinitionPermissions"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'serviceDefinitionPermissions',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Service Definition Permissions
         </UiTabsTrigger>
         <UiTabsTrigger
           value="serviceDefinitionRoles"
@@ -376,95 +390,7 @@ watch(
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField
-              :model-value="data?.permissions"
-              v-slot="{ componentField, errorMessage }"
-              name="permissions"
-            >
-              <FormItem>
-                <FormLabel>Select Permissions</FormLabel>
-                <UiPopover>
-                  <UiPopoverTrigger asChild>
-                    <FormControl>
-                      <div
-                        variant="outline"
-                        role="combobox"
-                        class="w-full text-sm text-left border flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
-                        :class="{
-                          'text-muted-foreground':
-                            !data?.permissions?.length,
-                        }"
-                      >
-                        {{
-                          selectedPermissions?.length
-                            ? selectedPermissions
-                                .map(
-                                  (permission: Permission) => permission.code
-                                )
-                                .join(", ")
-                            : "Select permissions"
-                        }}
-                        <Icon
-                          name="material-symbols:unfold-more-rounded"
-                          class="ml-2 h-4 w-4 shrink-0 opacity-50"
-                        />
-                      </div>
-                    </FormControl>
-                  </UiPopoverTrigger>
-                  <UiPopoverContent class="w-full self-start p-0">
-                    <UiCommand>
-                      <UiCommandInput placeholder="Search product menus..." />
-                      <UiCommandList>
-                        <UiCommandEmpty>No permissions found.</UiCommandEmpty>
-                        <UiCommandGroup>
-                          <UiCommandItem
-                            v-for="permission in permissionsData"
-                            :key="permission.code"
-                            :value="permission.code"
-                            @select="
-                              () => {
-                                const isSelected =
-                                  selectedPermissions.some(
-                                    (selected: Permission) => selected.code === permission.code
-                                  );
-
-                                if (isSelected) {
-                                  selectedPermissions =
-                                      selectedPermissions.filter(
-                                      (selected: Permission) =>
-                                        selected.code !== permission.code
-                                    );
-                                } else {
-                                  selectedPermissions.push(permission);
-                                }
-
-                                form.setFieldValue(
-                                  'permissions',
-                                  selectedPermissions.map(
-                                    (permission: Permission) => permission
-                                  )
-                                );
-                              }
-                            "
-                          >
-                            {{ permission.code }}
-                            <UiCheckbox
-                              :checked="
-                                selectedPermissions.some(
-                                  (selected: Permission) => selected.code === permission.code
-                                )
-                              "
-                              class="ml-auto"
-                            />
-                          </UiCommandItem>
-                        </UiCommandGroup>
-                      </UiCommandList>
-                    </UiCommand>
-                  </UiPopoverContent>
-                </UiPopover>
-                <FormMessage>{{ errorMessage }}</FormMessage>
-              </FormItem>
-            </FormField>
+      
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"
@@ -488,6 +414,12 @@ watch(
       </form>
     </UiCard>
 
+    </UiTabsContent>
+    <UiTabsContent
+    value="serviceDefinitionPermissions"
+    class="text-base bg-background rounded-lg"
+    >
+    <ServiceDefinitionsPermissions :serviceDefinitionProps="data" />
     </UiTabsContent>
     <UiTabsContent
     value="serviceDefinitionRoles"
