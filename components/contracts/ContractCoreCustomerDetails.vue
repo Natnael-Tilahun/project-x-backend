@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const openItems = ref("details");
+const openItems = ref("permissions");
 
 import { useForm } from "vee-validate";
 import { ref } from "vue";
@@ -14,25 +14,21 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { ContractCoreCustomer, Contract, Permission } from "~/types";
+import { getIdFromPath } from "~/lib/utils";
 
 const route = useRoute();
 const { getContractCoreCustomerById, updateContractCoreCustomer, isLoading, isSubmitting } =
   useContractsCoreCustomers();
-const fullPath = ref(route.fullPath);
-const pathSegments = ref([]);
+
 const contractId = ref<string>("");
 const contractCoreCustomerId = ref<string>("");
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
-
 const isError = ref(false);
 const data = ref<ContractCoreCustomer>();
 const contractData = ref<Contract>();
 const permissionsData = ref<Permission[]>([]);
-
-pathSegments.value = splitPath(fullPath.value);
-const pathLength = pathSegments.value.length;
-contractId.value = pathSegments.value[pathLength - 1];
+  contractId.value = getIdFromPath();
 contractCoreCustomerId.value = route.query.coreCustomerId as string;
 
 const props = defineProps<{
@@ -43,9 +39,7 @@ if(props.contractProps){
   contractData.value = props.contractProps;
   permissionsData.value =contractData.value?.permissions as Permission[];
 } 
-function splitPath(path: any) {
-  return path.split("/").filter(Boolean);
-}
+
 
 const form = useForm({
   validationSchema: newContractCoreCustomerFormSchema,
@@ -56,7 +50,7 @@ const fetchContractCoreCustomer = async() => {
 try {
   isLoading.value = true;
   loading.value = true;
-  data.value = await getContractCoreCustomerById(contractCoreCustomerId.value);
+  data.value = await getContractCoreCustomerById(contractId.value, contractCoreCustomerId.value);
   form.setValues(data.value);
 } catch (err) {
   console.error("Error fetching contract core customer:", err);
@@ -80,8 +74,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       contract: contractData.value
     }
     console.log(newValues);
-    data.value = await updateContractCoreCustomer(contractCoreCustomerId.value, newValues); // Call your API function to fetch profile
-    navigateTo(`/contracts/${contractId.value}/contractCoreCustomers`);
+    data.value = await updateContractCoreCustomer(contractId.value, contractCoreCustomerId.value, newValues); // Call your API function to fetch profile
+    // navigateTo(`/contracts/${contractId.value}/contractCoreCustomers`);
     toast({
       title: "Contract Core Customer Updated",
       description: "Contract Core Customer updated successfully",
@@ -97,10 +91,10 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
 // Watch for changes in the route's query parameters
 watch(
-  () => openItems.value,
-  (openItems) => {
-    console.log("openItems: ", openItems);
-    if (openItems == "details" || openItems == "permissions" || openItems == "contractCoreCustomers" || openItems == "contractRoleDetails" || openItems == "newContractRole") {
+  () => route.query.coreCustomerActiveTab,
+  (newActiveTab) => {
+    console.log("openItems: ", newActiveTab);
+    if ( newActiveTab == "permissions" || newActiveTab == "newContractCoreCustomerAccount" || newActiveTab == "contractCoreCustomersAccounts") {
       fetchContractCoreCustomer();
     }
   }
@@ -112,66 +106,9 @@ watch(
     <div v-if="loading" class="py-10 flex justify-center w-full">
       <UiLoading />
     </div>
-    <UiTabs
-      v-else-if="data && !isError"
-      v-model="openItems"
-      class="w-full space-y-0"
-    >
-      <UiTabsList
-        class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
-      >
-        <UiTabsTrigger
-          value="details"
-          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-        >
-          Details
-        </UiTabsTrigger>
-        <UiTabsTrigger
-          value="permissions"
-    
-          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-        >
-          Contract Core Customer Permissions
-        </UiTabsTrigger>
-        <UiTabsTrigger
-          value="contractCoreCustomers"
-          @click="
-            navigateTo({
-              path: route.path,
-              query: {
-                activeTab: 'contractCoreCustomers',
-              },
-            })
-          "
-          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-        >
-          Contract Core Customers
-        </UiTabsTrigger>
+    <div class="w-full flex flex-col gap-4 " v-else-if="data && !isError">
 
-        <UiTabsTrigger
-          value="newContractRole"
-          @click="
-            navigateTo({
-              path: route.path,
-              query: {
-                activeTab: 'newContractRole',
-              },
-            })
-          "
-          :class="{
-            hidden: openItems != 'newContractRole'
-          }"
-          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-        >
-          New Contract Role
-        </UiTabsTrigger>
-
-      </UiTabsList>
-      <UiTabsContent
-        value="details"
-        class="text-base bg-background rounded-lg"
-      >
-    <UiCard  class="w-full p-6">
+    <UiCard class="w-full p-6">
       <form @submit="onSubmit">
         <div class="grid grid-cols-2 gap-6">
           <FormField v-slot="{ componentField }" name="id">
@@ -234,23 +171,89 @@ watch(
         </div>
       </form>
     </UiCard>
-    </UiTabsContent>
+    <UiTabs
+      v-model="openItems"
+      class="w-full space-y-0 border rounded-lg p-"
+    >
+      <UiTabsList
+        class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
+      >
+        <!-- <UiTabsTrigger
+          value="details"
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Details
+        </UiTabsTrigger> -->
+        <UiTabsTrigger
+          value="permissions"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                coreCustomerActiveTab: 'permissions',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+        Permissions
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="accounts"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                coreCustomerActiveTab: 'accounts',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+        Accounts
+        </UiTabsTrigger>
+
+        <UiTabsTrigger
+          value="newAccount"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                coreCustomerActiveTab: 'newAccount',
+              },
+            })
+          "
+     
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          New Account
+        </UiTabsTrigger>
+
+      </UiTabsList>
+ 
     <UiTabsContent
     value="permissions"
-    class="text-base bg-background rounded-lg"
+    class="text-base bg-background rounded-lg p-4"
     >
     <ContractsCoreCustomersPermissions :contractCoreCustomerProps="data" :permissionsData="permissionsData" />
     </UiTabsContent>
     <UiTabsContent
-    value="contractCoreCustomers"
-    class="text-base bg-background rounded-lg p-6"
+    value="accounts"
+    class="text-base bg-background rounded-lg p-4"
     >
-    <ContractsCoreCustomers :contractProps="data" />
+    <ContractsAccounts :contractCoreCustomerProps="data" :contractId="contractId" />
     </UiTabsContent>
-
+    <UiTabsContent
+    value="newAccount"
+    class="text-base bg-background rounded-lg p-4"
+    >
+    <ContractsAccountsNewAccount :coreCustomerId="data?.id || ''"  />
+    </UiTabsContent>
     </UiTabs>
+  </div>
+
     <div v-else-if="data == null || data == undefined">
-      <UiNoResultFound title="Sorry, No contract found." />
+      <UiNoResultFound title="Sorry, No core customer found." />
     </div>
     <div v-else-if="isError">
       <ErrorMessage title="Something went wrong." />

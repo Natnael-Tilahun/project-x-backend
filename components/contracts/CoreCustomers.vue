@@ -2,7 +2,8 @@
 import { ref, onMounted } from "vue";
 import { columns } from "~/components/contracts/CoreCustomers/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import type { ContractCoreCustomer } from "~/types";
+import { getIdFromPath } from "~/lib/utils";
+import type { ContractCoreCustomer, Contract } from "~/types";
 
 const { getContractCoreCustomers, getContractCoreCustomerById, isLoading } = useContractsCoreCustomers();
 const loading = ref(isLoading.value);
@@ -10,14 +11,17 @@ const isError = ref(false);
 const data = ref<ContractCoreCustomer[]>([]);
 const keyword = ref<string>("");
 const route = useRoute();
+const contractId = ref<string>("");
+contractId.value = getIdFromPath();
+
 const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    const contracts = await getContractCoreCustomers(0, 100000000);
+    const contracts = await getContractCoreCustomers(contractId.value, 0, 100000000);
     data.value = contracts;
   } catch (err: any) {
-    console.error("Error fetching contracts:", err);
+    console.error("Error fetching contract core customers:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
@@ -29,7 +33,7 @@ const refetch = async () => {
   await fetchData();
 };
 
-await useAsyncData("contractsData", async () => {
+await useAsyncData("contractCoreCustomersData", async () => {
   await fetchData();
 });
 
@@ -37,9 +41,9 @@ const searchHandler = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    data.value[0] = await getContractCoreCustomerById(keyword.value); // Call your API function to fetch roles
+    data.value[0] = await getContractCoreCustomerById(contractId.value, keyword.value); // Call your API function to fetch roles
   } catch (err: any) {
-    console.error("Error fetching contracts:", err);
+    console.error("Error fetching contract core customers:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;

@@ -735,16 +735,16 @@ interface PermissionGroup {
 
 interface ContractCoreCustomer {
   id?: string;
-  enable: boolean;
+  enable?: boolean;
   coreCustomerId: string;
-  contract: Contract;
+  contract?: Contract;
   permissions?: Permission[];
 }
 
 interface ContractAccount {
   id?: string;
-  enable: boolean;
-  coreCustomer: CoreCustomer;
-  contract: Contract;
+  enable?: boolean;
+  coreCustomer?: ContractCoreCustomer;
+  contract?: Contract;
   permissions?: Permission[];
 }

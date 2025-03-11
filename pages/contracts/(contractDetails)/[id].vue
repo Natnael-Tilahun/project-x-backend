@@ -335,7 +335,7 @@ watch(
     value="contractCoreCustomerDetails"
     class="text-base bg-background rounded-lg p-6"
     >
-    <ContractsContractCoreCustomerDetails :contractProps="data" />
+    <ContractsContractCoreCustomerDetails :contractProps="data" :contractId="contractId" />
     </UiTabsContent>
     </UiTabs>
     <div v-else-if="data == null || data == undefined">

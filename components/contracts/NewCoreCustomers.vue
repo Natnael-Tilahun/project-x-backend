@@ -10,25 +10,18 @@ import {
 import { ref, onBeforeUnmount } from "vue";
 import { toast } from "~/components/ui/toast";
 import { newContractCoreCustomerFormSchema } from "~/validations/newContractCoreCustomerFormSchema";
-import { ServiceType } from "@/global-types";
-import type { ContractCoreCustomer, Permission, ServiceDefinition, Contract } from "~/types";
+import type { ContractCoreCustomer, Permission, Contract } from "~/types";
+import { getIdFromPath } from "~/lib/utils";
+
 const { createNewContractCoreCustomer, isLoading } = useContractsCoreCustomers();
-const { getServiceDefinitions } = useServiceDefinitions();
-const { getPermissions } = usePermissions();
-const route = useRoute();
 const isError = ref(false);
 const data = ref<ContractCoreCustomer>();
 const isSubmitting = ref(false);
 const permissionsData = ref<Permission[]>([]);
-const serviceDefinitionsData = ref<ServiceDefinition[]>([]);
 const selectedPermissions = ref<Permission[]>([]);
 const contractId = ref<string>("");
 const contractData = ref<Contract>();
-const fullPath = ref(route.fullPath);
-const pathSegments = ref([]);
-pathSegments.value = splitPath(fullPath.value);
-const pathLength = pathSegments.value.length;
-contractId.value = pathSegments.value[pathLength - 1];
+contractId.value = getIdFromPath();
 
 const props = defineProps<{
   contractProps: Contract;
@@ -39,9 +32,6 @@ if(props.contractProps){
   permissionsData.value =contractData.value?.permissions as Permission[];
 }
 
-function splitPath(path: any) {
-  return path.split("/").filter(Boolean);
-}
 
 const form = useForm({
   validationSchema: newContractCoreCustomerFormSchema,
@@ -52,12 +42,14 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     isLoading.value = true;
     const newValues = {
-      ...values,
-      contract: contractData.value,
-      permissions: selectedPermissions.value,
+        "coreCustomers": [
+            {
+            "coreCustomerId": values.coreCustomerId
+            }
+        ]
     }
     console.log(newValues);
-    data.value = await createNewContractCoreCustomer(newValues); // Call your API function to fetch profile
+    data.value = await createNewContractCoreCustomer(contractId.value, newValues); // Call your API function to fetch profile
     navigateTo(`/contracts/${contractId.value}?activeTab=contractCoreCustomers`);
     toast({
       title: "Contract Core Customer Created",
@@ -72,24 +64,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   }
 });
 
-// const fetchData = async () => {
-//   try {
-//     const permissions = await getPermissions();
-//     permissionsData.value = permissions.sort((a: Permission, b: Permission) =>
-//       a?.code?.toLowerCase().localeCompare(b?.code?.toLowerCase())
-//     );
-//     const serviceDefinitions = await getServiceDefinitions();
-//     serviceDefinitionsData.value = serviceDefinitions;
-//   } catch (err) {
-//     console.error("Error fetching permissions:", err);
-//     isError.value = true;
-//   } 
-// };
-
-// await useAsyncData("permissionsData", async () => {
-//   await fetchData();
-// });
-
 onBeforeUnmount(() => {
   isError.value = false;
   data.value = undefined;
@@ -102,8 +76,7 @@ onBeforeUnmount(() => {
     <div class="">
       <h1 class="md:text-2xl text-lg font-medium">Create New Contract Core Customer</h1>
       <p class="text-sm text-muted-foreground">
-        Create new contract core customer by including permissions, contract, and
-        core customer
+        Create new contract core customer by including core customer id
       </p>
     </div>
 
