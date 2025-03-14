@@ -739,6 +739,7 @@ interface ContractCoreCustomer {
   coreCustomerId: string;
   contract?: Contract;
   permissions?: Permission[];
+  coreAccounts?: Account[];
 }
 
 interface ContractAccount {
@@ -747,4 +748,27 @@ interface ContractAccount {
   coreCustomer?: ContractCoreCustomer;
   contract?: Contract;
   permissions?: Permission[];
+  account?: Account;
+}
+
+// Update the interface to match the actual data structure
+interface Account {
+  accountNumber: string;
+  customerId?: string;
+  accountCategoryId: string;
+  accountTitle1: string;
+  jointAccountHolder1: string | null;
+  jointAccountHolder2: string | null;
+  currency: string;
+  onlineActualBalance: string;
+  onlineClearedBalance: string;
+  workingBalance: string;
+  openingDate?: string;
+  dateLastUpdate?: string;
+  inactivMarker?: string;
+  postingRestrictId?: string;
+  accountType?: string | null;
+  availableBalance?: string | null;
+  lastUpdated?:string | Data | null
+  accountHolder?: string | null
 }

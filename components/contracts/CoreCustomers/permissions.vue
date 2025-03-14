@@ -17,14 +17,14 @@ import type { Permission, ContractCoreCustomer } from "~/types";
 import { getIdFromPath } from "~/lib/utils";
 
 const route = useRoute();
-const { updateContractCoreCustomerPermissions, isLoading, isSubmitting } = useContractsCoreCustomers();
+const { updateContractCoreCustomerPermissions, isLoading, isSubmitting } =
+  useContractsCoreCustomers();
 
 const contractId = ref<string>("");
 contractId.value = getIdFromPath();
 
 const contractCoreCustomerId = ref<string>("");
 contractCoreCustomerId.value = route.query.coreCustomerId as string;
-
 
 const selectedPermissions = ref<Permission[]>([]);
 const permissionsData = ref<Permission[]>([]);
@@ -49,7 +49,7 @@ if (props?.permissionsData) {
 }
 
 const form = useForm({
-  validationSchema: '',
+  validationSchema: "",
 });
 
 const onSubmit = form.handleSubmit(async (values: any) => {
@@ -57,9 +57,15 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = true;
     isSubmitting.value = true;
     const newValues = {
-      permissionCodes: selectedPermissions.value.map((permission: any) => permission.code)
-    }
-    data.value = await updateContractCoreCustomerPermissions(contractId.value, contractCoreCustomerId.value, newValues);
+      permissionCodes: selectedPermissions.value.map(
+        (permission: any) => permission.code
+      ),
+    };
+    data.value = await updateContractCoreCustomerPermissions(
+      contractId.value,
+      contractCoreCustomerId.value,
+      newValues
+    );
     toast({
       title: "Contract Core Customer Permissions Updated",
       description: "Contract Core Customer Permissions updated successfully",
@@ -72,70 +78,86 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = false;
   }
 });
-
 </script>
 
 <template>
-  <div class="flex flex-col gap-6 items-center">
-    <div v-if="loading" class="py-10 flex justify-center w-full">
-      <UiLoading />
-    </div>
-    <UiCard v-else-if="permissionsData && !isError" class="w-full p-6">
-      <form @submit="onSubmit">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            <FormField
+  <UiSheet class="flex flex-col gap-6 items-center">
+    <UiSheetHeader>
+      <UiSheetTitle class="border-b-2"
+        >Contract Account Permissions</UiSheetTitle
+      >
+      <UiSheetDescription class="py-4 space-y-4">
+        <div v-if="loading" class="py-10 flex justify-center w-full">
+          <UiLoading />
+        </div>
+        <UiCard v-else-if="permissionsData && permissionsData.length > 0 && !isError" class="w-full p-6">
+          <form @submit="onSubmit">
+            <div class="grid grid-cols-2 gap-6">
+              <FormField
                 v-for="permission in permissionsData"
                 :key="permission.code"
-                :model-value="selectedPermissions.some(p => p.code === permission.code)"
+                :model-value="
+                  selectedPermissions.some((p) => p.code === permission.code)
+                "
                 v-slot="{ handleChange }"
                 name="permissions"
               >
                 <FormItem>
                   <FormLabel> {{ permission.code }} </FormLabel>
                   <FormControl>
-                    <UiSwitch 
-                      :checked="selectedPermissions.some(p => p.code === permission.code)"
-                      @update:checked="(checked) => {
-                        if (checked) {
-                          selectedPermissions.push(permission);
-                        } else {
-                          selectedPermissions = selectedPermissions.filter(p => p.code !== permission.code);
+                    <UiSwitch
+                      :checked="
+                        selectedPermissions.some(
+                          (p) => p.code === permission.code
+                        )
+                      "
+                      @update:checked="
+                        (checked) => {
+                          if (checked) {
+                            selectedPermissions.push(permission);
+                          } else {
+                            selectedPermissions = selectedPermissions.filter(
+                              (p) => p.code !== permission.code
+                            );
+                          }
                         }
-                      }"
+                      "
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               </FormField>
-          <div class="col-span-full w-full py-4 flex justify-between">
-            <UiButton
-              :disabled="submitting"
-              variant="outline"
-              type="button"
-              @click="$router.go(-1)"
-            >
-              Cancel
-            </UiButton>
-            <UiButton :disabled="submitting" type="submit">
-              <Icon
-                name="svg-spinners:8-dots-rotate"
-                v-if="submitting"
-                class="mr-2 h-4 w-4 animate-spin"
-              ></Icon>
+              <div class="col-span-full w-full py-4 flex justify-between">
+                <UiButton
+                  :disabled="submitting"
+                  variant="outline"
+                  type="button"
+                  @click="$router.go(-1)"
+                >
+                  Cancel
+                </UiButton>
+                <UiButton :disabled="submitting" type="submit">
+                  <Icon
+                    name="svg-spinners:8-dots-rotate"
+                    v-if="submitting"
+                    class="mr-2 h-4 w-4 animate-spin"
+                  ></Icon>
 
-              Update
-            </UiButton>
-          </div>
+                  Update
+                </UiButton>
+              </div>
+            </div>
+          </form>
+        </UiCard>
+        <div v-else-if="data == null || data == undefined || permissionsData.length == 0" >
+          <UiNoResultFound title="Sorry, No core customer level permissions found." />
         </div>
-      </form>
-    </UiCard>
-    <div v-else-if="data == null || data == undefined">
-      <UiNoResultFound title="Sorry, No merchant found." />
-    </div>
-    <div v-else-if="isError">
-      <ErrorMessage title="Something went wrong." />
-    </div>
-  </div>
+        <div v-else-if="isError">
+          <ErrorMessage title="Something went wrong." />
+        </div>
+      </UiSheetDescription>
+    </UiSheetHeader>
+  </UiSheet>
 </template>
 
 <style lang="css" scoped></style>

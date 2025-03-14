@@ -1,107 +1,3 @@
-<!-- <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { columns } from "~/components/contracts/Accounts/columns";
-import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import { getIdFromPath } from "~/lib/utils";
-import type { ContractAccount, Contract } from "~/types";
-
-const { getContractCoreCustomerAccounts, getContractCoreCustomerAccountById, isLoading } = useContractsCoreCustomersAccount();
-const loading = ref(isLoading.value);
-const isError = ref(false);
-const data = ref<ContractAccount[]>([]);
-const keyword = ref<string>("");
-const route = useRoute();
-const contractId = ref<string>("");
-
-
-contractId.value = getIdFromPath();
-console.log("contractIdFromPathdd", contractId.value);
-
-const fetchData = async () => {
-  try {
-    isLoading.value = true;
-    loading.value = true;
-    const contracts = await getContractCoreCustomerAccounts(0, 100000000);
-    data.value = contracts;
-  } catch (err: any) {
-    console.error("Error fetching contract core customers accounts:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-    loading.value = false;
-  }
-};
-
-const refetch = async () => {
-  await fetchData();
-};
-
-await useAsyncData("contractCoreCustomersData", async () => {
-  await fetchData();
-});
-
-const searchHandler = async () => {
-  try {
-    isLoading.value = true;
-    loading.value = true;
-    data.value[0] = await getContractCoreCustomerAccountById(keyword.value); // Call your API function to fetch roles
-  } catch (err: any) {
-    console.error("Error fetching contract core customers accounts:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-    loading.value = false;
-  }
-};
-</script> -->
-
-<!-- <template>
-  <div v-if="loading" class="py-10 flex justify-center w-full">
-    <UiLoading />
-  </div>
-  <div
-    v-else-if="data && !isError"
-    class="py-5 flex flex-col space-y-10 mx-auto"
-  >
-      <UiButton   
-      @click="
-            navigateTo({
-              path: route.path,
-              query: {
-                coreCustomerId: data[0]?.coreCustomer?.id,
-                coreCustomerActiveTab: 'newAccount',
-              },
-            })"
-             class="w-fit self-end px-5"
-        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
-        Contract Core Customer Account</UiButton
-      >
-    <UiDataTable :columns="columns" :data="data">
-      <template v-slot:toolbar="{ table }">
-        <div class="flex items-center gap-4">
-          <UiInput
-            type="search"
-            placeholder="Search by contract id"
-            class="md:w-[100px] lg:w-[300px]"
-            v-model="keyword"
-          />
-          <UiButton @click="searchHandler">
-            <Icon
-              name="svg-spinners:8-dots-rotate"
-              v-if="isLoading"
-              class="mr-2 h-4 w-4 animate-spin"
-            ></Icon>
-            Search</UiButton
-          >
-        </div>
-      </template>
-    </UiDataTable>
-  </div>
-  <div v-if="isError">
-    <ErrorMessage :retry="refetch" title="Something went wrong." />
-  </div>
-</template> -->
-
 <script lang="ts" setup>
 const openItems = ref(["item-1"]);
 import { toast } from "~/components/ui/toast";
@@ -109,19 +5,29 @@ import { ref, onMounted } from "vue";
 import { columns } from "~/components/contracts/Accounts/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { getIdFromPath } from "~/lib/utils";
-import type { ContractAccount, Contract } from "~/types";
+import type { ContractAccount, Contract, Account } from "~/types";
+import {
+  Form,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+} from "~/components/ui/form";
 
-const { getContractCoreCustomerAccounts, getContractCoreCustomerAccountById, isLoading: isLoadingContractCoreCustomerAccount } = useContractsCoreCustomersAccount();
-const { createNewContractAccount, isLoading: isLoadingCreateNewContractAccount, isSubmitting } = useContractsCoreCustomers();
-const loadingContractCoreCustomerAccount = ref(isLoadingContractCoreCustomerAccount.value);
-const isErrorContractCoreCustomerAccount = ref(false);
-const data = ref<ContractAccount[]>([]);
-const keyword = ref<string>("");
+const {
+  getContractCoreCustomerAccounts,
+  updateContractCoreCustomerAccount,
+  isLoading: isLoadingContractCoreCustomerAccount,
+} = useContractsCoreCustomersAccount();
+const {
+  createNewContractAccount,
+  isLoading: isLoadingCreateNewContractAccount,
+  isSubmitting,
+} = useContractsCoreCustomers();
 const route = useRoute();
 const contractId = ref<string>("");
-
 contractId.value = getIdFromPath();
-
 
 const { getCoreAccountsByCustomerId, isLoading } = useCustomers();
 
@@ -130,42 +36,23 @@ const isError = ref(false);
 const accountsData = ref<any>();
 const coreCustomerId = ref<string>();
 const contractCoreCustomerId = ref<any>();
-const customerId = ref<string>();
-const tooltipText = ref<string>("Copy to clipboard");
-const tooltipOpen = ref<boolean>(true);
 const selectedAccounts = ref<Account[]>([]);
-const selectedAccountId = ref<string>("");
-const showAccountDetails = ref(false);
+const selectedContractAccount = ref<ContractAccount[]>([]);
+const coreCustomerPermissions = ref<any>();
 
 const props = defineProps<{
   contractId?: string;
   contractCoreCustomerProps: any;
+  coreCustomerPermissions?: any;
 }>();
+const emit = defineEmits(["refresh"]);
+const refetch = async () => {
+  await emit("refresh");
+};
 
 coreCustomerId.value = props.contractCoreCustomerProps.coreCustomerId;
 contractCoreCustomerId.value = props.contractCoreCustomerProps.id;
-console.log("contractId: ", contractId.value);
-console.log("coreCustomerId: ", coreCustomerId.value);
-console.log("contractCoreCustomerId: ", contractCoreCustomerId.value);
-console.log("coreCustomer: ", props.contractCoreCustomerProps);
-// Update the interface to match the actual data structure
-interface Account {
-  accountNumber: string;
-  customerId: string;
-  accountCategoryId: string;
-  accountTitle1: string;
-  jointAccountHolder1: string | null;
-  jointAccountHolder2: string | null;
-  currency: string;
-  onlineActualBalance: string;
-  onlineClearedBalance: string;
-  workingBalance: string;
-  openingDate: string;
-  dateLastUpdate: string;
-  inactivMarker: string;
-  postingRestrictId: string;
-  accountType: string | null;
-}
+coreCustomerPermissions.value = props.coreCustomerPermissions || [];
 
 const displayApiDataOnLabel = (data: any) => {
   if (data == null || data == "") {
@@ -180,24 +67,18 @@ const displayApiDataOnLabel = (data: any) => {
   return data; // Default case if customerActivated is undefined or any other value
 };
 
-const copyToClipboard = (data: any) => {
-  navigator.clipboard.writeText(data);
-  tooltipText.value = "Copied to clipboard";
-  tooltipOpen.value = true;
-  setTimeout(() => {
-    tooltipOpen.value = false;
-    tooltipText.value = "Copy to clipboard";
-  }, 2000); // Reset the tooltip text after 2 seconds
-};
-
 const searchCoreAccountsByCustomerIdHandler = async () => {
   try {
     loading.value = true;
-    console.log("coreCustomerId.value: ", coreCustomerId.value);
     if (coreCustomerId.value) {
       const response = await getCoreAccountsByCustomerId(coreCustomerId.value); // Call your API function to fetch roles
-      console.log("response: ", response);
       accountsData.value = response;
+      accountsData.value = accountsData.value.filter(
+        (acc: Account) =>
+          !selectedAccounts.value.some(
+            (selectedAcc) => selectedAcc.accountNumber === acc.accountNumber
+          )
+      );
     } else {
       return true;
     }
@@ -225,33 +106,62 @@ const getContractCoreCustomerAccountsByIdHandler = async () => {
     } else {
       return true;
     }
-} catch (err: any) {
+  } catch (err: any) {
     console.error("Error fetching contract core customers accounts:", err);
     isError.value = true;
   } finally {
     loading.value = false;
   }
-}
+};
+
+const fetchContractCoreCustomerAccounts = async () => {
+  try {
+    loading.value = true;
+    if (coreCustomerId.value) {
+      const response = await getContractCoreCustomerAccounts(0, 100000000);
+      const contractAccount = response.filter(
+        (item: any) => item.coreCustomer?.id === contractCoreCustomerId.value
+      );
+      selectedContractAccount.value = contractAccount;
+      selectedAccounts.value =
+        contractAccount.map((item: any) => item.account) || [];
+      accountsData.value = accountsData.value.filter(
+        (acc: Account) =>
+          !selectedAccounts.value.some(
+            (selectedAcc) => selectedAcc.accountNumber === acc.accountNumber
+          )
+      );
+    } else {
+      return true;
+    }
+  } catch (err: any) {
+    console.error("Error fetching contract core customers accounts:", err);
+    isError.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
 
 onMounted(async () => {
   await getContractCoreCustomerAccountsByIdHandler();
+  await fetchContractCoreCustomerAccounts();
 });
 
-const handleAccountSelect = (account: Account) => {
+const handleAccountSelect = (account: Account | undefined) => {
   const index = selectedAccounts.value.findIndex(
-    (a) => a.accountNumber === account.accountNumber
+    (a) => a.accountNumber === account?.accountNumber
   );
 
   if (index === -1) {
-    selectedAccounts.value.push(account);
+    selectedAccounts.value.push(account as Account);
   } else {
     selectedAccounts.value.splice(index, 1);
   }
 };
 
-const isAccountSelected = (account: Account) => {
+const isAccountSelected = (account: Account | undefined) => {
   return selectedAccounts.value.some(
-    (a) => a.accountNumber === account.accountNumber
+    (a) => a.accountNumber === account?.accountNumber
   );
 };
 
@@ -259,15 +169,19 @@ const addAccounts = async () => {
   try {
     isSubmitting.value = true;
     isLoading.value = true;
-    const newValues = { 
-        "coreAccounts": selectedAccounts.value.map((account: Account) => ({
-            "accountNumber": account.accountNumber,
-        }))
-    }
+    const newValues = {
+      coreAccounts: selectedAccounts.value.map((account: Account) => ({
+        accountNumber: account.accountNumber,
+      })),
+    };
     console.log(newValues);
-    const response = await createNewContractAccount(contractId.value, contractCoreCustomerId.value, newValues); // Call your API function to fetch profile
-    console.log("response: ", response);
-    // navigateTo(`/contracts/${contractId.value}?activeTab=contractCoreCustomersDetails&&coreCustomerId=${coreCustomerId.value}&&coreCustomerActiveTab=accounts`);
+    const response = await createNewContractAccount(
+      contractId.value,
+      contractCoreCustomerId.value,
+      newValues
+    ); // Call your API function to fetch profile
+    await getContractCoreCustomerAccountsByIdHandler();
+    await fetchContractCoreCustomerAccounts();
     toast({
       title: "Contract Core Customer Account Created",
       description: "Contract Core Customer Account created successfully",
@@ -279,7 +193,32 @@ const addAccounts = async () => {
     isLoading.value = false;
     isSubmitting.value = false;
   }
-}
+};
+
+const updateContractAccountStatus = async (id: string, status: boolean) => {
+  try {
+    loading.value = true;
+    if (id) {
+      const values = {
+        id: id,
+        enable: status,
+      };
+      await updateContractCoreCustomerAccount(id, values);
+      await fetchContractCoreCustomerAccounts();
+      toast({
+        title: "Contract Account Status Updated.",
+        description: "Contract Account staus updated successfully",
+      });
+    } else {
+      return true;
+    }
+  } catch (err: any) {
+    console.error("Error updating contract core account:", err);
+    isError.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
 </script>
 
 <template>
@@ -331,12 +270,15 @@ const addAccounts = async () => {
     </UiCard>
 
     <UiCard
-      v-if="accountsData && accountsData.length > 0"
-      class="w-full flex flex-col border-none gap-4"
+      v-if="
+        (accountsData && accountsData.length > 0) ||
+        selectedContractAccount.length > 0
+      "
+      class="w-full flex flex-col border-none gap-2"
     >
       <!-- <div class="p-6"> -->
       <div class="flex justify-between items-center">
-        <h2 class="text-lg font-semibold">Core Customer Accounts</h2>
+        <h2 class="text-lg font-semibold">Add Core Customer Accounts</h2>
         <p class="text-sm text-muted-foreground">
           {{ selectedAccounts.length }} selected
         </p>
@@ -344,14 +286,15 @@ const addAccounts = async () => {
 
       <UiAccordion type="single" collapsible v-model:value="openItems">
         <UiAccordionItem
-          v-for="(account, index) in accountsData"
-          :key="account.accountNumber"
+          v-for="(
+            { account, enable, id, permissions }, index
+          ) in selectedContractAccount"
+          :key="account?.accountNumber"
           :value="`item-${index + 1}`"
-          class="border rounded-lg mb-4 data-[state=open]:bg-muted/50"
+          class="border rounded-lg mb-4 px-2 data-[state=open]:bg-muted/50"
         >
           <div
             class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors"
-            
           >
             <div class="flex items-center gap-4 w-full">
               <UiCheckbox
@@ -359,36 +302,172 @@ const addAccounts = async () => {
                 @click.stop="handleAccountSelect(account)"
                 class="h-5 w-5"
               />
-              <UiAccordionTrigger class="ml-auto">
-              <div class="flex-1 grid grid-cols-5 gap-4">
+              <!-- <UiAccordionTrigger class="ml-auto hover:no-underline"> -->
+              <div class="flex-1 grid grid-cols-4 gap-4 py-2">
                 <div>
                   <p class="text-sm text-muted-foreground">Account Number</p>
-                  <p class="font-medium text-sm">{{ account.accountNumber }}</p>
+                  <p class="font-medium text-sm">
+                    {{ account?.accountNumber }}
+                  </p>
                 </div>
                 <div>
                   <p class="text-sm text-muted-foreground">Account Title</p>
-                  <p class="font-medium text-sm">{{ account.accountTitle1 }}</p>
-                </div>
-                <div>
-                  <p class="text-sm text-muted-foreground">Balance</p>
                   <p class="font-medium text-sm">
-                    {{ account.onlineActualBalance }} {{ account.currency }}
+                    {{ account?.accountHolder }}
                   </p>
                 </div>
-                <div>
-                  <p class="text-sm text-muted-foreground">Opening Date</p>
-                  <p class="font-medium text-sm">
-                    {{ new Date(account.openingDate).toLocaleDateString() }}
-                  </p>
+                <FormField
+                  :model-value="enable"
+                  v-slot="{ handleChange }"
+                  name="enable"
+                >
+                  <FormItem>
+                    <FormLabel> Enable </FormLabel>
+                    <FormControl>
+                      <UiSwitch
+                        :checked="enable"
+                        @update:checked="
+                          (checked) => {
+                            handleChange;
+                            updateContractAccountStatus(id || '', checked);
+                          }
+                        "
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                <div class="flex items-center">
+                  <UiSheet>
+                    <UiSheetTrigger>
+                      <UiButton
+                        size="sm"
+                        class="font-medium cursor-pointer px-2 h-fit py-1"
+                      >
+                        Permissions
+                      </UiButton>
+                    </UiSheetTrigger>
+                    <UiSheetContent
+                      class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+                    >
+                      <ContractsAccountsPermissions
+                        :contractAccountId="id"
+                        :coreCustomerPermissions="coreCustomerPermissions"
+                        :accountPermissions="permissions"
+                        :contractId="contractId"
+                        @refresh="refetch"
+                      />
+                    </UiSheetContent>
+                  </UiSheet>
                 </div>
               </div>
-            </UiAccordionTrigger>
+              <UiAccordionTrigger />
             </div>
           </div>
 
           <UiAccordionContent class="px-4 pb-4">
             <div
-              class="grid grid-cols-2 md:grid-cols-4 gap-4 px-16 py-4 border-t"
+              class="grid grid-cols-2 md:grid-cols-4 gap-4 px-8 py-4 border-t"
+            >
+              <div>
+                <p class="text-sm text-muted-foreground">Customer ID</p>
+                <p class="font-medium">{{ account?.customerId }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Account Category</p>
+                <p class="font-medium">{{ account?.accountCategoryId }}</p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Joint Holder 1</p>
+                <p class="font-medium">
+                  {{ displayApiDataOnLabel(account?.jointAccountHolder1) }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Joint Holder 2</p>
+                <p class="font-medium">
+                  {{ displayApiDataOnLabel(account?.jointAccountHolder2) }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Cleared Balance</p>
+                <p class="font-medium">
+                  {{ account?.onlineClearedBalance }} {{ account?.currency }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Last Updated</p>
+                <p class="font-medium">
+                  {{ new Date(account?.lastUpdated).toLocaleDateString() }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Account Type</p>
+                <p class="font-medium">
+                  {{ displayApiDataOnLabel(account?.accountType) }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Inactive Marker</p>
+                <p class="font-medium">
+                  {{ displayApiDataOnLabel(account?.inactivMarker) }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Posting Restrict Id</p>
+                <p class="font-medium">
+                  {{ account?.postingRestrictId || "-" }}
+                </p>
+              </div>
+            </div>
+          </UiAccordionContent>
+        </UiAccordionItem>
+        <UiAccordionItem
+          v-for="(account, index) in accountsData"
+          :key="account?.accountNumber"
+          :value="`item-${index + 2}`"
+          class="border rounded-lg mb-4 px-2 data-[state=open]:bg-muted/50"
+        >
+          <div
+            class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors"
+          >
+            <div class="flex items-center gap-4 w-full">
+              <UiCheckbox
+                :checked="isAccountSelected(account)"
+                @click.stop="handleAccountSelect(account)"
+                class="h-5 w-5"
+              />
+              <!-- <UiAccordionTrigger class="ml-auto hover:no-underline"> -->
+              <div class="flex-1 grid grid-cols-4 gap-4 py-2">
+                <div>
+                  <p class="text-sm text-muted-foreground">Account Number</p>
+                  <p class="font-medium text-sm">
+                    {{ account?.accountNumber }}
+                  </p>
+                </div>
+                <div>
+                  <p class="text-sm text-muted-foreground">Account Title</p>
+                  <p class="font-medium text-sm">
+                    {{ account?.accountTitle1 }}
+                  </p>
+                </div>
+
+                <div>
+                  <p class="text-sm text-muted-foreground">Opening Date</p>
+                  <p class="font-medium text-sm">
+                    {{
+                      new Date(account?.openingDate || "").toLocaleDateString()
+                    }}
+                  </p>
+                </div>
+              </div>
+              <UiAccordionTrigger />
+            </div>
+          </div>
+
+          <UiAccordionContent class="px-4 pb-4">
+            <div
+              class="grid grid-cols-2 md:grid-cols-4 gap-4 px-8 py-4 border-t"
             >
               <div>
                 <p class="text-sm text-muted-foreground">Customer ID</p>
@@ -414,12 +493,6 @@ const addAccounts = async () => {
                 <p class="text-sm text-muted-foreground">Cleared Balance</p>
                 <p class="font-medium">
                   {{ account.onlineClearedBalance }} {{ account.currency }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Working Balance</p>
-                <p class="font-medium">
-                  {{ account.workingBalance }} {{ account.currency }}
                 </p>
               </div>
               <div>
@@ -451,7 +524,7 @@ const addAccounts = async () => {
         </UiAccordionItem>
       </UiAccordion>
       <!-- </div> -->
-      <UiButton @click="addAccounts" class="w-fit self-end px-8">Add Accounts</UiButton>
+      <UiButton @click="addAccounts" type="submit" class="w-fit self-end px-8">Save</UiButton>
     </UiCard>
 
     <UiCard

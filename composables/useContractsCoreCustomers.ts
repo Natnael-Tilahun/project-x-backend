@@ -254,11 +254,10 @@ export const useContractsCoreCustomers = () => {
     contractId: string,
     contractAccountId: string,
     permissionsData: any,
-    contractCoreCustomerId: string
-  ) => Promise<ContractAccount> = async (contractId, contractAccountId, permissionsData, contractCoreCustomerId) => {
+  ) => Promise<ContractAccount> = async (contractId, contractAccountId, permissionsData) => {
     try {
       const { data, pending, error, status } = await useFetch<ContractAccount>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract/${contractId}/contract-core-customers/${contractCoreCustomerId}/contract-accounts/${contractAccountId}/permissions`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract/${contractId}/contract-core-customers/contract-accounts/${contractAccountId}/permissions`,
         {
           method: "PUT",
           headers: {
