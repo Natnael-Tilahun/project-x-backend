@@ -271,8 +271,8 @@ const updateContractAccountStatus = async (id: string, status: boolean) => {
 
     <UiCard
       v-if="
-        (accountsData && accountsData.length > 0) ||
-        selectedContractAccount.length > 0
+        ((accountsData && accountsData.length > 0) ||
+        selectedContractAccount.length > 0) &&  !loading
       "
       class="w-full flex flex-col border-none gap-2"
     >
@@ -524,11 +524,11 @@ const updateContractAccountStatus = async (id: string, status: boolean) => {
         </UiAccordionItem>
       </UiAccordion>
       <!-- </div> -->
-      <UiButton @click="addAccounts" type="submit" class="w-fit self-end px-8">Save</UiButton>
+      <UiButton @click="addAccounts" type="submit" class="w-fit self-end px-8">Add Accounts</UiButton>
     </UiCard>
 
     <UiCard
-      v-else-if="accountsData && accountsData.length === 0"
+      v-else-if="accountsData && accountsData.length === 0 && !loading"
       class="w-full p-6 text-center"
     >
       <p class="text-muted-foreground">No accounts found for this customer</p>
