@@ -4,24 +4,26 @@ import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import UsersDataTableRowActionsVue from "./DataTableRowActions.vue";
+import type { User } from "~/types";
+import { NuxtLink } from "#components";
 // import { Badge } from "../ui/badge";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export interface User {
-  id: string;
-  fullName: string;
-  userName: string;
-  email: string;
-  role: string;
-  status:
-  | "Active"
-  | "processing"
-  | "Suspended"
-  | "Locked"
-  | "New"
-  | "UnEnrolled";
-}
+// export interface User {
+//   id: string;
+//   fullName: string;
+//   userName: string;
+//   email: string;
+//   role: string;
+//   status:
+//   | "Active"
+//   | "processing"
+//   | "Suspended"
+//   | "Locked"
+//   | "New"
+//   | "UnEnrolled";
+// }
 
 export const columns: ColumnDef<User>[] = [
   {
@@ -42,19 +44,37 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: false,
     enableHiding: false,
   },
+  // {
+  //   accessorKey: "id",
+  //   header: "Id",
+  //   cell: ({ row }) => {
+  //     const id = row.getValue("id");
+  //     return h(
+  //       "div",
+  //       {
+  //         class:
+  //           "overflow-hidden text-ellipsis whitespace-nowrap w-24  transition-all duration-400 ease-out hover:w-full",
+  //       },
+  //       row.getValue("id")
+  //     );
+  //   },
+  // },
   {
-    accessorKey: "id",
-    header: "Id",
+    accessorKey: "login",
+    header: ({ column }) =>
+      h(DataTableColumnHeaderVue, { column, title: "Username" }),
     cell: ({ row }) => {
-      const id = row.getValue("id");
+      const id = row.original.id;
+      const route = useRoute();
       return h(
-        "div",
-        {
-          class:
-            "overflow-hidden text-ellipsis whitespace-nowrap w-24  transition-all duration-400 ease-out hover:w-full",
-        },
-        row.getValue("id")
-      );
+            NuxtLink,
+            {
+              class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `${route.path}/${id}`,
+          },
+          row.getValue("login")
+        );
     },
   },
   {
@@ -62,11 +82,15 @@ export const columns: ColumnDef<User>[] = [
     header: ({ column }) =>
       h(DataTableColumnHeaderVue, { column, title: "Phone" }),
     cell: ({ row }) => {
-      return h(
+      const phone = row.getValue("phone");
+      return phone ?
+      h(
         "div",
-        { class: "max-w-[100px] whitespace-nowrap  font-medium" },
+        {
+          class: "lowercase max-w-[210px] truncate hover:w-full'",
+        },
         row.getValue("phone")
-      );
+      ) : h("div", { class: "lowercase max-w-[210px] truncate hover:w-full'" }, "-");
     },
   },
   {
@@ -74,24 +98,27 @@ export const columns: ColumnDef<User>[] = [
     header: ({ column }) =>
       h(DataTableColumnHeaderVue, { column, title: "Email" }),
 
-    cell: ({ row }) =>
+    cell: ({ row }) => {
+      const email = row.getValue("email");
+      return email ?
       h(
         "div",
         {
           class: "lowercase max-w-[210px] truncate hover:w-full'",
         },
         row.getValue("email")
-      ),
+      ) : h("div", { class: "lowercase max-w-[210px] truncate hover:w-full'" }, "-");
+    },
   },
   {
     accessorKey: "authorities",
     header: "Role",
     cell: ({ row }) => {
       let roles = row.getValue("authorities");
-      return roles.map((role, index) => {
-        const comma = index < roles.length - 1 ? "," : ""; // Add comma if not the last role
+      return (roles && roles?.length > 0) ? roles?.map((role: string, index: number) => {
+        const comma = index < roles?.length - 1 ? "," : ""; // Add comma if not the last role
         return h("p", { class: "lowercase" }, [role, comma]);
-      });
+      }) : h("div", { class: "lowercase max-w-[210px] truncate hover:w-full'" }, "-");
     },
   },
   {
@@ -107,14 +134,74 @@ export const columns: ColumnDef<User>[] = [
     },
   },
   {
-    accessorKey: "enrolled",
+    accessorKey: "verified",
+    header: ({ column }) =>
+      h(DataTableColumnHeaderVue, { column, title: "Verified" }),
+    cell: ({ row }) => {
+      return h(
+        "div",
+        { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
+        row.getValue("verified")
+      );
+    },
+  },
+  {
+    accessorKey: "isEnrolled",
     header: ({ column }) =>
       h(DataTableColumnHeaderVue, { column, title: "Enrolled" }),
     cell: ({ row }) => {
       return h(
         "div",
         { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
-        row.getValue("enrolled")
+        row.getValue("isEnrolled")
+      );
+    },
+  },
+  {
+    accessorKey: "isUserAccountLocked",
+    header: ({ column }) =>
+      h(DataTableColumnHeaderVue, { column, title: "Locked" }),
+    cell: ({ row }) => {
+      return h(
+        "div",
+        { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
+        row.getValue("isUserAccountLocked")
+      );
+    },
+  },
+  {
+    accessorKey: "isPinSet",
+    header: ({ column }) =>
+      h(DataTableColumnHeaderVue, { column, title: "Pin Set" }),
+    cell: ({ row }) => {
+      return h(
+        "div",
+        { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
+        row.getValue("isPinSet")
+      );
+    },
+  },
+  {
+    accessorKey: "forcePinChange",
+    header: ({ column }) =>
+      h(DataTableColumnHeaderVue, { column, title: "Force Pin Change" }),
+    cell: ({ row }) => {
+      return h(
+        "div",
+        { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
+        row.getValue("forcePinChange")
+      );
+    },
+  },
+  {
+    accessorKey: "emailVerified",
+    header: ({ column }) =>
+      h(DataTableColumnHeaderVue, { column, title: "Email Verified" }),
+    cell: ({ row }) => {
+      return h(
+        "div",
+        { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
+        row.getValue("emailVerified")
       );
     },
   },

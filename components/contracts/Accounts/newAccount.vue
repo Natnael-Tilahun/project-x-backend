@@ -50,7 +50,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         ]
     }
     console.log(newValues);
-    data.value = await createNewContractAccount(contractId.value, coreCustomerId.value, newValues); // Call your API function to fetch profile
+    data.value = await createNewContractAccount(coreCustomerId.value, newValues); // Call your API function to fetch profile
     navigateTo(`/contracts/${contractId.value}?activeTab=contractCoreCustomersDetails&&coreCustomerId=${coreCustomerId.value}&&coreCustomerActiveTab=accounts`);
     toast({
       title: "Contract Core Customer Account Created",

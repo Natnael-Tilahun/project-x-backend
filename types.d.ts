@@ -42,13 +42,66 @@ import {
   ServiceDefinitionStatus,
   PermissionGroupStatus,
   RoleScope,
+  DeviceType,
+  Gender,
 } from "@/global-types";
 
 interface User {
-  email: string;
-  id: string;
-  password: string;
-  role: string[];
+  id?: string | null;
+  login: string;
+  email?: string | null;
+  phone: string;
+  nationalId?: string | null;
+  activated?: boolean;
+  langKey?: string | null;
+  imageUrl?: string | null;
+  verificationKey?: string | null;
+  resetKey?: string | null;
+  resetDate?: string | null;
+  deviceId?: string | null;
+  unsuccessfulLoginAttempts?: number | null;
+  lockCount?: number | null;
+  isUserAccountLocked?: boolean | null;
+  lockoutDateTime?: string | null;
+  preferredOtpMethod?: string | null;
+  isPinSet?: boolean | null;
+  currentLoginTime?: string | null;
+  lastLoginTime?: string | null;
+  forcePinChange?: boolean | null;
+  emailVerified?: boolean | null;
+  verified?: boolean | null;
+  createdBy?: string | null;
+  createdDate?: string | null;
+  lastModifiedBy?: string | null;
+  lastModifiedDate?: string | null;
+  isEnrolled?: boolean | null;
+  authorities?: string[] | null;
+}
+
+interface Device {
+  deviceId: string;
+  deviceName?: string | null  ;
+  deviceType?: DeviceType | null;
+  osVersion?: string | null;
+  country?: string | null;
+  city?: string | null;
+  state?: string | null;
+  timeZone?: string | null;
+  isp?: string | null;
+  ipAddress?: string | null;
+  locale?: string | null;
+  userAgent?: string | null;
+  requestSource?: string | null;
+  appVersion?: string | null;
+  platform?: string | null;
+  osFamily?: string | null;
+  deviceFamily?: string | null;
+  userAgentFamily?: string | null;
+  createdBy?: string | null;
+  createdDate?: string | Date | null;
+  lastModifiedBy?: string | null;
+  lastModifiedDate?: string | Date | null;
+  active?: boolean;
 }
 
 interface UserInput {
@@ -91,12 +144,6 @@ interface Permission {
   };
   type: PermissionType;
   selected?: boolean;
-}
-
-enum Gender {
-  Male = "Male",
-  Female = "Female",
-  None = "None",
 }
 
 enum Status {
@@ -740,6 +787,18 @@ interface ContractCoreCustomer {
   contract?: Contract;
   permissions?: Permission[];
   coreAccounts?: Account[];
+  isPrimary?: boolean;
+  firstName?: string;
+  middleName?: string;
+  lastName?: string;
+  fullName?: string;
+  salutation?: string;
+  gender?: Gender;
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  country?: string;
 }
 
 interface ContractAccount {

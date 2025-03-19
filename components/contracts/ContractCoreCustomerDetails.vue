@@ -19,7 +19,7 @@ import { getIdFromPath } from "~/lib/utils";
 const route = useRoute();
 const {
   getContractCoreCustomerById,
-  updateContractCoreCustomer,
+  updateContractCoreCustomerStatus,
   isLoading,
   isSubmitting,
 } = useContractsCoreCustomers();
@@ -80,49 +80,29 @@ onMounted(() => {
   fetchContractCoreCustomer();
 });
 
-const onSubmit = form.handleSubmit(async (values: any) => {
+
+const updatingContractCoreCustomerStatus = async (id: string, status: boolean) => {
   try {
-    submitting.value = true;
-    isSubmitting.value = true;
-    const newValues = {
-      ...values,
-      enable: values.coreCustomerStatus,
-      contract: {
-        id: contractId.value,
-      },
-      permissions: permissionsData.value,
-      coreAccounts: data.value?.coreAccounts,
-    };
-    console.log(newValues);
-    data.value = await updateContractCoreCustomer(
-      contractId.value,
-      contractCoreCustomerId.value,
-      newValues
-    ); // Call your API function to fetch profile
-    // navigateTo(`/contracts/${contractId.value}/contractCoreCustomers`);
-    toast({
-      title: "Contract Core Customer Updated",
-      description: "Contract Core Customer updated successfully",
-    });
+    loading.value = true;
+    if (id) {
+      const value = status ? "enable" : "disable";
+      await updateContractCoreCustomerStatus(id, value);
+      await fetchContractCoreCustomer();
+      toast({
+        title: "Contract Core Customer Status Updated.",
+        description: "Contract Core Customer staus updated successfully",
+      });
+    } else {
+      return true;
+    }
   } catch (err: any) {
     console.error("Error updating contract core customer:", err);
     isError.value = true;
   } finally {
-    isSubmitting.value = false;
-    submitting.value = false;
+    loading.value = false;
   }
-});
+};
 
-// Watch for changes in the route's query parameters
-// watch(
-//   () => route.query.coreCustomerActiveTab,
-//   (newActiveTab) => {
-//     console.log("openItems: ", newActiveTab);
-//     if (newActiveTab == "permissions" || newActiveTab == "accounts") {
-//       fetchContractCoreCustomer();
-//     }
-//   }
-// );
 </script>
 
 <template>
@@ -132,7 +112,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     </div>
     <div class="w-full flex flex-col gap-4" v-else-if="data && !isError">
       <UiCard class="w-full p-6">
-        <form @submit="onSubmit">
+        <form>
           <div class="grid grid-cols-2 gap-6">
             <FormField v-slot="{ componentField }" name="id">
               <FormItem>
@@ -162,13 +142,142 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
+            <FormField v-slot="{ componentField }" name="fullName">
+              <FormItem>
+                <FormLabel>Full Name </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    disabled
+                    placeholder="Enter Full Name"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="salutation">
+              <FormItem>
+                <FormLabel>Salutation </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    disabled
+                    placeholder="Enter Salutation"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="gender">
+              <FormItem>
+                <FormLabel>Gender </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    disabled
+                    placeholder="Enter Gender"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="addressLine1">
+              <FormItem>
+                <FormLabel>Address Line 1 </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    disabled
+                    placeholder="Enter Address Line 1"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="addressLine2">
+              <FormItem>
+                <FormLabel>Address Line 2 </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    disabled
+                    placeholder="Enter Address Line 2"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="city">
+              <FormItem>
+                <FormLabel>City </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    disabled
+                    placeholder="Enter City"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="state">
+              <FormItem>
+                <FormLabel>State </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    disabled
+                    placeholder="Enter State"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="country">
+              <FormItem>
+                <FormLabel>Country </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    disabled
+                    placeholder="Enter Country"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ value, handleChange }" name="isPrimary">
+              <FormItem
+                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
+              >
+                <FormLabel class="text-base"> Is Primary </FormLabel>
+                <FormControl>
+                  <UiSwitch disabled :checked="value" @update:checked="handleChange" />
+                </FormControl>
+              </FormItem>
+            </FormField>
             <FormField v-slot="{ value, handleChange }" name="coreCustomerStatus">
               <FormItem
                 class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
               >
                 <FormLabel class="text-base"> Enable </FormLabel>
                 <FormControl>
-                  <UiSwitch :checked="value" @update:checked="handleChange" />
+                  <UiSwitch :checked="value"           
+                  @update:checked="
+                          (checked) => {
+                            handleChange;
+                            updatingContractCoreCustomerStatus(data?.id || '', checked);
+                          }
+                  " 
+                  />
                 </FormControl>
               </FormItem>
             </FormField>
@@ -195,25 +304,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 </UiSheetContent>
               </UiSheet>
             </div>
-            <div class="col-span-full w-full py-4 flex justify-between">
-              <UiButton
-                :disabled="submitting"
-                variant="outline"
-                type="button"
-                @click="$router.go(-1)"
-              >
-                Cancel
-              </UiButton>
-              <UiButton :disabled="submitting" type="submit">
-                <Icon
-                  name="svg-spinners:8-dots-rotate"
-                  v-if="submitting"
-                  class="mr-2 h-4 w-4 animate-spin"
-                ></Icon>
 
-                Update
-              </UiButton>
-            </div>
           </div>
         </form>
       </UiCard>

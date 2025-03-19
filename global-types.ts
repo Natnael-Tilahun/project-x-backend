@@ -403,3 +403,16 @@ export enum RoleScope {
   SYSTEM = "SYSTEM",
   CUSTOMER = "CUSTOMER",
 }
+
+export enum DeviceType {
+  ANDROID = "ANDROID",
+  IOS = "IOS",
+  WEB = "WEB",
+  UNKNOWN = "UNKNOWN",
+}
+
+export enum Gender {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  NONE = "NONE",
+}

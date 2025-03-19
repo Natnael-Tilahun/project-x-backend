@@ -10,13 +10,12 @@ export const useContractsCoreCustomers = () => {
   const store = useAuthStore();
 
   const getContractCoreCustomers: (
-    contractId: string,
     page?: number,
     size?: number
-  ) => Promise<ContractCoreCustomer[]> = async (contractId, page, size) => {
+  ) => Promise<ContractCoreCustomer[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await useFetch<ContractCoreCustomer[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract/${contractId}/contract-core-customers?page=${page}&size=${size}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-core-customers?page=${page}&size=${size}`,
         {
           method: "GET",
           headers: {
@@ -53,7 +52,7 @@ export const useContractsCoreCustomers = () => {
   const getContractCoreCustomerById: (contractId: string, id: string) => Promise<ContractCoreCustomer> = async (contractId, id) => {
     try {
       const { data, pending, error, status } = await useFetch<ContractCoreCustomer>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract/${contractId}/contract-core-customers/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-core-customers/${id}`,
         {
           method: "GET",
           headers: {
@@ -142,20 +141,18 @@ export const useContractsCoreCustomers = () => {
     }
   };
 
-  const updateContractCoreCustomer: (
-    contractId: string,
-    contractCoreCustomerId: string,
-    contractCoreCustomerData: any
-  ) => Promise<ContractCoreCustomer> = async (contractId, contractCoreCustomerId, contractCoreCustomerData) => {
+  const updateContractCoreCustomerStatus: (
+      contractCoreCustomerId: string,
+    statusData: any
+  ) => Promise<ContractCoreCustomer> = async (contractCoreCustomerId, statusData) => {
     try {
       const { data, pending, error, status } = await useFetch<ContractCoreCustomer>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract/${contractId}/contract-core-customers/${contractCoreCustomerId}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-core-customers/${contractCoreCustomerId}/${statusData}`,
         {
           method: "PATCH",
           headers: {
             Authorization: `Bearer ${store.accessToken}`,
           },
-          body: JSON.stringify(contractCoreCustomerData),
         }
       );
 
@@ -197,13 +194,12 @@ export const useContractsCoreCustomers = () => {
   };
 
   const updateContractCoreCustomerPermissions: (
-    contractId: string,
     contractCoreCustomerId: string,
     permissionsData: any
-  ) => Promise<ContractCoreCustomer> = async (contractId, contractCoreCustomerId, permissionsData) => {
+  ) => Promise<ContractCoreCustomer> = async (contractCoreCustomerId, permissionsData) => {
     try {
       const { data, pending, error, status } = await useFetch<ContractCoreCustomer>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract/${contractId}/contract-core-customers/${contractCoreCustomerId}/permissions`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-core-customers/${contractCoreCustomerId}/permissions`,
         {
           method: "PUT",
           headers: {
@@ -251,13 +247,12 @@ export const useContractsCoreCustomers = () => {
   };
 
   const updateContractAccountsPermissions: (
-    contractId: string,
     contractAccountId: string,
     permissionsData: any,
-  ) => Promise<ContractAccount> = async (contractId, contractAccountId, permissionsData) => {
+  ) => Promise<ContractAccount> = async (contractAccountId, permissionsData) => {
     try {
       const { data, pending, error, status } = await useFetch<ContractAccount>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract/${contractId}/contract-core-customers/contract-accounts/${contractAccountId}/permissions`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-core-customers/contract-accounts/${contractAccountId}/permissions`,
         {
           method: "PUT",
           headers: {
@@ -304,10 +299,10 @@ export const useContractsCoreCustomers = () => {
     }
   };
 
-  const deleteContractCoreCustomer: (contractId: string, id: string) => Promise<any> = async (contractId, id) => {
+  const deleteContractCoreCustomer: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract/${contractId}/contract-core-customers/${id}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-core-customers/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -339,13 +334,12 @@ export const useContractsCoreCustomers = () => {
   };
 
   const createNewContractAccount: (
-    contractId: string,
     contractCoreCustomerId: string,
     contractAccountData: any
-  ) => Promise<ContractAccount> = async (contractId, contractCoreCustomerId, contractAccountData) => {
+  ) => Promise<ContractAccount> = async (contractCoreCustomerId, contractAccountData) => {
     try {
       const { data, pending, error, status } = await useFetch<ContractAccount>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract/${contractId}/contract-core-customers/${contractCoreCustomerId}/contract-accounts`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-core-customers/${contractCoreCustomerId}/contract-accounts`,
         {
           method: "POST",
           headers: {
@@ -400,7 +394,7 @@ export const useContractsCoreCustomers = () => {
     getContractCoreCustomerById,
     createNewContractCoreCustomer,
     deleteContractCoreCustomer,
-    updateContractCoreCustomer,
+    updateContractCoreCustomerStatus,
     updateContractCoreCustomerPermissions,
     updateContractAccountsPermissions,
     createNewContractAccount,

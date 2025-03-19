@@ -193,14 +193,65 @@ export const useContractsCoreCustomersAccount = () => {
     }
   };
 
-  const updateContractCoreCustomerAccountPermissions: (
-    contractId: string,
+  const updateContractCoreCustomerAccountStatus: (
     contractAccountId: string,
-    permissionsData: any
-  ) => Promise<ContractAccount> = async (contractId, contractAccountId, permissionsData) => {
+    statusData: any
+  ) => Promise<ContractAccount> = async (contractAccountId, statusData) => {
     try {
       const { data, pending, error, status } = await useFetch<ContractAccount>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract/${contractId}/contract-core-customers/contract-accounts/${contractAccountId}/permissions`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-accounts/${contractAccountId}/${statusData}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+
+        if (error.value?.data?.type == "/constraint-violation") {
+          console.log(
+            "Updating contract account error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Updating contract account errorrr: ",
+            error.value?.data?.message
+          );
+        }
+        throw new Error(error.value?.data);
+      }
+
+      if (!data.value) {
+        throw new Error("No contract account with this contract account id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
+  const updateContractCoreCustomerAccountPermissions: (
+    contractAccountId: string,
+    permissionsData: any
+  ) => Promise<ContractAccount> = async (contractAccountId, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await useFetch<ContractAccount>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-core-customers/contract-accounts/${contractAccountId}/permissions`,
         {
           method: "PUT",
           headers: {
@@ -289,7 +340,7 @@ export const useContractsCoreCustomersAccount = () => {
     getContractCoreCustomerAccountById,
     createNewContractCoreCustomerAccount,
     deleteContractCoreCustomerAccount,
-    updateContractCoreCustomerAccount,
+    updateContractCoreCustomerAccountStatus,
     updateContractCoreCustomerAccountPermissions,
     isSubmitting,
   };

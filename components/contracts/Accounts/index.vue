@@ -17,7 +17,7 @@ import {
 
 const {
   getContractCoreCustomerAccounts,
-  updateContractCoreCustomerAccount,
+  updateContractCoreCustomerAccountStatus,
   isLoading: isLoadingContractCoreCustomerAccount,
 } = useContractsCoreCustomersAccount();
 const {
@@ -176,7 +176,6 @@ const addAccounts = async () => {
     };
     console.log(newValues);
     const response = await createNewContractAccount(
-      contractId.value,
       contractCoreCustomerId.value,
       newValues
     ); // Call your API function to fetch profile
@@ -195,15 +194,13 @@ const addAccounts = async () => {
   }
 };
 
-const updateContractAccountStatus = async (id: string, status: boolean) => {
+const updatingContractAccountStatus = async (id: string, status: boolean) => {
   try {
     loading.value = true;
     if (id) {
-      const values = {
-        id: id,
-        enable: status,
-      };
-      await updateContractCoreCustomerAccount(id, values);
+      const value = status ? "enable" : "disable";
+      console.log("value: ", value);  
+      await updateContractCoreCustomerAccountStatus(id, value);
       await fetchContractCoreCustomerAccounts();
       toast({
         title: "Contract Account Status Updated.",
@@ -329,7 +326,7 @@ const updateContractAccountStatus = async (id: string, status: boolean) => {
                         @update:checked="
                           (checked) => {
                             handleChange;
-                            updateContractAccountStatus(id || '', checked);
+                            updatingContractAccountStatus(id || '', checked);
                           }
                         "
                       />

@@ -124,6 +124,17 @@ const mainLinks = [
       // { title: "Permissions", link: "/permissions" },
     ],
   },
+  {
+    title: "Users",
+    icon: "solar:user-bold",
+    size: "22",
+    showDropdown: false,
+    dropdown: [
+      // { title: "Customers Roles", link: "/customerRoles" },
+      { title: "Users", link: "/users" },
+      // { title: "Permissions", link: "/permissions" },
+    ],
+  },
   // {
   //   title: "Employee Management",
   //   icon: "solar:user-bold",

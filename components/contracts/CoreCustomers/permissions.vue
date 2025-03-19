@@ -62,7 +62,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       ),
     };
     data.value = await updateContractCoreCustomerPermissions(
-      contractId.value,
       contractCoreCustomerId.value,
       newValues
     );

@@ -27,7 +27,7 @@ async function deleteContractCoreCustomers(id: string) {
   try {
     isLoading.value = true;
     loading.value = true;
-    await deleteContractCoreCustomer(contractId.value, id); // Call your API function to fetch roles
+    await deleteContractCoreCustomer(id); // Call your API function to fetch roles
     console.log("Contract Core Customer deleted successfully");
     toast({
       title: "Contract Core Customer deleted successfully",
