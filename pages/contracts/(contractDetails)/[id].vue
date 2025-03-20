@@ -194,7 +194,37 @@ watch(
         >
           Contract Core Customer Details
         </UiTabsTrigger>
-
+        <UiTabsTrigger
+          value="contractUsers"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'contractUsers',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Contract Users
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="newUser"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'newUser',
+              },
+            })
+          "
+          :class="{
+            hidden: openItems != 'newUser'
+          }"
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          New Contract User
+        </UiTabsTrigger>
       </UiTabsList>
       <UiTabsContent
         value="contractDetails"
@@ -336,6 +366,18 @@ watch(
     class="text-base bg-background rounded-lg p-6"
     >
     <ContractsContractCoreCustomerDetails :contractProps="data" :contractId="contractId" />
+    </UiTabsContent>
+    <UiTabsContent
+    value="contractUsers"
+    class="text-base bg-background rounded-lg p-6"
+    >
+    <ContractsUsers :contractProps="data" :contractId="contractId" />
+    </UiTabsContent>
+    <UiTabsContent
+    value="newUser"
+    class="text-base bg-background rounded-lg p-6"
+    >
+    <ContractsUsersNewUser :contractProps="data" :contractId="contractId" />
     </UiTabsContent>
     </UiTabs>
     <div v-else-if="data == null || data == undefined">

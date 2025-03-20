@@ -320,7 +320,7 @@ export const useUsers = () => {
     }
   };
 
-  const searchUsers: (keyword: string) => Promise<any> = async (
+  const searchUsers: (keyword: string) => Promise<User[]> = async (
     keyword
   ) => {
     try {

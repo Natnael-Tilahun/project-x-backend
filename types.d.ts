@@ -810,6 +810,16 @@ interface ContractAccount {
   account?: Account;
 }
 
+
+interface ContractUser {
+  id?: string;
+  enable?: boolean;
+  isPrimaryUser?: boolean;
+  contract?: Contract;
+  user?: User;
+  serviceDefinitionRole?: ServiceDefinitionRole;
+}
+
 // Update the interface to match the actual data structure
 interface Account {
   accountNumber: string;
