@@ -377,3 +377,42 @@ export enum SystemMenuType {
   PAYMENT_REQUEST = "PAYMENT_REQUEST",
   NONE = "NONE",
 }
+
+export enum PermissionType {
+  SYSTEM = "SYSTEM",
+  MONETARY = "MONETARY",
+  NON_MONETARY = "NON_MONETARY",
+}
+
+export enum ServiceType {
+  RETAIL = "RETAIL",
+  BUSINESS = "BUSINESS",
+}
+
+export enum ServiceDefinitionStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+}
+
+export enum PermissionGroupStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+}
+
+export enum RoleScope {
+  SYSTEM = "SYSTEM",
+  CUSTOMER = "CUSTOMER",
+}
+
+export enum DeviceType {
+  ANDROID = "ANDROID",
+  IOS = "IOS",
+  WEB = "WEB",
+  UNKNOWN = "UNKNOWN",
+}
+
+export enum Gender {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
+  NONE = "NONE",
+}

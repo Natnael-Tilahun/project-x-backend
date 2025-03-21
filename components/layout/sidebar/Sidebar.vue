@@ -5,9 +5,9 @@
   >
     <div class="flex w-full items-center justify-between px-3">
       <h1
-        class="lg:text-2xl text-xl font-bold h-11 px-4 md:px-10 backdrop-blur-md self-center shadow-sm"
+        class="lg:text-2xl text-xl font-black h-11 px-4 md:px-10 backdrop-blur-md text-primary self-center shadow-sm"
       >
-        Project X
+        Project-X
       </h1>
       <Icon
         name="material-symbols:cancel"
@@ -30,6 +30,7 @@
           >
             <NuxtLink
               :to="link.link"
+      
               class="flex gap-3 items-center w-full py-0 rounded-lg transition text-left"
             >
               <span><Icon :name="link.icon" :size="link.size"></Icon></span>
@@ -53,9 +54,9 @@
                 :key="dropdownIndex"
                 :to="item.link"
                 @click="closeMenuNav"
-                class="w-full border-l-2 hover:rounded-r-lg group-hover:border-primary hover:bg-accent px-4 py-3 rounded-none hover:text-primary"
+                class="w-full border-l-2 hover:rounded-r-lg group-hover:border-primary hover:bg-accent px-4 py-3 hover:text-primary"
                 :class="{
-                  'text-primary bg-primary/10': isRouteActive(item.link),
+                  'text-primary-foreground bg-primary rounded-lg font-bold': isRouteActive(item.link),
                 }"
               >
                 {{ item.title }}
@@ -70,6 +71,9 @@
           v-else
           :to="link.link"
           @click="closeMenuNav"
+          :class="{
+                  'text-primary-foreground bg-primary font-bold': isRouteActive(link?.link ?? ''),
+                }"
           class="flex gap-3 py-3 px-2 hover:bg-popover hover:text-primary rounded-lg transition"
         >
           <span><Icon :name="link.icon" :size="link.size"></Icon></span>
@@ -106,6 +110,7 @@ const mainLinks = [
     dropdown: [
       { title: "Roles", link: "/userRoles" },
       { title: "Permissions", link: "/userPermissions" },
+      { title: "Permission Groups", link: "/permissionGroups" },
     ],
   },
   {
@@ -116,6 +121,17 @@ const mainLinks = [
     dropdown: [
       // { title: "Customers Roles", link: "/customerRoles" },
       { title: "Customers", link: "/customers" },
+      // { title: "Permissions", link: "/permissions" },
+    ],
+  },
+  {
+    title: "Users",
+    icon: "solar:user-bold",
+    size: "22",
+    showDropdown: false,
+    dropdown: [
+      // { title: "Customers Roles", link: "/customerRoles" },
+      { title: "Users", link: "/users" },
       // { title: "Permissions", link: "/permissions" },
     ],
   },
@@ -171,6 +187,32 @@ const mainLinks = [
     ],
   },
   {
+    title: "Application Management",
+    icon: "material-symbols:phone-android",
+    size: "22",
+    showDropdown: false,
+    dropdown: [{ title: "Applications", link: "/applications" }],
+  },
+  {
+    title: "Contract Management",
+    icon: "material-symbols:contract",
+    size: "22",
+    showDropdown: false,
+    dropdown: [
+      { title: "Contracts", link: "/contracts" },
+    ],
+  },
+  {
+    title: "Service Management",
+    icon: "material-symbols:work",
+    size: "22",
+    showDropdown: false,
+    dropdown: [
+      { title: "Banking Services", link: "/bankingServices" },
+      { title: "Service Definitions", link: "/serviceDefinitions" },
+    ],
+  },
+  {
     title: "Application Content Management",
     icon: "material-symbols:create-new-folder",
     size: "22",
@@ -209,13 +251,6 @@ const mainLinks = [
       { title: "Logs", link: "/log" },
       // { title: "Reports", link: "/reports" },
     ],
-  },
-  {
-    title: "Application Management",
-    icon: "iconoir:reports-solid",
-    size: "22",
-    showDropdown: false,
-    dropdown: [{ title: "Applications", link: "/applications" }],
   },
   // {
   //   title: "Master Data Management",
@@ -297,14 +332,17 @@ const closeMenuNav = () => {
 const route = useRoute();
 // Function to check if route is active, including parent routes
 function isRouteActive(path: string) {
-  // Check if the current route starts with the given path
-  // This will match both exact paths and their children
+  if (path === '/') {
+    // For dashboard, only return true if we're exactly at the root
+    return route.path === '/';
+  }
+  // For other routes, keep the existing behavior
   return route.path.startsWith(path);
 }
 </script>
 
 <style scoped>
 .router-link-active {
-  @apply font-bold text-primary bg-popover;
+  @apply font-bold bg-primary rounded-lg text-primary-foreground;
 }
 </style>

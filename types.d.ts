@@ -37,13 +37,71 @@ import {
   UpdatePolicy,
   AppVersionStatus,
   SystemMenuType,
+  PermissionType,
+  ServiceType,
+  ServiceDefinitionStatus,
+  PermissionGroupStatus,
+  RoleScope,
+  DeviceType,
+  Gender,
 } from "@/global-types";
 
 interface User {
-  email: string;
-  id: string;
-  password: string;
-  role: string[];
+  id?: string | null;
+  login: string;
+  email?: string | null;
+  phone: string;
+  nationalId?: string | null;
+  activated?: boolean;
+  langKey?: string | null;
+  imageUrl?: string | null;
+  verificationKey?: string | null;
+  resetKey?: string | null;
+  resetDate?: string | null;
+  deviceId?: string | null;
+  unsuccessfulLoginAttempts?: number | null;
+  lockCount?: number | null;
+  isUserAccountLocked?: boolean | null;
+  lockoutDateTime?: string | null;
+  preferredOtpMethod?: string | null;
+  isPinSet?: boolean | null;
+  currentLoginTime?: string | null;
+  lastLoginTime?: string | null;
+  forcePinChange?: boolean | null;
+  emailVerified?: boolean | null;
+  verified?: boolean | null;
+  createdBy?: string | null;
+  createdDate?: string | null;
+  lastModifiedBy?: string | null;
+  lastModifiedDate?: string | null;
+  isEnrolled?: boolean | null;
+  authorities?: string[] | null;
+}
+
+interface Device {
+  deviceId: string;
+  deviceName?: string | null  ;
+  deviceType?: DeviceType | null;
+  osVersion?: string | null;
+  country?: string | null;
+  city?: string | null;
+  state?: string | null;
+  timeZone?: string | null;
+  isp?: string | null;
+  ipAddress?: string | null;
+  locale?: string | null;
+  userAgent?: string | null;
+  requestSource?: string | null;
+  appVersion?: string | null;
+  platform?: string | null;
+  osFamily?: string | null;
+  deviceFamily?: string | null;
+  userAgentFamily?: string | null;
+  createdBy?: string | null;
+  createdDate?: string | Date | null;
+  lastModifiedBy?: string | null;
+  lastModifiedDate?: string | Date | null;
+  active?: boolean;
 }
 
 interface UserInput {
@@ -64,10 +122,11 @@ interface Role {
   lastModifiedBy?: string;
   lastModifiedDate?: Date;
   name: string;
-  description: string;
+  description?: string;
   disabled: boolean;
   enforce2fa: boolean;
   permissionUsageData?: Permission[];
+  scope: RoleScope;
 }
 
 interface Permission {
@@ -83,13 +142,8 @@ interface Permission {
     min: 0;
     max: 50;
   };
+  type: PermissionType;
   selected?: boolean;
-}
-
-enum Gender {
-  Male = "Male",
-  Female = "Female",
-  None = "None",
 }
 
 enum Status {
@@ -411,6 +465,8 @@ interface PaymentIntegration {
   reEnquirePaymentDetailBeforePayment?: boolean | null;
   singleFormPayment?: boolean | null;
   isImage?: boolean | null;
+  dailyLimitPerAccount?: number | null;
+  limitPerTransaction?: number | null;
 }
 
 interface Menu {
@@ -663,4 +719,127 @@ interface AppVersion {
   isRevoked: boolean;
   enabled: boolean;
   status: AppVersionStatus;
+}
+
+interface Contract {
+  id?: string | null;
+  name: string | null;
+  description?: string | null;
+  serviceType?: ServiceType | null;
+  serviceDefinition?: ServiceDefinition | null;
+  permissions?: Permission[] | null;
+}
+
+interface ServiceDefinition {
+  id?: string | null;
+  name: string;
+  description?: string | null;
+  serviceType: ServiceType;
+  defaultGroup?: string | null;
+  numberOfFeatures?: number | null;
+  numberOfActiveRoles?: number | null;
+  numberOfRoles?: number | null;
+  numberOfContracts?: number | null;
+  status?: ServiceDefinitionStatus | null;
+  service?: BankingService | null;
+  permissions?: Permission[] | null;
+}
+
+interface BankingService {
+  id: string;
+  serviceType: ServiceType;
+  serviceName?: string;
+  description?: string | null;
+}
+
+interface ServiceDefinition {
+  id?: string;
+  name: string;
+  description: string;
+  serviceType: ServiceType;
+  defaultGroup: string;
+  numberOfFeatures: number;
+  numberOfActiveRoles: number;
+  numberOfRoles: number;
+  numberOfContracts: number;
+  status: ServiceDefinitionStatus;
+  service: BankingService;
+  permissions: Permission[];
+}
+
+interface ServiceDefinitionRole {
+  id?: string
+  isDefault?: boolean
+  serviceDefinition: ServiceDefinition
+  role?: Role
+}
+
+interface PermissionGroup {
+  groupCode: string;
+  name?: string;
+  description?: string;
+  scope: RoleScope;
+  status?: PermissionGroupStatus;
+}
+
+interface ContractCoreCustomer {
+  id?: string;
+  enable?: boolean;
+  coreCustomerId: string;
+  contract?: Contract;
+  permissions?: Permission[];
+  coreAccounts?: Account[];
+  isPrimary?: boolean;
+  firstName?: string;
+  middleName?: string;
+  lastName?: string;
+  fullName?: string;
+  salutation?: string;
+  gender?: Gender;
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+}
+
+interface ContractAccount {
+  id?: string;
+  enable?: boolean;
+  coreCustomer?: ContractCoreCustomer;
+  contract?: Contract;
+  permissions?: Permission[];
+  account?: Account;
+}
+
+
+interface ContractUser {
+  id?: string;
+  enable?: boolean;
+  isPrimaryUser?: boolean;
+  contract?: Contract;
+  user?: User;
+  serviceDefinitionRole?: ServiceDefinitionRole;
+}
+
+// Update the interface to match the actual data structure
+interface Account {
+  accountNumber: string;
+  customerId?: string;
+  accountCategoryId: string;
+  accountTitle1: string;
+  jointAccountHolder1: string | null;
+  jointAccountHolder2: string | null;
+  currency: string;
+  onlineActualBalance: string;
+  onlineClearedBalance: string;
+  workingBalance: string;
+  openingDate?: string;
+  dateLastUpdate?: string;
+  inactivMarker?: string;
+  postingRestrictId?: string;
+  accountType?: string | null;
+  availableBalance?: string | null;
+  lastUpdated?:string | Data | null
+  accountHolder?: string | null
 }

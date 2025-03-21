@@ -3,7 +3,7 @@ import { z } from "zod";
 
 export const newMerchantFormSchema = toTypedSchema(
   z.object({
-    customerId: z.string(),
+    merchantId: z.string(),
     businessType: z.string().min(2),
     businessNumber: z.string(),
     businessName: z.string().min(2),

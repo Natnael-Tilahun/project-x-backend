@@ -9,11 +9,13 @@ import {
 } from "~/components/ui/form";
 import { useToast } from "~/components/ui/toast";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import { RoleScope } from "~/global-types";
+import type { Role, Permission } from "~/types";
 
 const { toast } = useToast();
 
 const openItems = ref(["item-1"]);
-const { getRolePermissions, updateRolePermissions, isLoading, isUpdating } =
+const { getRolePermissions, updateRolePermissions, updateRoleStatus, isLoading, isUpdating } =
   useRoles();
 const loading = ref(isLoading.value);
 const updating = ref(isLoading.value);
@@ -140,6 +142,7 @@ try {
       description: fetchedData.description,
       enforce2fa: fetchedData.enforce2fa,
       disabled: !fetchedData.disabled,
+      scope: fetchedData.scope,
     };
 
     // Transform permissionUsageData into individual fields
@@ -229,7 +232,32 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isUpdating.value = false;
     updating.value = false;
   }
+
+  
 });
+
+const updadateRoleStatus = async (status: boolean) => {
+  try {
+    isUpdating.value = true;
+    updating.value = true;
+    await updateRoleStatus(name, status); // Call your API function to fetch roles
+    toast({
+      title: "Role status updated successfully.",
+    });
+  } catch (err: any) {
+    console.error("Error updating role status:", err);
+    toast({
+      title: "Uh oh! Something went wrong.",
+      description: `There was a problem with your request: ${err}`,
+      variant: "destructive",
+    });
+    await refetch();
+    isError.value = true;
+  } finally {
+    isUpdating.value = false;
+    updating.value = false;
+  }
+};
 </script>
 
 <template>
@@ -253,21 +281,24 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <p class="mr-auto">{{ data?.name }}</p></UiAccordionTrigger
               >
 
-              <!-- <FormField v-slot="{ value, handleChange }" name="disabled">
+              <div class="flex items-center gap-4">
+                <UiBadge :class="badgeBg(!data.disabled) + ' font-bold px-2 py-1'">{{
+                !data.disabled ? "Enabled" : "Disabled"
+              }}</UiBadge>
+              <FormField v-slot="{ value, handleChange }" name="disabled">
                 <FormItem>
                   <FormControl>
                     <UiSwitch
-                      disabled=""
                       :checked="value"
                       @update:checked="handleChange"
+                      @click="updadateRoleStatus(value)"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
-              </FormField> -->
-              <UiBadge :class="badgeBg(!data.disabled)">{{
-                !data.disabled ? "Enabled" : "Disabled"
-              }}</UiBadge>
+              </FormField>
+              </div>
+
             </div>
 
             <UiAccordionContent class="w-full" v-model="openItems">
@@ -285,6 +316,30 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                     <FormMessage />
                   </FormItem>
                 </FormField>
+
+                <FormField v-slot="{ componentField }" name="scope">
+              <FormItem>
+                <FormLabel> Scope </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a scope" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(RoleScope)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
                 <FormField v-slot="{ componentField }" name="description">
                   <FormItem>

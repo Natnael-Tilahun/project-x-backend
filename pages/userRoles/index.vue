@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { columns } from "~/components/userRoles/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import type { Role } from "~/types";
 
 const { getRoles, isLoading } = useRoles();
 const loading = ref(isLoading.value);

@@ -85,7 +85,7 @@ async function deleteRole(id: string) {
         <UiAlertDialogCancel @click="setOpenEditModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="deleteRole(row.original.id)">
+        <UiAlertDialogAction @click="deleteRole(row.original.name)">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"

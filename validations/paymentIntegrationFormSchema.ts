@@ -70,6 +70,8 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     minimumAmountVariableType: MinimumAmountVariableTypeSchema,
     creditAccountNumberVariableType: CreditAccountNumberVariableTypeSchema,
     isImage: z.boolean().optional().nullable(),
+    dailyLimitPerAccount: z.number().optional().nullable(),
+    limitPerTransaction: z.number().optional().nullable(),
   })
 );
 

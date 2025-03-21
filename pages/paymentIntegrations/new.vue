@@ -22,6 +22,7 @@ import {
   CreditAccountNumberVariableType,
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import type { PaymentIntegration } from "~/types";
 
 const route = useRoute();
 const {
@@ -39,7 +40,6 @@ const paymentIntegrationId = ref<string>("");
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<PaymentIntegration>();
-const apiOperationsData = ref<ApiOperation>();
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
 const activeTab = route.query.activeTab as string;
@@ -309,7 +309,40 @@ function splitPath(path: any) {
                 <FormMessage />
               </FormItem>
             </FormField>
-
+            <FormField
+                :model-value="data?.dailyLimitPerAccount"
+                v-slot="{ componentField }"
+                name="dailyLimitPerAccount"
+              >
+                <FormItem>
+                  <FormLabel> Daily Limit Per Account </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter daily limit per account"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.limitPerTransaction"
+                v-slot="{ componentField }"
+                name="limitPerTransaction"
+              >
+                <FormItem>
+                  <FormLabel> Limit Per Transaction </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter limit per transaction"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
             <FormField
               :model-value="data?.integrationType"
               v-slot="{ componentField }"
