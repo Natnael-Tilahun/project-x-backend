@@ -50,7 +50,7 @@ export const columns: ColumnDef<ContractCoreCustomer>[] = [
     header: "Enable",
     cell: ({ row }) => {
       const enable = row.getValue("enable");
-      return enable
+      return enable != null
         ? h(
             "div",
             {
@@ -74,7 +74,7 @@ export const columns: ColumnDef<ContractCoreCustomer>[] = [
               class:
                 "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
             },
-            row.getValue("permissions").length
+            row.getValue("permissions")?.length
           )
         : h("p", "-");
     },

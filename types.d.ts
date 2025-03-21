@@ -465,6 +465,8 @@ interface PaymentIntegration {
   reEnquirePaymentDetailBeforePayment?: boolean | null;
   singleFormPayment?: boolean | null;
   isImage?: boolean | null;
+  dailyLimitPerAccount?: number | null;
+  limitPerTransaction?: number | null;
 }
 
 interface Menu {

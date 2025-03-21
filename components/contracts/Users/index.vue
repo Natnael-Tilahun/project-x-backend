@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/contracts/CoreCustomers/columns";
+import { columns } from "~/components/contracts/Users/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { getIdFromPath } from "~/lib/utils";
 import type { ContractCoreCustomer, Contract, ContractUser } from "~/types";

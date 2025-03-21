@@ -549,6 +549,40 @@ watch(
                 </FormItem>
               </FormField>
               <FormField
+                :model-value="data?.dailyLimitPerAccount"
+                v-slot="{ componentField }"
+                name="dailyLimitPerAccount"
+              >
+                <FormItem>
+                  <FormLabel> Daily Limit Per Account </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter daily limit per account"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.limitPerTransaction"
+                v-slot="{ componentField }"
+                name="limitPerTransaction"
+              >
+                <FormItem>
+                  <FormLabel> Limit Per Transaction </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter limit per transaction"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
                 :model-value="data?.integrationType"
                 v-slot="{ componentField }"
                 name="integrationType"

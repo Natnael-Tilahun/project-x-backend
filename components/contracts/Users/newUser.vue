@@ -14,29 +14,22 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type {
-  ContractCoreCustomer,
   Contract,
   Permission,
   User,
   ServiceDefinitionRole,
 } from "~/types";
 import { copyToClipboard, getIdFromPath } from "~/lib/utils";
-import { ServiceType } from "~/global-types";
 
 const route = useRoute();
-const {
-  getContractCoreCustomerById,
-  updateContractCoreCustomerStatus,
-  isLoading,
-  isSubmitting,
-} = useContractsCoreCustomers();
-
+const { createNewContractUser } = useContractsUsers();
 const { searchUsers } = useUsers();
+const { getServiceDefinitionsRoles } = useServiceDefinitionsRoles();
+
 
 const contractId = ref<string>("");
 const contractCoreCustomerId = ref<string>("");
-const loading = ref(isLoading.value);
-const submitting = ref(isLoading.value);
+const loading = ref(false);
 const isError = ref(false);
 const data = ref<User | null>(null);
 const usersData = ref<User[]>([]);
@@ -46,8 +39,6 @@ const coreCustomerPermissionsData = ref<Permission[]>([]);
 const searchUser = ref<string>("");
 const openNewUserModal = ref(false);
 const serviceDefinitionRolesData = ref<ServiceDefinitionRole[]>([]);
-
-const { getServiceDefinitionsRoles } = useServiceDefinitionsRoles();
 
 contractId.value = getIdFromPath();
 contractCoreCustomerId.value = route.query.coreCustomerId as string;
@@ -74,35 +65,25 @@ const form = useForm({
 
 const fetchServiceDefinitionRoles = async () => {
   try {
-    isLoading.value = true;
     loading.value = true;
     const response = await getServiceDefinitionsRoles();
     serviceDefinitionRolesData.value = response;
-    console.log(
-      "serviceDefinitionRolesData: ",
-      serviceDefinitionRolesData.value
-    );
   } catch (err) {
     console.error("Error fetching service definition roles:", err);
     isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
   }
 };
 
 const searchUserHandler = async () => {
   try {
-    isLoading.value = true;
     loading.value = true;
     // userData.value = "";
     if (searchUser.value) {
       const response = await searchUsers(searchUser.value); // Call your API function to fetch roles
       usersData.value = response;
        data.value = usersData.value[0]  || {}
-      console.log("usersData: ", usersData.value);
-      console.log("dataa: ", data.value);
-      //   userCustomerId.value = userData.value?.customerId;
     } else {
       return true;
     }
@@ -117,7 +98,6 @@ const searchUserHandler = async () => {
     });
     isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
   }
 };
@@ -126,9 +106,6 @@ const setOpenNewUserModal = (value: boolean) => {
   openNewUserModal.value = value;
 };
 
-const handleNewUser = async () => {
-  console.log("handleNewUser");
-};
 
 const refetch = async () => {
   await fetchServiceDefinitionRoles();
@@ -138,40 +115,18 @@ onMounted(() => {
   fetchServiceDefinitionRoles();
 });
 
-const updatingContractCoreCustomerStatus = async (
-  id: string,
-  status: boolean
-) => {
+const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     loading.value = true;
-    if (id) {
-      const value = status ? "enable" : "disable";
-      await updateContractCoreCustomerStatus(id, value);
-      await fetchContractCoreCustomer();
+    if (!data.value || !contractId.value) {
       toast({
-        title: "Contract Core Customer Status Updated.",
-        description: "Contract Core Customer staus updated successfully",
+        title: "Uh oh! Something went wrong.",
+        description: "User or contract not found.",
+        variant: "destructive",
       });
-    } else {
-      return true;
+      return;
     }
-  } catch (err: any) {
-    console.error("Error updating contract core customer:", err);
-    isError.value = true;
-  } finally {
-    loading.value = false;
-  }
-};
 
-const onSubmit = form.handleSubmit(async (values: any) => {
-  if (!data.value || !contractId.value) {
-    toast({
-      title: "Uh oh! Something went wrong.",
-      description: "User or contract not found.",
-      variant: "destructive",
-    });
-    return;
-  }
   const newValues = {
     ...values,
     contract: {
@@ -186,6 +141,26 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   };
   console.log("values: ", values);
   console.log("newValues: ", newValues);
+
+      const response = await createNewContractUser(newValues); // Call your API function to fetch roles
+      console.log("response: ", response);
+      // usersData.value = response;
+      //  data.value = usersData.value[0]  || {}
+      // console.log("usersData: ", usersData.value);
+      // console.log("dataa: ", data.value);
+      //   userCustomerId.value = userData.value?.customerId;
+      navigateTo(`${route.path}?activeTab=contractUsers`);
+    toast({
+      title: "Contract Created",
+      description: "Contract user created successfully",
+    });
+  } catch (err: any) {
+    console.error("Error creating contract user:", err);
+    isError.value = true;
+  } finally {
+    loading.value = false;
+    openNewUserModal.value = false;
+  }
 });
 </script>
 
@@ -232,7 +207,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           <form @submit="onSubmit">
             <UiAlertDialogHeader>
               <UiAlertDialogTitle>Add New User To Contract</UiAlertDialogTitle>
-
+              <UiSeparator />
               <UiAlertDialogDescription>
                 <div class="grid grid-cols-2 gap-6">
                   <div class="col-span-full">
@@ -324,7 +299,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       </div>
       <UiCard
         v-if="usersData?.length > 0"
-        class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full p-6"
+        class="grid lg:grid-cols-3 gap-4 text-sm md:gap-x-8 w-full p-6"
       >
         <div class="space-y-1">
           <h1 class="text-muted-foreground uppercase">ID</h1>
@@ -387,7 +362,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         <div class="space-y-0">
           <h1 class="text-muted-foreground">User Activated</h1>
           <UiBadge
-            class="p-2 rounded-md w-full"
+            class="p-2 rounded-md w-full hover:bg-green-500"
             :class="data?.activated ? 'bg-green-500' : 'bg-red-500'"
           >
             {{ data?.activated ? "Active" : "Inactive" }}
