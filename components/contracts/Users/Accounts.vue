@@ -20,6 +20,7 @@ const {
   updateContractCoreCustomerAccountStatus,
   isLoading: isLoadingContractCoreCustomerAccount,
 } = useContractsCoreCustomersAccount();
+
 const {
   createNewContractAccount,
   isLoading: isLoadingCreateNewContractAccount,
@@ -30,6 +31,11 @@ const contractId = ref<string>("");
 contractId.value = getIdFromPath();
 
 const { getCoreAccountsByCustomerId, isLoading } = useCustomers();
+const { getUserAccountByContractUserId, isLoading: isLoadingUserAccounts } = useUserAccounts();
+
+const { addUserAccounts, isLoading: isLoadingAddUserAccounts } = useContractsUsers();
+
+const { getContractCoreCustomers, isLoading: isLoadingContractCoreCustomers } = useContractsCoreCustomers();
 
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -39,11 +45,19 @@ const contractCoreCustomerId = ref<any>();
 const selectedAccounts = ref<Account[]>([]);
 const selectedContractAccount = ref<ContractAccount[]>([]);
 const coreCustomerPermissions = ref<any>();
-
 const props = defineProps<{
     userId?: string;
     contractUserId?: string;
+    contract?: any;
 }>();
+
+const contractCoreCustomerAccounts = ref<{coreCustomerId: string, account: Account}[]>();
+
+contractId.value = getIdFromPath();
+
+console.log("contractUserId: ", props.contractUserId);
+console.log("contract: ", contractId.value);
+
 const emit = defineEmits(["refresh"]);
 const refetch = async () => {
   await emit("refresh");
@@ -92,54 +106,108 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
   }
 };
 
-const getContractCoreCustomerAccountsByIdHandler = async () => {
+const getUserAccountByContractUserIdHandler = async () => {
   try {
     loading.value = true;
-    if (coreCustomerId.value) {
-      const response = await getCoreAccountsByCustomerId(coreCustomerId.value);
-      accountsData.value = response;
+    if (props.contractUserId) {
+      const response = await getUserAccountByContractUserId(props.contractUserId);
+      console.log("user accounts response: ", response);
+      // accountsData.value = response;
+      // console.log("accountsData: ", accountsData.value);
+      // console.log("contractUserId: ", props.contractUserId);
     } else {
       return true;
     }
   } catch (err: any) {
-    console.error("Error fetching contract core customers accounts:", err);
+    console.error("Error fetching user accounts:", err);
     isError.value = true;
   } finally {
     loading.value = false;
   }
 };
 
-const fetchContractCoreCustomerAccounts = async () => {
+// const fetchContractCoreCustomerAccounts = async () => {
+//   try {
+//     loading.value = true;
+//     if (coreCustomerId.value) {
+//       const response = await getContractCoreCustomerAccounts(0, 100000000);
+//       const contractAccount = response.filter(
+//         (item: any) => item.coreCustomer?.id === contractCoreCustomerId.value
+//       );
+//       selectedContractAccount.value = contractAccount;
+//       selectedAccounts.value =
+//         contractAccount.map((item: any) => item.account) || [];
+//       accountsData.value = accountsData.value.filter(
+//         (acc: Account) =>
+//           !selectedAccounts.value.some(
+//             (selectedAcc) => selectedAcc.accountNumber === acc.accountNumber
+//           )
+//       );
+//     } else {
+//       return true;
+//     }
+//   } catch (err: any) {
+//     console.error("Error fetching contract core customers accounts:", err);
+//     isError.value = true;
+//   } finally {
+//     loading.value = false;
+//   }
+// };
+
+const fetchContractCoreCustomers = async () => {
   try {
     loading.value = true;
-    if (coreCustomerId.value) {
-      const response = await getContractCoreCustomerAccounts(0, 100000000);
-      const contractAccount = response.filter(
-        (item: any) => item.coreCustomer?.id === contractCoreCustomerId.value
-      );
-      selectedContractAccount.value = contractAccount;
-      selectedAccounts.value =
-        contractAccount.map((item: any) => item.account) || [];
-      accountsData.value = accountsData.value.filter(
-        (acc: Account) =>
-          !selectedAccounts.value.some(
-            (selectedAcc) => selectedAcc.accountNumber === acc.accountNumber
-          )
-      );
-    } else {
-      return true;
-    }
+    const response = await getContractCoreCustomers(contractId.value);
+    
+    // // Flatten and transform the data into the desired structure
+    // contractCoreCustomerAccounts.value = response.reduce((acc: any[], item: any) => {
+    //   if (item.coreAccounts && Array.isArray(item.coreAccounts)) {
+    //     const accounts = item.coreAccounts.map((account: any) => ({
+    //       coreCustomerId: item.id,
+    //       account: account.account
+    //     }));
+    //     return [...acc, ...accounts];
+    //   }
+    //   return acc;
+    // }, []);
+
+    // If you still need accountsData, you can map it separately
+    // accountsData.value = response.reduce((acc: any[], item: any) => {
+    //   if (item.coreAccounts && Array.isArray(item.coreAccounts)) {
+    //     const accounts = item.coreAccounts.map((account: any) => account.account);
+    //     return [...acc, ...accounts];
+    //   }
+    //   return acc;
+    // }, []);
+
+    selectedContractAccount.value = response.reduce((acc: any[], item: any) => {
+      if (item.coreAccounts && Array.isArray(item.coreAccounts)) {
+        const accounts = item.coreAccounts.map((account: any) => ({
+          coreCustomerId: item.id,
+          account: account.account
+        }));
+        return [...acc, ...accounts];
+      }
+      return acc;
+    }, []);
+;
+
+    console.log("contractCoreCustomerAccounts: ", contractCoreCustomerAccounts.value);
+    console.log("accountsData: ", accountsData.value);
+    console.log("selectedAccounts: ", selectedAccounts.value);
   } catch (err: any) {
-    console.error("Error fetching contract core customers accounts:", err);
+    console.error("Error fetching contract core customers:", err);
     isError.value = true;
   } finally {
     loading.value = false;
   }
 };
-
+    
 onMounted(async () => {
-  await getContractCoreCustomerAccountsByIdHandler();
-  await fetchContractCoreCustomerAccounts();
+  // await getContractCoreCustomerAccountsByIdHandler();
+  // await fetchContractCoreCustomerAccounts();
+  await fetchContractCoreCustomers();
+  await getUserAccountByContractUserIdHandler();
 });
 
 const handleAccountSelect = (account: Account | undefined) => {
@@ -165,17 +233,19 @@ const addAccounts = async () => {
     isSubmitting.value = true;
     isLoading.value = true;
     const newValues = {
-      coreAccounts: selectedAccounts.value.map((account: Account) => ({
-        accountNumber: account.accountNumber,
-      })),
+      contractAccounts: selectedAccounts.value.map((account: Account) => (
+        account.accountNumber
+      )),
     };
+
     console.log(newValues);
-    const response = await createNewContractAccount(
-      contractCoreCustomerId.value,
+    const response = await addUserAccounts(
+      props.contractUserId || '',
       newValues
     ); // Call your API function to fetch profile
-    await getContractCoreCustomerAccountsByIdHandler();
-    await fetchContractCoreCustomerAccounts();
+    console.log("response: ", response);
+    await fetchContractCoreCustomers();
+    await getUserAccountByContractUserIdHandler();
     toast({
       title: "Contract Core Customer Account Created",
       description: "Contract Core Customer Account created successfully",
@@ -196,7 +266,7 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
       const value = status ? "enable" : "disable";
       console.log("value: ", value);  
       await updateContractCoreCustomerAccountStatus(id, value);
-      await fetchContractCoreCustomerAccounts();
+      // await fetchContractCoreCustomerAccounts();
       toast({
         title: "Contract Account Status Updated.",
         description: "Contract Account staus updated successfully",
@@ -216,12 +286,18 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
 <template>
     <UiSheet class="flex flex-col gap-6 items-center">
     <UiSheetHeader>
-      <UiSheetTitle class="border-b-2"
-        >Contract Account Permissions</UiSheetTitle
-      >
+      <!-- <UiSheetTitle class="border-b-2"
+        >Contract Account </UiSheetTitle
+      > -->
+      <div class="flex justify-between items-center">
+        <h2 class="text-lg font-semibold">Add Core Customer Accounts</h2>
+        <p class="text-sm text-muted-foreground">
+          {{ selectedAccounts.length }} selected
+        </p>
+      </div>
       <UiSheetDescription class="py-4 space-y-4">
   <div class="flex flex-col space-y-8">
-    <div class="flex gap-8 items-center">
+    <!-- <div class="flex gap-8 items-center">
       <div class="grid w-full max-w-sm items-center gap-2">
         <UiLabel for="search" class="font-normal text-muted-foreground"
           >Find account by customer id</UiLabel
@@ -247,7 +323,7 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
           >
         </div>
       </div>
-    </div>
+    </div> -->
 
     <UiCard
       class="grid lg:grid-cols-4 gap-4 md:gap-8 w-full p-6"
@@ -275,12 +351,12 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
       class="w-full flex flex-col border-none gap-2"
     >
       <!-- <div class="p-6"> -->
-      <div class="flex justify-between items-center">
+      <!-- <div class="flex justify-between items-center">
         <h2 class="text-lg font-semibold">Add Core Customer Accounts</h2>
         <p class="text-sm text-muted-foreground">
           {{ selectedAccounts.length }} selected
         </p>
-      </div>
+      </div> -->
 
       <UiAccordion type="single" collapsible v-model:value="openItems">
         <UiAccordionItem
@@ -348,11 +424,9 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                     <UiSheetContent
                       class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
                     >
-                      <ContractsAccountsPermissions
-                        :contractAccountId="id"
-                        :coreCustomerPermissions="coreCustomerPermissions"
+                      <UserAccountsPermissions
+                        :userAccountId="id"
                         :accountPermissions="permissions"
-                        :contractId="contractId"
                         @refresh="refetch"
                       />
                     </UiSheetContent>

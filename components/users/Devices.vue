@@ -6,7 +6,7 @@ import { toast } from "~/components/ui/toast";
 import { getIdFromPath } from "~/lib/utils";
 import type { Device } from "~/types";
 
-const { getUserDevices, isLoading } = useUsers();
+const { getUserDevices, suspendDevicesByDeviceId, restoreDevicesByDeviceId, isLoading } = useUsers();
 
 const data = ref<Device[]>();
 const loading = ref(isLoading.value);
@@ -79,6 +79,30 @@ const fetchDevices = async () => {
 }
 };
 
+const manageDevice = async (deviceId: string, suspended: boolean) => {
+  try {
+    if (suspended) {
+      await restoreDevicesByDeviceId(userId.value as string, deviceId);
+    } else {
+      await suspendDevicesByDeviceId(userId.value as string, deviceId);
+    }
+    fetchDevices();
+    toast({
+      title: suspended ? "Device restored" : "Device suspended",
+      description: suspended ? "The device has been restored" : "The device has been suspended",
+      variant: "default",
+    });
+  } catch (err) {
+    console.error("Error suspending device:", err);
+    toast({
+      title: "Error suspending device",
+      description: "An error occurred while suspending the device",
+      variant: "destructive",
+    });
+    isError.value = true;
+  }
+};
+
 onMounted(() => {
   fetchDevices();
 });
@@ -106,7 +130,7 @@ onMounted(() => {
     </UiCard>
 
     <UiCard
-      v-if="data && data.length > 0"
+      v-if="data && data.length > 0 && !loading && !isError"
       class="w-full flex flex-col gap-4 p-6"
     >
       <!-- <div class="p-6"> -->
@@ -130,12 +154,12 @@ onMounted(() => {
             @click.stop="handleDeviceSelect(device)"
           >
             <div class="flex items-center gap-4 w-full">
-              <UiCheckbox
+              <!-- <UiCheckbox
                 :checked="isDeviceSelected(device)"
                 @click.stop="handleDeviceSelect(device)"
                 class="h-5 w-5"
-              />
-              <div class="flex-1 grid grid-cols-5 gap-4">
+              /> -->
+              <div class="flex-1 grid grid-cols-7 gap-4">
                 <div>
                   <p class="text-sm text-muted-foreground">Device ID</p>
                   <p class="font-medium">{{ device.deviceId }}</p>
@@ -161,6 +185,15 @@ onMounted(() => {
                   <UiBadge class="font-medium" :class="{ 'bg-green-500': device.active, 'bg-red-500': !device.active }">
                     {{ device.active ? 'Active' : 'Inactive' }}
                   </UiBadge>
+                </div>
+                <div>
+                  <p class="text-sm text-muted-foreground">Suspended</p>
+                  <UiBadge class="font-medium" :class="{ 'bg-red-500': device.suspended, 'bg-green-500': !device.suspended }">
+                    {{ device.suspended ? 'Suspended' : 'Not Suspended' }}
+                  </UiBadge>
+                </div>
+                <div class="flex items-start">
+                  <UiButton size="sm" class="w-fit self-center px-8" :class="{ 'bg-green-500': device.suspended, 'bg-red-500': !device.suspended }" @click="manageDevice(device.id, device?.suspended ?? false)">{{ device.suspended ? 'Restore' : 'Suspend' }}</UiButton>
                 </div>
               </div>
               <UiAccordionTrigger class="ml-auto" />
@@ -305,15 +338,18 @@ onMounted(() => {
         </UiAccordionItem>
       </UiAccordion>
       <!-- </div> -->
-      <UiButton class="w-fit self-end px-8">UnLink</UiButton>
+      <!-- <UiButton class="w-fit self-end px-8">UnLink</UiButton> -->
     </UiCard>
 
     <UiCard
-      v-else-if="accountsData && accountsData.length === 0"
+      v-else-if="data && data.length === 0 && !loading && !isError"
       class="w-full p-6 text-center"
     >
       <p class="text-muted-foreground">No devices found for this user</p>
     </UiCard>
+    <div v-if="isError && !loading">
+    <ErrorMessage :retry="fetchDevices" title="Something went wrong." />
+  </div>
   </div>
 </template>
 

@@ -73,7 +73,7 @@ export const columns: ColumnDef<ContractUser>[] = [
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `/users/${userId}`,
             },
-            "View User"
+            row.getValue("user")?.phone
           )
         : h("p", "-");
     },
@@ -82,16 +82,16 @@ export const columns: ColumnDef<ContractUser>[] = [
     accessorKey: "serviceDefinitionRole",
     header: "Service Definition Role",
     cell: ({ row }) => {
-      const serviceDefinitionRole = row.getValue("serviceDefinitionRole")?.id;
+      const serviceDefinitionRole = row.getValue("serviceDefinitionRole");
       return serviceDefinitionRole
         ? h(
             NuxtLink,
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/serviceDefinitionRoles/${serviceDefinitionRole}`,
+              to: `/serviceDefinitions/${serviceDefinitionRole?.serviceDefinition?.id}?activeTab=serviceDefinitionRoleDetails&serviceDefinitionRoleId=${serviceDefinitionRole?.id}`,
             },
-            "View Service Definition Role"
+            serviceDefinitionRole?.role?.name || "View Service Definition Role"
           )
         : h("p", "-");
     },
@@ -137,6 +137,7 @@ export const columns: ColumnDef<ContractUser>[] = [
       const userId = row.original.user?.id;
       const id = row.getValue("id");
       const contractUserId = row.original.id;
+      const contract = row.original.contract;
       return id
         ? h(
             Sheet,
@@ -156,7 +157,7 @@ export const columns: ColumnDef<ContractUser>[] = [
                   class: "md:w-2/3 md:max-w-none w-screen",    
                 },
                 [
-                  h(ContractsUsersAccounts, { userId: userId || "", contractUserId: contractUserId || "" }), // Pass the `id` as a prop
+                  h(ContractsUsersAccounts, { userId: userId || "", contractUserId: contractUserId || "", contract: contract || "" }), // Pass the `id` as a prop
                 ]
               ),
             ]

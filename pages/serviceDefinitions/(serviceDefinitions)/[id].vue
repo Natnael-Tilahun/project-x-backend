@@ -109,6 +109,7 @@ watch(
   () => route.query.activeTab,
   (newActiveTab) => {
     if (newActiveTab) {
+      console.log("newActiveTab: ", newActiveTab);
       openItems.value = newActiveTab as string; // Update the active tab when the query param
     if (newActiveTab == "serviceDefinitionDetails" || newActiveTab == "serviceDefinitionPermissions" || newActiveTab == "serviceDefinitionRoles" || newActiveTab == "serviceDefinitionRoleDetails" || newActiveTab == "newServiceDefinitionRole") {
       fetchServiceDefinitions();

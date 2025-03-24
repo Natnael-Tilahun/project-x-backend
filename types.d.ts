@@ -79,6 +79,7 @@ interface User {
 }
 
 interface Device {
+  id?: string | null;
   deviceId: string;
   deviceName?: string | null  ;
   deviceType?: DeviceType | null;
@@ -102,6 +103,7 @@ interface Device {
   lastModifiedBy?: string | null;
   lastModifiedDate?: string | Date | null;
   active?: boolean;
+  suspended?: boolean;
 }
 
 interface UserInput {
