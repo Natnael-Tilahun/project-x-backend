@@ -826,6 +826,7 @@ interface ContractUser {
 
 // Update the interface to match the actual data structure
 interface Account {
+  id?: string | null;
   accountNumber: string;
   customerId?: string;
   accountCategoryId: string;

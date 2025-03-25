@@ -86,9 +86,9 @@ export const useUserAccounts = () => {
     }
   };
 
-  const getUserAccountByContractUserId: (contractUserId: string) => Promise<ContractAccount> = async (contractUserId) => {
+  const getUserAccountByContractUserId: (contractUserId: string) => Promise<ContractAccount[]> = async (contractUserId) => {
     try {
-      const { data, pending, error, status } = await useFetch<ContractAccount>(
+      const { data, pending, error, status } = await useFetch<ContractAccount[]>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/user-accounts/${contractUserId}/list`,
         {
           method: "GET",

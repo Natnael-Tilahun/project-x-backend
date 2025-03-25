@@ -30,14 +30,10 @@ const route = useRoute();
 const contractId = ref<string>("");
 contractId.value = getIdFromPath();
 
-const { getCoreAccountsByCustomerId, isLoading } = useCustomers();
 const { getUserAccountByContractUserId, isLoading: isLoadingUserAccounts } = useUserAccounts();
-
-const { addUserAccounts, isLoading: isLoadingAddUserAccounts } = useContractsUsers();
-
 const { getContractCoreCustomers, isLoading: isLoadingContractCoreCustomers } = useContractsCoreCustomers();
 
-const loading = ref(isLoading.value);
+const loading = ref(false);
 const isError = ref(false);
 const accountsData = ref<any>();
 const coreCustomerId = ref<string>();
@@ -45,6 +41,7 @@ const contractCoreCustomerId = ref<any>();
 const selectedAccounts = ref<Account[]>([]);
 const selectedContractAccount = ref<ContractAccount[]>([]);
 const coreCustomerPermissions = ref<any>();
+const coreAccounts = ref<any>();
 const props = defineProps<{
     userId?: string;
     contractUserId?: string;
@@ -76,89 +73,65 @@ const displayApiDataOnLabel = (data: any) => {
   return data; // Default case if customerActivated is undefined or any other value
 };
 
-const searchCoreAccountsByCustomerIdHandler = async () => {
-  try {
-    loading.value = true;
-    if (coreCustomerId.value) {
-      const response = await getCoreAccountsByCustomerId(coreCustomerId.value); // Call your API function to fetch roles
-      accountsData.value = response;
-      accountsData.value = accountsData.value.filter(
-        (acc: Account) =>
-          !selectedAccounts.value.some(
-            (selectedAcc) => selectedAcc.accountNumber === acc.accountNumber
-          )
-      );
-    } else {
-      return true;
-    }
-  } catch (err: any) {
-    console.error("Error fetching accounts:", err);
-    toast({
-      title: "Uh oh! Something went wrong.",
-      description: `${
-        err.message == "404 NOT_FOUND" ? "Account not found." : err.message
-      }`,
-      variant: "destructive",
-    });
-    isError.value = true;
-  } finally {
-    loading.value = false;
-  }
-};
-
-const getUserAccountByContractUserIdHandler = async () => {
-  try {
-    loading.value = true;
-    if (props.contractUserId) {
-      const response = await getUserAccountByContractUserId(props.contractUserId);
-      console.log("user accounts response: ", response);
-      // accountsData.value = response;
-      // console.log("accountsData: ", accountsData.value);
-      // console.log("contractUserId: ", props.contractUserId);
-    } else {
-      return true;
-    }
-  } catch (err: any) {
-    console.error("Error fetching user accounts:", err);
-    isError.value = true;
-  } finally {
-    loading.value = false;
-  }
-};
-
-// const fetchContractCoreCustomerAccounts = async () => {
+// const getUserAccountByContractUserIdHandler = async () => {
 //   try {
 //     loading.value = true;
-//     if (coreCustomerId.value) {
-//       const response = await getContractCoreCustomerAccounts(0, 100000000);
-//       const contractAccount = response.filter(
-//         (item: any) => item.coreCustomer?.id === contractCoreCustomerId.value
-//       );
-//       selectedContractAccount.value = contractAccount;
-//       selectedAccounts.value =
-//         contractAccount.map((item: any) => item.account) || [];
-//       accountsData.value = accountsData.value.filter(
-//         (acc: Account) =>
-//           !selectedAccounts.value.some(
-//             (selectedAcc) => selectedAcc.accountNumber === acc.accountNumber
-//           )
-//       );
+//     if (props.contractUserId) {
+//       const response = await getUserAccountByContractUserId(props.contractUserId);
+//       console.log("user accounts response: ", response);
+//       // accountsData.value = response;
+//       // console.log("accountsData: ", accountsData.value);
+//       // console.log("contractUserId: ", props.contractUserId);
 //     } else {
 //       return true;
 //     }
 //   } catch (err: any) {
-//     console.error("Error fetching contract core customers accounts:", err);
+//     console.error("Error fetching user accounts:", err);
 //     isError.value = true;
 //   } finally {
 //     loading.value = false;
 //   }
 // };
 
+const getUserAccountByContractUserIdHandler= async () => {
+  try {
+    loading.value = true;
+    if (props.contractUserId) {
+      const response = await getUserAccountByContractUserId(props.contractUserId || '');
+      console.log("getUserAccountByContractUserId response: ", response);
+      const contractAccount = response?.map(
+        (item: any) => item.account
+      );
+      selectedContractAccount.value = contractAccount;
+      selectedAccounts.value =
+        contractAccount.map((item: any) => item.account) || [];
+      accountsData.value = accountsData.value.filter(
+        (acc: Account) =>
+          !selectedAccounts.value.some(
+            (selectedAcc) => selectedAcc.accountNumber === acc.accountNumber
+          )
+      );
+      console.log("selectedAccounts: ", selectedAccounts.value);
+      console.log("accountsData: ", accountsData.value);
+      console.log("selectedContractAccount: ", selectedContractAccount.value);
+    } else {
+      return true;
+    }
+  } catch (err: any) {
+    console.error("Error fetching contract user accounts:", err);
+    isError.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
+
+
+
 const fetchContractCoreCustomers = async () => {
   try {
     loading.value = true;
     const response = await getContractCoreCustomers(contractId.value);
-    
+    console.log("response: ", response);
     // // Flatten and transform the data into the desired structure
     // contractCoreCustomerAccounts.value = response.reduce((acc: any[], item: any) => {
     //   if (item.coreAccounts && Array.isArray(item.coreAccounts)) {
@@ -171,7 +144,6 @@ const fetchContractCoreCustomers = async () => {
     //   return acc;
     // }, []);
 
-    // If you still need accountsData, you can map it separately
     // accountsData.value = response.reduce((acc: any[], item: any) => {
     //   if (item.coreAccounts && Array.isArray(item.coreAccounts)) {
     //     const accounts = item.coreAccounts.map((account: any) => account.account);
@@ -180,21 +152,56 @@ const fetchContractCoreCustomers = async () => {
     //   return acc;
     // }, []);
 
-    selectedContractAccount.value = response.reduce((acc: any[], item: any) => {
-      if (item.coreAccounts && Array.isArray(item.coreAccounts)) {
-        const accounts = item.coreAccounts.map((account: any) => ({
-          coreCustomerId: item.id,
-          account: account.account
-        }));
-        return [...acc, ...accounts];
-      }
-      return acc;
-    }, []);
-;
+    // selectedContractAccount.value = response.reduce((acc: any[], item: any) => {
+    //   if (item.coreAccounts && Array.isArray(item.coreAccounts)) {
+    //     const accounts = item.coreAccounts.map((account: any) => ({
+    //       coreCustomerId: item.id,
+    //       account: account.account
+    //     }));
+    //     return [...acc, ...accounts];
+    //   }
+    //   return acc;
+    // }, []);
 
-    console.log("contractCoreCustomerAccounts: ", contractCoreCustomerAccounts.value);
+    coreAccounts.value = response.map((item: any) => {
+      return item.coreAccounts;
+    });
+
+    console.log("coreAccounts: ", coreAccounts.value);
+
+
+accountsData.value = response.map((item: any) => {
+      return {
+        coreCustomerId: item.id,
+        customerId: item.coreCustomerId,
+        accounts: item.coreAccounts?.map((account: any) => ({
+          ...account.account,
+          coreCustomerId: item.id,
+          accountEnable: account.enable,
+          accountId: account.id,
+          permissions: account.permissions
+        })) || []
+      };
+    });
+
+    // Filter out any selected accounts from accountsData
+    if (selectedAccounts.value.length > 0) {
+      accountsData.value = accountsData.value.map((customer: any) => {
+        return {
+          ...customer,
+          accounts: customer.accounts.filter(
+            (acc: Account) => !selectedAccounts.value.some(
+              (selectedAcc) => selectedAcc.accountNumber === acc.accountNumber
+            )
+          )
+        };
+      });
+    }
+
+    // console.log("contractCoreCustomerAccounts: ", contractCoreCustomerAccounts.value);
     console.log("accountsData: ", accountsData.value);
     console.log("selectedAccounts: ", selectedAccounts.value);
+    console.log("selectedContractAccount: ", selectedContractAccount.value);
   } catch (err: any) {
     console.error("Error fetching contract core customers:", err);
     isError.value = true;
@@ -204,48 +211,52 @@ const fetchContractCoreCustomers = async () => {
 };
     
 onMounted(async () => {
-  // await getContractCoreCustomerAccountsByIdHandler();
-  // await fetchContractCoreCustomerAccounts();
   await fetchContractCoreCustomers();
   await getUserAccountByContractUserIdHandler();
+  // await fetchContractUserAccounts();
 });
 
-const handleAccountSelect = (account: Account | undefined) => {
+const handleAccountSelect = (account: Account) => {
+  if (!account) return;
+  
   const index = selectedAccounts.value.findIndex(
-    (a) => a.accountNumber === account?.accountNumber
+    (a) => a.id === account.id && a.accountNumber === account.accountNumber
   );
 
   if (index === -1) {
-    selectedAccounts.value.push(account as Account);
+    selectedAccounts.value.push(account);
   } else {
     selectedAccounts.value.splice(index, 1);
   }
+  console.log("Selected accounts:", selectedAccounts.value);
 };
 
-const isAccountSelected = (account: Account | undefined) => {
+const isAccountSelected = (account: Account) => {
+  if (!account) return false;
+  
   return selectedAccounts.value.some(
-    (a) => a.accountNumber === account?.accountNumber
+    (a) => a.id === account.id && a.accountNumber === account.accountNumber
   );
 };
 
 const addAccounts = async () => {
   try {
     isSubmitting.value = true;
-    isLoading.value = true;
+    loading.value = true;
     const newValues = {
-      contractAccounts: selectedAccounts.value.map((account: Account) => (
-        account.accountNumber
-      )),
+      contractAccounts: selectedAccounts.value.map((account: Account) => account.id)
     };
 
-    console.log(newValues);
-    const response = await addUserAccounts(
-      props.contractUserId || '',
-      newValues
-    ); // Call your API function to fetch profile
-    console.log("response: ", response);
+    console.log("newValues: ", newValues);
+    // Make your API call here to add the accounts
+    // const response = await addUserAccounts(props.contractUserId || '', newValues);
+    
     await fetchContractCoreCustomers();
     await getUserAccountByContractUserIdHandler();
+    
+    // Clear selected accounts after adding
+    selectedAccounts.value = [];
+    
     toast({
       title: "Contract Core Customer Account Created",
       description: "Contract Core Customer Account created successfully",
@@ -254,7 +265,7 @@ const addAccounts = async () => {
     console.error("Error creating new contract account:", err.message);
     isError.value = true;
   } finally {
-    isLoading.value = false;
+    loading.value = false;
     isSubmitting.value = false;
   }
 };
@@ -281,6 +292,49 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
     loading.value = false;
   }
 };
+
+// Add these new methods for bulk selection
+const handleCustomerSelect = (customer: any) => {
+  if (!customer || !customer.accounts) return;
+  
+  // Check if all accounts of this customer are already selected
+  const allSelected = customer.accounts.every((account: Account) => 
+    isAccountSelected(account)
+  );
+  
+  if (allSelected) {
+    // If all are selected, deselect all
+    customer.accounts.forEach((account: Account) => {
+      const index = selectedAccounts.value.findIndex(
+        (a) => a.id === account.id && a.accountNumber === account.accountNumber
+      );
+      if (index !== -1) {
+        selectedAccounts.value.splice(index, 1);
+      }
+    });
+  } else {
+    // Otherwise, select all unselected accounts
+    customer.accounts.forEach((account: Account) => {
+      if (!isAccountSelected(account)) {
+        selectedAccounts.value.push(account);
+      }
+    });
+  }
+  
+  console.log("Selected accounts after bulk action:", selectedAccounts.value);
+};
+
+const getCustomerSelectionState = (customer: any) => {
+  if (!customer || !customer.accounts || customer.accounts.length === 0) return false;
+  
+  const selectedCount = customer.accounts.filter((account: Account) => 
+    isAccountSelected(account)
+  ).length;
+  
+  if (selectedCount === 0) return false;
+  if (selectedCount === customer.accounts.length) return true;
+  return 'indeterminate'; // For partially selected state
+};
 </script>
 
 <template>
@@ -290,10 +344,8 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
         >Contract Account </UiSheetTitle
       > -->
       <div class="flex justify-between items-center">
-        <h2 class="text-lg font-semibold">Add Core Customer Accounts</h2>
-        <p class="text-sm text-muted-foreground">
-          {{ selectedAccounts.length }} selected
-        </p>
+        <h2 class="text-lg font-semibold">Add User Accounts</h2>
+
       </div>
       <UiSheetDescription class="py-4 space-y-4">
   <div class="flex flex-col space-y-8">
@@ -359,79 +411,78 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
       </div> -->
 
       <UiAccordion type="single" collapsible v-model:value="openItems">
-        <UiAccordionItem
-          v-for="(
-            { account, enable, id, permissions }, index
-          ) in selectedContractAccount"
-          :key="account?.accountNumber"
-          :value="`item-${index + 1}`"
-          class="border rounded-lg mb-4 px-2 data-[state=open]:bg-muted/50"
-        >
-          <div
-            class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors"
+        <template v-for="(customer, customerIndex) in accountsData" :key="customer.coreCustomerId">
+          <UiAccordionItem
+            :value="`customer-${customerIndex}`"
+            class="border rounded-lg mb-4 data-[state=open]:bg-muted/50"
           >
-            <div class="flex items-center gap-4 w-full">
-              <UiCheckbox
-                :checked="isAccountSelected(account)"
-                @click.stop="handleAccountSelect(account)"
-                class="h-5 w-5"
-              />
-              <!-- <UiAccordionTrigger class="ml-auto hover:no-underline"> -->
-              <div class="flex-1 grid grid-cols-4 gap-4 py-2">
+            <div class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors">
+              <div class="flex items-center gap-4 w-full">
+                <!-- Add parent checkbox -->
+                <UiCheckbox
+                  :checked="getCustomerSelectionState(customer) === true"
+                  :indeterminate="getCustomerSelectionState(customer) === 'indeterminate'"
+                  @click="handleCustomerSelect(customer)"
+                  class="h-5 w-5 mr-3"
+                />
+               
+                <div class="flex-1 gap-4 py-4 w-full">
+                  <UiAccordionTrigger class="w-full text-left">
+                  <!-- <div class="w-full space-y-1">
+                    <p class="text-sm  text-muted-foreground">Core Customer ID</p>
+                    <p class="font-medium text-sm">{{ customer.coreCustomerId }}</p>
+                  </div> -->
+                  <div class="w-full space-y-1">
+                    <p class="text-sm text-muted-foreground">Customer Id</p>
+                    <p class="font-medium text-sm">{{ customer.customerId }}</p>
+                  </div>
+                  <div class="w-full space-y-1">
+                    <p class="text-sm text-muted-foreground">Accounts</p>
+                    <p class="font-medium text-sm">{{ customer.accounts.length }}</p>
+                  </div>
+                </UiAccordionTrigger>
+                </div>
+              
+              </div>
+            </div>
+
+            <UiAccordionContent class="px-4 pb-4">
+              <div v-for="account in customer.accounts" :key="account.id" 
+                   class="grid grid-cols-2 md:grid-cols-3 gap-6 w-full px-6 py-4 border-t">
+                <div class="flex items-center w-full">
+                  <UiCheckbox
+                    :checked="isAccountSelected(account)"
+                    @click="handleAccountSelect(account)"
+                    class="h-5 w-5 mr-8"
+                  />
+                  <div>
+                    <p class="text-sm text-muted-foreground">Account ID</p>
+                    <p class="font-medium">{{ account.id }}</p>
+                  </div>
+                </div>
                 <div>
                   <p class="text-sm text-muted-foreground">Account Number</p>
-                  <p class="font-medium text-sm">
-                    {{ account?.accountNumber }}
-                  </p>
+                  <p class="font-medium">{{ account.accountNumber }}</p>
                 </div>
                 <div>
-                  <p class="text-sm text-muted-foreground">Account Title</p>
-                  <p class="font-medium text-sm">
-                    {{ account?.accountHolder }}
-                  </p>
+                  <p class="text-sm text-muted-foreground">Account Holder</p>
+                  <p class="font-medium">{{ displayApiDataOnLabel(account.accountHolder) }}</p>
                 </div>
-                <FormField
-                  :model-value="enable"
-                  v-slot="{ handleChange }"
-                  name="enable"
-                >
-                  <FormItem>
-                    <FormLabel> Enable </FormLabel>
-                    <FormControl>
-                      <UiSwitch
-                        :checked="enable"
-                        @update:checked="
-                          (checked) => {
-                            handleChange;
-                            updatingContractAccountStatus(id || '', checked);
-                          }
-                        "
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <div class="flex items-center">
-                  <UiSheet>
-                    <UiSheetTrigger>
-                      <UiButton
-                        size="sm"
-                        class="font-medium cursor-pointer px-2 h-fit py-1"
-                      >
-                        Permissions
-                      </UiButton>
-                    </UiSheetTrigger>
-                    <UiSheetContent
-                      class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
-                    >
-                      <UserAccountsPermissions
-                        :userAccountId="id"
-                        :accountPermissions="permissions"
-                        @refresh="refetch"
-                      />
-                    </UiSheetContent>
-                  </UiSheet>
-                </div>
+              </div>
+            </UiAccordionContent>
+          </UiAccordionItem>
+        </template>
+
+        <!-- Display already selected accounts -->
+        <UiAccordionItem
+          v-if="selectedContractAccount && selectedContractAccount.length > 0"
+          value="selected-accounts"
+          class="border rounded-lg mb-4 px-2 data-[state=open]:bg-muted/50"
+        >
+          <div class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors">
+            <div class="flex items-center gap-4 w-full">
+              <div class="flex-1 py-2">
+                <h3 class="font-medium">Selected Accounts ({{ selectedContractAccount.length }})</h3>
               </div>
               <UiAccordionTrigger />
             </div>
@@ -439,164 +490,57 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
 
           <UiAccordionContent class="px-4 pb-4">
             <div
+              v-for="({ account, enable, id, permissions }, index) in selectedContractAccount"
+              :key="account?.accountNumber"
               class="grid grid-cols-2 md:grid-cols-4 gap-4 px-8 py-4 border-t"
             >
               <div>
-                <p class="text-sm text-muted-foreground">Customer ID</p>
-                <p class="font-medium">{{ account?.customerId }}</p>
+                <p class="text-sm text-muted-foreground">Account ID</p>
+                <p class="font-medium">{{ account?.id }}</p>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">Account Category</p>
-                <p class="font-medium">{{ account?.accountCategoryId }}</p>
+                <p class="text-sm text-muted-foreground">Account Number</p>
+                <p class="font-medium">{{ account?.accountNumber }}</p>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">Joint Holder 1</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account?.jointAccountHolder1) }}
-                </p>
+                <p class="text-sm text-muted-foreground">Account Title</p>
+                <p class="font-medium">{{ account?.accountHolder }}</p>
               </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Joint Holder 2</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account?.jointAccountHolder2) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Cleared Balance</p>
-                <p class="font-medium">
-                  {{ account?.onlineClearedBalance }} {{ account?.currency }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Last Updated</p>
-                <p class="font-medium">
-                  {{ new Date(account?.lastUpdated).toLocaleDateString() }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Account Type</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account?.accountType) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Inactive Marker</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account?.inactivMarker) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Posting Restrict Id</p>
-                <p class="font-medium">
-                  {{ account?.postingRestrictId || "-" }}
-                </p>
-              </div>
-            </div>
-          </UiAccordionContent>
-        </UiAccordionItem>
-        <UiAccordionItem
-          v-for="(account, index) in accountsData"
-          :key="account?.accountNumber"
-          :value="`item-${index + 2}`"
-          class="border rounded-lg mb-4 px-2 data-[state=open]:bg-muted/50"
-        >
-          <div
-            class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors"
-          >
-            <div class="flex items-center gap-4 w-full">
-              <UiCheckbox
-                :checked="isAccountSelected(account)"
-                @click.stop="handleAccountSelect(account)"
-                class="h-5 w-5"
-              />
-              <!-- <UiAccordionTrigger class="ml-auto hover:no-underline"> -->
-              <div class="flex-1 grid grid-cols-4 gap-4 py-2">
-                <div>
-                  <p class="text-sm text-muted-foreground">Account Number</p>
-                  <p class="font-medium text-sm">
-                    {{ account?.accountNumber }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-sm text-muted-foreground">Account Title</p>
-                  <p class="font-medium text-sm">
-                    {{ account?.accountTitle1 }}
-                  </p>
-                </div>
-
-                <div>
-                  <p class="text-sm text-muted-foreground">Opening Date</p>
-                  <p class="font-medium text-sm">
-                    {{
-                      new Date(account?.openingDate || "").toLocaleDateString()
-                    }}
-                  </p>
-                </div>
-              </div>
-              <UiAccordionTrigger />
-            </div>
-          </div>
-
-          <UiAccordionContent class="px-4 pb-4">
-            <div
-              class="grid grid-cols-2 md:grid-cols-4 gap-4 px-8 py-4 border-t"
-            >
-              <div>
-                <p class="text-sm text-muted-foreground">Customer ID</p>
-                <p class="font-medium">{{ account.customerId }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Account Category</p>
-                <p class="font-medium">{{ account.accountCategoryId }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Joint Holder 1</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account.jointAccountHolder1) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Joint Holder 2</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account.jointAccountHolder2) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Cleared Balance</p>
-                <p class="font-medium">
-                  {{ account.onlineClearedBalance }} {{ account.currency }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Last Updated</p>
-                <p class="font-medium">
-                  {{ new Date(account.dateLastUpdate).toLocaleDateString() }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Account Type</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account.accountType) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Inactive Marker</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account.inactivMarker) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Posting Restrict Id</p>
-                <p class="font-medium">
-                  {{ account.postingRestrictId || "-" }}
-                </p>
-              </div>
+              <FormField
+                :model-value="enable"
+                v-slot="{ handleChange }"
+                name="enable"
+              >
+                <FormItem>
+                  <FormLabel>Enable</FormLabel>
+                  <FormControl>
+                    <UiSwitch
+                      :checked="enable"
+                      @update:checked="
+                        (checked) => {
+                          handleChange;
+                          updatingContractAccountStatus(id || '', checked);
+                        }
+                      "
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
             </div>
           </UiAccordionContent>
         </UiAccordionItem>
       </UiAccordion>
       <!-- </div> -->
-      <UiButton @click="addAccounts" type="submit" class="w-fit self-end px-8">Add Accounts</UiButton>
+      <div class="flex justify-between items-center">
+      <p class="text-sm text-muted-foreground">
+          {{ selectedAccounts.length }} selected
+        </p>
+      <UiButton @click="addAccounts" :disabled="selectedAccounts.length === 0 || isSubmitting" type="submit" class="w-fit self-end px-8">
+        <Icon name="svg-spinners:8-dots-rotate" v-if="isSubmitting" class="mr-2 h-4 w-4 animate-spin"></Icon>
+        Add Accounts
+      </UiButton>
+      </div>
     </UiCard>
 
     <UiCard
