@@ -32,7 +32,7 @@ const CreditAccountNumberVariableTypeSchema = z
   .nativeEnum(CreditAccountNumberVariableType)
   .nullable()
   .optional();
-const PaymentCategorySchema = z.nativeEnum(PaymentCategory).nullable();
+const PaymentCategorySchema = z.enum(Object.keys(PaymentCategory) as [string, ...string[]]);
 
 export const paymentIntegrationFormSchema = toTypedSchema(
   z.object({
