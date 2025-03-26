@@ -395,11 +395,11 @@ function splitPath(path: any) {
                     <UiSelectContent>
                       <UiSelectGroup>
                         <UiSelectItem
-                          v-for="item in Object.values(PaymentCategory)"
-                          :key="item"
-                          :value="item"
+                          v-for="(displayValue, enumKey) in PaymentCategory"
+                          :key="enumKey"
+                          :value="enumKey"
                         >
-                          {{ item }}
+                          {{ displayValue }}
                         </UiSelectItem>
                       </UiSelectGroup>
                     </UiSelectContent>
