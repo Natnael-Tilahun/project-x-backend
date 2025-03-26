@@ -20,6 +20,7 @@ import {
   MaximumAmountVariableType,
   MinimumAmountVariableType,
   CreditAccountNumberVariableType,
+  PaymentCategory,
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { PaymentIntegration } from "~/types";
@@ -371,6 +372,42 @@ function splitPath(path: any) {
                 <FormMessage />
               </FormItem>
             </FormField>
+
+            <FormField
+                :model-value="data?.category"
+                v-slot="{ componentField }"
+                name="category"
+              >
+                <FormItem>
+                  <FormLabel> Category </FormLabel>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue
+                          :placeholder="
+                            data?.category
+                              ? data?.category
+                              : 'Select a category'
+                          "
+                        />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem
+                          v-for="item in Object.values(PaymentCategory)"
+                          :key="item"
+                          :value="item"
+                        >
+                          {{ item }}
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+
 
             <FormField
               :model-value="data?.transactionAmountType"
@@ -855,9 +892,9 @@ function splitPath(path: any) {
             </FormField>
 
             <FormField
-              :model-value="data?.isSingleFormPayment"
+              :model-value="data?.singleFormPayment"
               v-slot="{ value, handleChange }"
-              name="isSingleFormPayment"
+              name="singleFormPayment"
             >
               <FormItem>
                 <FormLabel> Single Form Payment </FormLabel>

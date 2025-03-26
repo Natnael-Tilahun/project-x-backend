@@ -44,6 +44,7 @@ import {
   RoleScope,
   DeviceType,
   Gender,
+  PaymentCategory,
 } from "@/global-types";
 
 interface User {
@@ -462,13 +463,14 @@ interface PaymentIntegration {
   paymentErrorTemplateShort?: string | null;
   defaultPaymentReason?: string | null;
   integrationType?: PaymentIntegrationType | null;
-  visibility?: Visibility | null;
+  visiblity?: Visibility | null;
   confirmRecipientIdentity?: boolean | null;
   reEnquirePaymentDetailBeforePayment?: boolean | null;
   singleFormPayment?: boolean | null;
   isImage?: boolean | null;
   dailyLimitPerAccount?: number | null;
   limitPerTransaction?: number | null;
+  category?: PaymentCategory | null;
 }
 
 interface Menu {
