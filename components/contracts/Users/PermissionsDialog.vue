@@ -13,7 +13,7 @@ const props = defineProps<{
   isUserAccount?: boolean; // Flag to indicate if this is an existing user account
 }>();
 
-const emit = defineEmits(['update:open', 'savePermissions']);
+const emit = defineEmits(['update:open', 'refetch']);
 
 // Get the user accounts composable and toast
 const { updateUserAccountPermissions } = useUserAccounts();
@@ -146,15 +146,17 @@ const saveAndClose = async () => {
         title: "Permissions Updated",
         description: "Account permissions have been updated successfully"
       });
+      emit('refetch');
+      closeDialog();
     }
     
-    // Always emit the event to update parent component state
-    emit('savePermissions', {
-      id: props.permissionId,
-      permissions: [...localSelectedPermissions.value]
-    });
-    
-    emit('update:open', false);
+    // // Always emit the event to update parent component state
+    // emit('savePermissions', {
+    //   id: props.permissionId,
+    //   permissions: [...localSelectedPermissions.value]
+    // });
+
+
   } catch (error: any) {
     console.error("Error updating permissions:", error);
     toast({
@@ -211,11 +213,11 @@ const saveAndClose = async () => {
             </div>
           </div>
           
-          <div class="grid gap-3">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div 
               v-for="permission in availablePermissions" 
-              :key="permission.id"
-              class="flex items-start border rounded-md p-3 hover:bg-muted/30 transition-colors cursor-pointer"
+              :key="permission.code"
+              class="flex items-start rounded-md p-3 hover:bg-muted/30 transition-colors cursor-pointer"
               @click="handleRowClick(permission.code || '')"
             >
               <div @click.stop="handleCheckboxClick(permission.code || '', $event)" class="mr-3">
@@ -225,9 +227,9 @@ const saveAndClose = async () => {
                 />
               </div>
               <div>
-                <p class="font-medium text-sm">{{ permission.name }}</p>
+                <p class="font-medium text-sm">{{ permission.code }}</p>
                 <p class="text-xs text-muted-foreground mt-1">{{ permission.description || 'No description available' }}</p>
-                <p class="text-xs text-primary-foreground bg-primary px-2 py-0.5 rounded mt-1 inline-block">{{ permission.code }}</p>
+                <!-- <p class="text-xs text-primary-foreground bg-primary px-2 py-0.5 rounded mt-1 inline-block">{{ permission.code }}</p> -->
               </div>
             </div>
           </div>

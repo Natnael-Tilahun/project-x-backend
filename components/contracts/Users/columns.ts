@@ -154,7 +154,7 @@ export const columns: ColumnDef<ContractUser>[] = [
               h(
                 SheetContent,
                 {
-                  class: "md:w-2/3 md:max-w-none w-screen",    
+                  class: "md:w-3/4 md:max-w-none w-screen",    
                 },
                 [
                   h(ContractsUsersAccounts, { userId: userId || "", contractUserId: contractUserId || "", contract: contract || "" }), // Pass the `id` as a prop
