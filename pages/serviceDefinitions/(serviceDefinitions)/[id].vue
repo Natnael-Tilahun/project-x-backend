@@ -51,7 +51,7 @@ try {
   isLoading.value = true;
   loading.value = true;
     data.value = await getServiceDefinitionById(serviceDefinitionId.value);
-  const permissions = await getPermissions();
+  const permissions = await getPermissions(0,100000);
   permissionsData.value = permissions.sort((a: Permission, b: Permission) =>
       a?.code?.toLowerCase().localeCompare(b?.code?.toLowerCase())
     );
