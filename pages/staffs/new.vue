@@ -1,0 +1,271 @@
+<script lang="ts" setup>
+import { useForm } from "vee-validate";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { ref, onBeforeUnmount } from "vue";
+import { toast } from "~/components/ui/toast";
+import { newStaffFormSchema } from "~/validations/newStaffFormSchema";
+import type { Office, Staff } from "~/types";
+const { createNewStaff, isLoading } = useStaffs();
+const { getOffices } = useOffice();
+const isError = ref(false);
+const data = ref<Staff>();
+const isSubmitting = ref(false);
+const offices = ref<Office[]>([]);
+const loading = ref(false);
+
+const form = useForm({
+  validationSchema: newStaffFormSchema,
+});
+
+const onSubmit = form.handleSubmit(async (values: any) => {
+  try {
+    isSubmitting.value = true;
+    isLoading.value = true;
+    console.log("values: ", values);
+    data.value = await createNewStaff(values); // Call your API function to fetch profile
+    navigateTo(`/staffs/${data.value.id}`);
+    console.log("New staff data; ", data.value);
+    toast({
+      title: "Staff Created",
+      description: "Staff created successfully",
+    });
+  } catch (err: any) {
+    console.error("Error creating new staff:", err.message);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    isSubmitting.value = false;
+  }
+});
+
+  const fetchOfficesData = async () => {
+  try {
+    loading.value = true;
+    offices.value = await getOffices();
+    console.log("Offices: ", offices.value);
+  } catch (err) {
+    console.error("Error fetching offices:", err);
+    isError.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(async () => {
+  await fetchOfficesData();
+});
+
+const refetch = async () => {
+  await fetchOfficesData();
+};
+
+onBeforeUnmount(() => {
+  isError.value = false;
+  data.value = undefined;
+  isSubmitting.value = false;
+});
+</script>
+
+<template>
+  <div class="w-full h-full flex flex-col gap-8">
+    <div class="">
+      <h1 class="md:text-2xl text-lg font-medium">Create New Staff</h1>
+      <p class="text-sm text-muted-foreground">
+        Create new staff by including First Name,external id, email, origanizational role type and phone number
+      </p>
+    </div>
+
+    <UiCard class="w-full flex border-[1px] rounded-lg h-full">
+      <div value="roleDetails" class="text-sm md:text-base p-6 basis-full">
+        <form @submit="onSubmit">
+          <div class="grid grid-cols-2 gap-6">
+            <FormField v-slot="{ componentField }" name="firstName">
+              <FormItem>
+                <FormLabel>First Name </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter staff first name"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="lastName">
+              <FormItem>
+                <FormLabel>Last Name </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter staff last name"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="displayName">
+              <FormItem>
+                <FormLabel>Display Name </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter staff display name"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="mobileNo">
+              <FormItem>
+                <FormLabel> Mobile Number </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter staff mobile number"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="externalId">
+              <FormItem>
+                <FormLabel> External Id </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter staff external id"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="emailAddress">
+              <FormItem>
+                <FormLabel> Email Address </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter email address"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="origanizationalRoleType">
+              <FormItem>
+                <FormLabel>Oganizational Role Type </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter Oganizational Role Type"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="joiningDate">
+              <FormItem>
+                <FormLabel> Joining Date </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="date"
+                    placeholder="Enter joining date"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="organisationalRoleParentStaff">
+              <FormItem>
+                <FormLabel>Oganizational Role Parent Staff</FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter Oganizational Role Parent Staff"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="office">
+              <FormItem class="w-full">
+                <FormLabel> Office </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select an office" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in offices"
+                        :value="item.id"
+                      >
+                        {{ item.name }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ value, handleChange }" name="loanOfficer">
+                <FormItem>
+                  <FormLabel> Loan Officer </FormLabel>
+                  <FormControl>
+                    <UiSwitch :checked="value" @update:checked="handleChange" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField v-slot="{ value, handleChange }" name="active">
+                <FormItem>
+                  <FormLabel> Active </FormLabel>
+                  <FormControl>
+                    <UiSwitch :checked="value" @update:checked="handleChange" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+
+            <div class="col-span-full w-full py-4 flex justify-between">
+              <UiButton
+                :disabled="isSubmitting"
+                variant="outline"
+                type="button"
+                @click="$router.go(-1)"
+              >
+                Cancel
+              </UiButton>
+              <UiButton :disabled="isSubmitting" type="submit">
+                <Icon
+                  name="svg-spinners:8-dots-rotate"
+                  v-if="isSubmitting"
+                  class="mr-2 h-4 w-4 animate-spin"
+                ></Icon>
+
+                Submit
+              </UiButton>
+            </div>
+          </div>
+        </form>
+      </div>
+    </UiCard>
+  </div>
+</template>

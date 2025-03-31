@@ -848,3 +848,42 @@ interface Account {
   lastUpdated?:string | Data | null
   accountHolder?: string | null
 }
+
+interface Staff {
+  id:	string;
+  firstname: string | null
+  lastname:string | null
+  displayName?:	string | null
+  mobileNo: string
+  externalId?: string | null
+  emailAddress?:	string | null
+  loanOfficer: boolean
+  organisationalRoleType?: number | null
+  active: boolean
+  joiningDate?:	string | null 
+  office:	Office
+  organisationalRoleParentStaff ?:	string
+  }
+
+interface Office {
+  id: string
+name:	string
+code?:	string | null
+state?:	string | null
+organizationRegion?:	string | null
+districtName?:	string | null
+description?:	string | null
+hierarchy?:	string | null
+openingDate:	string 
+parent	?:string | null
+}
+
+interface StaffAssignment {
+  id: string
+  startDate?: string 
+  endDate?: string 
+  staff: Staff
+  supervisor?: Staff
+  office: Office
+  role: Role
+}
