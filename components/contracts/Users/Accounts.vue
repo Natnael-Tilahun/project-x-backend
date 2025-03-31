@@ -2,7 +2,6 @@
 const openItems = ref(["item-1"]);
 import { toast } from "~/components/ui/toast";
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/contracts/Accounts/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { getIdFromPath } from "~/lib/utils";
 import type { ContractAccount, Contract, Account } from "~/types";
@@ -17,7 +16,6 @@ import {
 import PermissionsDialog from "~/components/contracts/Users/PermissionsDialog.vue";
 
 const {
-  getContractCoreCustomerAccounts,
   updateContractCoreCustomerAccountStatus,
   isLoading: isLoadingContractCoreCustomerAccount,
 } = useContractsCoreCustomersAccount();
@@ -48,8 +46,6 @@ const accountsData = ref<any>();
 const contractAccountsData = ref<
   { customerId: string; contractAccounts: ContractAccount[] }[]
 >([]);
-const coreCustomerId = ref<string>();
-const contractCoreCustomerId = ref<any>();
 const selectedAccounts = ref<
   {
     accountId: string;
@@ -58,25 +54,13 @@ const selectedAccounts = ref<
     enable?: boolean;
   }[]
 >([]);
-const selectedContractAccount = ref<ContractAccount[]>([]);
-const coreCustomerPermissions = ref<any>();
-const contractAccounts = ref<any>();
 const props = defineProps<{
   userId?: string;
   contractUserId?: string;
   contract?: any;
 }>();
 
-
-const contractCoreCustomerAccounts =
-  ref<{ coreCustomerId: string; account: Account }[]>();
-
 const userAccountPermissions = ref<{ [userAccountId: string]: string[] }>({});
-
-contractId.value = getIdFromPath();
-
-console.log("contractUserId: ", props.contractUserId);
-console.log("contract: ", contractId.value);
 
 const emit = defineEmits(["refresh"]);
 const refetch = async () => {
@@ -93,7 +77,7 @@ const displayApiDataOnLabel = (data: any) => {
   if (data == true) {
     return "true";
   }
-  return data; // Default case if customerActivated is undefined or any other value
+  return data;
 };
 
 const getUserAccountByContractUserIdHandler = async () => {
@@ -103,7 +87,6 @@ const getUserAccountByContractUserIdHandler = async () => {
       const response = await getUserAccountByContractUserId(
         props.contractUserId || ""
       );
-      console.log("getUserAccountByContractUserId response: ", response);
 
       // Map the contract accounts and store their user account IDs
       const userAccounts = response || [];
@@ -127,11 +110,6 @@ const getUserAccountByContractUserIdHandler = async () => {
           userAccountPermissions.value[userAccount.id] = userAccount.permissions
             .filter((p: any) => p.code) // Only include permissions with a code
             .map((p: any) => p.code);
-
-          console.log(
-            `Loaded permissions for ${userAccount.id}:`,
-            userAccountPermissions.value[userAccount.id]
-          );
         }
       });
 
@@ -142,14 +120,6 @@ const getUserAccountByContractUserIdHandler = async () => {
             (selectedAcc) => selectedAcc.accountId === acc.id
           )
       );
-
-      console.log(
-        "selectedAccounts with userAccountIds: ",
-        selectedAccounts.value
-      );
-      console.log("accountsData: ", accountsData.value);
-      console.log("selectedContractAccount: ", selectedContractAccount.value);
-      console.log("userAccountPermissions: ", userAccountPermissions.value);
     } else {
       return true;
     }
@@ -165,7 +135,6 @@ const fetchContractCoreCustomers = async () => {
   try {
     loading.value = true;
     const response = await getContractCoreCustomers(contractId.value);
-    console.log("response: ", response);
 
     // Structure data as customer -> contract accounts
     contractAccountsData.value = response.map((item: any) => {
@@ -202,10 +171,6 @@ const fetchContractCoreCustomers = async () => {
         }
       );
     }
-
-    console.log("contractAccountsData: ", contractAccountsData.value);
-    console.log("selectedAccounts: ", selectedAccounts.value);
-    console.log("selectedContractAccount: ", selectedContractAccount.value);
   } catch (err: any) {
     console.error("Error fetching contract core customers:", err);
     isError.value = true;
@@ -217,7 +182,6 @@ const fetchContractCoreCustomers = async () => {
 onMounted(async () => {
   await fetchContractCoreCustomers();
   await getUserAccountByContractUserIdHandler();
-  // await fetchContractUserAccounts();
 });
 
 const initializePermissions = (
@@ -269,9 +233,6 @@ const handleAccountSelect = (contractAccount: ContractAccount) => {
       delete userAccountPermissions.value[permissionId];
     }
   }
-
-  console.log("Selected accounts:", selectedAccounts.value);
-  console.log("User account permissions:", userAccountPermissions.value);
 };
 
 const isAccountSelected = (contractAccount: ContractAccount) => {
@@ -280,59 +241,6 @@ const isAccountSelected = (contractAccount: ContractAccount) => {
   return selectedAccounts.value.some(
     (a) => a.contractAccountId === contractAccount.id
   );
-};
-
-// Function to toggle a specific permission
-const togglePermission = (contractAccountId: string, permissionId: string) => {
-  if (!userAccountPermissions.value[contractAccountId]) {
-    userAccountPermissions.value[contractAccountId] = [];
-  }
-
-  const permissionIndex = userAccountPermissions.value[
-    contractAccountId
-  ].findIndex((p) => p === permissionId);
-
-  if (permissionIndex !== -1) {
-    // Remove permission
-    userAccountPermissions.value[contractAccountId].splice(permissionIndex, 1);
-  } else {
-    // Add permission if it's available in the contract account
-    const availablePermissions = getAvailablePermissions(contractAccountId);
-    if (availablePermissions.some((p) => p.code === permissionId)) {
-      userAccountPermissions.value[contractAccountId].push(permissionId);
-    }
-  }
-
-  console.log(
-    "Updated permissions for",
-    contractAccountId,
-    ":",
-    userAccountPermissions.value[contractAccountId]
-  );
-};
-
-// Check if a permission is active for a user account
-const isPermissionActive = (
-  contractAccountId: string,
-  permissionId: string
-) => {
-  if (!userAccountPermissions.value[contractAccountId]) return false;
-
-  return userAccountPermissions.value[contractAccountId].includes(permissionId);
-};
-
-// Check if a permission is available (exists in the contract account)
-const isPermissionAvailable = (
-  contractAccountId: string,
-  permissionId: string
-) => {
-  const contractAccount = contractAccountsData.value
-    .flatMap((customer) => customer.contractAccounts)
-    .find((acc) => acc.id === contractAccountId);
-
-  if (!contractAccount || !contractAccount.permissions) return false;
-
-  return contractAccount.permissions.some((p) => p.code === permissionId);
 };
 
 // Get available permissions for a contract account
@@ -368,13 +276,12 @@ const addAccounts = async () => {
       ),
     };
 
-    console.log("newValues: ", newValues);
     // Make your API call here to add the accounts with permissions
     const response = await addUserAccounts(
       props.contractUserId || "",
       newValues
     );
-    console.log("response: ", response);
+    
     await fetchContractCoreCustomers();
     await getUserAccountByContractUserIdHandler();
 
@@ -400,11 +307,7 @@ const updatingUserAccountStatus = async (id: string, status: boolean) => {
     loading.value = true;
     if (id) {
       const value = status ? "enable" : "disable";
-      console.log("value: ", value);
-
-      console.log("id: ", id);
       await updateUserAccountStatus(id, value);
-      // await fetchContractCoreCustomerAccounts();
       toast({
         title: "Contract Account Status Updated.",
         description: "Contract Account staus updated successfully",
@@ -451,8 +354,6 @@ const handleCustomerSelect = (customer: any) => {
       }
     });
   }
-
-  console.log("Selected accounts after bulk action:", selectedAccounts.value);
 };
 
 const getCustomerSelectionState = (customer: any) => {
@@ -514,13 +415,6 @@ const openPermissionsDialog = async (selectedAccount: {
     permissionId,
   };
 
-  console.log("Opening dialog for:", permissionId);
-  console.log(
-    "Available permissions:",
-    getAvailablePermissions(contractAccount.id || "")
-  );
-  console.log("Selected permissions:", getSelectedPermissions(permissionId));
-
   // Delay opening the dialog slightly to ensure data is ready
   setTimeout(() => {
     permissionsDialogOpen.value = true;
@@ -531,8 +425,6 @@ const openPermissionsDialog = async (selectedAccount: {
 const savePermissions = (data: { id?: string; permissions: string[] }) => {
   if (!data.id) return;
 
-  console.log("Received permissions to save:", data);
-
   // Make sure userAccountPermissions is initialized for this ID
   if (!userAccountPermissions.value[data.id]) {
     userAccountPermissions.value[data.id] = [];
@@ -540,13 +432,6 @@ const savePermissions = (data: { id?: string; permissions: string[] }) => {
 
   // Replace the permissions for this ID with the new permissions
   userAccountPermissions.value[data.id] = [...data.permissions];
-
-  console.log(
-    "Updated permissions for",
-    data.id,
-    ":",
-    userAccountPermissions.value[data.id]
-  );
 };
 
 const refetchPage = async () => {
@@ -558,9 +443,6 @@ const refetchPage = async () => {
 <template>
   <UiSheet class="flex flex-col gap-6 items-center">
     <UiSheetHeader>
-      <!-- <UiSheetTitle class="border-b-2"
-            >Contract Account </UiSheetTitle
-          > -->
       <div class="flex justify-between items-center">
         <h2 class="text-lg font-semibold">Add User Accounts</h2>
       </div>
@@ -587,19 +469,11 @@ const refetchPage = async () => {
           <UiCard
             v-if="
               ((accountsData && accountsData.length > 0) ||
-                selectedContractAccount.length > 0) &&
+                selectedAccounts.length > 0) &&
               !loading
             "
             class="w-full flex flex-col border-none gap-2"
           >
-            <!-- <div class="p-6"> -->
-            <!-- <div class="flex justify-between items-center">
-            <h2 class="text-lg font-semibold">Add Core Customer Accounts</h2>
-            <p class="text-sm text-muted-foreground">
-              {{ selectedAccounts.length }} selected
-            </p>
-          </div> -->
-
             <UiAccordion type="single" collapsible v-model:value="openItems">
               <template
                 v-for="(customer, customerIndex) in accountsData"
@@ -626,10 +500,6 @@ const refetchPage = async () => {
 
                       <div class="flex-1 gap-4 py-0 w-full">
                         <UiAccordionTrigger class="w-full text-left">
-                          <!-- <div class="w-full space-y-1">
-                        <p class="text-sm  text-muted-foreground">Core Customer ID</p>
-                        <p class="font-medium text-sm">{{ customer.coreCustomerId }}</p>
-                      </div> -->
                           <div class="w-full">
                             <p class="text-sm text-muted-foreground">
                               Customer Id
@@ -674,12 +544,6 @@ const refetchPage = async () => {
                           <div
                             class="grid grid-cols-1 md:grid-cols-5 gap-4 flex-1"
                           >
-                            <!-- Added checkbox for selected accounts -->
-                      
-                            <!-- <div>
-                              <p class="text-sm text-muted-foreground">Contract Account ID</p>
-                              <p class="font-medium">{{ contractAccount.id }}</p>
-                            </div> -->
                             <div class=" w-full">
                               <p class="text-sm text-muted-foreground">
                                 Account Number
@@ -713,8 +577,6 @@ const refetchPage = async () => {
                               </p>
                             </div>
                             <div class="flex w-full col-span-2 justify-between items-start gap-8">
-                              
-                       
                             <div class="flex gap-0 justify-center w-full">
                               <FormField
                                 :model-value="
@@ -832,13 +694,6 @@ const refetchPage = async () => {
                             @click="handleAccountSelect(contractAccount)"
                             class="h-5 w-5 mr-8"
                           />
-                          <!-- <div>
-                            <p class="text-sm text-muted-foreground text-left">
-                              Contract Account ID
-                            </p>
-                            <p class="font-medium text-left">{{ contractAccount.id }}</p>
-                          </div> -->
-                      
                         <div>
                           <p class="text-sm text-muted-foreground text-left">
                             Account Number
@@ -878,7 +733,6 @@ const refetchPage = async () => {
                 </UiAccordionItem>
               </template>
             </UiAccordion>
-            <!-- </div> -->
             <div class="flex justify-between items-center">
               <p class="text-sm text-muted-foreground">
                 {{ selectedAccounts.length }} selected
@@ -929,8 +783,6 @@ const refetchPage = async () => {
       )
     "
     @refetch="refetchPage"
-
-    
   />
 </template>
 
