@@ -12,11 +12,9 @@ import { toast } from "~/components/ui/toast";
 import { newStaffFormSchema } from "~/validations/newStaffFormSchema";
 import type { Office, Staff } from "~/types";
 const { createNewStaff, isLoading } = useStaffs();
-const { getOffices } = useOffice();
 const isError = ref(false);
 const data = ref<Staff>();
 const isSubmitting = ref(false);
-const offices = ref<Office[]>([]);
 const loading = ref(false);
 
 const form = useForm({
@@ -43,27 +41,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = false;
   }
 });
-
-  const fetchOfficesData = async () => {
-  try {
-    loading.value = true;
-    offices.value = await getOffices();
-    console.log("Offices: ", offices.value);
-  } catch (err) {
-    console.error("Error fetching offices:", err);
-    isError.value = true;
-  } finally {
-    loading.value = false;
-  }
-};
-
-onMounted(async () => {
-  await fetchOfficesData();
-});
-
-const refetch = async () => {
-  await fetchOfficesData();
-};
 
 onBeforeUnmount(() => {
   isError.value = false;
@@ -137,19 +114,6 @@ onBeforeUnmount(() => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="externalId">
-              <FormItem>
-                <FormLabel> External Id </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter staff external id"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
             <FormField v-slot="{ componentField }" name="emailAddress">
               <FormItem>
                 <FormLabel> Email Address </FormLabel>
@@ -157,19 +121,6 @@ onBeforeUnmount(() => {
                   <UiInput
                     type="text"
                     placeholder="Enter email address"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField v-slot="{ componentField }" name="origanizationalRoleType">
-              <FormItem>
-                <FormLabel>Oganizational Role Type </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter Oganizational Role Type"
                     v-bind="componentField"
                   />
                 </FormControl>
@@ -189,51 +140,6 @@ onBeforeUnmount(() => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="organisationalRoleParentStaff">
-              <FormItem>
-                <FormLabel>Oganizational Role Parent Staff</FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter Oganizational Role Parent Staff"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField v-slot="{ componentField }" name="office">
-              <FormItem class="w-full">
-                <FormLabel> Office </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select an office" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in offices"
-                        :value="item.id"
-                      >
-                        {{ item.name }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField v-slot="{ value, handleChange }" name="loanOfficer">
-                <FormItem>
-                  <FormLabel> Loan Officer </FormLabel>
-                  <FormControl>
-                    <UiSwitch :checked="value" @update:checked="handleChange" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
               <FormField v-slot="{ value, handleChange }" name="active">
                 <FormItem>
                   <FormLabel> Active </FormLabel>

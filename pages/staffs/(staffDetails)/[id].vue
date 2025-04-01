@@ -13,12 +13,11 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import type { Staff, Office } from "~/types";
+import type { Staff } from "~/types";
 import { dateFormatter } from "~/lib/utils";
 const route = useRoute();
 const { getStaffById, updateStaff, isLoading, isSubmitting } =
   useStaffs();
-const { getOffices } = useOffice();
 
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
@@ -27,7 +26,6 @@ const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<Staff>();
-const offices = ref<Office[]>([]);
 
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
@@ -80,26 +78,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   }
 });
 
-const fetchOfficesData = async () => {
-  try {
-    loading.value = true;
-    offices.value = await getOffices();
-    console.log("Offices: ", offices.value);
-  } catch (err) {
-    console.error("Error fetching offices:", err);
-    isError.value = true;
-  } finally {
-    loading.value = false;
-  }
-};
-
-onMounted(async () => {
-  await fetchOfficesData();
-});
-
-const refetch = async () => {
-  await fetchOfficesData();
-};
 </script>
 
 <template>
@@ -175,19 +153,6 @@ const refetch = async () => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="externalId">
-            <FormItem>
-              <FormLabel> External Id </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="text"
-                  placeholder="Enter external id"
-                  v-bind="componentField"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
           <FormField v-slot="{ componentField }" name="emailAddress">
             <FormItem>
               <FormLabel>Email Address </FormLabel>
@@ -195,32 +160,6 @@ const refetch = async () => {
                 <UiInput
                   type="text"
                   placeholder="Enter email address"
-                  v-bind="componentField"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-          <FormField v-slot="{ componentField }" name="organisationalRoleType">
-            <FormItem>
-              <FormLabel> Organisational Role Type </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="text"
-                  placeholder="Enter organisational Role Type"
-                  v-bind="componentField"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-          <FormField v-slot="{ componentField }" name="organisationalRoleParentStaff">
-            <FormItem>
-              <FormLabel> Organisational Role Parent Staff </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="text"
-                  placeholder="Enter organisational Role Parent Staff"
                   v-bind="componentField"
                 />
               </FormControl>
@@ -239,38 +178,6 @@ const refetch = async () => {
               </FormControl>
               <FormMessage />
             </FormItem>
-          </FormField>
-          <FormField v-slot="{ componentField }" name="office">
-              <FormItem class="w-full">
-                <FormLabel> Office </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select an office" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in offices"
-                        :value="item.id"
-                      >
-                        {{ item.name }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-          <FormField v-slot="{ value, handleChange }" name="loanOfficer">
-                <FormItem>
-                  <FormLabel> Loan Officer </FormLabel>
-                  <FormControl>
-                    <UiSwitch :checked="value" @update:checked="handleChange" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
           </FormField>
           <FormField v-slot="{ value, handleChange }" name="active">
                 <FormItem>

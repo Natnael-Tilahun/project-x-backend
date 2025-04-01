@@ -33,6 +33,7 @@ const { getCoreAccountsByCustomerId, isLoading } = useCustomers();
 
 const loading = ref(isLoading.value);
 const isError = ref(false);
+const errorMessage = ref("");
 const accountsData = ref<any>();
 const coreCustomerId = ref<string>();
 const contractCoreCustomerId = ref<any>();
@@ -70,6 +71,8 @@ const displayApiDataOnLabel = (data: any) => {
 const searchCoreAccountsByCustomerIdHandler = async () => {
   try {
     loading.value = true;
+    isError.value = false;
+    accountsData.value = [];
     if (coreCustomerId.value) {
       const response = await getCoreAccountsByCustomerId(coreCustomerId.value); // Call your API function to fetch roles
       accountsData.value = response;
@@ -83,7 +86,9 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
       return true;
     }
   } catch (err: any) {
+    isError.value = true;
     console.error("Error fetching accounts:", err);
+    errorMessage.value = err.message == "404 NOT_FOUND" ? "Account not found." : err.message;
     toast({
       title: "Uh oh! Something went wrong.",
       description: `${
@@ -91,7 +96,6 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
       }`,
       variant: "destructive",
     });
-    isError.value = true;
   } finally {
     loading.value = false;
   }
@@ -228,7 +232,7 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
         <div class="flex items-center gap-4">
           <UiInput
             id="search"
-            type="search"
+            type="number"
             placeholder="Search..."
             class="md:w-[100px] lg:w-[300px]"
             v-model="coreCustomerId"
@@ -267,10 +271,7 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
     </UiCard>
 
     <UiCard
-      v-if="
-        ((accountsData && accountsData.length > 0) ||
-        selectedContractAccount.length > 0) &&  !loading
-      "
+
       class="w-full flex flex-col border-none gap-2"
     >
       <!-- <div class="p-6"> -->
@@ -281,8 +282,14 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
         </p>
       </div>
 
-      <UiAccordion type="single" collapsible v-model:value="openItems">
+      <UiAccordion
+      v-if="
+        ((accountsData && accountsData.length > 0)  ||
+        selectedContractAccount.length > 0) &&  !loading && !isError
+      "
+      type="single" collapsible v-model:value="openItems">
         <UiAccordionItem
+        
           v-for="(
             { account, enable, id, permissions }, index
           ) in selectedContractAccount"
@@ -519,17 +526,25 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
             </div>
           </UiAccordionContent>
         </UiAccordionItem>
+        <div class="flex justify-end pt-4">
+      <UiButton @click="addAccounts" type="submit" class="w-fit self-end px-8">Add Accounts</UiButton>
+      </div>
       </UiAccordion>
       <!-- </div> -->
-      <UiButton @click="addAccounts" type="submit" class="w-fit self-end px-8">Add Accounts</UiButton>
-    </UiCard>
-
-    <UiCard
-      v-else-if="accountsData && accountsData.length === 0 && !loading"
+      <UiCard
+      v-else-if="accountsData && accountsData.length === 0 && !loading && !isError"
       class="w-full p-6 text-center"
     >
-      <p class="text-muted-foreground">No accounts found for this customer</p>
+      <p class="text-muted-foreground py-8">No accounts found for this customer</p>
     </UiCard>
+    <div class="w-full" v-else-if="isError">
+      <ErrorMessage :title="errorMessage || 'Something went wrong.'" />
+    </div>
+
+      
+    </UiCard>
+
+  
   </div>
 </template>
 

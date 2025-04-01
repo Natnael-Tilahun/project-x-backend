@@ -855,14 +855,9 @@ interface Staff {
   lastname:string | null
   displayName?:	string | null
   mobileNo: string
-  externalId?: string | null
   emailAddress?:	string | null
-  loanOfficer: boolean
-  organisationalRoleType?: number | null
   active: boolean
   joiningDate?:	string | null 
-  office:	Office
-  organisationalRoleParentStaff ?:	string
   }
 
 interface Office {

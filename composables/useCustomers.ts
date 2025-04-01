@@ -10,15 +10,16 @@ export const useCustomers = () => {
   const pageNumbers = ref<number>(pageNumber);
   const pageSizes = ref<number>(pageSize);
 
-  const getCustomers: () => Promise<any> = async () => {
+  const getCustomers: (page?: number,
+    size?: number) => Promise<any> = async (page, size) => {
     try {
       const { data, pending, error, status } = await useFetch<Customer[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/list?page=${pageNumbers.value}&size=${pageSizes.value}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/list?page=${page}&size=${size}`,
         {
-              params: {
-                page: pageNumbers.value,
-                size: pageSizes.value,
-              },
+              // params: {
+              //   page: pageNumbers.value,
+              //   size: pageSizes.value,
+              // },
               method: "GET",
               headers: {
           Authorization: `Bearer ${store.accessToken}`,
