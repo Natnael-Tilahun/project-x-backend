@@ -14,16 +14,16 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Office } from "~/types";
 import { dateFormatter } from "~/lib/utils";
 const route = useRoute();
-const { getOfficeById, updateOffice, isLoading, isSubmitting } =
+const { getOfficeById, updateOffice, isLoading, isSubmitting, getOffices } =
   useOffice();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
 const merchantId = ref<string>("");
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
-
 const isError = ref(false);
 const data = ref<Office>();
+const offices = ref<Office[]>([]);
 
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
@@ -45,6 +45,8 @@ try {
     "office.value data: ",
   data.value
   );
+  offices.value = await getOffices();
+  console.log("Offices: ", offices.value);
   form.setValues(
     {...data.value,
   openingDate: data.value.openingDate
@@ -63,7 +65,13 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     submitting.value = true;
     isSubmitting.value = true;
-    data.value = await updateOffice(values.id, values); // Call your API function to fetch profile
+    const newValues = {
+      ...values,
+      openingDate: new Date().toISOString(),
+      parent: values.parent
+    }
+    console.log("newValues: ", newValues);
+    data.value = await updateOffice(values.id, newValues); // Call your API function to fetch profile
     navigateTo(`/offices/${data.value.id}`);
     console.log("New office data; ", data.value);
     toast({
@@ -78,6 +86,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = false;
   }
 });
+
 </script>
 
 <template>
@@ -94,6 +103,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormControl>
                 <UiInput
                   type="text"
+                  disabled
                   placeholder="Enter office Id"
                   v-bind="componentField"
                 />
@@ -205,16 +215,24 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="parent">
-            <FormItem>
+
+          <FormField v-slot="{ componentField }" name="parent.id">
+            <FormItem class="w-full">
               <FormLabel> Parent </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="text"
-                  placeholder="Enter parent"
-                  v-bind="componentField"
-                />
-              </FormControl>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue placeholder="Select a parent office" />
+                  </UiSelectTrigger>
+                </FormControl>
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem v-for="item in offices" :value="item.id">
+                      {{ item.name }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
               <FormMessage />
             </FormItem>
           </FormField>

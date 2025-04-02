@@ -32,6 +32,7 @@ export const columns: ColumnDef<Staff>[] = [
       const staffId = row.original.id;
       const route = useRoute();
       const firstname = row.getValue("firstname");
+      const lastname = row.original.lastname;
       return firstname
         ? h(
             NuxtLink,
@@ -40,7 +41,7 @@ export const columns: ColumnDef<Staff>[] = [
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `${route.path}/${staffId}`,
             },
-            row.getValue("firstname") + " " + row.getValue("lastname")
+            row.getValue("firstname") + " " + lastname
           )
         : h("p", "-");
     },
@@ -80,44 +81,11 @@ export const columns: ColumnDef<Staff>[] = [
     },
   },
   {
-    accessorKey: "externalId",
-    header: "External Id",
-    cell: ({ row }) => {
-      const externalId = row.getValue("externalId");
-      return externalId ? h("p", externalId) : h("p", "-");
-    },
-  },
-  {
     accessorKey: "emailAddress",
     header: "Email Address",
     cell: ({ row }) => {
       const emailAddress = row.getValue("emailAddress");
       return emailAddress ? h("p", emailAddress) : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "loanOfficer",
-    header: "Loan Officer",
-    cell: ({ row }) => {
-      const loanOfficer = row.getValue("loanOfficer");
-      return loanOfficer ? h("p", loanOfficer) : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "organisationalRoleType",
-    header: "Organisational Role Type",
-    cell: ({ row }) => {
-      const organisationalRoleType = row.getValue("organisationalRoleType");
-      return organisationalRoleType
-        ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            row.getValue("organisationalRoleType")
-          )
-        : h("p", "-");
     },
   },
   {
@@ -147,43 +115,28 @@ export const columns: ColumnDef<Staff>[] = [
             "div",
             {
               class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+                "whitespace-nowrap truncate hover:w-full font-medium",
             },
-            row.getValue("joiningDate")
+            new Date(row.getValue("joiningDate")).toDateString()
           )
         : h("p", "-");
     },
   },
   {
-    accessorKey: "office",
-    header: "Office",
+    accessorKey: "user",
+    header: "User",
     cell: ({ row }) => {
-      const office = row.getValue("office")?.name
-      return office
+      const userId = row.original.user?.id;
+      const route = useRoute();
+      return userId
         ? h(
-            "div",
+            NuxtLink,
             {
               class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `${route.path}/${staffId}`,
             },
-            row.getValue("office")?.name
-          )
-        : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "organisationalRoleParentStaff",
-    header: "Organisational Role Parent Staff",
-    cell: ({ row }) => {
-      const organisationalRoleParentStaff = row.getValue("organisationalRoleParentStaff");
-      return organisationalRoleParentStaff
-        ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            row.getValue("organisationalRoleParentStaff")?.firstname + " " + row.getValue("organisationalRoleParentStaff")?.lastname
+            row.getValue("user")?.phone
           )
         : h("p", "-");
     },

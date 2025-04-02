@@ -1,28 +1,29 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/contracts/Users/columns";
+import { columns } from "~/components/staffAssignments/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import { getIdFromPath } from "~/lib/utils";
-import type { ContractCoreCustomer, Contract, ContractUser } from "~/types";
+import type { StaffAssignment } from "~/types";
 
-const { getContractUserById, getContractUserByContractId, isLoading } = useContractsUsers();
+const { getStaffAssignments, getStaffAssignmentById, isLoading } = useStaffAssignments();
 const loading = ref(isLoading.value);
 const isError = ref(false);
-const data = ref<ContractUser[]>([]);
+const data = ref<StaffAssignment[]>([]);
 const keyword = ref<string>("");
-const route = useRoute();
-const contractId = ref<string>("");
-contractId.value = getIdFromPath();
 
 const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    const contracts = await getContractUserByContractId(contractId.value);
-    data.value = contracts;
-    console.log(data.value);
+    const staffAssignments = await getStaffAssignments(0, 100000000);
+    // Sort integrations by name alphabetically
+    data.value = staffAssignments.sort((a:StaffAssignment, b:StaffAssignment) => {
+      if (a?.staff?.firstname && b?.staff?.firstname) {
+        return a?.staff?.firstname.toLowerCase().localeCompare(b?.staff?.firstname.toLowerCase());
+      }
+      return 0; // Return 0 if either firstname is missing
+    });
   } catch (err: any) {
-    console.error("Error fetching contract users:", err);
+    console.error("Error fetching staff assignments:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
@@ -34,7 +35,7 @@ const refetch = async () => {
   await fetchData();
 };
 
-await useAsyncData("contractUsersData", async () => {
+await useAsyncData("staffsData", async () => {
   await fetchData();
 });
 
@@ -42,9 +43,9 @@ const searchHandler = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    data.value[0] = await getContractUserById(keyword.value); // Call your API function to fetch roles
+    data.value[0] = await getStaffAssignmentById(keyword.value); // Call your API function to fetch roles
   } catch (err: any) {
-    console.error("Error fetching contract users:", err);
+    console.error("Error fetching staff assignments:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
@@ -62,27 +63,19 @@ const searchHandler = async () => {
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <!-- <NuxtLink to="/contracts/newCoreCustomer" class="w-fit self-end"> -->
-      <UiButton   
-      @click="
-            navigateTo({
-              path: route.path,
-              query: {
-                activeTab: 'newUser',
-              },
-            })"
-             class="w-fit self-end px-5"
-          ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
-          Contract User</UiButton
+    <NuxtLink to="/staffAssignments/new" class="w-fit self-end">
+      <UiButton class="w-fit self-end px-5"
+        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
+        Staff</UiButton
       >
-    <!-- </NuxtLink> -->
+    </NuxtLink>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <!-- <CustomersDataTableSearchbar :table="table" /> -->
         <div class="flex items-center gap-4">
           <UiInput
             type="search"
-            placeholder="Search by phone number or email"
+            placeholder="Search by staff id"
             class="md:w-[100px] lg:w-[300px]"
             v-model="keyword"
           />

@@ -300,6 +300,7 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
                   <ContractsCoreCustomersPermissions
                     :contractCoreCustomerProps="data"
                     :permissionsData="permissionsData"
+                    @refresh="refetch"
                   />
                 </UiSheetContent>
               </UiSheet>

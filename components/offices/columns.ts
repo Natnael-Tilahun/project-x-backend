@@ -130,9 +130,9 @@ export const columns: ColumnDef<Office>[] = [
             "div",
             {
               class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+                "whitespace-nowrap truncate hover:w-full font-medium",
             },
-            new Date(row.getValue("openingDate")).toLocaleDateString()
+            new Date(row.getValue("openingDate")).toDateString()
           )
         : h("p", "-");
     },
@@ -149,7 +149,7 @@ export const columns: ColumnDef<Office>[] = [
               class:
                 "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
             },
-            row.getValue("parent")
+            row.getValue("parent")?.name
           )
         : h("p", "-");
     },

@@ -39,6 +39,8 @@ const props = defineProps<{
   permissionsData?: Permission[];
 }>();
 
+const emit = defineEmits(["refresh"]);
+
 if (props?.contractCoreCustomerProps) {
   data.value = props?.contractCoreCustomerProps;
   selectedPermissions.value = data.value?.permissions || [];
@@ -69,6 +71,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       title: "Contract Core Customer Permissions Updated",
       description: "Contract Core Customer Permissions updated successfully",
     });
+    emit("refresh");
   } catch (err: any) {
     console.error("Error updating contract core customer permissions:", err);
     isError.value = true;

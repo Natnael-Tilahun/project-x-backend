@@ -26,13 +26,18 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     isLoading.value = true;
     console.log("values: ", values);
-    data.value = await createNewStaff(values); // Call your API function to fetch profile
-    navigateTo(`/staffs/${data.value.id}`);
+    const newValues = {
+      ...values,
+      joiningDate: new Date().toISOString(),
+    }
+    const response = await createNewStaff(newValues); // Call your API function to fetch profile
+    data.value = response
     console.log("New staff data; ", data.value);
     toast({
       title: "Staff Created",
       description: "Staff created successfully",
     });
+    navigateTo(`/staffs`);
   } catch (err: any) {
     console.error("Error creating new staff:", err.message);
     isError.value = true;
@@ -62,7 +67,7 @@ onBeforeUnmount(() => {
       <div value="roleDetails" class="text-sm md:text-base p-6 basis-full">
         <form @submit="onSubmit">
           <div class="grid grid-cols-2 gap-6">
-            <FormField v-slot="{ componentField }" name="firstName">
+            <FormField v-slot="{ componentField }" name="firstname">
               <FormItem>
                 <FormLabel>First Name </FormLabel>
                 <FormControl>
@@ -75,7 +80,7 @@ onBeforeUnmount(() => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="lastName">
+            <FormField v-slot="{ componentField }" name="lastname">
               <FormItem>
                 <FormLabel>Last Name </FormLabel>
                 <FormControl>

@@ -86,6 +86,43 @@ export const useContractsUsers = () => {
     }
   };
 
+  const getContractUserByContractId: (contractId: string) => Promise<ContractUser[]> = async (contractId) => {
+    try {
+      const { data, pending, error, status } = await useFetch<ContractUser[]>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contracts/${contractId}/contract-users`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No contract user with this id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
   const createNewContractUser: (
     contractUserData: any
   ) => Promise<ContractUser> = async (contractUserData) => {
@@ -286,6 +323,7 @@ export const useContractsUsers = () => {
     isLoading,
     getContractUsers,
     getContractUserById,
+    getContractUserByContractId,
     createNewContractUser,
     deleteContractUser,
     updateContractUser,

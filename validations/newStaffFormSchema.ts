@@ -4,8 +4,8 @@ import { z } from "zod";
 export const newStaffFormSchema = toTypedSchema(
   z.object({
     id: z.string().optional(),
-    firstName: z.string().nullable(),
-    lastName: z.string().nullable(),
+    firstname: z.string().nullable(),
+    lastname: z.string().nullable(),
     displayName: z.string().optional().nullable(),
     mobileNo: z.string(),
     emailAddress: z.string().optional().nullable(),

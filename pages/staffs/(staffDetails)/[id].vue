@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const openItems = ref(["item-1"]);
+const openItems = ref("staffDetails");
 
 import { useForm } from "vee-validate";
 import { ref } from "vue";
@@ -39,7 +39,33 @@ const form = useForm({
   validationSchema: newStaffFormSchema,
 });
 
-try {
+
+const onSubmit = form.handleSubmit(async (values: any) => {
+  try {
+    submitting.value = true;
+    isSubmitting.value = true;
+    const newValues = {
+      ...values,
+      joiningDate: new Date().toISOString()
+    }
+    data.value = await updateStaff(values.id, newValues); // Call your API function to fetch profile
+    navigateTo(`/staffs/${data.value.id}`);
+    console.log("New staff data; ", data.value);
+    toast({
+      title: "Staff Created",
+      description: "Staff created successfully",
+    });
+  } catch (err: any) {
+    console.error("Error creating new staff:", err);
+    isError.value = true;
+  } finally {
+    isSubmitting.value = false;
+    submitting.value = false;
+  }
+});
+
+const fetchStaffData = async () => {
+  try {
   isLoading.value = true;
   loading.value = true;
   data.value = await getStaffById(merchantId.value);
@@ -57,26 +83,24 @@ try {
   isLoading.value = false;
   loading.value = false;
 }
+}
 
-const onSubmit = form.handleSubmit(async (values: any) => {
-  try {
-    submitting.value = true;
-    isSubmitting.value = true;
-    data.value = await updateStaff(values.id, values); // Call your API function to fetch profile
-    navigateTo(`/staffs/${data.value.id}`);
-    console.log("New staff data; ", data.value);
-    toast({
-      title: "Staff Created",
-      description: "Staff created successfully",
-    });
-  } catch (err: any) {
-    console.error("Error creating new staff:", err);
-    isError.value = true;
-  } finally {
-    isSubmitting.value = false;
-    submitting.value = false;
+onMounted(() => {
+  fetchStaffData();
+})
+
+// Watch for changes in the route's query parameters
+watch(
+  () => route.query.activeTab,
+  (newActiveTab) => {
+    if (newActiveTab) {
+      openItems.value = newActiveTab as string; // Update the active tab when the query param
+    if (newActiveTab == "staffDetails" || newActiveTab == "staffAssignments" ) {
+      fetchStaffData();
+    }
   }
-});
+  }
+);
 
 </script>
 
@@ -85,7 +109,48 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     <div v-if="loading" class="py-10 flex justify-center w-full">
       <UiLoading />
     </div>
-    <UiCard v-else-if="data && !isError" class="w-full p-6">
+    <UiTabs
+      v-else-if="data && !isError"
+      v-model="openItems"
+      class="w-full space-y-0"
+    >
+      <UiTabsList
+        class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
+      >
+        <UiTabsTrigger
+          value="staffDetails"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'staffDetails',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Staff Details
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="Staff Assignments"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'staffAssignments',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Staff Assignments
+        </UiTabsTrigger>
+      </UiTabsList>
+      <UiTabsContent
+        value="staffDetails"
+        class="text-base bg-background rounded-lg"
+      >
+    <UiCard class="w-full p-6">
       <form @submit="onSubmit">
         <div class="grid grid-cols-2 gap-6">
           <FormField v-slot="{ componentField }" name="id">
@@ -94,6 +159,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormControl>
                 <UiInput
                   type="text"
+                  disabled
                   placeholder="Enter staff Id"
                   v-bind="componentField"
                 />
@@ -101,7 +167,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="firstName">
+          <FormField v-slot="{ componentField }" name="firstname">
             <FormItem>
               <FormLabel>First Name </FormLabel>
               <FormControl>
@@ -114,7 +180,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="lastName">
+          <FormField v-slot="{ componentField }" name="lastname">
             <FormItem>
               <FormLabel>Last Name </FormLabel>
               <FormControl>
@@ -171,7 +237,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormLabel> Joining Date </FormLabel>
               <FormControl>
                 <UiInput
-                  type="text"
+                  type="date"
                   placeholder="Enter joining date"
                   v-bind="componentField"
                 />
@@ -211,6 +277,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         </div>
       </form>
     </UiCard>
+    </UiTabsContent>
+    </UiTabs>
     <div v-else-if="data == null || data == undefined">
       <UiNoResultFound title="Sorry, No staff found." />
     </div>

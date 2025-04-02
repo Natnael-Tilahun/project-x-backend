@@ -17,6 +17,7 @@ const isError = ref(false);
 const data = ref<Office>();
 const isSubmitting = ref(false);
 const loading = ref(false);
+const offices = ref<Office[]>([]);
 
 const form = useForm({
   validationSchema: newOfficeFormSchema,
@@ -27,8 +28,12 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     isLoading.value = true;
     console.log("values: ", values);
-    data.value = await createNewOffice(values); // Call your API function to fetch profile
-    navigateTo(`/offices/${data.value.id}`);
+    const newValues = {
+      ...values,
+      openingDate: new Date().toISOString(),
+    };
+    data.value = await createNewOffice(newValues); // Call your API function to fetch profile
+    navigateTo(`/offices`);
     console.log("New office data; ", data.value);
     toast({
       title: "Office Created",
@@ -48,6 +53,30 @@ onBeforeUnmount(() => {
   data.value = undefined;
   isSubmitting.value = false;
 });
+
+const fetchOfficesData = async () => {
+  try {
+    loading.value = true;
+
+    offices.value = await getOffices();
+
+    console.log("Offices: ", offices.value);
+  } catch (err) {
+    console.error("Error fetching offices:", err);
+
+    isError.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(async () => {
+  await fetchOfficesData();
+});
+
+const refetch = async () => {
+  await fetchOfficesData();
+};
 </script>
 
 <template>
@@ -55,7 +84,8 @@ onBeforeUnmount(() => {
     <div class="">
       <h1 class="md:text-2xl text-lg font-medium">Create New Office</h1>
       <p class="text-sm text-muted-foreground">
-        Create new staff by including Name, code, state, origanizational region, distric name and opening date.
+        Create new staff by including Name, code, state, origanizational region,
+        distric name and opening date.
       </p>
     </div>
 
@@ -167,19 +197,27 @@ onBeforeUnmount(() => {
                 <FormMessage />
               </FormItem>
             </FormField>
+
             <FormField v-slot="{ componentField }" name="parent">
-              <FormItem>
-                <FormLabel>Parent</FormLabel>
+            <FormItem class="w-full">
+              <FormLabel> Parent </FormLabel>
+              <UiSelect v-bind="componentField">
                 <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter parent"
-                    v-bind="componentField"
-                  />
+                  <UiSelectTrigger>
+                    <UiSelectValue placeholder="Select a parent office" />
+                  </UiSelectTrigger>
                 </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem v-for="item in offices" :value="item.id">
+                      {{ item.name }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+              <FormMessage />
+            </FormItem>
+          </FormField>
 
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton

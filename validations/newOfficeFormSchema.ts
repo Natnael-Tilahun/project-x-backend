@@ -12,6 +12,6 @@ export const newOfficeFormSchema = toTypedSchema(
     description: z.string().nullable().optional(),
     hierarchy: z.string().nullable().optional(),
     openingDate: z.union([z.string(), z.date()]),
-    parent: z.string().nullable().optional()
+    parent: z.any().nullable().optional()
   })
 );
