@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { buttonVariants } from "~/components/ui/button";
 import { cn } from "@/lib/utils";
-import LoginForm from "~/components/login/LoginForm.vue";
-
+import SetNewPasswordForm from "~/components/login/SetNewPasswordForm.vue";
 // Page Meta Configuration
 definePageMeta({
   layout: false,
@@ -39,12 +38,12 @@ definePageMeta({
         class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]"
       >
         <div class="flex flex-col space-y-2 text-center">
-          <h1 class="text-2xl font-semibold tracking-tight">Login</h1>
+          <h1 class="text-2xl font-semibold tracking-tight">Activate New User</h1>
           <!-- <p class="text-sm text-muted-foreground">
             Enter your email(username) and password below to login
           </p> -->
         </div>
-        <LoginForm />
+        <SetNewPasswordForm />
         <!-- <p class="px-8 text-center text-sm text-muted-foreground">
           By clicking continue, you agree to our
           <a
