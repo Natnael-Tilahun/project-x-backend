@@ -135,6 +135,17 @@ const mainLinks = [
       // { title: "Permissions", link: "/permissions" },
     ],
   },
+  {
+    title: "Staff Management",
+    icon: "material-symbols:groups",
+    size: "22",
+    showDropdown: false,
+    dropdown: [
+      { title: "Staffs", link: "/staffs" },
+      { title: "Offices", link: "/offices" },
+      { title: "Staff Assignments", link: "/staffAssignments" },
+    ],
+  },
   // {
   //   title: "Employee Management",
   //   icon: "solar:user-bold",

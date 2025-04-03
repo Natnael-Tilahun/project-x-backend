@@ -57,6 +57,11 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     });
   } catch (err: any) {
     console.error("Error creating new contract:", err.message);
+    toast({
+      title: "Error creating new contract core customer",
+      description: err.message,
+      variant: "destructive",
+    });
     isError.value = true;
   } finally {
     isLoading.value = false;

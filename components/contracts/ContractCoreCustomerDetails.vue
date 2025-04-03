@@ -291,7 +291,7 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
                     type="button"
                     class="font-medium cursor-pointer w-full"
                   >
-                    Permissions
+                    Contract Core Customer Permissions
                   </UiButton>
                 </UiSheetTrigger>
                 <UiSheetContent
@@ -300,6 +300,7 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
                   <ContractsCoreCustomersPermissions
                     :contractCoreCustomerProps="data"
                     :permissionsData="permissionsData"
+                    @refresh="refetch"
                   />
                 </UiSheetContent>
               </UiSheet>
@@ -346,7 +347,7 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
             "
             class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
           >
-            Accounts
+            Contract Accounts
           </UiTabsTrigger>
         </UiTabsList>
 

@@ -5,7 +5,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { getIdFromPath } from "~/lib/utils";
 import type { ContractCoreCustomer, Contract, ContractUser } from "~/types";
 
-const { getContractUsers, getContractUserById, isLoading } = useContractsUsers();
+const { getContractUserById, getContractUserByContractId, isLoading } = useContractsUsers();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<ContractUser[]>([]);
@@ -18,7 +18,7 @@ const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    const contracts = await getContractUsers(0, 100000000);
+    const contracts = await getContractUserByContractId(contractId.value);
     data.value = contracts;
     console.log(data.value);
   } catch (err: any) {

@@ -186,15 +186,16 @@ export const columns: ColumnDef<ServiceDefinition>[] = [
     accessorKey: "service",
     header: "Service",
     cell: ({ row }) => {
-      const service = row.getValue("service")?.serviceName;
+      const service = row.getValue("service")?.id;
       return service
         ? h(
-            "div",
+            NuxtLink,
             {
               class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `/bankingServices/${service}`,
             },
-            row.getValue("service")?.serviceName
+            row.getValue("service")?.id
           )
         : h("p", "-");
     },

@@ -5,6 +5,22 @@ export enum PaymentIntegrationType {
   NONE = "NONE",
 }
 
+export enum PaymentCategory {
+  WALLET_TRANSFER = "Wallet Transfer",
+  BILL_PAYMENT = "Bill Payment",
+  TICKET_PAYMENT = "Ticket Payment",
+  SUBSCRIPTION_PAYMENT = "Subscription Payment",
+  FUNDRAISER_DONATION = "Fundraiser/Donation",
+  TOP_UP = "Top-Up (Airtime & Data Recharge)",
+  MERCHANT_PAYMENT = "Merchant Payment",
+  BANK_TRANSFER = "Bank Transfer",
+  GOVERNMENT_PAYMENT = "Government Payments",
+  E_COMMERCE_PAYMENT = "E-commerce Payment",
+  P2P_PAYMENT = "Peer-to-Peer (P2P) Payments",
+  CREDIT_DEBIT_CARD_PAYMENT = "Credit/Debit Card Payments",
+  OTHER = "other",
+}
+
 export enum TransactionAmountType {
   PREDEFINED = "PREDEFINED",
   USER_DEFINED = "USER_DEFINED",

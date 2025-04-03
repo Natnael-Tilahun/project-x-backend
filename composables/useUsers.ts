@@ -557,6 +557,86 @@ export const useUsers = () => {
     }
   };
 
+  const suspendDevicesByDeviceId: (
+    userId: string,
+    deviceId: string
+  ) => Promise<User> = async (userId, deviceId) => {
+    try {
+      const { data, pending, error, status } = await useFetch<User>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/users/${userId}/devices/${deviceId}/suspend`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No device with this user id and device id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
+  const restoreDevicesByDeviceId: (
+    userId: string,
+    deviceId: string
+  ) => Promise<User> = async (userId, deviceId) => {
+    try {
+      const { data, pending, error, status } = await useFetch<User>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/users/${userId}/devices/${deviceId}/restore`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No device with this user id and device id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
   return {
     isLoading,
     getUsers,
@@ -573,6 +653,8 @@ export const useUsers = () => {
     searchUsers,
     getUserDevices,
     getUserDevicesByDeviceId,
+    suspendDevicesByDeviceId,
+    restoreDevicesByDeviceId,
   };
 };
 

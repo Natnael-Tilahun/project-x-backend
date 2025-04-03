@@ -78,7 +78,7 @@ const fetchData = async () => {
   try {
   isLoading.value = true;
   loading.value = true;
-  permissionsData.value = await getPermissions();
+  permissionsData.value = await getPermissions(0,100000);
   console.log("permissionsData.value: ", permissionsData.value);
 } catch (err) {
   console.error("Error fetching permissions:", err);

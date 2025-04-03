@@ -23,7 +23,7 @@ const loading = ref(false);
 const submitting = ref(false);
 const serviceDefinitionRolesData = ref<ServiceDefinitionRole[]>([]);
 const isError = ref(false);
-const data = ref<ContractUser>();
+const data = ref<ContractUser>({});
 
 const props = defineProps<{
   id: string;
@@ -112,7 +112,7 @@ watch(
       <UiLoading />
     </div>
 
-    <div v-if="data" class="w-full border-0 flex flex-col gap-4">
+    <div v-if="data && !loading" class="w-full border-0 flex flex-col gap-4">
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Update Cotract User</UiAlertDialogTitle>
       </UiAlertDialogHeader>
@@ -215,7 +215,7 @@ watch(
         </div>
       </form>
     </div>
-    <div v-else-if="data == null || data == undefined">
+    <div v-else-if="!loading || data == null || data == undefined">
       <UiNoResultFound title="Sorry, No contract found." />
     </div>
     <div v-else-if="isError">

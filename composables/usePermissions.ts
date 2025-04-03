@@ -13,7 +13,8 @@ export const usePermissions = () => {
   const pageNumbers = ref<number>(pageNumber);
   const pageSizes = ref<number>(pageSize);
 
-  const getPermissions: () => Promise<any> = async () => {
+  const getPermissions: (    page?: number,
+    size?: number) => Promise<any> = async (page, size) => {
     try {
       // const { data, pending, error, status } = await useFetch<any>(
       //   `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/permissions`,
@@ -35,8 +36,8 @@ export const usePermissions = () => {
         () => $fetch(`${runtimeConfig.public.API_BASE_URL}/api/v1/internal/permissions`,
           {
             params: {
-              page: pageNumbers.value,
-              size: pageSizes.value
+              page: page,
+              size: size
             },
             method: "GET",
             headers: {

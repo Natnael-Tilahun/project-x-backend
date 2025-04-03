@@ -2,7 +2,6 @@
 const openItems = ref(["item-1"]);
 import { toast } from "~/components/ui/toast";
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/contracts/Accounts/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { getIdFromPath } from "~/lib/utils";
 import type { ContractAccount, Contract, Account } from "~/types";
@@ -14,36 +13,55 @@ import {
   FormControl,
   FormMessage,
 } from "~/components/ui/form";
+import PermissionsDialog from "~/components/contracts/Users/PermissionsDialog.vue";
 
 const {
-  getContractCoreCustomerAccounts,
   updateContractCoreCustomerAccountStatus,
   isLoading: isLoadingContractCoreCustomerAccount,
 } = useContractsCoreCustomersAccount();
+
 const {
   createNewContractAccount,
   isLoading: isLoadingCreateNewContractAccount,
   isSubmitting,
 } = useContractsCoreCustomers();
+
+const { addUserAccounts, isLoading: isLoadingAddUserAccounts } =
+  useContractsUsers();
+
+const { updateUserAccountStatus } = useUserAccounts();
+
 const route = useRoute();
 const contractId = ref<string>("");
 contractId.value = getIdFromPath();
 
-const { getCoreAccountsByCustomerId, isLoading } = useCustomers();
+const { getUserAccountByContractUserId, isLoading: isLoadingUserAccounts } =
+  useUserAccounts();
+const { getContractCoreCustomers, isLoading: isLoadingContractCoreCustomers } =
+  useContractsCoreCustomers();
 
-const loading = ref(isLoading.value);
+const loading = ref(false);
 const isError = ref(false);
 const accountsData = ref<any>();
-const coreCustomerId = ref<string>();
-const contractCoreCustomerId = ref<any>();
-const selectedAccounts = ref<Account[]>([]);
-const selectedContractAccount = ref<ContractAccount[]>([]);
-const coreCustomerPermissions = ref<any>();
-
+const contractAccountsData = ref<
+  { customerId: string; contractAccounts: ContractAccount[] }[]
+>([]);
+const selectedAccounts = ref<
+  {
+    accountId: string;
+    contractAccountId: string;
+    userAccountId?: string;
+    enable?: boolean;
+  }[]
+>([]);
 const props = defineProps<{
-    userId?: string;
-    contractUserId?: string;
+  userId?: string;
+  contractUserId?: string;
+  contract?: any;
 }>();
+
+const userAccountPermissions = ref<{ [userAccountId: string]: string[] }>({});
+
 const emit = defineEmits(["refresh"]);
 const refetch = async () => {
   await emit("refresh");
@@ -59,78 +77,102 @@ const displayApiDataOnLabel = (data: any) => {
   if (data == true) {
     return "true";
   }
-  return data; // Default case if customerActivated is undefined or any other value
+  return data;
 };
 
-const searchCoreAccountsByCustomerIdHandler = async () => {
+const getUserAccountByContractUserIdHandler = async () => {
   try {
     loading.value = true;
-    if (coreCustomerId.value) {
-      const response = await getCoreAccountsByCustomerId(coreCustomerId.value); // Call your API function to fetch roles
-      accountsData.value = response;
+    if (props.contractUserId) {
+      const response = await getUserAccountByContractUserId(
+        props.contractUserId || ""
+      );
+
+      // Map the contract accounts and store their user account IDs
+      const userAccounts = response || [];
+
+      // Create a mapping of contract account IDs to user account IDs
+      selectedAccounts.value = userAccounts.map((userAccount: any) => ({
+        accountId: userAccount.account?.id || "",
+        contractAccountId:
+          userAccount.contractAccountId || userAccount.account?.id,
+        userAccountId: userAccount.id, // Use the user account ID
+        enable: userAccount.enable,
+      }));
+
+      // Reset permissions store to avoid stale data
+      userAccountPermissions.value = {};
+
+      // Initialize permissions for existing user accounts (using codes)
+      userAccounts.forEach((userAccount: any) => {
+        if (userAccount.id && userAccount.permissions) {
+          // Make sure we're using the 'code' property from each permission
+          userAccountPermissions.value[userAccount.id] = userAccount.permissions
+            .filter((p: any) => p.code) // Only include permissions with a code
+            .map((p: any) => p.code);
+        }
+      });
+
+      // Filter available accounts to exclude those already selected
       accountsData.value = accountsData.value.filter(
         (acc: Account) =>
           !selectedAccounts.value.some(
-            (selectedAcc) => selectedAcc.accountNumber === acc.accountNumber
+            (selectedAcc) => selectedAcc.accountId === acc.id
           )
       );
     } else {
       return true;
     }
   } catch (err: any) {
-    console.error("Error fetching accounts:", err);
-    toast({
-      title: "Uh oh! Something went wrong.",
-      description: `${
-        err.message == "404 NOT_FOUND" ? "Account not found." : err.message
-      }`,
-      variant: "destructive",
+    console.error("Error fetching contract user accounts:", err);
+    isError.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
+
+const fetchContractCoreCustomers = async () => {
+  try {
+    loading.value = true;
+    const response = await getContractCoreCustomers(contractId.value);
+
+    // Structure data as customer -> contract accounts
+    contractAccountsData.value = response.map((item: any) => {
+      return {
+        coreCustomerId: item.id,
+        customerId: item.coreCustomerId,
+        contractAccounts:
+          item.coreAccounts?.map((coreAccount: any) => ({
+            id: coreAccount.id,
+            enable: coreAccount.enable,
+            permissions: coreAccount.permissions,
+            account: coreAccount.account,
+          })) || [],
+      };
     });
-    isError.value = true;
-  } finally {
-    loading.value = false;
-  }
-};
 
-const getContractCoreCustomerAccountsByIdHandler = async () => {
-  try {
-    loading.value = true;
-    if (coreCustomerId.value) {
-      const response = await getCoreAccountsByCustomerId(coreCustomerId.value);
-      accountsData.value = response;
-    } else {
-      return true;
+    // Keep accountsData for backward compatibility
+    accountsData.value = contractAccountsData.value;
+
+    // Filter out any selected accounts from contractAccountsData
+    if (selectedAccounts.value.length > 0) {
+      contractAccountsData.value = contractAccountsData.value.map(
+        (customer: any) => {
+          return {
+            ...customer,
+            contractAccounts: customer.contractAccounts.filter(
+              (contractAcc: ContractAccount) =>
+                !selectedAccounts.value.some(
+                  (selectedAcc) =>
+                    selectedAcc.contractAccountId === contractAcc.id
+                )
+            ),
+          };
+        }
+      );
     }
   } catch (err: any) {
-    console.error("Error fetching contract core customers accounts:", err);
-    isError.value = true;
-  } finally {
-    loading.value = false;
-  }
-};
-
-const fetchContractCoreCustomerAccounts = async () => {
-  try {
-    loading.value = true;
-    if (coreCustomerId.value) {
-      const response = await getContractCoreCustomerAccounts(0, 100000000);
-      const contractAccount = response.filter(
-        (item: any) => item.coreCustomer?.id === contractCoreCustomerId.value
-      );
-      selectedContractAccount.value = contractAccount;
-      selectedAccounts.value =
-        contractAccount.map((item: any) => item.account) || [];
-      accountsData.value = accountsData.value.filter(
-        (acc: Account) =>
-          !selectedAccounts.value.some(
-            (selectedAcc) => selectedAcc.accountNumber === acc.accountNumber
-          )
-      );
-    } else {
-      return true;
-    }
-  } catch (err: any) {
-    console.error("Error fetching contract core customers accounts:", err);
+    console.error("Error fetching contract core customers:", err);
     isError.value = true;
   } finally {
     loading.value = false;
@@ -138,69 +180,139 @@ const fetchContractCoreCustomerAccounts = async () => {
 };
 
 onMounted(async () => {
-  await getContractCoreCustomerAccountsByIdHandler();
-  await fetchContractCoreCustomerAccounts();
+  await fetchContractCoreCustomers();
+  await getUserAccountByContractUserIdHandler();
 });
 
-const handleAccountSelect = (account: Account | undefined) => {
+const initializePermissions = (
+  contractAccount: ContractAccount,
+  userAccountId?: string
+) => {
+  if (!contractAccount.id) return;
+
+  // If we have a user account ID, use that for permissions
+  const id = userAccountId || contractAccount.id;
+
+  // Initialize with empty array (no permissions selected initially)
+  userAccountPermissions.value[id] = [];
+};
+
+const getPermissionId = (account: {
+  contractAccountId: string;
+  userAccountId?: string;
+}) => {
+  return account.userAccountId || account.contractAccountId;
+};
+
+const handleAccountSelect = (contractAccount: ContractAccount) => {
+  if (!contractAccount || !contractAccount.id) return;
+
   const index = selectedAccounts.value.findIndex(
-    (a) => a.accountNumber === account?.accountNumber
+    (a) => a.contractAccountId === contractAccount.id
   );
 
   if (index === -1) {
-    selectedAccounts.value.push(account as Account);
+    // Add to selected accounts
+    selectedAccounts.value.push({
+      accountId: contractAccount.account?.id || "",
+      contractAccountId: contractAccount.id,
+      // userAccountId will be assigned when created/fetched
+    });
+
+    // Initialize permissions using contract account ID for now
+    initializePermissions(contractAccount);
   } else {
+    const account = selectedAccounts.value[index];
+    const permissionId = getPermissionId(account);
+
+    // Remove from selected accounts
     selectedAccounts.value.splice(index, 1);
+
+    // Remove permissions for this account
+    if (permissionId in userAccountPermissions.value) {
+      delete userAccountPermissions.value[permissionId];
+    }
   }
 };
 
-const isAccountSelected = (account: Account | undefined) => {
+const isAccountSelected = (contractAccount: ContractAccount) => {
+  if (!contractAccount || !contractAccount.id) return false;
+
   return selectedAccounts.value.some(
-    (a) => a.accountNumber === account?.accountNumber
+    (a) => a.contractAccountId === contractAccount.id
   );
+};
+
+// Get available permissions for a contract account
+const getAvailablePermissions = (contractAccountId: string) => {
+  const contractAccount = contractAccountsData.value
+    .flatMap((customer) => customer.contractAccounts)
+    .find((acc) => acc.id === contractAccountId);
+
+  return contractAccount?.permissions || [];
+};
+
+// Get the selected permissions for an account - handle both new and existing accounts
+const getSelectedPermissions = (id: string) => {
+  if (!id) return [];
+
+  // Ensure we have an entry for this ID
+  if (!userAccountPermissions.value[id]) {
+    userAccountPermissions.value[id] = [];
+  }
+
+  // Create a new array to ensure reactivity
+  return [...userAccountPermissions.value[id]];
 };
 
 const addAccounts = async () => {
   try {
     isSubmitting.value = true;
-    isLoading.value = true;
+    loading.value = true;
+
     const newValues = {
-      coreAccounts: selectedAccounts.value.map((account: Account) => ({
-        accountNumber: account.accountNumber,
-      })),
+      contractAccounts: selectedAccounts.value.map(
+        (account) => account.contractAccountId
+      ),
     };
-    console.log(newValues);
-    const response = await createNewContractAccount(
-      contractCoreCustomerId.value,
+
+    // Make your API call here to add the accounts with permissions
+    const response = await addUserAccounts(
+      props.contractUserId || "",
       newValues
-    ); // Call your API function to fetch profile
-    await getContractCoreCustomerAccountsByIdHandler();
-    await fetchContractCoreCustomerAccounts();
+    );
+    
+    await fetchContractCoreCustomers();
+    await getUserAccountByContractUserIdHandler();
+
+    // Clear selected accounts and permissions after adding
+    selectedAccounts.value = [];
+    userAccountPermissions.value = {};
+
     toast({
-      title: "Contract Core Customer Account Created",
-      description: "Contract Core Customer Account created successfully",
+      title: "User Accounts Added",
+      description: "User accounts with permissions added successfully",
     });
   } catch (err: any) {
-    console.error("Error creating new contract account:", err.message);
+    console.error("Error adding user accounts:", err.message);
     isError.value = true;
   } finally {
-    isLoading.value = false;
+    loading.value = false;
     isSubmitting.value = false;
   }
 };
 
-const updatingContractAccountStatus = async (id: string, status: boolean) => {
+const updatingUserAccountStatus = async (id: string, status: boolean) => {
   try {
     loading.value = true;
     if (id) {
       const value = status ? "enable" : "disable";
-      console.log("value: ", value);  
-      await updateContractCoreCustomerAccountStatus(id, value);
-      await fetchContractCoreCustomerAccounts();
+      await updateUserAccountStatus(id, value);
       toast({
         title: "Contract Account Status Updated.",
         description: "Contract Account staus updated successfully",
       });
+      await refetchPage();
     } else {
       return true;
     }
@@ -211,330 +323,467 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
     loading.value = false;
   }
 };
+
+// Add these new methods for bulk selection
+const handleCustomerSelect = (customer: any) => {
+  if (!customer || !customer.contractAccounts) return;
+
+  // Check if all accounts of this customer are already selected
+  const allSelected = customer.contractAccounts.every(
+    (contractAccount: ContractAccount) => isAccountSelected(contractAccount)
+  );
+
+  if (allSelected) {
+    // If all are selected, deselect all
+    customer.contractAccounts.forEach((contractAccount: ContractAccount) => {
+      const index = selectedAccounts.value.findIndex(
+        (a) => a.contractAccountId === contractAccount.id
+      );
+      if (index !== -1) {
+        selectedAccounts.value.splice(index, 1);
+      }
+    });
+  } else {
+    // Otherwise, select all unselected accounts
+    customer.contractAccounts.forEach((contractAccount: ContractAccount) => {
+      if (!isAccountSelected(contractAccount)) {
+        selectedAccounts.value.push({
+          accountId: contractAccount.account?.id || "",
+          contractAccountId: contractAccount.id || "",
+        });
+      }
+    });
+  }
+};
+
+const getCustomerSelectionState = (customer: any) => {
+  if (
+    !customer ||
+    !customer.contractAccounts ||
+    customer.contractAccounts.length === 0
+  )
+    return false;
+
+  const selectedCount = customer.contractAccounts.filter(
+    (contractAccount: ContractAccount) => isAccountSelected(contractAccount)
+  ).length;
+
+  if (selectedCount === 0) return false;
+  if (selectedCount === customer.contractAccounts.length) return true;
+  return "indeterminate"; // For partially selected state
+};
+
+// Get the selected contract account object by ID
+const getSelectedContractAccount = (contractAccountId: string) => {
+  return contractAccountsData.value
+    .flatMap((customer) => customer.contractAccounts)
+    .find((acc) => acc.id === contractAccountId);
+};
+
+const permissionsDialogOpen = ref(false);
+const currentEditingAccount = ref<{
+  contractAccount: ContractAccount | null;
+  permissionId: string;
+}>({ contractAccount: null, permissionId: "" });
+
+// Open the permissions dialog for a specific account
+const openPermissionsDialog = async (selectedAccount: {
+  contractAccountId: string;
+  userAccountId?: string;
+}) => {
+  const contractAccount = await getSelectedContractAccount(
+    selectedAccount.contractAccountId
+  );
+  if (!contractAccount) {
+    console.error(
+      "Could not find contract account:",
+      selectedAccount.contractAccountId
+    );
+    return;
+  }
+
+  const permissionId = getPermissionId(selectedAccount);
+
+  // Get current permissions for this account (ensure it's initialized)
+  if (!userAccountPermissions.value[permissionId]) {
+    userAccountPermissions.value[permissionId] = [];
+  }
+
+  // Force reactivity by creating a new object reference
+  currentEditingAccount.value = {
+    contractAccount: { ...contractAccount },
+    permissionId,
+  };
+
+  // Delay opening the dialog slightly to ensure data is ready
+  setTimeout(() => {
+    permissionsDialogOpen.value = true;
+  }, 50);
+};
+
+// Update permissions from dialog
+const savePermissions = (data: { id?: string; permissions: string[] }) => {
+  if (!data.id) return;
+
+  // Make sure userAccountPermissions is initialized for this ID
+  if (!userAccountPermissions.value[data.id]) {
+    userAccountPermissions.value[data.id] = [];
+  }
+
+  // Replace the permissions for this ID with the new permissions
+  userAccountPermissions.value[data.id] = [...data.permissions];
+};
+
+const refetchPage = async () => {
+  await fetchContractCoreCustomers();
+  await getUserAccountByContractUserIdHandler();
+}
 </script>
 
 <template>
-    <UiSheet class="flex flex-col gap-6 items-center">
+  <UiSheet class="flex flex-col gap-6 items-center">
     <UiSheetHeader>
-      <UiSheetTitle class="border-b-2"
-        >Contract Account Permissions</UiSheetTitle
-      >
-      <UiSheetDescription class="py-4 space-y-4">
-  <div class="flex flex-col space-y-8">
-    <div class="flex gap-8 items-center">
-      <div class="grid w-full max-w-sm items-center gap-2">
-        <UiLabel for="search" class="font-normal text-muted-foreground"
-          >Find account by customer id</UiLabel
-        >
-        <div class="flex items-center gap-4">
-          <UiInput
-            id="search"
-            type="search"
-            placeholder="Search..."
-            class="md:w-[100px] lg:w-[300px]"
-            v-model="coreCustomerId"
-          />
-          <UiButton
-            :disabled="coreCustomerId == '' || loading"
-            @click="searchCoreAccountsByCustomerIdHandler"
-          >
-            <Icon
-              name="svg-spinners:8-dots-rotate"
-              v-if="loading"
-              class="mr-2 h-4 w-4 animate-spin"
-            ></Icon>
-            Search</UiButton
-          >
-        </div>
-      </div>
-    </div>
-
-    <UiCard
-      class="grid lg:grid-cols-4 gap-4 md:gap-8 w-full p-6"
-      v-if="loading"
-    >
-      <UiSkeleton class="h-16 w-full" />
-      <UiSkeleton class="h-16 w-full" />
-      <UiSkeleton class="h-16 w-full" />
-      <UiSkeleton class="h-16 w-full" />
-      <UiSkeleton class="h-16 w-full" />
-      <UiSkeleton class="h-16 w-full" />
-      <UiSkeleton class="h-16 w-full" />
-      <UiSkeleton class="h-16 w-full" />
-      <UiSkeleton class="h-16 w-full" />
-      <UiSkeleton class="h-16 w-full" />
-      <UiSkeleton class="h-16 w-full" />
-      <UiSkeleton class="h-16 w-full" />
-    </UiCard>
-
-    <UiCard
-      v-if="
-        ((accountsData && accountsData.length > 0) ||
-        selectedContractAccount.length > 0) &&  !loading
-      "
-      class="w-full flex flex-col border-none gap-2"
-    >
-      <!-- <div class="p-6"> -->
       <div class="flex justify-between items-center">
-        <h2 class="text-lg font-semibold">Add Core Customer Accounts</h2>
-        <p class="text-sm text-muted-foreground">
-          {{ selectedAccounts.length }} selected
-        </p>
+        <h2 class="text-lg font-semibold">Add User Accounts</h2>
       </div>
-
-      <UiAccordion type="single" collapsible v-model:value="openItems">
-        <UiAccordionItem
-          v-for="(
-            { account, enable, id, permissions }, index
-          ) in selectedContractAccount"
-          :key="account?.accountNumber"
-          :value="`item-${index + 1}`"
-          class="border rounded-lg mb-4 px-2 data-[state=open]:bg-muted/50"
-        >
-          <div
-            class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors"
+      <UiSheetDescription class="py-4 space-y-4">
+        <div class="flex flex-col space-y-8">
+          <UiCard
+            class="grid lg:grid-cols-4 gap-4 md:gap-8 w-full p-6"
+            v-if="loading"
           >
-            <div class="flex items-center gap-4 w-full">
-              <UiCheckbox
-                :checked="isAccountSelected(account)"
-                @click.stop="handleAccountSelect(account)"
-                class="h-5 w-5"
-              />
-              <!-- <UiAccordionTrigger class="ml-auto hover:no-underline"> -->
-              <div class="flex-1 grid grid-cols-4 gap-4 py-2">
-                <div>
-                  <p class="text-sm text-muted-foreground">Account Number</p>
-                  <p class="font-medium text-sm">
-                    {{ account?.accountNumber }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-sm text-muted-foreground">Account Title</p>
-                  <p class="font-medium text-sm">
-                    {{ account?.accountHolder }}
-                  </p>
-                </div>
-                <FormField
-                  :model-value="enable"
-                  v-slot="{ handleChange }"
-                  name="enable"
+            <UiSkeleton class="h-16 w-full" />
+            <UiSkeleton class="h-16 w-full" />
+            <UiSkeleton class="h-16 w-full" />
+            <UiSkeleton class="h-16 w-full" />
+            <UiSkeleton class="h-16 w-full" />
+            <UiSkeleton class="h-16 w-full" />
+            <UiSkeleton class="h-16 w-full" />
+            <UiSkeleton class="h-16 w-full" />
+            <UiSkeleton class="h-16 w-full" />
+            <UiSkeleton class="h-16 w-full" />
+            <UiSkeleton class="h-16 w-full" />
+            <UiSkeleton class="h-16 w-full" />
+          </UiCard>
+
+          <UiCard
+            v-if="
+              ((accountsData && accountsData.length > 0) ||
+                selectedAccounts.length > 0) &&
+              !loading
+            "
+            class="w-full flex flex-col border-none gap-2"
+          >
+            <UiAccordion type="single" collapsible v-model:value="openItems">
+              <template
+                v-for="(customer, customerIndex) in accountsData"
+                :key="customer.coreCustomerId"
+              >
+                <UiAccordionItem
+                  :value="`customer-${customerIndex}`"
+                  class="border rounded-lg mb-4 data-[state=open]:bg-muted/50"
                 >
-                  <FormItem>
-                    <FormLabel> Enable </FormLabel>
-                    <FormControl>
-                      <UiSwitch
-                        :checked="enable"
-                        @update:checked="
-                          (checked) => {
-                            handleChange;
-                            updatingContractAccountStatus(id || '', checked);
-                          }
+                  <div
+                    class="flex items-center px-4 py-0 hover:bg-muted/50 cursor-pointer transition-colors"
+                  >
+                    <div class="flex items-center gap-4 w-full">
+                      <!-- Add parent checkbox -->
+                      <UiCheckbox
+                        :checked="getCustomerSelectionState(customer) === true"
+                        :indeterminate="
+                          getCustomerSelectionState(customer) ===
+                          'indeterminate'
                         "
+                        @click="handleCustomerSelect(customer)"
+                        class="h-5 w-5 mr-3"
                       />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <div class="flex items-center">
-                  <UiSheet>
-                    <UiSheetTrigger>
-                      <UiButton
-                        size="sm"
-                        class="font-medium cursor-pointer px-2 h-fit py-1"
-                      >
-                        Permissions
-                      </UiButton>
-                    </UiSheetTrigger>
-                    <UiSheetContent
-                      class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+
+                      <div class="flex-1 gap-4 py-0 w-full">
+                        <UiAccordionTrigger class="w-full text-left">
+                          <div class="w-full">
+                            <p class="text-sm text-muted-foreground">
+                              Customer Id
+                            </p>
+                            <p class="font-medium text-sm">
+                              {{ customer.customerId }}
+                            </p>
+                          </div>
+                          <div class="w-full">
+                            <p class="text-sm text-muted-foreground">
+                              Accounts
+                            </p>
+                            <p class="font-medium text-sm">
+                              {{ customer.contractAccounts.length }}
+                            </p>
+                          </div>
+                        </UiAccordionTrigger>
+                      </div>
+                    </div>
+                  </div>
+
+                  <UiAccordionContent class="px-4">
+                    <!-- Loop through all accounts under this customer -->
+                    <div
+                      v-for="contractAccount in customer.contractAccounts"
+                      :key="contractAccount.id"
                     >
-                      <ContractsAccountsPermissions
-                        :contractAccountId="id"
-                        :coreCustomerPermissions="coreCustomerPermissions"
-                        :accountPermissions="permissions"
-                        :contractId="contractId"
-                        @refresh="refetch"
-                      />
-                    </UiSheetContent>
-                  </UiSheet>
-                </div>
-              </div>
-              <UiAccordionTrigger />
-            </div>
-          </div>
+                      <!-- Different UI for selected vs unselected accounts -->
+                      <div
+                        v-if="isAccountSelected(contractAccount)"
+                        class="border rounded-lg mb-4 overflow-hidden"
+                      >
+                        <!-- Selected Account UI (similar to previous selected accounts section) -->
+                        <div
+                          class="bg-muted/30 px-6 py-3 flex justify-between items-center"
+                        >
+                        <UiCheckbox
+                              :checked="true"
+                              @click="handleAccountSelect(contractAccount)"
+                              class="h-5 w-5 mr-8"
+                            />
+                          <div
+                            class="grid grid-cols-1 md:grid-cols-5 gap-4 flex-1"
+                          >
+                            <div class=" w-full">
+                              <p class="text-sm text-muted-foreground">
+                                Account Number
+                              </p>
+                              <p class="font-medium">
+                                {{ contractAccount.account?.accountNumber }}
+                              </p>
+                            </div>
+                            <div class=" w-full">
+                              <p class="text-sm text-muted-foreground">
+                                Account Holder
+                              </p>
+                              <p class="font-medium">
+                                {{
+                                  displayApiDataOnLabel(
+                                    contractAccount.account?.accountHolder
+                                  )
+                                }}
+                              </p>
+                            </div>
+                            <div class=" w-full">
+                              <p class="text-sm text-muted-foreground">
+                                Account Category
+                              </p>
+                              <p class="font-medium">
+                                {{
+                                  displayApiDataOnLabel(
+                                    contractAccount.account?.accountCategory?.description
+                                  )
+                                }}
+                              </p>
+                            </div>
+                            <div class="flex w-full col-span-2 justify-between items-start gap-8">
+                            <div class="flex gap-0 justify-center w-full">
+                              <FormField
+                                :model-value="
+                                  selectedAccounts.find(
+                                    (a) =>
+                                      a.contractAccountId === contractAccount.id
+                                  )?.enable
+                                "
+                                v-slot="{ handleChange }"
+                                name="enable"
+                              >
+                                <FormItem>
+                                  <FormLabel> Enable </FormLabel>
+                                  <FormControl>
+                                    <UiSwitch
+                                      :checked="
+                                        selectedAccounts.find(
+                                          (a) =>
+                                            a.contractAccountId ===
+                                            contractAccount.id
+                                        )?.enable
+                                      "
+                                      @update:checked="
+                                        (checked) => {
+                                          handleChange;
+                                          updatingUserAccountStatus(
+                                            selectedAccounts.find(
+                                              (a) =>
+                                                a.contractAccountId ===
+                                                contractAccount.id
+                                            )?.userAccountId || '',
+                                            checked
+                                          );
+                                        }
+                                      "
+                                    />
+                                  </FormControl>
+                                  <FormMessage />
+                                </FormItem>
+                              </FormField>
+                            </div>
+                            <div class="flex gap-2 self-center justify-end items-center w-full">
+                              <!-- Permissions button -->
+                              <UiButton
+                                variant="outline"
+                                size="sm"
+                                @click="
+                                  openPermissionsDialog({
+                                    contractAccountId: contractAccount.id,
+                                    userAccountId: selectedAccounts.find(
+                                      (a) =>
+                                        a.contractAccountId ===
+                                        contractAccount.id
+                                    )?.userAccountId,
+                                  })
+                                "
+                              >
+                                <Icon
+                                  name="lucide:shield"
+                                  class="h-4 w-4 mr-2"
+                                />
+                                Permissions
+                                <span
+                                  v-if="
+                                    getSelectedPermissions(
+                                      getPermissionId({
+                                        contractAccountId: contractAccount.id,
+                                        userAccountId: selectedAccounts.find(
+                                          (a) =>
+                                            a.contractAccountId ===
+                                            contractAccount.id
+                                        )?.userAccountId,
+                                      })
+                                    ).length > 0
+                                  "
+                                  class="ml-2 bg-primary text-primary-foreground rounded-full text-xs px-2"
+                                >
+                                  {{
+                                    getSelectedPermissions(
+                                      getPermissionId({
+                                        contractAccountId: contractAccount.id,
+                                        userAccountId: selectedAccounts.find(
+                                          (a) =>
+                                            a.contractAccountId ===
+                                            contractAccount.id
+                                        )?.userAccountId,
+                                      })
+                                    ).length
+                                  }}
+                                </span>
+                              </UiButton>
 
-          <UiAccordionContent class="px-4 pb-4">
-            <div
-              class="grid grid-cols-2 md:grid-cols-4 gap-4 px-8 py-4 border-t"
-            >
-              <div>
-                <p class="text-sm text-muted-foreground">Customer ID</p>
-                <p class="font-medium">{{ account?.customerId }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Account Category</p>
-                <p class="font-medium">{{ account?.accountCategoryId }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Joint Holder 1</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account?.jointAccountHolder1) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Joint Holder 2</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account?.jointAccountHolder2) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Cleared Balance</p>
-                <p class="font-medium">
-                  {{ account?.onlineClearedBalance }} {{ account?.currency }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Last Updated</p>
-                <p class="font-medium">
-                  {{ new Date(account?.lastUpdated).toLocaleDateString() }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Account Type</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account?.accountType) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Inactive Marker</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account?.inactivMarker) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Posting Restrict Id</p>
-                <p class="font-medium">
-                  {{ account?.postingRestrictId || "-" }}
-                </p>
-              </div>
+                              <!-- Remove button -->
+                              <UiButton
+                                variant="ghost"
+                                size="icon"
+                                @click="handleAccountSelect(contractAccount)"
+                              >
+                                <Icon name="lucide:x" class="h-5 w-5 bg-red-500 text-white rounded-sm" />
+                              </UiButton>
+                            </div>
+                          </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <!-- Regular unselected account UI -->
+                      <div
+                        v-else
+                        class="grid grid-cols-2 md:grid-cols-3 items-start text-center gap-6 w-full px-6 py-4 border-t"
+                      >
+                        <div class="flex items-center w-full">
+                          <UiCheckbox
+                            :checked="false"
+                            @click="handleAccountSelect(contractAccount)"
+                            class="h-5 w-5 mr-8"
+                          />
+                        <div>
+                          <p class="text-sm text-muted-foreground text-left">
+                            Account Number
+                          </p>
+                          <p class="font-medium text-left">
+                            {{ contractAccount.account?.accountNumber }}
+                          </p>
+                        </div>
+                      </div>
+                        <div>
+                          <p class="text-sm text-muted-foreground text-left">
+                            Account Holder
+                          </p>
+                          <p class="font-medium text-left">
+                            {{
+                              displayApiDataOnLabel(
+                                contractAccount.account?.accountHolder
+                              )
+                            }}
+                          </p>
+                        </div>
+                        <div>
+                          <p class="text-sm text-muted-foreground text-left">
+                            Account Category
+                          </p>
+                          <p class="font-medium text-left">
+                            {{
+                              displayApiDataOnLabel(
+                                contractAccount.account?.accountCategory?.description
+                              )
+                            }}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </UiAccordionContent>
+                </UiAccordionItem>
+              </template>
+            </UiAccordion>
+            <div class="flex justify-between items-center">
+              <p class="text-sm text-muted-foreground">
+                {{ selectedAccounts.length }} selected
+              </p>
+              <UiButton
+                @click="addAccounts"
+                type="submit"
+                class="w-fit self-end px-8"
+              >
+                <Icon
+                  name="svg-spinners:8-dots-rotate"
+                  v-if="isSubmitting"
+                  class="mr-2 h-4 w-4 animate-spin"
+                ></Icon>
+                Save User Accounts
+              </UiButton>
             </div>
-          </UiAccordionContent>
-        </UiAccordionItem>
-        <UiAccordionItem
-          v-for="(account, index) in accountsData"
-          :key="account?.accountNumber"
-          :value="`item-${index + 2}`"
-          class="border rounded-lg mb-4 px-2 data-[state=open]:bg-muted/50"
-        >
-          <div
-            class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors"
+          </UiCard>
+
+          <UiCard
+            v-else-if="accountsData && accountsData.length === 0 && !loading"
+            class="w-full p-6 text-center"
           >
-            <div class="flex items-center gap-4 w-full">
-              <UiCheckbox
-                :checked="isAccountSelected(account)"
-                @click.stop="handleAccountSelect(account)"
-                class="h-5 w-5"
-              />
-              <!-- <UiAccordionTrigger class="ml-auto hover:no-underline"> -->
-              <div class="flex-1 grid grid-cols-4 gap-4 py-2">
-                <div>
-                  <p class="text-sm text-muted-foreground">Account Number</p>
-                  <p class="font-medium text-sm">
-                    {{ account?.accountNumber }}
-                  </p>
-                </div>
-                <div>
-                  <p class="text-sm text-muted-foreground">Account Title</p>
-                  <p class="font-medium text-sm">
-                    {{ account?.accountTitle1 }}
-                  </p>
-                </div>
-
-                <div>
-                  <p class="text-sm text-muted-foreground">Opening Date</p>
-                  <p class="font-medium text-sm">
-                    {{
-                      new Date(account?.openingDate || "").toLocaleDateString()
-                    }}
-                  </p>
-                </div>
-              </div>
-              <UiAccordionTrigger />
-            </div>
-          </div>
-
-          <UiAccordionContent class="px-4 pb-4">
-            <div
-              class="grid grid-cols-2 md:grid-cols-4 gap-4 px-8 py-4 border-t"
-            >
-              <div>
-                <p class="text-sm text-muted-foreground">Customer ID</p>
-                <p class="font-medium">{{ account.customerId }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Account Category</p>
-                <p class="font-medium">{{ account.accountCategoryId }}</p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Joint Holder 1</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account.jointAccountHolder1) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Joint Holder 2</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account.jointAccountHolder2) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Cleared Balance</p>
-                <p class="font-medium">
-                  {{ account.onlineClearedBalance }} {{ account.currency }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Last Updated</p>
-                <p class="font-medium">
-                  {{ new Date(account.dateLastUpdate).toLocaleDateString() }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Account Type</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account.accountType) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Inactive Marker</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account.inactivMarker) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Posting Restrict Id</p>
-                <p class="font-medium">
-                  {{ account.postingRestrictId || "-" }}
-                </p>
-              </div>
-            </div>
-          </UiAccordionContent>
-        </UiAccordionItem>
-      </UiAccordion>
-      <!-- </div> -->
-      <UiButton @click="addAccounts" type="submit" class="w-fit self-end px-8">Add Accounts</UiButton>
-    </UiCard>
-
-    <UiCard
-      v-else-if="accountsData && accountsData.length === 0 && !loading"
-      class="w-full p-6 text-center"
-    >
-      <p class="text-muted-foreground">No accounts found for this customer</p>
-    </UiCard>
-  </div>
-</UiSheetDescription>
+            <p class="text-muted-foreground">
+              No accounts found for this customer
+            </p>
+          </UiCard>
+        </div>
+      </UiSheetDescription>
     </UiSheetHeader>
   </UiSheet>
+
+  <!-- Add the permissions dialog component with updated props -->
+  <PermissionsDialog
+    v-if="currentEditingAccount.contractAccount"
+    v-model:open="permissionsDialogOpen"
+    :contract-account="currentEditingAccount.contractAccount"
+    :permission-id="currentEditingAccount.permissionId"
+    :selected-permissions="
+      getSelectedPermissions(currentEditingAccount.permissionId)
+    "
+    :available-permissions="
+      getAvailablePermissions(currentEditingAccount.contractAccount.id || '')
+    "
+    :is-user-account="
+      !!selectedAccounts.find(
+        (acc) => acc.userAccountId === currentEditingAccount.permissionId
+      )
+    "
+    @refetch="refetchPage"
+  />
 </template>
 
 <style lang="css" scoped></style>

@@ -51,7 +51,7 @@ try {
   isLoading.value = true;
   loading.value = true;
     data.value = await getServiceDefinitionById(serviceDefinitionId.value);
-  const permissions = await getPermissions();
+  const permissions = await getPermissions(0,100000);
   permissionsData.value = permissions.sort((a: Permission, b: Permission) =>
       a?.code?.toLowerCase().localeCompare(b?.code?.toLowerCase())
     );
@@ -109,6 +109,7 @@ watch(
   () => route.query.activeTab,
   (newActiveTab) => {
     if (newActiveTab) {
+      console.log("newActiveTab: ", newActiveTab);
       openItems.value = newActiveTab as string; // Update the active tab when the query param
     if (newActiveTab == "serviceDefinitionDetails" || newActiveTab == "serviceDefinitionPermissions" || newActiveTab == "serviceDefinitionRoles" || newActiveTab == "serviceDefinitionRoleDetails" || newActiveTab == "newServiceDefinitionRole") {
       fetchServiceDefinitions();

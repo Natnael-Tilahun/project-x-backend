@@ -10,12 +10,13 @@ export const useContractsCoreCustomers = () => {
   const store = useAuthStore();
 
   const getContractCoreCustomers: (
+    contractId?: string,
     page?: number,
-    size?: number
-  ) => Promise<ContractCoreCustomer[]> = async (page, size) => {
+    size?: number,
+  ) => Promise<ContractCoreCustomer[]> = async (contractId, page, size) => {
     try {
       const { data, pending, error, status } = await useFetch<ContractCoreCustomer[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-core-customers?page=${page}&size=${size}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contracts/${contractId}/core-customers?page=${page}&size=${size}`,
         {
           method: "GET",
           headers: {

@@ -18,7 +18,7 @@ const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    const permissions = await getPermissions();
+    const permissions = await getPermissions(0,100000);
     data.value = permissions.sort((a: Permission, b: Permission) =>
       a?.code?.toLowerCase().localeCompare(b?.code?.toLowerCase())
     );

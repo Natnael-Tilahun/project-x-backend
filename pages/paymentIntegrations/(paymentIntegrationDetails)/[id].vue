@@ -19,9 +19,11 @@ import {
   MinimumAmountVariableType,
   CreditAccountNumberVariableType,
   Visibility,
+  PaymentCategory
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { useDocuments } from "~/composables/useDocuments";
+import type { PaymentIntegration, ApiOperation } from "~/types";
 
 const route = useRoute();
 const {
@@ -616,6 +618,42 @@ watch(
                   <FormMessage />
                 </FormItem>
               </FormField>
+
+              <FormField
+                :model-value="data?.category"
+                v-slot="{ componentField }"
+                name="category"
+              >
+                <FormItem>
+                  <FormLabel> Category </FormLabel>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue
+                          :placeholder="
+                            data?.category
+                              ? data?.category
+                              : 'Select a category'
+                          "
+                        />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem
+                          v-for="(displayValue, enumKey) in PaymentCategory"
+                          :key="enumKey"
+                          :value="enumKey"
+                        >
+                          {{ displayValue }}
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+
               <FormField
                 :model-value="data?.transactionAmountType"
                 v-slot="{ componentField }"

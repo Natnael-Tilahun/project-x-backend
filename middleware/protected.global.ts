@@ -7,7 +7,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   const runtimeConfig = useRuntimeConfig();
 
   // Allow access to login page
-  if (to.path === "/login") {
+  if (to.path === "/login" || to.path === "/a" || to.path === "/forgotPassword" || to.path === "/activateNewUser") {
     return;
   }
 

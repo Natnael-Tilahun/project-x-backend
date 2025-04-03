@@ -44,6 +44,7 @@ import {
   RoleScope,
   DeviceType,
   Gender,
+  PaymentCategory,
 } from "@/global-types";
 
 interface User {
@@ -79,6 +80,7 @@ interface User {
 }
 
 interface Device {
+  id?: string | null;
   deviceId: string;
   deviceName?: string | null  ;
   deviceType?: DeviceType | null;
@@ -102,6 +104,7 @@ interface Device {
   lastModifiedBy?: string | null;
   lastModifiedDate?: string | Date | null;
   active?: boolean;
+  suspended?: boolean;
 }
 
 interface UserInput {
@@ -460,13 +463,14 @@ interface PaymentIntegration {
   paymentErrorTemplateShort?: string | null;
   defaultPaymentReason?: string | null;
   integrationType?: PaymentIntegrationType | null;
-  visibility?: Visibility | null;
+  visiblity?: Visibility | null;
   confirmRecipientIdentity?: boolean | null;
   reEnquirePaymentDetailBeforePayment?: boolean | null;
   singleFormPayment?: boolean | null;
   isImage?: boolean | null;
   dailyLimitPerAccount?: number | null;
   limitPerTransaction?: number | null;
+  category?: PaymentCategory | null;
 }
 
 interface Menu {
@@ -824,6 +828,7 @@ interface ContractUser {
 
 // Update the interface to match the actual data structure
 interface Account {
+  id?: string | null;
   accountNumber: string;
   customerId?: string;
   accountCategoryId: string;
@@ -842,4 +847,38 @@ interface Account {
   availableBalance?: string | null;
   lastUpdated?:string | Data | null
   accountHolder?: string | null
+}
+
+interface Staff {
+  id:	string;
+  firstname: string | null
+  lastname:string | null
+  displayName?:	string | null
+  mobileNo: string
+  emailAddress?:	string | null
+  active: boolean
+  joiningDate?:	string | null 
+  }
+
+interface Office {
+  id: string
+name:	string
+code?:	string | null
+state?:	string | null
+organizationRegion?:	string | null
+districtName?:	string | null
+description?:	string | null
+hierarchy?:	string | null
+openingDate:	string 
+parent	?:string | null
+}
+
+interface StaffAssignment {
+  id: string
+  startDate?: string 
+  endDate?: string 
+  staff: Staff
+  supervisor?: Staff
+  office: Office
+  role: Role
 }

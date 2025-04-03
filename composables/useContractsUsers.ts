@@ -86,6 +86,43 @@ export const useContractsUsers = () => {
     }
   };
 
+  const getContractUserByContractId: (contractId: string) => Promise<ContractUser[]> = async (contractId) => {
+    try {
+      const { data, pending, error, status } = await useFetch<ContractUser[]>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contracts/${contractId}/contract-users`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No contract user with this id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
   const createNewContractUser: (
     contractUserData: any
   ) => Promise<ContractUser> = async (contractUserData) => {
@@ -227,14 +264,70 @@ export const useContractsUsers = () => {
     }
   };
 
+  const addUserAccounts: (
+    contractUserId: string,
+    accountIds: any
+  ) => Promise<ContractUser> = async (contractUserId, accountIds) => {
+    try {
+      const { data, pending, error, status } = await useFetch<ContractUser>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-users/${contractUserId}/add-contract-accounts`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+          body: JSON.stringify(accountIds),
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message || error.value?.data?.detail,
+          variant: "destructive",
+        });
+
+        console.log("Adding user accounts error: ", error.value?.data.detail);
+
+        if (error.value?.data?.type == "/constraint-violation") {
+          console.log(
+            "Adding user accounts error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Adding user accounts errorrr: ",
+            error.value?.data?.message
+          );
+        }
+        throw new Error(error.value?.data.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No contract user with this contract user id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
 
   return {
     isLoading,
     getContractUsers,
     getContractUserById,
+    getContractUserByContractId,
     createNewContractUser,
     deleteContractUser,
     updateContractUser,
+    addUserAccounts,
     isSubmitting,
   };
 };
