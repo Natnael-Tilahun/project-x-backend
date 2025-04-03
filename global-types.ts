@@ -2,6 +2,7 @@ export enum PaymentIntegrationType {
   PAYMENT = "PAYMENT",
   TRANSFER = "TRANSFER",
   TOPUP = "TOPUP",
+  INTERNAL_TRANSFER = "INTERNAL_TRANSFER",
   NONE = "NONE",
 }
 
