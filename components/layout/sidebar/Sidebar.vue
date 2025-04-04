@@ -1,17 +1,17 @@
 <template>
   <NuxtScrollbar
     tag="aside"
-    class="bg-background text-sm text-secondary-foreground py-5 font-medium border-r shrink-0"
+    class="bg-background text-sm text-secondary-foreground py-0 font-medium border-r shadow-xl shrink-0"
   >
-    <div class="flex w-full items-center justify-between px-3">
+    <div class="flex w-full items-center h-16 justify-between px-3 py-0 border-b">
       <h1
-        class="lg:text-2xl text-xl font-black h-11 px-4 md:px-10 backdrop-blur-md text-primary self-center shadow-sm"
+        class="lg:text-3xl text-xl font-black px-4 md:px-5 text-primary self-center"
       >
         Project-X
       </h1>
       <Icon
         name="material-symbols:cancel"
-        size="22"
+        size="26"
         @click="closeMenuNav"
         class="md:hidden md:w-0"
       ></Icon>
@@ -56,7 +56,7 @@
                 @click="closeMenuNav"
                 class="w-full border-l-2 hover:rounded-r-lg group-hover:border-primary hover:bg-accent px-4 py-3 hover:text-primary"
                 :class="{
-                  'text-primary-foreground bg-primary rounded-lg font-bold': isRouteActive(item.link),
+                  'text-primary bg-[#8C2A7C]/15 rounded-lg font-bold': isRouteActive(item.link),
                 }"
               >
                 {{ item.title }}
@@ -354,6 +354,6 @@ function isRouteActive(path: string) {
 
 <style scoped>
 .router-link-active {
-  @apply font-bold bg-primary rounded-lg text-primary-foreground;
+  @apply font-bold bg-[#8C2A7C]/15 rounded-lg text-primary dark:text-primary-foreground dark:bg-[#8C2A7C]/40;
 }
 </style>
