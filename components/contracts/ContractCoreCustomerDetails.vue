@@ -289,13 +289,14 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
                     size="lg"
                     variant="outline"
                     type="button"
-                    class="font-medium cursor-pointer w-full"
+                    class="font-medium bg-[#8C2A7C]/15 text-primary hover:bg-[#8C2A7C]/20 cursor-pointer w-full"
                   >
+                    <Icon name="lucide:shield" class="h-4 w-4 mr-2" />
                     Contract Core Customer Permissions
                   </UiButton>
                 </UiSheetTrigger>
                 <UiSheetContent
-                  class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+                  class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
                 >
                   <ContractsCoreCustomersPermissions
                     :contractCoreCustomerProps="data"

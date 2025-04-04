@@ -133,20 +133,6 @@ watch(
           Contract Details
         </UiTabsTrigger>
         <UiTabsTrigger
-          value="contractPermissions"
-          @click="
-            navigateTo({
-              path: route.path,
-              query: {
-                activeTab: 'contractPermissions',
-              },
-            })
-          "
-          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-        >
-          Contract Permissions
-        </UiTabsTrigger>
-        <UiTabsTrigger
           value="contractCoreCustomers"
           @click="
             navigateTo({
@@ -319,6 +305,27 @@ watch(
                 <FormMessage />
               </FormItem>
             </FormField>
+            <div class="w-full space-y-2">
+              <UiLabel for="enable">Permissions</UiLabel>
+              <UiSheet class="w-full">
+                <UiSheetTrigger class="w-full">
+                  <UiButton
+                    size="lg"
+                    variant="outline"
+                    type="button"
+                    class="font-medium bg-[#8C2A7C]/15 text-primary hover:bg-[#8C2A7C]/20 cursor-pointer w-full"
+                  >
+                    <Icon name="lucide:shield" class="h-4 w-4 mr-2" />
+                    Contract Permissions
+                  </UiButton>
+                </UiSheetTrigger>
+                <UiSheetContent
+                  class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
+                >
+                  <ContractPermissions @refresh="fetchContract" :contractProps="data" />
+                </UiSheetContent>
+              </UiSheet>
+            </div>
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"
@@ -341,12 +348,6 @@ watch(
         </div>
       </form>
     </UiCard>
-    </UiTabsContent>
-    <UiTabsContent
-    value="contractPermissions"
-    class="text-base bg-background rounded-lg"
-    >
-    <ContractPermissions :contractProps="data" />
     </UiTabsContent>
     <UiTabsContent
     value="contractCoreCustomers"

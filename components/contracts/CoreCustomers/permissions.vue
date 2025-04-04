@@ -2,7 +2,7 @@
 import { useContractsCoreCustomers } from "~/composables/useContractsCoreCustomers";
 
 import { useForm } from "vee-validate";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { toast } from "~/components/ui/toast";
 // import { newServiceDefinitionFormSchema } from "~/validations/newServiceDefinitionFormSchema";
 import {
@@ -33,6 +33,24 @@ const data = ref<ContractCoreCustomer>();
 
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
+
+// Add computed property to check if all permissions are selected
+const allSelected = computed(() => {
+  if (!permissionsData.value || permissionsData.value.length === 0) return false;
+  return permissionsData.value.every(permission => 
+    selectedPermissions.value.some(p => p.code === permission.code)
+  );
+});
+
+// Function to select all permissions
+const selectAll = () => {
+  selectedPermissions.value = [...permissionsData.value];
+};
+
+// Function to deselect all permissions
+const deselectAll = () => {
+  selectedPermissions.value = [];
+};
 
 const props = defineProps<{
   contractCoreCustomerProps?: ContractCoreCustomer;
@@ -86,7 +104,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   <UiSheet class="flex flex-col gap-6 items-center">
     <UiSheetHeader>
       <UiSheetTitle class="border-b-2"
-        >Contract Account Permissions</UiSheetTitle
+        >Contract Core Customer Permissions</UiSheetTitle
       >
       <UiSheetDescription class="py-4 space-y-4">
         <div v-if="loading" class="py-10 flex justify-center w-full">
@@ -94,7 +112,37 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         </div>
         <UiCard v-else-if="permissionsData && permissionsData.length > 0 && !isError" class="w-full p-6">
           <form @submit="onSubmit">
-            <div class="grid grid-cols-2 gap-6">
+            <div class="grid grid-cols-2 lg:grid-cols-5 gap-6">
+              <!-- Add select all controls -->
+              <div class="col-span-full flex justify-between items-center mb-4">
+                <p class="font-medium">Available Permissions</p>
+                <div class="flex items-center gap-2">
+                  <p class="text-sm text-muted-foreground">
+                    {{ selectedPermissions.length }} of {{ permissionsData.length }} selected
+                  </p>
+                  <div class="flex gap-2">
+                    <UiButton 
+                      variant="outline" 
+                      size="sm" 
+                      @click="selectAll"
+                      :disabled="allSelected"
+                      type="button"
+                    >
+                      Select All
+                    </UiButton>
+                    <UiButton 
+                      variant="outline" 
+                      size="sm" 
+                      @click="deselectAll"
+                      :disabled="selectedPermissions.length === 0"
+                      type="button"
+                    >
+                      Deselect All
+                    </UiButton>
+                  </div>
+                </div>
+              </div>
+              
               <FormField
                 v-for="permission in permissionsData"
                 :key="permission.code"
@@ -104,10 +152,10 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 v-slot="{ handleChange }"
                 name="permissions"
               >
-                <FormItem>
-                  <FormLabel> {{ permission.code }} </FormLabel>
+                <FormItem class="flex items-start space-x-3 space-y-0 p-2 rounded-md hover:bg-muted/50">
                   <FormControl>
-                    <UiSwitch
+                    <UiCheckbox
+                      class="order-first self-center"
                       :checked="
                         selectedPermissions.some(
                           (p) => p.code === permission.code
@@ -126,6 +174,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                       "
                     />
                   </FormControl>
+                  <FormLabel class="font-normal text-sm"> {{ permission.code }} </FormLabel>
                   <FormMessage />
                 </FormItem>
               </FormField>

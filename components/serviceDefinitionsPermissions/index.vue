@@ -2,7 +2,7 @@
 const openItems = ref(["item-1"]);
 
 import { useForm } from "vee-validate";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { toast } from "~/components/ui/toast";
 // import { newServiceDefinitionFormSchema } from "~/validations/newServiceDefinitionFormSchema";
 import {
@@ -92,6 +92,24 @@ const fetchData = async () => {
 await useAsyncData("permissionsData", async () => {
   await fetchData();
 });
+
+// Add computed property to check if all permissions are selected
+const allSelected = computed(() => {
+  if (!permissionsData.value || permissionsData.value.length === 0) return false;
+  return permissionsData.value.every(permission => 
+    selectedPermissions.value.some(p => p.code === permission.code)
+  );
+});
+
+// Function to select all permissions
+const selectAll = () => {
+  selectedPermissions.value = [...permissionsData.value];
+};
+
+// Function to deselect all permissions
+const deselectAll = () => {
+  selectedPermissions.value = [];
+};
 </script>
 
 <template>
@@ -102,30 +120,60 @@ await useAsyncData("permissionsData", async () => {
     <UiCard v-else-if="permissionsData && !isError" class="w-full p-6">
       <form @submit="onSubmit">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            <FormField
-                v-for="permission in permissionsData"
-                :key="permission.code"
-                :model-value="selectedPermissions.some(p => p.code === permission.code)"
-                v-slot="{ handleChange }"
-                name="permissions"
-              >
-                <FormItem>
-                  <FormLabel> {{ permission.code }} </FormLabel>
-                  <FormControl>
-                    <UiSwitch 
-                      :checked="selectedPermissions.some(p => p.code === permission.code)"
-                      @update:checked="(checked) => {
-                        if (checked) {
-                          selectedPermissions.push(permission);
-                        } else {
-                          selectedPermissions = selectedPermissions.filter(p => p.code !== permission.code);
-                        }
-                      }"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
+          <div class="col-span-full flex justify-between items-center mb-4">
+            <p class="font-medium">Available Permissions</p>
+            <div class="flex items-center gap-2">
+              <p class="text-sm text-muted-foreground">
+                {{ selectedPermissions.length }} of {{ permissionsData.length }} selected
+              </p>
+              <div class="flex gap-2">
+                <UiButton 
+                  variant="outline" 
+                  size="sm" 
+                  @click="selectAll"
+                  :disabled="allSelected"
+                  type="button"
+                >
+                  Select All
+                </UiButton>
+                <UiButton 
+                  variant="outline" 
+                  size="sm" 
+                  @click="deselectAll"
+                  :disabled="selectedPermissions.length === 0"
+                  type="button"
+                >
+                  Deselect All
+                </UiButton>
+              </div>
+            </div>
+          </div>
+          
+          <FormField
+            v-for="permission in permissionsData"
+            :key="permission.code"
+            :model-value="selectedPermissions.some(p => p.code === permission.code)"
+            v-slot="{ handleChange }"
+            name="permissions"
+          >
+            <FormItem class="flex items-start space-x-3 space-y-0 p-2 rounded-md hover:bg-muted/50">
+              <FormControl>
+                <UiCheckbox
+                  class="order-first self-center"
+                  :checked="selectedPermissions.some(p => p.code === permission.code)"
+                  @update:checked="(checked) => {
+                    if (checked) {
+                      selectedPermissions.push(permission);
+                    } else {
+                      selectedPermissions = selectedPermissions.filter(p => p.code !== permission.code);
+                    }
+                  }"
+                />
+              </FormControl>
+              <FormLabel class="font-normal text-sm"> {{ permission.code }} </FormLabel>
+              <FormMessage />
+            </FormItem>
+          </FormField>
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"
