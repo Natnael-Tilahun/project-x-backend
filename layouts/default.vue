@@ -108,7 +108,7 @@ const closeMenuNav = () => {
     >
       <!-- Page Header -->
       <div class="border-b shadow-none bg-popover text-popover-foreground">
-        <div class="flex h-16 items-center px-3 md:px-8">
+        <div class="flex h-16 items-center px-3 md:px-8  bg-primary text-primary-foreground shadow-xl">
           <!-- <DashboardMainNav class="mx-6" /> -->
           <div class="flex items-center gap-3 md:gap-2">
             <OpenSidebarIcon v-if="isSidebarCollapsed" @click="toggleSidebar" />
@@ -117,30 +117,30 @@ const closeMenuNav = () => {
               <Breadcrumb>
                 <BreadcrumbList>
                   <template v-if="pathSegments.length === 0">
-                    <BreadcrumbItem>
-                      <BreadcrumbPage>Dashboard</BreadcrumbPage>
+                    <BreadcrumbItem> 
+                      <BreadcrumbPage class="text-primary-foreground font-black">Dashboard</BreadcrumbPage>
                     </BreadcrumbItem>
                   </template>
                   <template v-else>
                     <BreadcrumbItem>
-                      <BreadcrumbLink>
-                        <NuxtLink to="/">Dashboard</NuxtLink>
+                      <BreadcrumbLink >
+                        <NuxtLink to="/" class="text-gray-200 font-medium">Dashboard</NuxtLink>
                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <template
                       v-for="(segment, index) in pathSegments"
                       :key="index"
                     >
-                      <BreadcrumbSeparator />
+                      <BreadcrumbSeparator class="text-primary-foreground" />
                       <BreadcrumbItem>
                         <template v-if="index === pathSegments.length - 1">
-                          <BreadcrumbPage class="text-primary font-medium">
+                          <BreadcrumbPage class="text-primary-foreground font-black">
                             {{ capitalizeRouteName(segment) }}</BreadcrumbPage
                           >
                         </template>
                         <template v-else>
                           <BreadcrumbLink>
-                            <NuxtLink :to="generateLink(index)">
+                            <NuxtLink :to="generateLink(index)" class="text-gray-200 font-medium">
                               {{ capitalizeRouteName(segment) }}</NuxtLink
                             >
                           </BreadcrumbLink>
@@ -192,6 +192,6 @@ const closeMenuNav = () => {
 </template>
 <style scoped>
 .router-link-active {
-  @apply font-light text-primary ml-1;
+  @apply font-light text-primary dark:text-primary ml-1;
 }
 </style>
