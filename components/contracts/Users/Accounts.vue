@@ -623,6 +623,7 @@ const refetchPage = async () => {
                               <UiButton
                                 variant="outline"
                                 size="sm"
+                                class="bg-[#8C2A7C]/15 text-primary hover:bg-[#8C2A7C]/20"
                                 @click="
                                   openPermissionsDialog({
                                     contractAccountId: contractAccount.id,

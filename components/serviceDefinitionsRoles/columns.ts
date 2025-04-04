@@ -25,36 +25,62 @@ export const columns: ColumnDef<ServiceDefinitionRole>[] = [
     enableHiding: false,
   },
   {
+    accessorKey: "id",
+    header: "Info",
+    cell: ({ row }) => {
+      const serviceDefinitionRoleId = row.original.id;
+      const serviceDefinitionId = row.original.serviceDefinition.id;
+      const route = useRoute();
+      return serviceDefinitionRoleId
+        ? h(
+            NuxtLink,
+            {
+              class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `${route.path}?activeTab=serviceDefinitionRoleDetails&serviceDefinitionRoleId=${serviceDefinitionRoleId}`,
+            },
+            "View Details"
+          )
+        : h("p", "-");
+    },
+  },
+  {
     accessorKey: "service",
     header: "Service Definition",
     cell: ({ row }) => {
-      const serviceDefinitionRoleId = row.original.id;
+      const serviceDefinitionId = row.original.id;
       const route = useRoute();
-      const name = row.getValue("service")?.name;
+      const name = row.getValue("serviceDefinition")?.name;
       return name
         ? h(
             NuxtLink,
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}/${serviceDefinitionRoleId}`,
+              to: `${route.path}/${serviceDefinitionId}`,
             },
-            row.getValue("service")?.name
+            row.getValue("serviceDefinition")?.name
           )
-        : h("p", "-");
+        : h(NuxtLink, {
+            class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+            to: `${route.path}?activeTab=serviceDefinitionDetails&serviceDefinitionId=${serviceDefinitionId}`,
+          }, "View Service Definition Details");
     },
   },
   {
     accessorKey: "role",
     header: "Role",
     cell: ({ row }) => {
-      const role = row.getValue("role")?.name;
-      return role
+      const route = useRoute();
+      const name = row.getValue("role")?.name;
+      return name
         ? h(
-            "div",
+            NuxtLink,
             {
               class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+              "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `/userRoles/${name}`,
             },
             row.getValue("role")?.name
           )

@@ -2,7 +2,7 @@
 const openItems = ref(["item-1"]);
 
 import { useForm } from "vee-validate";
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { toast } from "~/components/ui/toast";
 // import { newServiceDefinitionFormSchema } from "~/validations/newServiceDefinitionFormSchema";
 import {
@@ -43,6 +43,7 @@ const props = defineProps<{
   contractProps?: Contract;
 }>();
 
+const emit = defineEmits(['refresh']);
 if (props?.contractProps) {
   contract.value = props?.contractProps;
   data.value = contract.value;
@@ -66,6 +67,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       title: "Contract Permissions Updated",
       description: "Contract Permissions updated successfully",
     });
+    emit('refresh');
   } catch (err: any) {
     console.error("Error updating contract permissions:", err);
     isError.value = true;
@@ -95,16 +97,69 @@ await useAsyncData("serviceDefinitionPermissionsData", async () => {
     await fetchServiceDefinitionData();
   }
 });
+
+// Add computed property to check if all permissions are selected
+const allSelected = computed(() => {
+  if (!permissionsData.value || permissionsData.value.length === 0) return false;
+  return permissionsData.value.every(permission => 
+    selectedPermissions.value.some(p => p.code === permission.code)
+  );
+});
+
+// Function to select all permissions
+const selectAll = () => {
+  selectedPermissions.value = [...permissionsData.value];
+};
+
+// Function to deselect all permissions
+const deselectAll = () => {
+  selectedPermissions.value = [];
+};
 </script>
 
 <template>
-  <div class="flex flex-col gap-6 items-center">
-    <div v-if="loading" class="py-10 flex justify-center w-full">
-      <UiLoading />
-    </div>
-    <UiCard v-else-if="permissionsData && !isError" class="w-full p-6">
+    <UiSheet class="flex flex-col gap-6 items-center">
+    <UiSheetHeader>
+      <UiSheetTitle class="border-b-2"
+        >Contract Permissions</UiSheetTitle
+      >
+      <UiSheetDescription class="py-4 space-y-4">
+        <div v-if="loading" class="py-10 flex justify-center w-full">
+          <UiLoading />
+        </div>
+        <UiCard v-else-if="permissionsData && !isError" class="w-full p-6">
       <form @submit="onSubmit">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid grid-cols-2 lg:grid-cols-6 gap-6">
+          <!-- Add select all controls -->
+          <div class="col-span-full flex justify-between items-center mb-4">
+            <p class="font-medium">Available Permissions</p>
+            <div class="flex items-center gap-2">
+              <p class="text-sm text-muted-foreground">
+                {{ selectedPermissions.length }} of {{ permissionsData.length }} selected
+              </p>
+              <div class="flex gap-2">
+                <UiButton 
+                  variant="outline" 
+                  size="sm" 
+                  @click="selectAll"
+                  :disabled="allSelected"
+                  type="button"
+                >
+                  Select All
+                </UiButton>
+                <UiButton 
+                  variant="outline" 
+                  size="sm" 
+                  @click="deselectAll"
+                  :disabled="selectedPermissions.length === 0"
+                  type="button"
+                >
+                  Deselect All
+                </UiButton>
+              </div>
+            </div>
+          </div>
+          
             <FormField
                 v-for="permission in permissionsData"
                 :key="permission.code"
@@ -112,10 +167,11 @@ await useAsyncData("serviceDefinitionPermissionsData", async () => {
                 v-slot="{ handleChange }"
                 name="permissions"
               >
-                <FormItem>
-                  <FormLabel> {{ permission.code }} </FormLabel>
-                  <FormControl>
-                    <UiSwitch 
+              <FormItem className="flex flex-row w-full items-start gap-x-3">
+                <FormLabel class="self-center order-last">{{ permission.code }}</FormLabel>           
+                <FormControl>
+                    <UiCheckbox 
+                    class="order-first self-center"
                       :checked="selectedPermissions.some(p => p.code === permission.code)"
                       @update:checked="(checked) => {
                         if (checked) {
@@ -126,6 +182,7 @@ await useAsyncData("serviceDefinitionPermissionsData", async () => {
                       }"
                     />
                   </FormControl>
+                  <!-- <FormLabel class="font-normal text-sm"> {{ permission.code }} </FormLabel> -->
                   <FormMessage />
                 </FormItem>
               </FormField>
@@ -157,7 +214,9 @@ await useAsyncData("serviceDefinitionPermissionsData", async () => {
     <div v-else-if="isError">
       <ErrorMessage title="Something went wrong." />
     </div>
-  </div>
+  </UiSheetDescription>
+  </UiSheetHeader>
+</UiSheet>
 </template>
 
 <style lang="css" scoped></style>

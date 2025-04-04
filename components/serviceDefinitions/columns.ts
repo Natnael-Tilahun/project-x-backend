@@ -195,7 +195,7 @@ export const columns: ColumnDef<ServiceDefinition>[] = [
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `/bankingServices/${service}`,
             },
-            row.getValue("service")?.id
+            "View Service Details"
           )
         : h("p", "-");
     },

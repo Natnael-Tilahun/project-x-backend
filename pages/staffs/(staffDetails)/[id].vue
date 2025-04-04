@@ -129,10 +129,10 @@ watch(
           "
           class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
         >
-          Staff Details
+          Detail Info
         </UiTabsTrigger>
         <UiTabsTrigger
-          value="Staff Assignments"
+          value="staffAssignments"
           @click="
             navigateTo({
               path: route.path,
@@ -143,7 +143,7 @@ watch(
           "
           class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
         >
-          Staff Assignments
+          Assignments
         </UiTabsTrigger>
       </UiTabsList>
       <UiTabsContent
@@ -277,6 +277,14 @@ watch(
         </div>
       </form>
     </UiCard>
+    </UiTabsContent>
+    <UiTabsContent
+        value="staffAssignments"
+        class="text-base bg-background rounded-lg"
+      >
+      <UiCard class="w-full p-6">
+        Staff Assignments
+      </UiCard>
     </UiTabsContent>
     </UiTabs>
     <div v-else-if="data == null || data == undefined">

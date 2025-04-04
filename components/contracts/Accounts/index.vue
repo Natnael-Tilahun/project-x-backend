@@ -346,13 +346,14 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                     <UiSheetTrigger>
                       <UiButton
                         size="sm"
-                        class="font-medium cursor-pointer px-2 h-fit py-1"
+                        class="font-medium cursor-pointer px-2 h-fit py-1 bg-[#8C2A7C]/15 text-primary hover:bg-[#8C2A7C]/20"
                       >
+                        <Icon name="lucide:shield" class="h-4 w-4 mr-2" />
                         Permissions
                       </UiButton>
                     </UiSheetTrigger>
                     <UiSheetContent
-                      class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+                      class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
                     >
                       <ContractsAccountsPermissions
                         :contractAccountId="id"
