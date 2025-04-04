@@ -13,19 +13,6 @@ definePageMeta({
   <div
     class="container relative h-[800px] md:h-screen flex flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0"
   >
-    <!-- Sign Up Button -->
-    <a
-      href=""
-      :class="
-        cn(
-          buttonVariants({ variant: 'ghost' }),
-          'absolute right-4 top-4 md:right-8 md:top-8'
-        )
-      "
-    >
-      SignUp
-    </a>
-
     <!-- Background Image Section -->
     <div
       class="relative hidden h-screen flex-col bg-muted p-0 text-white dark:border-r lg:flex"

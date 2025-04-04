@@ -49,3 +49,13 @@ export const copyToClipboard = async (data: any) => {
 export function splitPath(path: any) {
   return path.split("/").filter(Boolean);
 }
+
+export  const getIdFromPath = (passedPath?: string) => {
+  const route = useRoute();
+  const pathSegments = passedPath ? passedPath.split("/").filter(Boolean) : route.path.split("/").filter(Boolean);
+    return pathSegments[pathSegments.length - 1];
+  }
+
+  export const dateFormatter = (date: string) => {
+    return new Date(date).toISOString().split("T")[0];
+  };

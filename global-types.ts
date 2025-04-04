@@ -2,7 +2,24 @@ export enum PaymentIntegrationType {
   PAYMENT = "PAYMENT",
   TRANSFER = "TRANSFER",
   TOPUP = "TOPUP",
+  INTERNAL_TRANSFER = "INTERNAL_TRANSFER",
   NONE = "NONE",
+}
+
+export enum PaymentCategory {
+  WALLET_TRANSFER = "Wallet Transfer",
+  BILL_PAYMENT = "Bill Payment",
+  TICKET_PAYMENT = "Ticket Payment",
+  SUBSCRIPTION_PAYMENT = "Subscription Payment",
+  FUNDRAISER_DONATION = "Fundraiser/Donation",
+  TOP_UP = "Top-Up (Airtime & Data Recharge)",
+  MERCHANT_PAYMENT = "Merchant Payment",
+  BANK_TRANSFER = "Bank Transfer",
+  GOVERNMENT_PAYMENT = "Government Payments",
+  E_COMMERCE_PAYMENT = "E-commerce Payment",
+  P2P_PAYMENT = "Peer-to-Peer (P2P) Payments",
+  CREDIT_DEBIT_CARD_PAYMENT = "Credit/Debit Card Payments",
+  OTHER = "other",
 }
 
 export enum TransactionAmountType {
@@ -375,5 +392,44 @@ export enum SystemMenuType {
   BENEFICIARY_MANAGEMENT = "BENEFICIARY_MANAGEMENT",
   SCHEDULED_PAYMENT = "SCHEDULED_PAYMENT",
   PAYMENT_REQUEST = "PAYMENT_REQUEST",
+  NONE = "NONE",
+}
+
+export enum PermissionType {
+  SYSTEM = "SYSTEM",
+  MONETARY = "MONETARY",
+  NON_MONETARY = "NON_MONETARY",
+}
+
+export enum ServiceType {
+  RETAIL = "RETAIL",
+  BUSINESS = "BUSINESS",
+}
+
+export enum ServiceDefinitionStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+}
+
+export enum PermissionGroupStatus {
+  ACTIVE = "ACTIVE",
+  INACTIVE = "INACTIVE",
+}
+
+export enum RoleScope {
+  SYSTEM = "SYSTEM",
+  CUSTOMER = "CUSTOMER",
+}
+
+export enum DeviceType {
+  ANDROID = "ANDROID",
+  IOS = "IOS",
+  WEB = "WEB",
+  UNKNOWN = "UNKNOWN",
+}
+
+export enum Gender {
+  MALE = "MALE",
+  FEMALE = "FEMALE",
   NONE = "NONE",
 }

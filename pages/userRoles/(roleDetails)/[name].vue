@@ -9,12 +9,19 @@ import {
 } from "~/components/ui/form";
 import { useToast } from "~/components/ui/toast";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import { RoleScope } from "~/global-types";
+import type { Role, Permission } from "~/types";
 
 const { toast } = useToast();
 
 const openItems = ref(["item-1"]);
-const { getRolePermissions, updateRolePermissions, isLoading, isUpdating } =
-  useRoles();
+const {
+  getRolePermissions,
+  updateRolePermissions,
+  updateRoleStatus,
+  isLoading,
+  isUpdating,
+} = useRoles();
 const loading = ref(isLoading.value);
 const updating = ref(isLoading.value);
 const isError = ref(false);
@@ -140,6 +147,7 @@ try {
       description: fetchedData.description,
       enforce2fa: fetchedData.enforce2fa,
       disabled: !fetchedData.disabled,
+      scope: fetchedData.scope,
     };
 
     // Transform permissionUsageData into individual fields
@@ -230,6 +238,29 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     updating.value = false;
   }
 });
+
+const updadateRoleStatus = async (status: boolean) => {
+  try {
+    isUpdating.value = true;
+    updating.value = true;
+    await updateRoleStatus(name, status); // Call your API function to fetch roles
+    toast({
+      title: "Role status updated successfully.",
+    });
+  } catch (err: any) {
+    console.error("Error updating role status:", err);
+    toast({
+      title: "Uh oh! Something went wrong.",
+      description: `There was a problem with your request: ${err}`,
+      variant: "destructive",
+    });
+    await refetch();
+    isError.value = true;
+  } finally {
+    isUpdating.value = false;
+    updating.value = false;
+  }
+};
 </script>
 
 <template>
@@ -237,7 +268,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     <div v-if="loading" class="py-10 flex justify-center items-center">
       <UiLoading />
     </div>
-    <div v-else-if="data" class="flex flex-col gap-8 items-center">
+    <div v-else-if="data" class="flex flex-col gap-4 items-center">
       <!-- <UiButton class="pr-5 w-fit self-end" variant="outline">
         <Icon
           name="material-symbols:edit-outline"
@@ -253,39 +284,67 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <p class="mr-auto">{{ data?.name }}</p></UiAccordionTrigger
               >
 
-              <!-- <FormField v-slot="{ value, handleChange }" name="disabled">
-                <FormItem>
-                  <FormControl>
-                    <UiSwitch
-                      disabled=""
-                      :checked="value"
-                      @update:checked="handleChange"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField> -->
-              <UiBadge :class="badgeBg(!data.disabled)">{{
-                !data.disabled ? "Enabled" : "Disabled"
-              }}</UiBadge>
-            </div>
-
-            <UiAccordionContent class="w-full" v-model="openItems">
-              <div class="grid grid-cols- rounded-xl gap-5 w-full p-6 border">
-                <FormField v-slot="{ value, handleChange }" name="enforce2fa">
+              <div class="flex items-center gap-4">
+                <UiBadge
+                  :class="badgeBg(!data.disabled) + ' font-bold px-2 py-1'"
+                  >{{ !data.disabled ? "Enabled" : "Disabled" }}</UiBadge
+                >
+                <FormField v-slot="{ value, handleChange }" name="disabled">
                   <FormItem>
-                    <FormLabel> Enforce 2fa</FormLabel>
                     <FormControl>
                       <UiSwitch
                         :checked="value"
-                        disabled
                         @update:checked="handleChange"
+                        @click="updadateRoleStatus(value)"
                       />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
+              </div>
+            </div>
 
+            <UiAccordionContent class="w-full" v-model="openItems">
+              <div class="grid grid-cols-1 rounded-xl gap-2 w-full p-6 border">
+                <div class="grid grid-cols-2 gap-2 items-center">
+                  <FormField v-slot="{ value, handleChange }" name="enforce2fa">
+                    <FormItem>
+                      <FormLabel> Enforce 2fa</FormLabel>
+                      <FormControl>
+                        <UiSwitch
+                          :checked="value"
+                          disabled
+                          @update:checked="handleChange"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+
+                  <FormField v-slot="{ componentField }" name="scope">
+                    <FormItem>
+                      <FormLabel> Scope </FormLabel>
+                      <UiSelect v-bind="componentField">
+                        <FormControl class="min-w-[180px]">
+                          <UiSelectTrigger>
+                            <UiSelectValue placeholder="Select a scope" />
+                          </UiSelectTrigger>
+                        </FormControl>
+                        <UiSelectContent>
+                          <UiSelectGroup>
+                            <UiSelectItem
+                              v-for="item in Object.values(RoleScope)"
+                              :value="item"
+                            >
+                              {{ item }}
+                            </UiSelectItem>
+                          </UiSelectGroup>
+                        </UiSelectContent>
+                      </UiSelect>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
                 <FormField v-slot="{ componentField }" name="description">
                   <FormItem>
                     <FormLabel> Description</FormLabel>
@@ -324,10 +383,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
             value="permissions"
             class="space-y-4 text-sm md:text-base"
           >
-            <div class="flex flex-col md:gap-4 w-full">
-              <div class="flex flex-col space-y-6">
                 <UiAccordion
                   type="single"
+                  class="border-none space-y-2"
                   :default-value="Object.keys(groupedPermissions())[0]"
                   collapsible
                 >
@@ -336,7 +394,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                     :key="grouping"
                   >
                     <UiAccordionItem
-                      class="mb-5 border-none"
+                      class="border-none "
                       :value="grouping.toString()"
                     >
                       <div
@@ -363,7 +421,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                         >
                           <FormItem>
                             <FormControl>
-                              <UiSwitch
+                              <UiCheckbox
                                 :checked="value"
                                 @update:checked="
                                   ($event) => {
@@ -378,56 +436,42 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                         </FormField>
                       </div>
 
-                      <UiAccordionContent class="w-full" v-model="openItems">
-                        <div class="flex flex-col gap-2 w-full justify-between">
+                      <UiAccordionContent class="w-full border border-t-0 mt-2 rounded-lg" v-model="openItems">
                           <div
-                            class="space-y-1 border-b"
-                            v-for="permission in permissions"
-                            :key="permission.code"
+                            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-x-6 px-4 py-2"
                           >
                             <div
-                              class="flex lg:grid-cols-3 gap-4 md:gap-8 w-full justify-between px-10 py-4"
+                              v-for="permission in permissions"
+                              :key="permission.code"
+                              class="flex items-center py-2 hover:bg-muted/50"
                             >
-                              <div class="space-y-4">
-                                <div class="flex flex-col">
-                                  <h1 class="text-muted-foreground">Code</h1>
-                                  <p>{{ permission.code }}</p>
-                                </div>
-
-                                <div class="flex flex-col">
-                                  <h1 class="text-muted-foreground">
-                                    Description
-                                  </h1>
-                                  <p>{{ permission.description }}</p>
-                                </div>
-
-                                <div>{{ permission.selected }}</div>
-                              </div>
-                              <FormField
-                                v-slot="{ value, handleChange }"
-                                :name="`${permission.code}`"
-                              >
-                                <FormItem>
-                                  <FormLabel>Selected</FormLabel>
-                                  <FormControl>
-                                    <UiSwitch
-                                      :checked="value"
-                                      :default-checked="permission.selected"
-                                      @update:checked="handleChange"
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              </FormField>
+                              <!-- <div class="flex border gap-4 items-start"> -->
+                                <FormField
+                                  v-slot="{ value, handleChange }"
+                                  :name="`${permission.code}`"
+                                >
+                                <FormItem className="flex flex-row w-full items-start gap-x-3">                                   
+                                   <FormLabel class="self-center">{{ permission.code }}</FormLabel>
+                                    <FormControl> 
+                                      <UiCheckbox
+                                        :checked="value"
+                                        class="order-first self-center"
+                                        :default-checked="permission.selected"
+                                        @update:checked="handleChange"
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                </FormField>
+                                <!-- <div>{{ permission.code }}</div> -->
+                              <!-- </div> -->
+                              <!-- <p class="text-sm text-muted-foreground">{{ permission.description }}</p> -->
                             </div>
                           </div>
-                        </div>
                       </UiAccordionContent>
                     </UiAccordionItem>
                   </template>
                 </UiAccordion>
-              </div>
-            </div>
             <div class="w-full flex justify-end">
               <UiButton :disabled="isUpdating" type="submit">
                 <Icon

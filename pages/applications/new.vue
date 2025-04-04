@@ -162,6 +162,16 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               </FormItem>
             </FormField>
 
+            <FormField v-slot="{ value, handleChange }" name="enabled">
+                <FormItem>
+                  <FormLabel> Enabled </FormLabel>
+                  <FormControl>
+                    <UiSwitch :checked="value" @update:checked="handleChange" />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+
             <FormField v-slot="{ componentField }" name="iconUrl">
               <FormItem class="w-full">
                 <FormLabel>Icon URL</FormLabel>

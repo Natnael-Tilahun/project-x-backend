@@ -20,8 +20,10 @@ import {
   MaximumAmountVariableType,
   MinimumAmountVariableType,
   CreditAccountNumberVariableType,
+  PaymentCategory,
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import type { PaymentIntegration } from "~/types";
 
 const route = useRoute();
 const {
@@ -39,7 +41,6 @@ const paymentIntegrationId = ref<string>("");
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<PaymentIntegration>();
-const apiOperationsData = ref<ApiOperation>();
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
 const activeTab = route.query.activeTab as string;
@@ -309,7 +310,40 @@ function splitPath(path: any) {
                 <FormMessage />
               </FormItem>
             </FormField>
-
+            <FormField
+                :model-value="data?.dailyLimitPerAccount"
+                v-slot="{ componentField }"
+                name="dailyLimitPerAccount"
+              >
+                <FormItem>
+                  <FormLabel> Daily Limit Per Account </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter daily limit per account"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.limitPerTransaction"
+                v-slot="{ componentField }"
+                name="limitPerTransaction"
+              >
+                <FormItem>
+                  <FormLabel> Limit Per Transaction </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter limit per transaction"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
             <FormField
               :model-value="data?.integrationType"
               v-slot="{ componentField }"
@@ -338,6 +372,42 @@ function splitPath(path: any) {
                 <FormMessage />
               </FormItem>
             </FormField>
+
+            <FormField
+                :model-value="data?.category"
+                v-slot="{ componentField }"
+                name="category"
+              >
+                <FormItem>
+                  <FormLabel> Category </FormLabel>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue
+                          :placeholder="
+                            data?.category
+                              ? data?.category
+                              : 'Select a category'
+                          "
+                        />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem
+                          v-for="(displayValue, enumKey) in PaymentCategory"
+                          :key="enumKey"
+                          :value="enumKey"
+                        >
+                          {{ displayValue }}
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+
 
             <FormField
               :model-value="data?.transactionAmountType"
@@ -822,9 +892,9 @@ function splitPath(path: any) {
             </FormField>
 
             <FormField
-              :model-value="data?.isSingleFormPayment"
+              :model-value="data?.singleFormPayment"
               v-slot="{ value, handleChange }"
-              name="isSingleFormPayment"
+              name="singleFormPayment"
             >
               <FormItem>
                 <FormLabel> Single Form Payment </FormLabel>

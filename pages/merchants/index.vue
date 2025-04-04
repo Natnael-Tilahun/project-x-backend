@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { columns } from "~/components/merchants/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import type { Merchant } from "~/types";
 
 const { getMerchants, getMerchantById, isLoading } = useMerchants();
 const loading = ref(isLoading.value);
@@ -16,7 +17,7 @@ const fetchData = async () => {
     const merchants = await getMerchants(0, 100000000);
     // Sort integrations by name alphabetically
     data.value = merchants.sort((a, b) =>
-      a.businessName.toLowerCase().localeCompare(b.businessName.toLowerCase())
+      a?.businessName?.toLowerCase().localeCompare(b?.businessName?.toLowerCase())
     );
   } catch (err: any) {
     console.error("Error fetching merchants:", err);

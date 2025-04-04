@@ -10,6 +10,9 @@ import {
 import { newUserRoleformSchema } from "~/validations/newUserRoleformSchema";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
+import { RoleScope } from "~/global-types";
+import type { Role } from "~/types";
+
 const { createNewRole, isLoading } = await useRoles();
 const isError = ref(false);
 const data = ref<Role>();
@@ -32,7 +35,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     isLoading.value = true;
     data.value = await createNewRole(values); // Call your API function to fetch profile
-    navigateTo(`/userRoles/${data.value.name}`);
+    navigateTo(`/userRoles`);
     console.log("New role data; ", data.value);
     toast({
       title: "Role Created",
@@ -112,6 +115,30 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormControl>
                   <UiSwitch :checked="value" @update:checked="handleChange" />
                 </FormControl>
+              </FormItem>
+            </FormField>
+
+            <FormField v-slot="{ componentField }" name="scope">
+              <FormItem>
+                <FormLabel> Scope </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a scope" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(RoleScope)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
               </FormItem>
             </FormField>
 

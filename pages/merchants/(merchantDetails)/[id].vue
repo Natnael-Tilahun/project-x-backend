@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-
+import type { Merchant } from "~/types";
 const route = useRoute();
 const { getMerchantById, updateMerchant, isLoading, isSubmitting } =
   useMerchants();

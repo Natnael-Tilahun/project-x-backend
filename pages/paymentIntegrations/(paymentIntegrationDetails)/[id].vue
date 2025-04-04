@@ -19,9 +19,11 @@ import {
   MinimumAmountVariableType,
   CreditAccountNumberVariableType,
   Visibility,
+  PaymentCategory
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { useDocuments } from "~/composables/useDocuments";
+import type { PaymentIntegration, ApiOperation } from "~/types";
 
 const route = useRoute();
 const {
@@ -549,6 +551,40 @@ watch(
                 </FormItem>
               </FormField>
               <FormField
+                :model-value="data?.dailyLimitPerAccount"
+                v-slot="{ componentField }"
+                name="dailyLimitPerAccount"
+              >
+                <FormItem>
+                  <FormLabel> Daily Limit Per Account </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter daily limit per account"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
+                :model-value="data?.limitPerTransaction"
+                v-slot="{ componentField }"
+                name="limitPerTransaction"
+              >
+                <FormItem>
+                  <FormLabel> Limit Per Transaction </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter limit per transaction"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField
                 :model-value="data?.integrationType"
                 v-slot="{ componentField }"
                 name="integrationType"
@@ -582,6 +618,42 @@ watch(
                   <FormMessage />
                 </FormItem>
               </FormField>
+
+              <FormField
+                :model-value="data?.category"
+                v-slot="{ componentField }"
+                name="category"
+              >
+                <FormItem>
+                  <FormLabel> Category </FormLabel>
+                  <UiSelect v-bind="componentField">
+                    <FormControl>
+                      <UiSelectTrigger>
+                        <UiSelectValue
+                          :placeholder="
+                            data?.category
+                              ? data?.category
+                              : 'Select a category'
+                          "
+                        />
+                      </UiSelectTrigger>
+                    </FormControl>
+                    <UiSelectContent>
+                      <UiSelectGroup>
+                        <UiSelectItem
+                          v-for="(displayValue, enumKey) in PaymentCategory"
+                          :key="enumKey"
+                          :value="enumKey"
+                        >
+                          {{ displayValue }}
+                        </UiSelectItem>
+                      </UiSelectGroup>
+                    </UiSelectContent>
+                  </UiSelect>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+
               <FormField
                 :model-value="data?.transactionAmountType"
                 v-slot="{ componentField }"

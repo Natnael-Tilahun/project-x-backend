@@ -1,6 +1,6 @@
 import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-
+import type { Role } from "~/types";
 export const useRoles = () => {
   const runtimeConfig = useRuntimeConfig();
   const authUser = useAuthUser();
@@ -175,6 +175,37 @@ export const useRoles = () => {
     }
   };
 
+  const updateRoleStatus: (roleName: string, roleStatus: boolean) => Promise<Role> = async (roleName, roleStatus) => {
+    try {
+      const { data, pending, error, status } = await useFetch<Role>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/${roleName}?action=${roleStatus ? "enable" : "disable"}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+      isUpdating.value = pending.value;
+      if (status.value === "error") {
+        console.log("Updating role status error: ", error.value?.data?.message)
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
+          variant: "destructive"
+        })
+        throw new Error(error.value?.data);
+      }
+      if (!data.value) {
+        throw new Error("No roles data received");
+      }
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
   return {
     isLoading,
     isUpdating,
@@ -183,5 +214,6 @@ export const useRoles = () => {
     deleteRoleById,
     createNewRole,
     updateRolePermissions,
+    updateRoleStatus,
   };
 };

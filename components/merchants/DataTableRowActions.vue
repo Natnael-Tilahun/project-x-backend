@@ -80,7 +80,7 @@ async function deleteMerchants(id: string) {
         <UiAlertDialogCancel @click="setOpenEditModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="deleteMerchants(row.original.id)">
+        <UiAlertDialogAction @click="deleteMerchants(row.original.merchantId)">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"
