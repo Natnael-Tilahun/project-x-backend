@@ -850,13 +850,13 @@ interface Account {
 }
 
 interface Staff {
-  id:	string;
-  firstname: string | null
-  lastname:string | null
+  id?:	string | null;
+  firstname: string 
+  lastname:string
   displayName?:	string | null
-  mobileNo: string
-  emailAddress?:	string | null
-  active: boolean
+  mobileNo?: string | null
+  emailAddress:	string | null
+  active?: boolean | null
   joiningDate?:	string | null 
   }
 
@@ -875,8 +875,8 @@ parent	?:string | null
 
 interface StaffAssignment {
   id: string
-  startDate?: string 
-  endDate?: string 
+  startDate?: string | null
+  endDate?: string | null
   staff: Staff
   supervisor?: Staff
   office: Office

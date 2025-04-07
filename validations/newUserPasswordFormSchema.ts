@@ -4,7 +4,6 @@ import { z } from "zod";
 export const newUserPasswordFormSchema = toTypedSchema(
   z
     .object({
-      email: z.string(),
       newPassword: z.string().min(6),
       confirmPassword: z.string().min(6),
     })

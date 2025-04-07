@@ -93,32 +93,6 @@ onBeforeUnmount(() => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="displayName">
-              <FormItem>
-                <FormLabel>Display Name </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter staff display name"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField v-slot="{ componentField }" name="mobileNo">
-              <FormItem>
-                <FormLabel> Mobile Number </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter staff mobile number"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
             <FormField v-slot="{ componentField }" name="emailAddress">
               <FormItem>
                 <FormLabel> Email Address </FormLabel>
@@ -132,29 +106,6 @@ onBeforeUnmount(() => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="joiningDate">
-              <FormItem>
-                <FormLabel> Joining Date </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="date"
-                    placeholder="Enter joining date"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-              <FormField v-slot="{ value, handleChange }" name="active">
-                <FormItem>
-                  <FormLabel> Active </FormLabel>
-                  <FormControl>
-                    <UiSwitch :checked="value" @update:checked="handleChange" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="isSubmitting"

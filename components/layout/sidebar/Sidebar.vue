@@ -28,6 +28,7 @@
           <UiCollapsibleTrigger
             class="p-3 shadow-none w-full hover:text-primary"
           >
+      
             <NuxtLink
               :to="link.link"
       
@@ -48,27 +49,27 @@
             <ul
               class="dropdown-menu rounded-none flex flex-col gap-0 py-2 px-4"
             >
-              <!-- <li> -->
-              <NuxtLink
-                v-for="(item, dropdownIndex) in link.dropdown"
-                :key="dropdownIndex"
-                :to="item.link"
-                @click="closeMenuNav"
-                class="w-full border-l-2 hover:rounded-r-lg group-hover:border-primary hover:bg-accent px-4 py-3 hover:text-primary"
-                :class="{
-                  'text-primary bg-[#8C2A7C]/15 rounded-lg font-bold': isRouteActive(item.link),
-                }"
-              >
-                {{ item.title }}
-              </NuxtLink>
-              <!-- <UiSeparator class="mt-3 bg-zinc-300" /> -->
-              <!-- </li> -->
+              <template v-for="(item, dropdownIndex) in link.dropdown" :key="dropdownIndex">
+                <!-- <UiPermissionGuard :permission="item?.permission"> -->
+                  <NuxtLink
+                    :to="item.link"
+                    @click="closeMenuNav"
+                    class="w-full border-l-2 hover:rounded-r-lg group-hover:border-primary hover:bg-accent px-4 py-3 hover:text-primary"
+                    :class="{
+                      'text-primary bg-[#8C2A7C]/15 rounded-lg font-bold': isRouteActive(item.link),
+                    }"
+                  >
+                    {{ item.title }}
+                  </NuxtLink>
+                <!-- </UiPermissionGuard> -->
+              </template>
             </ul>
           </UiCollapsibleContent>
         </UiCollapsible>
 
+        <!-- <UiPermissionGuard v-if="link?.dropdown" :permission="link?.permission"> -->
         <NuxtLink
-          v-else
+         v-if="!link.dropdown"
           :to="link.link"
           @click="closeMenuNav"
           :class="{
@@ -79,6 +80,7 @@
           <span><Icon :name="link.icon" :size="link.size"></Icon></span>
           <p>{{ link.title }}</p>
         </NuxtLink>
+        <!-- </UiPermissionGuard> -->
       </template>
     </ul>
   </NuxtScrollbar>
@@ -94,6 +96,7 @@ const mainLinks = [
     link: "/",
     size: "22",
     showDropdown: false,
+    permission: "READ_DASHBOARD",
   },
   // {
   //   title: "Alerts",
@@ -108,9 +111,9 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Roles", link: "/userRoles" },
-      { title: "Permissions", link: "/userPermissions" },
-      { title: "Permission Groups", link: "/permissionGroups" },
+      { title: "Roles", link: "/userRoles", permission: "READ_ROLE" },
+      { title: "Permissions", link: "/userPermissions", permission: "READ_PERMISSION" },
+      { title: "Permission Groups", link: "/permissionGroups", permission: "READ_PERMISSION_GROUP" },
     ],
   },
   {
@@ -120,7 +123,7 @@ const mainLinks = [
     showDropdown: false,
     dropdown: [
       // { title: "Customers Roles", link: "/customerRoles" },
-      { title: "Customers", link: "/customers" },
+      { title: "Customers", link: "/customers", permission: "READ_CUSTOMER" },
       // { title: "Permissions", link: "/permissions" },
     ],
   },
@@ -131,7 +134,7 @@ const mainLinks = [
     showDropdown: false,
     dropdown: [
       // { title: "Customers Roles", link: "/customerRoles" },
-      { title: "Users", link: "/users" },
+      { title: "Users", link: "/users", permission: "READ_USER" },
       // { title: "Permissions", link: "/permissions" },
     ],
   },
@@ -141,9 +144,9 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Staffs", link: "/staffs" },
-      { title: "Offices", link: "/offices" },
-      { title: "Staff Assignments", link: "/staffAssignments" },
+      { title: "Staffs", link: "/staffs", permission: "READ_STAFF" },
+      { title: "Offices", link: "/offices", permission: "READ_OFFICE" },
+      { title: "Staff Assignments", link: "/staffAssignments", permission: "READ_STAFF_ASSIGNMENT" },
     ],
   },
   // {
@@ -162,6 +165,7 @@ const mainLinks = [
     icon: "material-symbols:partner-exchange-outline-rounded",
     link: "/merchants",
     size: "22",
+    permission: "READ_MERCHANT",
     showDropdown: false,
   },
   // {
@@ -191,9 +195,9 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Api Integrations", link: "/integrations" },
-      { title: "Payment Integrations", link: "/paymentIntegrations" },
-      { title: "Menu Categories", link: "/menuCategories" },
+      { title: "Api Integrations", link: "/integrations", permission: "READ_INTEGRATION" },
+      { title: "Payment Integrations", link: "/paymentIntegrations", permission: "READ_PAYMENT_INTEGRATION" },
+      { title: "Menu Categories", link: "/menuCategories", permission: "READ_MENU_CATEGORY" },
       // { title: "Auth Configurations", link: "/authConfigurations" },
     ],
   },
@@ -202,7 +206,7 @@ const mainLinks = [
     icon: "material-symbols:phone-android",
     size: "22",
     showDropdown: false,
-    dropdown: [{ title: "Applications", link: "/applications" }],
+    dropdown: [{ title: "Applications", link: "/applications", permission: "READ_APPLICATION" }],
   },
   {
     title: "Contract Management",
@@ -210,7 +214,7 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Contracts", link: "/contracts" },
+      { title: "Contracts", link: "/contracts", permission: "READ_CONTRACT" },
     ],
   },
   {
@@ -219,8 +223,8 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Banking Services", link: "/bankingServices" },
-      { title: "Service Definitions", link: "/serviceDefinitions" },
+      { title: "Banking Services", link: "/bankingServices", permission: "READ_BANKING_SERVICE" },
+      { title: "Service Definitions", link: "/serviceDefinitions", permission: "READ_SERVICE_DEFINITION" },
     ],
   },
   {
@@ -229,20 +233,23 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "FAQs", link: "/applicationContentManagement/faqs" },
+      { title: "FAQs", link: "/applicationContentManagement/faqs", permission: "READ_FAQ" },
       {
         title: "Privacy Policies",
         link: "/applicationContentManagement/privacy-policies",
+        permission: "READ_PRIVACY_POLICY",
       },
       {
         title: "Term & Conditions",
         link: "/applicationContentManagement/term-conditions",
+        permission: "READ_TERM_CONDITION",
       },
       {
         title: "Service Outage Messages",
         link: "/applicationContentManagement/service-outage-messages",
+        permission: "READ_SERVICE_OUTAGE_MESSAGE",
       },
-      { title: "Locations", link: "/applicationContentManagement/locations" },
+      { title: "Locations", link: "/applicationContentManagement/locations", permission: "READ_LOCATION" },
       // {
       //   title: "Customer Care Informations",
       //   link: "/applicationContentManagement/customer-care-info",
@@ -250,6 +257,7 @@ const mainLinks = [
       {
         title: "Ad Campaigns",
         link: "/applicationContentManagement/ad-campaigns",
+        permission: "READ_AD_CAMPAIGN",
       },
     ],
   },
@@ -259,7 +267,7 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Logs", link: "/log" },
+      { title: "Logs", link: "/logs", permission: "READ_LOG" },
       // { title: "Reports", link: "/reports" },
     ],
   },

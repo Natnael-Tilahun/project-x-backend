@@ -52,7 +52,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       ...values,
       supervisor: values.supervisor?.id ? values.supervisor : null,
       startDate: new Date(values.startDate).toISOString(),
-      endDate: new Date(values.endDate).toISOString(),
+      endDate: values.endDate ? new Date(values.endDate).toISOString() : null,
     };
     data.value = await updateStaffAssignment(values.id, newValues); // Call your API function to fetch profile
     navigateTo(`/staffAssignments/${data.value.id}`);
