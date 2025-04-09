@@ -1,4 +1,4 @@
-import { PaymentIntegrationType } from "@/global-types";
+import { LanguageRelatedStatus, PaymentIntegrationType } from "@/global-types";
 import { TransactionAmountType } from "@/global-types";
 import {
   Visibility,
@@ -881,4 +881,41 @@ interface StaffAssignment {
   supervisor?: Staff
   office: Office
   role: Role
+}
+
+interface UssdLanguage {
+  id?: string  
+  languageType: string
+  languageName: string
+  status: LanguageRelatedStatus
+}
+
+interface DefaultMessage {
+  id?: string
+  message: string
+  title: string
+  language: Language
+}
+
+interface LocalizedDefaultMessage {
+  id?: string
+  defaultMessageId: string
+  languageId:string
+  message: string
+  status: LanguageRelatedStatus
+}
+
+interface UssdMenuList{
+  id: string
+  menuName: string
+  visible: boolean
+  displayOrder: number
+}
+
+interface LocalizedUssdMenu{
+  id?: string
+  menuLanguageId: string
+  languageId: string
+  message: string
+  status: LanguageRelatedStatus
 }

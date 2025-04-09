@@ -228,6 +228,19 @@ const mainLinks = [
     ],
   },
   {
+    title: "USSD Management",
+    icon: "material-symbols:phone-android",
+    size: "22",
+    showDropdown: false,
+    dropdown: [
+      { title: "USSD Languages", link: "/ussdLanguages", permission: "READ_USSD_LANGUAGE" },
+      { title: "USSD Default Messages", link: "/ussdDefaultMessages", permission: "READ_USSD_DEFAULT_MESSAGE" },
+      { title: "USSD Localized Default Messages", link: "/ussdLocalizedMessages", permission: "READ_USSD_LOCALIZED_DEFAULT_MESSAGE" },
+      { title: "USSD Menus", link: "/ussdMenus", permission: "READ_USSD_MENU" },
+      { title: "USSD Localized Menus", link: "/ussdLocalizedMenus", permission: "READ_USSD_LOCALIZED_MENU" },
+    ],
+  },
+  {
     title: "Application Content Management",
     icon: "material-symbols:create-new-folder",
     size: "22",
