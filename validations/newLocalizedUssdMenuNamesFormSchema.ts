@@ -5,9 +5,9 @@ import { LanguageRelatedStatus } from "~/global-types";
 export const newLocalizedUssdMenuNamesFormSchema = toTypedSchema(
   z.object({
     id: z.string().optional().nullable(),
-    menuLanguageId: z.string(),
+    menuLanguageId: z.any(),
     languageId: z.string(),
     message: z.string(),
-    status: z.nativeEnum(LanguageRelatedStatus).default(LanguageRelatedStatus.VISIBLE),
+    status: z.boolean().default(true),
   })
 );

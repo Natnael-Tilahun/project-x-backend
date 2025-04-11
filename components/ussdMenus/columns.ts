@@ -5,7 +5,7 @@ import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import UssdMenusDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
-import type {  UssdMenuList } from "~/types";
+import type { UssdMenuList } from "~/types";
 
 export const columns: ColumnDef<UssdMenuList>[] = [
   {
@@ -50,7 +50,9 @@ export const columns: ColumnDef<UssdMenuList>[] = [
     header: "Visible",
     cell: ({ row }) => {
       const visible = row.getValue("visible");
-      return visible ? h("p", "Yes") : h("p", "No");
+      return visible
+        ? h(Badge, { class: "bg-green-500" }, "Yes")
+        : h(Badge, { class: "bg-red-500" }, "No");
     },
   },
   {
@@ -59,6 +61,14 @@ export const columns: ColumnDef<UssdMenuList>[] = [
     cell: ({ row }) => {
       const displayOrder = row.getValue("displayOrder");
       return displayOrder ? h("p", displayOrder) : h("p", "-");
+    },
+  },
+  {
+    accessorKey: "child",
+    header: "Childs",
+    cell: ({ row }) => {
+      const child = row.getValue("child");
+      return child ? h("p", child?.length) : h("p", "-");
     },
   },
   {

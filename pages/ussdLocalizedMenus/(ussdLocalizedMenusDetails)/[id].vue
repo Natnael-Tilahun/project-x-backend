@@ -15,7 +15,7 @@ import type { LocalizedUssdMenu, UssdLanguage, UssdMenuList } from "~/types";
 import { LanguageRelatedStatus } from "~/global-types";
 
 const route = useRoute();
-  const { getUssdLocalizedMenuById, isLoading, isSubmitting, getUssdLocalizedMenus } =
+  const { getUssdLocalizedMenuById, isLoading, isSubmitting, updateUssdLocalizedMenu, updateUssdLocalizedMenuStatus } =
   useUssdLocalizedMenus();
 const { getUssdMenus, isLoading: isLoadingUssdMenus } =
   useUssdMenus();
@@ -43,18 +43,16 @@ const form = useForm({
   validationSchema: newLocalizedUssdMenuNamesFormSchema,
 });
 
+const getUssdLocalizedMenuByIdData = async () => {
 try {
   isLoading.value = true;
   loading.value = true;
   data.value = await getUssdLocalizedMenuById(ussdLocalizedMenuId.value);
-  console.log(
-    "ussdLocalizedMenu.value data: ",
-  data.value
-  );
   form.setValues({
     id: data.value?.id,
     ...data.value,
-    menuLanguageId: data.value?.menuLanguageId.id,
+    menuLanguageId: data.value?.menuLanguageId?.id,
+    status: data.value?.status === "Visible" ? true : false,
   });
 } catch (err) {
   console.error("Error fetching ussd localized menu:", err);
@@ -63,12 +61,16 @@ try {
   isLoading.value = false;
   loading.value = false;
 }
+}
+
+await useAsyncData("ussdLocalizedMenuByIdData", async () => {
+  await getUssdLocalizedMenuByIdData();
+});
 
 const getUssdMenusData = async () => {
   try {
     isLoading.value = true;
     ussdMenus.value = await getUssdMenus();
-    console.log("ussdMenus: ", ussdMenus.value);
   } catch (err: any) {
     console.error("Error fetching ussd menus:", err.message);
     isError.value = true;
@@ -81,7 +83,6 @@ const getUssdLanguagesData = async () => {
   try {
     isLoadingUssdLanguages.value = true;
     ussdLanguages.value = await getUssdLanguages();
-    console.log("ussdLanguages: ", ussdLanguages.value);
   } catch (err: any) {
     console.error("Error fetching ussd languages:", err.message);
     isError.value = true;
@@ -99,14 +100,15 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     submitting.value = true;
     isSubmitting.value = true;
-    console.log("values: ", values);
     const newValues = {
-        ...values,
+      ...values,
+      status: values.status ? "Visible" : "Disable"
     }
-    console.log("newValues: ", newValues);
-    // data.value = await updateUssdLocalizedMenu(values.id, newValues); // Call your API function to fetch profile
-    // navigateTo(`/ussdLocalizedMenus/${data.value.id}`);
-    console.log("New ussd localized menu data; ", data.value);
+    console.log("newValues", newValues);
+   const response = await updateUssdLocalizedMenu(values.id, newValues); // Call your API function to fetch profile
+   await getUssdLocalizedMenuByIdData();
+   // navigateTo(`/ussdLocalizedMenus/${data.value.id}`);
+    console.log("New ussd localized menu data; ", response);
     toast({
       title: "Ussd Localized Menu Updated",
       description: "Ussd Localized Menu updated successfully",
@@ -122,6 +124,31 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
 
 
+const updatingUssdLocalizedMenuStatus = async (menuId: string, status: boolean) => {
+  try {
+    console.log("menuId", menuId);
+    console.log("status", status);
+    const statusValue = status ? "Visible" : "Disable";
+   const response = await updateUssdLocalizedMenuStatus(menuId, statusValue);
+   console.log("response", response);
+    toast({
+      title: "Ussd localized menu status updated",
+      description: "Ussd localized menu status updated successfully",
+    });
+    await getUssdLocalizedMenuByIdData();
+  } catch (err) {
+    console.error("Error updating ussd localized menu status:", err);
+    toast({
+      title: "Error updating ussd localized menu status",
+      description: "Error updating ussd localized menu status",
+    });
+    isError.value = true;
+  }
+}
+
+
+
+
 </script>
 
 <template>
@@ -130,7 +157,27 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       <UiLoading />
     </div>
     <UiCard v-else-if="data && !isError" class="w-full p-6">
-      <form @submit.prevent="onSubmit">
+      <form @submit.prevent="onSubmit" class="space-y-6 flex flex-col">
+        <!-- <div class="w-1/5 self-end flex flex-row gap-2 items-center"> -->
+        <FormField v-slot="{ value, handleChange }" name="status">
+              <FormItem
+                class="flex flex-row items-end justify-between self-end rounded-xl border pb-2 px-4 w-fit gap-10"
+              >
+                <FormLabel class="text-base "> Status </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value"   
+                  class="self-center"
+                  @update:checked="
+                          (checked) => {
+                            handleChange;
+                            updatingUssdLocalizedMenuStatus(data?.id || '', checked);
+                          }
+                  " 
+                  />
+                </FormControl>
+              </FormItem>
+            </FormField>
+        <!-- </div> -->
         <div class="grid grid-cols-2 gap-6">
           <FormField v-slot="{ componentField }" name="id">
             <FormItem>
@@ -194,41 +241,17 @@ const onSubmit = form.handleSubmit(async (values: any) => {
             </FormField>
           <FormField v-slot="{ componentField }" name="message">
             <FormItem>
-              <FormLabel>Ussd Default Message Message </FormLabel>
+              <FormLabel>Localized Message </FormLabel>
               <FormControl>
                 <UiTextarea
                   type="text"
-                  placeholder="Enter ussd default message message"
+                  placeholder="Enter localized menu message"
                   v-bind="componentField"
                 />
               </FormControl>
               <FormMessage />
             </FormItem>
           </FormField>
-
-          <FormField v-slot="{ componentField }" name="status">
-              <FormItem>
-                <FormLabel> Status </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a status" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in Object.values(LanguageRelatedStatus)"
-                        :value="item"
-                      >
-                        {{ item }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
-              </FormItem>
-            </FormField>
     
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton

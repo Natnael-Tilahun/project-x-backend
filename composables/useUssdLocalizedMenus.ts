@@ -1,6 +1,6 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { LocalizedDefaultMessage, LocalizedUssdMenu } from "~/types";
+import type { LocalizedDefaultMessage, LocalizedUssdMenu, UssdMenuList } from "~/types";
 
 export const useUssdLocalizedMenus = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -140,11 +140,12 @@ export const useUssdLocalizedMenus = () => {
 
   const updateUssdLocalizedMenu: (menuId: string, menuData: any) => Promise<LocalizedUssdMenu> = async (
     menuId,
-    menuData
+    menuData,
+    // menuData
   ) => {
     try {
       const { data, pending, error, status } = await useFetch<LocalizedUssdMenu>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/update-menu/${menuId}`,
+        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/edit-localized-menu-byId/${menuId}`,
         {
           method: "PUT",
           // headers: {
@@ -179,6 +180,55 @@ export const useUssdLocalizedMenus = () => {
 
       if (!data.value) {
         throw new Error("No localized menu with this menu id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
+  const updateUssdLocalizedMenuStatus: (id: string, status: string) => Promise<LocalizedUssdMenu> = async (
+    id,
+    status
+  ) => {
+    try {
+      const { data, pending, error, status: statusCode } = await useFetch<LocalizedUssdMenu>(
+        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/update-enable-disable?menuId=${id}&status=${status}`,
+        {
+          method: "PUT",
+          // headers: {
+          //   Authorization: `Bearer ${store.accessToken}`,
+          // },
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (statusCode.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+
+        if (error.value?.data?.type == "/constraint-violation") {
+          console.log(
+            "Updating ussd localized menu status error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log("Updating ussd localized menu status errorrr: ", error.value?.data?.message);
+        }
+        throw new Error(error.value?.data);
+      }
+
+      if (!data.value) {
+        throw new Error("No ussd localized menu status received");
       }
 
       return data.value;
@@ -242,6 +292,7 @@ export const useUssdLocalizedMenus = () => {
     getUssdLocalizedMenuById,
     createNewUssdLocalizedMenu,
     updateUssdLocalizedMenu,
+    updateUssdLocalizedMenuStatus,
     deleteUssdLocalizedMenu,
     isSubmitting,
   };

@@ -15,7 +15,7 @@ import type { DefaultMessage, LocalizedDefaultMessage, UssdLanguage } from "~/ty
 import { LanguageRelatedStatus } from "~/global-types";
 
 const route = useRoute();
-  const { getUssdLocalizedDefaultMessageById, updateUssdLocalizedDefaultMessage, isLoading, isSubmitting, getUssdLocalizedDefaultMessages } =
+  const { getUssdLocalizedDefaultMessageById, updateUssdLocalizedDefaultMessage, isLoading, isSubmitting, getUssdLocalizedDefaultMessages, updateUssdLocalizedDefaultMessageStatus } =
   useUssdLocalizedDefaultMessage();
 const { getUssdDefaultMessages, isLoading: isLoadingUssdDefaultMessages } =
   useUssdDefaultMessage();
@@ -42,17 +42,17 @@ const form = useForm({
   validationSchema: newLocalizedUssdDefaultMessagesFormSchema,
 });
 
+const getUssdLocalizedDefaultMessageByIdData = async () => {
 try {
   isLoading.value = true;
   loading.value = true;
   data.value = await getUssdLocalizedDefaultMessageById(ussdLocalizedDefaultMessageId.value);
-  console.log(
-    "ussdLocalizedDefaultMessage.value data: ",
-  data.value
-  );
   form.setValues({
     id: data.value?.id,
     ...data.value,
+    defaultMessageId: data.value?.defaultMessageId?.id,
+    languageId: data.value?.languageId,
+    status: data.value?.status == "Visible" ? true : false,
   });
 } catch (err) {
   console.error("Error fetching ussd localized default message:", err);
@@ -60,6 +60,7 @@ try {
 } finally {
   isLoading.value = false;
   loading.value = false;
+}
 }
 
 const getUssdDefaultMessagesData = async () => {
@@ -91,6 +92,7 @@ const getUssdLanguagesData = async () => {
 onMounted(async () => {
   await getUssdDefaultMessagesData();
   await getUssdLanguagesData();
+  await getUssdLocalizedDefaultMessageByIdData();
 });
 
 const onSubmit = form.handleSubmit(async (values: any) => {
@@ -99,10 +101,14 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     const newValues = {
         ...values,
+        status: values.status ? "Visible" : "Disable",
     }
     console.log("newValues: ", newValues);
     data.value = await updateUssdLocalizedDefaultMessage(values.id, newValues); // Call your API function to fetch profile
-    navigateTo(`/ussdLocalizedMessages/${data.value.id}`);
+    // navigateTo(`/ussdLocalizedMessages/${data.value.id}`);
+    await getUssdLocalizedDefaultMessageByIdData();
+    await getUssdDefaultMessagesData();
+    await getUssdLanguagesData();
     console.log("New ussd localized default message data; ", data.value);
     toast({
       title: "Ussd Localized Default Message Updated",
@@ -118,6 +124,30 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 });
 
 
+const updatingUssdLocalizedDefaultMessageStatus = async (menuId: string, status: boolean) => {
+  try {
+    console.log("menuId", menuId);
+    console.log("status", status);
+    const statusValue = status ? "Visible" : "Disable";
+    const response = await updateUssdLocalizedDefaultMessageStatus(menuId, statusValue);
+   console.log("response", response);
+    toast({
+      title: "Ussd localized menu status updated",
+      description: "Ussd localized menu status updated successfully",
+    });
+    await getUssdLocalizedDefaultMessageByIdData();
+    await getUssdDefaultMessagesData();
+    await getUssdLanguagesData();
+  } catch (err) {
+    console.error("Error updating ussd localized default message status:", err);
+    toast({
+      title: "Error updating ussd localized menu status",
+      description: "Error updating ussd localized menu status",
+    });
+    isError.value = true;
+  }
+}
+
 
 </script>
 
@@ -127,7 +157,25 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       <UiLoading />
     </div>
     <UiCard v-else-if="data && !isError" class="w-full p-6">
-      <form @submit.prevent="onSubmit">
+      <form @submit.prevent="onSubmit" class="space-y-6 flex flex-col">
+        <FormField v-slot="{ value, handleChange }" name="status">
+              <FormItem
+                class="flex flex-row items-end justify-between self-end rounded-xl border pb-2 px-4 w-fit gap-10"
+              >
+                <FormLabel class="text-base "> Status </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value"   
+                  class="self-center"
+                  @update:checked="
+                          (checked) => {
+                            handleChange;
+                            updatingUssdLocalizedDefaultMessageStatus(data?.id || '', checked);
+                          }
+                  " 
+                  />
+                </FormControl>
+              </FormItem>
+            </FormField>
         <div class="grid grid-cols-2 gap-6">
           <FormField v-slot="{ componentField }" name="id">
             <FormItem>
@@ -143,7 +191,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="defaultMessageId.id">
+          <FormField v-slot="{ componentField }" name="defaultMessageId">
               <FormItem>
                 <FormLabel> Ussd Default Message </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -203,7 +251,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
             </FormItem>
           </FormField>
 
-          <FormField v-slot="{ componentField }" name="status">
+          <!-- <FormField v-slot="{ componentField }" name="status">
               <FormItem>
                 <FormLabel> Status </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -225,7 +273,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 </UiSelect>
                 <FormMessage />
               </FormItem>
-            </FormField>
+            </FormField> -->
     
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton

@@ -61,15 +61,13 @@ onMounted(async () => {
 });
 
 const onSubmit = form.handleSubmit(async (values: any) => {
-  console.log("values: ", values);
-
   try {
     isSubmitting.value = true;
     isLoading.value = true;
     const newUssdLocalizedMenu = {
       ...values,
+      status: values.status ? "Visible" : "Disable",
     };
-    console.log("newUssdLocalizedMenu: ", newUssdLocalizedMenu);
     data.value = await createNewUssdLocalizedMenu(newUssdLocalizedMenu); // Call your API function to fetch profile
     navigateTo(`/ussdLocalizedMenus/${data.value.id}`);
     console.log("New ussd localized menu data; ", data.value);
@@ -90,9 +88,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 <template>
   <div class="w-full h-full flex flex-col gap-8">
     <div class="">
-      <h1 class="md:text-2xl text-lg font-medium">Create New Ussd Menu</h1>
+      <h1 class="md:text-2xl text-lg font-medium">Create New Localized Ussd Menu</h1>
       <p class="text-sm text-muted-foreground">
-        Create new ussd menu by including menu name, message, status
+        Create new localized ussd menu by including menu name, message, status
       </p>
     </div>
 
@@ -172,7 +170,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
-
+<!-- 
             <FormField v-slot="{ componentField }" name="status">
               <FormItem>
                 <FormLabel> Status </FormLabel>
@@ -194,6 +192,21 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                   </UiSelectContent>
                 </UiSelect>
                 <FormMessage />
+              </FormItem>
+            </FormField> -->
+            <FormField v-slot="{ value, handleChange }" name="status">
+              <FormItem
+                class="flex flex-row items-center justify-between self-end rounded-xl border p-2 px-4 w-full gap-10"
+              >
+                <FormLabel class="text-base "> Status </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value"   
+                  class="self-center"
+                  @update:checked="
+                       handleChange
+                  " 
+                  />
+                </FormControl>
               </FormItem>
             </FormField>
 

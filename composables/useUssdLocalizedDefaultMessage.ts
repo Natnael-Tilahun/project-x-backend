@@ -1,6 +1,6 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { DefaultMessage, LocalizedDefaultMessage } from "~/types";
+import type { DefaultMessage, LocalizedDefaultMessage, LocalizedUssdMenu } from "~/types";
 
 export const useUssdLocalizedDefaultMessage = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -144,7 +144,7 @@ export const useUssdLocalizedDefaultMessage = () => {
   ) => {
     try {
       const { data, pending, error, status } = await useFetch<LocalizedDefaultMessage>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/update-default-message/${defaultMessageId}`,
+        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/edit-localized-messages/${defaultMessageId}`,
         {
           method: "PUT",
           // headers: {
@@ -187,6 +187,56 @@ export const useUssdLocalizedDefaultMessage = () => {
       throw err;
     }
   };
+
+  const updateUssdLocalizedDefaultMessageStatus: (id: string, status: string) => Promise<LocalizedDefaultMessage> = async (
+    id,
+    status
+  ) => {
+    try {
+      const { data, pending, error, status: statusCode } = await useFetch<LocalizedDefaultMessage>(
+        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/${id}/${status}`,
+        {
+          method: "PUT",
+          // headers: {
+          //   Authorization: `Bearer ${store.accessToken}`,
+          // },
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (statusCode.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+
+        if (error.value?.data?.type == "/constraint-violation") {
+          console.log(
+            "Updating ussd localized default message status error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log("Updating ussd localized default message status errorrr: ", error.value?.data?.message);
+        }
+        throw new Error(error.value?.data);
+      }
+
+      if (!data.value) {
+        throw new Error("No ussd localized default message status received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
 
   const deleteUssdLocalizedDefaultMessage: (
     defaultMessageId: string,
@@ -243,6 +293,7 @@ export const useUssdLocalizedDefaultMessage = () => {
     createNewUssdLocalizedDefaultMessage,
     updateUssdLocalizedDefaultMessage,
     deleteUssdLocalizedDefaultMessage,
+    updateUssdLocalizedDefaultMessageStatus,
     isSubmitting,
   };
 };

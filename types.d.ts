@@ -902,7 +902,7 @@ interface LocalizedDefaultMessage {
   defaultMessageId: string
   languageId:string
   message: string
-  status: LanguageRelatedStatus
+  status: any
 }
 
 interface UssdMenuList{
@@ -910,11 +910,12 @@ interface UssdMenuList{
   menuName: string
   visible: boolean
   displayOrder: number
+  child?: UssdMenuList[] | null
 }
 
 interface LocalizedUssdMenu{
   id?: string
-  menuLanguageId: string
+  menuLanguageId: any
   languageId: string
   message: string
   status: LanguageRelatedStatus

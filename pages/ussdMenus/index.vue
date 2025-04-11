@@ -4,7 +4,7 @@ import { columns } from "~/components/ussdMenus/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { UssdMenuList } from "~/types";
 
-const { getUssdMenus, isLoading } = useUssdMenus();
+const { getUssdMenusWithChilds, isLoading } = useUssdMenus();
 const keyword = ref<string>("");
 const data = ref<UssdMenuList[]>([]);
 const loading = ref(isLoading.value);
@@ -16,8 +16,7 @@ const getUssdMenusData = async () => {
     isLoading.value = true;
     loading.value = true;
     isError.value = false;
-    const ussdMenus = await getUssdMenus(0, 100);
-    // Sort integrations by name alphabetically
+    const ussdMenus = await getUssdMenusWithChilds(0, 100);
     data.value = ussdMenus.sort((a, b) =>
       a.menuName.toLowerCase().localeCompare(b.menuName.toLowerCase())
     );
@@ -63,7 +62,9 @@ const refetch = async () => {
               :model-value="(table?.getColumn('menuName')?.getFilterValue() as string) ?? ''"
               class="h-8 w-[150px] lg:w-[250px]"
               @input="
-                table?.getColumn('menuName')?.setFilterValue($event.target.value)
+                table
+                  ?.getColumn('menuName')
+                  ?.setFilterValue($event.target.value)
               "
             />
           </div>

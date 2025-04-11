@@ -68,6 +68,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isLoading.value = true;
     const newUssdLocalizedDefaultMessage = {
       ...values,
+      status: values.status ? "Visible" : "Disable",
     };
     console.log("newUssdLocalizedDefaultMessage: ", newUssdLocalizedDefaultMessage);
     data.value = await createNewUssdLocalizedDefaultMessage(newUssdLocalizedDefaultMessage); // Call your API function to fetch profile
@@ -90,9 +91,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 <template>
   <div class="w-full h-full flex flex-col gap-8">
     <div class="">
-      <h1 class="md:text-2xl text-lg font-medium">Create New Ussd Default Message</h1>
+      <h1 class="md:text-2xl text-lg font-medium">Create New Ussd Localized Message</h1>
       <p class="text-sm text-muted-foreground">
-        Create new ussd default message by including title, message, status
+        Create new ussd localized default message by including title, message, status
       </p>
     </div>
 
@@ -146,19 +147,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <!-- <FormField v-slot="{ componentField }" name="title">
-              <FormItem>
-                <FormLabel>Title </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter title"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField> -->
             <FormField v-slot="{ componentField }" name="message">
               <FormItem>
                 <FormLabel>Message </FormLabel>
@@ -173,7 +161,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="status">
+            <!-- <FormField v-slot="{ componentField }" name="status">
               <FormItem>
                 <FormLabel> Status </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -193,6 +181,22 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField> -->
+
+            <FormField
+              :model-value="data?.status"
+              v-slot="{ value, handleChange }"
+              name="status"
+            >
+              <FormItem
+              class="flex flex-row items-end justify-between self-end rounded-xl border p-2 px-4 w-full gap-10"
+              >
+                <FormLabel>Status </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value" @update:checked="handleChange" />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             </FormField>
