@@ -93,7 +93,7 @@ export const useUssdMenus = () => {
   const getUssdMenuById: (id: string) => Promise<UssdMenuList> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdMenuList>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-lists/menu-names/${id}`,
+        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-lists/menu-names-by-id/${id}`,
         {
           method: "GET",
           // headers: {
