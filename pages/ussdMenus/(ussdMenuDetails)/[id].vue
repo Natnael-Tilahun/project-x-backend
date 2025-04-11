@@ -160,14 +160,14 @@ const updatingUssdMenuVisible = async (menuId: string, visible: boolean) => {
             <FormItem>
               <FormLabel> Childs </FormLabel>
               <UiSelect v-bind="componentField">
-                <FormControl>
+                <FormControl >
                   <UiSelectTrigger>
                     <UiSelectValue placeholder="Select a child" />
                   </UiSelectTrigger>
                 </FormControl>
                 <UiSelectContent>
                   <UiSelectGroup v-if="data?.child">
-                    <UiSelectItem v-for="item in data?.child" :value="item.id || ''">
+                    <UiSelectItem disabled v-for="item in data?.child" :value="item.id || ''">
                       {{ item.menuName }}
                     </UiSelectItem>
                   </UiSelectGroup>
