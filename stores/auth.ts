@@ -10,6 +10,7 @@ interface AuthState {
   refreshToken: string;
   refreshTokenExpiresIn: string;
   permissions: string[];
+  roles: string[];
 }
 
 interface AuthPayload {
@@ -32,7 +33,8 @@ export const useAuthStore = defineStore("auth", {
     accessToken: "",
     refreshToken: "",
     refreshTokenExpiresIn: "",
-    permissions: []
+    permissions: [],
+    roles: []
   }),
 
   actions: {
@@ -48,6 +50,10 @@ export const useAuthStore = defineStore("auth", {
 
     setPermissions(auth: { permissions: string[] }) {
       this.permissions = auth?.permissions ?? [];
+    },
+
+    setRoles(auth: { roles: string[] }) {
+      this.roles = auth?.roles ?? [];
     },
 
     $reset() {
@@ -67,7 +73,7 @@ export const useAuthStore = defineStore("auth", {
     },
 
     hasRole: (state) => {
-      return (role: string) => state.userRole === role;
+      return (role: string) => state.roles.includes(role);
     }
   },
   // persist: {

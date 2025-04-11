@@ -7,59 +7,56 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ref, onBeforeUnmount } from "vue";
+import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
-import { newStaffFormSchema } from "~/validations/newStaffFormSchema";
-import type { Office, Staff } from "~/types";
-const { createNewStaff, isLoading } = useStaffs();
+import { newUssdLanguageFormSchema } from "~/validations/newUssdLanguageFormSchema";
+import type { UssdLanguage } from "~/types";
+import { LanguageRelatedStatus } from "~/global-types";
+
+const { createNewUssdLanguage, getUssdLanguages, isLoading } =
+  useUssdLanguages();
 const isError = ref(false);
-const data = ref<Staff>();
+const data = ref<UssdLanguage>();
 const isSubmitting = ref(false);
-const loading = ref(false);
 
 const form = useForm({
-  validationSchema: newStaffFormSchema,
+  validationSchema: newUssdLanguageFormSchema,
 });
 
 const onSubmit = form.handleSubmit(async (values: any) => {
+  console.log("values: ", values);
+
   try {
     isSubmitting.value = true;
     isLoading.value = true;
-    console.log("values: ", values);
-    const newValues = {
+    const updatedValues = {
       ...values,
-      joiningDate: new Date().toISOString(),
-    }
-    const response = await createNewStaff(newValues); // Call your API function to fetch profile
-    data.value = response
-    console.log("New staff data; ", data.value);
+      status: values.status ? "Visible" : "Disable",
+    };
+    data.value = await createNewUssdLanguage(updatedValues); // Call your API function to fetch profile
+    navigateTo(`/ussdLanguages`);
+    console.log("New ussd language data; ", data.value);
     toast({
-      title: "Staff Created",
-      description: "Staff created successfully",
+      title: "Ussd Language Created",
+      description: "Ussd Language created successfully",
     });
-    navigateTo(`/staffs`);
   } catch (err: any) {
-    console.error("Error creating new staff:", err.message);
+    console.error("Error creating new ussd language:", err.message);
     isError.value = true;
   } finally {
     isLoading.value = false;
     isSubmitting.value = false;
   }
 });
-
-onBeforeUnmount(() => {
-  isError.value = false;
-  data.value = undefined;
-  isSubmitting.value = false;
-});
 </script>
 
 <template>
   <div class="w-full h-full flex flex-col gap-8">
     <div class="">
-      <h1 class="md:text-2xl text-lg font-medium">Create New Staff</h1>
+      <h1 class="md:text-2xl text-lg font-medium">Create New Ussd Language</h1>
       <p class="text-sm text-muted-foreground">
-        Create new staff by including First Name,external id, email, origanizational role type and phone number
+        Create new ussd language by including language name, language type,
+        status
       </p>
     </div>
 
@@ -67,45 +64,58 @@ onBeforeUnmount(() => {
       <div value="roleDetails" class="text-sm md:text-base p-6 basis-full">
         <form @submit="onSubmit">
           <div class="grid grid-cols-2 gap-6">
-            <FormField v-slot="{ componentField }" name="firstname">
+            <FormField v-slot="{ componentField }" name="languageName">
               <FormItem>
-                <FormLabel>First Name </FormLabel>
+                <FormLabel>Language Name </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
-                    placeholder="Enter staff first name"
+                    placeholder="Enter language name"
                     v-bind="componentField"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="lastname">
+            <FormField v-slot="{ componentField }" name="languageType">
               <FormItem>
-                <FormLabel>Last Name </FormLabel>
+                <FormLabel>Language Type </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
-                    placeholder="Enter staff last name"
+                    placeholder="Enter language type"
                     v-bind="componentField"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="emailAddress">
+
+
+            <FormField v-slot="{ componentField }" name="status">
               <FormItem>
-                <FormLabel> Email Address </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter email address"
-                    v-bind="componentField"
-                  />
-                </FormControl>
+                <FormLabel> Status </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a status" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(LanguageRelatedStatus)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
                 <FormMessage />
               </FormItem>
             </FormField>
+
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="isSubmitting"

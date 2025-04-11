@@ -285,6 +285,7 @@ const updadateRoleStatus = async (status: boolean) => {
               >
 
               <div class="flex items-center gap-4">
+                <UiPermissionGuard permission="UPDATE_ROLE" >
                 <UiBadge
                   :class="badgeBg(!data.disabled) + ' font-bold px-2 py-1'"
                   >{{ !data.disabled ? "Enabled" : "Disabled" }}</UiBadge
@@ -301,6 +302,7 @@ const updadateRoleStatus = async (status: boolean) => {
                     <FormMessage />
                   </FormItem>
                 </FormField>
+                </UiPermissionGuard>
               </div>
             </div>
 
@@ -472,6 +474,7 @@ const updadateRoleStatus = async (status: boolean) => {
                     </UiAccordionItem>
                   </template>
                 </UiAccordion>
+                <UiPermissionGuard permission="UPDATE_ROLE" >
             <div class="w-full flex justify-end">
               <UiButton :disabled="isUpdating" type="submit">
                 <Icon
@@ -482,6 +485,7 @@ const updadateRoleStatus = async (status: boolean) => {
                 Update</UiButton
               >
             </div>
+          </UiPermissionGuard>
           </UiTabsContent>
         </UiTabs>
       </UiCard>

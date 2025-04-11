@@ -12,11 +12,11 @@ import {
 import { newUserPasswordFormSchema } from "~/validations/newUserPasswordFormSchema";
 import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuth } from "~/composables/useAuth";
-import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 
 const store = useAuthStore();
-const { login, isLoading } = useAuth();
-const router = useRouter();
+const { setNewPassword, isLoading } = useAuth();
+const route = useRoute();
 let showPassword = ref(false);
 let showConfirmPassword = ref(false);
 
@@ -37,16 +37,23 @@ const toggleConfirmPasswordVisibility = () => {
 const onSubmit = form.handleSubmit(async (values: any) => {
   isLoading.value = true;
   const userCredentials = {
-    email: values.email,
-    password: values.newPassword,
+    key: route.query.key,
+    newPassword: values.newPassword,
   };
 console.log("userCredentials: ",userCredentials)
   try {
-    // const data = await login(userCredentials);
-    // If login is successful, navigate to the home page
+    const data = await setNewPassword(userCredentials);
     navigateTo("/login", { replace: true });
+    toast({
+      title: "Password updated successfully",
+      description: "You can now login with your new password",
+    });
   } catch (error) {
     console.error("Login error: ", error);
+    toast({
+      title: "Password update failed",
+      description: "Please try again",
+    });
   } finally {
     // Ensure to stop loading state whether login is successful or not
     isLoading.value = false;
@@ -58,21 +65,6 @@ console.log("userCredentials: ",userCredentials)
   <div :class="cn('grid gap-6', $attrs.class ?? '')">
     <form @submit="onSubmit">
       <div class="grid gap-3">
-        <FormField v-slot="{ componentField }" name="email">
-          <FormItem>
-            <FormLabel>Email</FormLabel>
-            <FormControl>
-              <UiInput
-                type="text"
-                placeholder="email"
-                v-bind="componentField"
-                :disabled="isLoading"
-                aria-autocomplete="email"
-              />
-            </FormControl>
-            <FormMessage />
-          </FormItem>
-        </FormField>
         <FormField v-slot="{ componentField }" name="newPassword">
           <FormItem>
             <FormLabel>New Password</FormLabel>

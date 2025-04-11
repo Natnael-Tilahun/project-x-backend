@@ -5,7 +5,7 @@ export const newStaffAssignmentsFormSchema = toTypedSchema(
   z.object({
     id: z.string().optional(),
     startDate: z.union([z.string(), z.date()]),
-    endDate: z.union([z.string(), z.date()]),
+    endDate: z.union([z.string(), z.date()]).optional().nullable(),
     staff: z.object({
       id: z.string({ required_error: "Staff is required" })
     }),
