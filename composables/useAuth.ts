@@ -219,6 +219,32 @@ export const useAuth = () => {
     }
   };
 
+  const setNewPassword = async (newData: any) => {
+    try {
+      const { data, pending, error, status } = await useFetch(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/users/reset-password/finish`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+          body: newData,
+        }
+      );
+      
+      if (status.value === "error") {
+        throw new Error("New password error: " + error.value);
+      }
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+  
+
+
+
   return {
     login,
     userLoggedIn,
@@ -229,5 +255,6 @@ export const useAuth = () => {
     isLoading,
     getProfile,
     getRefreshToken,
+    setNewPassword,
   };
 };

@@ -433,3 +433,8 @@ export enum Gender {
   FEMALE = "FEMALE",
   NONE = "NONE",
 }
+
+export enum LanguageRelatedStatus {
+  VISIBLE = "Visible",
+  DISABLE = "Disable",
+}

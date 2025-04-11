@@ -134,7 +134,7 @@ export const columns: ColumnDef<Staff>[] = [
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}/${staffId}`,
+              to: `${route.path}/${userId}`,
             },
             row.getValue("user")?.phone
           )
