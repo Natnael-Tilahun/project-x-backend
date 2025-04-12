@@ -61,15 +61,19 @@ export const columns: ColumnDef<LocalizedUssdMenu>[] = [
       if (status == "Visible") {
         return h(Badge, { class: "bg-green-600 " }, row.original.status);
       } else {
-        return h(Badge, { class: "bg-red-500 whitespace-nowrap" }, row.original.status);
+        return h(
+          Badge,
+          { class: "bg-red-500 whitespace-nowrap" },
+          row.original.status
+        );
       }
     },
   },
   {
-    accessorKey: "languageId",
+    accessorKey: "language",
     header: "Language",
     cell: ({ row }) => {
-      const language = row.getValue("languageId");
+      const language = row.getValue("language").id;
       return language
         ? h(
             NuxtLink,
@@ -78,16 +82,16 @@ export const columns: ColumnDef<LocalizedUssdMenu>[] = [
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `/ussdLanguages/${language}`,
             },
-            row.original.languageId
+            row.getValue("language").languageName
           )
         : h("p", "-");
     },
   },
   {
-    accessorKey: "menuLanguageId",
-    header: "Menu Language",
+    accessorKey: "defaultMenu",
+    header: "Default Menu",
     cell: ({ row }) => {
-      const menuLanguage = row.original.menuLanguageId.id;
+      const menuLanguage = row.original.defaultMenu.id;
       return menuLanguage
         ? h(
             NuxtLink,
@@ -96,7 +100,7 @@ export const columns: ColumnDef<LocalizedUssdMenu>[] = [
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `/ussdMenus/${menuLanguage}`,
             },
-            row.original.menuLanguageId.message
+            row.original.defaultMenu.message
           )
         : h("p", "-");
     },

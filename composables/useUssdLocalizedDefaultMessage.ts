@@ -1,6 +1,10 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { DefaultMessage, LocalizedDefaultMessage, LocalizedUssdMenu } from "~/types";
+import type {
+  DefaultMessage,
+  LocalizedDefaultMessage,
+  LocalizedUssdMenu,
+} from "~/types";
 
 export const useUssdLocalizedDefaultMessage = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -9,13 +13,15 @@ export const useUssdLocalizedDefaultMessage = () => {
 
   const store = useAuthStore();
 
-  const getUssdLocalizedDefaultMessages: (page?: number, size?: number) => Promise<LocalizedDefaultMessage[]> = async (
-    page,
-    size
-  ) => {
+  const getUssdLocalizedDefaultMessages: (
+    page?: number,
+    size?: number
+  ) => Promise<LocalizedDefaultMessage[]> = async (page, size) => {
     try {
-      const { data, pending, error, status } = await useFetch<LocalizedDefaultMessage[]>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages`,
+      const { data, pending, error, status } = await useFetch<
+        LocalizedDefaultMessage[]
+      >(
+        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/by-language`,
         {
           method: "GET",
           // headers: {
@@ -49,17 +55,20 @@ export const useUssdLocalizedDefaultMessage = () => {
     }
   };
 
-  const getUssdLocalizedDefaultMessageById: (id: string) => Promise<LocalizedDefaultMessage> = async (id) => {
+  const getUssdLocalizedDefaultMessageById: (
+    id: string
+  ) => Promise<LocalizedDefaultMessage> = async (id) => {
     try {
-      const { data, pending, error, status } = await useFetch<LocalizedDefaultMessage>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/${id}`,
-        {
-          method: "GET",
-          // headers: {
-          //   Authorization: `Bearer ${store.accessToken}`,
-          // },
-        }
-      );
+      const { data, pending, error, status } =
+        await useFetch<LocalizedDefaultMessage>(
+          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/${id}`,
+          {
+            method: "GET",
+            // headers: {
+            //   Authorization: `Bearer ${store.accessToken}`,
+            // },
+          }
+        );
 
       isLoading.value = pending.value;
 
@@ -86,18 +95,21 @@ export const useUssdLocalizedDefaultMessage = () => {
     }
   };
 
-  const createNewUssdLocalizedDefaultMessage: (defaultMessageData: any) => Promise<LocalizedDefaultMessage> = async (defaultMessageData) => {
+  const createNewUssdLocalizedDefaultMessage: (
+    defaultMessageData: any
+  ) => Promise<LocalizedDefaultMessage> = async (defaultMessageData) => {
     try {
-      const { data, pending, error, status } = await useFetch<LocalizedDefaultMessage>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages`,
-        {
-          method: "POST",
-          // headers: {
-          //   Authorization: `Bearer ${store.accessToken}`,
-          // },
-          body: JSON.stringify(defaultMessageData),
-        }
-      );
+      const { data, pending, error, status } =
+        await useFetch<LocalizedDefaultMessage>(
+          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages`,
+          {
+            method: "POST",
+            // headers: {
+            //   Authorization: `Bearer ${store.accessToken}`,
+            // },
+            body: JSON.stringify(defaultMessageData),
+          }
+        );
 
       isLoading.value = pending.value;
 
@@ -111,7 +123,10 @@ export const useUssdLocalizedDefaultMessage = () => {
           variant: "destructive",
         });
 
-        console.log("Creating new localized default message error: ", error.value?.data.detail);
+        console.log(
+          "Creating new localized default message error: ",
+          error.value?.data.detail
+        );
 
         if (error.value?.data?.type == "/constraint-violation") {
           console.log(
@@ -138,21 +153,25 @@ export const useUssdLocalizedDefaultMessage = () => {
     }
   };
 
-  const updateUssdLocalizedDefaultMessage: (defaultMessageId: string, defaultMessageData: any) => Promise<LocalizedDefaultMessage> = async (
+  const updateUssdLocalizedDefaultMessage: (
+    defaultMessageId: string,
+    defaultMessageData: any
+  ) => Promise<LocalizedDefaultMessage> = async (
     defaultMessageId,
     defaultMessageData
   ) => {
     try {
-      const { data, pending, error, status } = await useFetch<LocalizedDefaultMessage>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/edit-localized-messages/${defaultMessageId}`,
-        {
-          method: "PUT",
-          // headers: {
-          //   Authorization: `Bearer ${store.accessToken}`,
-          // },
-          body: JSON.stringify(defaultMessageData),
-        }
-      );
+      const { data, pending, error, status } =
+        await useFetch<LocalizedDefaultMessage>(
+          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/edit-localized-messages/${defaultMessageId}`,
+          {
+            method: "PUT",
+            // headers: {
+            //   Authorization: `Bearer ${store.accessToken}`,
+            // },
+            body: JSON.stringify(defaultMessageData),
+          }
+        );
 
       isSubmitting.value = pending.value;
 
@@ -172,13 +191,18 @@ export const useUssdLocalizedDefaultMessage = () => {
             error.value?.data?.fieldErrors[0].message
           );
         } else {
-          console.log("Updating localized default message errorrr: ", error.value?.data?.message);
+          console.log(
+            "Updating localized default message errorrr: ",
+            error.value?.data?.message
+          );
         }
         throw new Error(error.value?.data);
       }
 
       if (!data.value) {
-        throw new Error("No localized default message with this default message id received");
+        throw new Error(
+          "No localized default message with this default message id received"
+        );
       }
 
       return data.value;
@@ -188,12 +212,17 @@ export const useUssdLocalizedDefaultMessage = () => {
     }
   };
 
-  const updateUssdLocalizedDefaultMessageStatus: (id: string, status: string) => Promise<LocalizedDefaultMessage> = async (
-    id,
-    status
-  ) => {
+  const updateUssdLocalizedDefaultMessageStatus: (
+    id: string,
+    status: string
+  ) => Promise<LocalizedDefaultMessage> = async (id, status) => {
     try {
-      const { data, pending, error, status: statusCode } = await useFetch<LocalizedDefaultMessage>(
+      const {
+        data,
+        pending,
+        error,
+        status: statusCode,
+      } = await useFetch<LocalizedDefaultMessage>(
         `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/${id}/${status}`,
         {
           method: "PUT",
@@ -221,7 +250,10 @@ export const useUssdLocalizedDefaultMessage = () => {
             error.value?.data?.fieldErrors[0].message
           );
         } else {
-          console.log("Updating ussd localized default message status errorrr: ", error.value?.data?.message);
+          console.log(
+            "Updating ussd localized default message status errorrr: ",
+            error.value?.data?.message
+          );
         }
         throw new Error(error.value?.data);
       }
@@ -237,20 +269,20 @@ export const useUssdLocalizedDefaultMessage = () => {
     }
   };
 
-
   const deleteUssdLocalizedDefaultMessage: (
-    defaultMessageId: string,
-    ) => Promise<LocalizedDefaultMessage | null> = async (defaultMessageId) => {
+    defaultMessageId: string
+  ) => Promise<LocalizedDefaultMessage | null> = async (defaultMessageId) => {
     try {
-      const { data, pending, error, status } = await useFetch<LocalizedDefaultMessage>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/${defaultMessageId}`,
-        {
-          method: "DELETE",
-          // headers: {
-          //   Authorization: `Bearer ${store.accessToken}`,
-          // },
-        }
-      );
+      const { data, pending, error, status } =
+        await useFetch<LocalizedDefaultMessage>(
+          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/${defaultMessageId}`,
+          {
+            method: "DELETE",
+            // headers: {
+            //   Authorization: `Bearer ${store.accessToken}`,
+            // },
+          }
+        );
 
       isSubmitting.value = pending.value;
 
@@ -284,7 +316,6 @@ export const useUssdLocalizedDefaultMessage = () => {
       throw err;
     }
   };
-
 
   return {
     isLoading,
