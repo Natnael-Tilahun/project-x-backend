@@ -1,6 +1,10 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { LocalizedDefaultMessage, LocalizedUssdMenu, UssdMenuList } from "~/types";
+import type {
+  LocalizedDefaultMessage,
+  LocalizedUssdMenu,
+  UssdMenuList,
+} from "~/types";
 
 export const useUssdLocalizedMenus = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -9,13 +13,15 @@ export const useUssdLocalizedMenus = () => {
 
   const store = useAuthStore();
 
-  const getUssdLocalizedMenus: (page?: number, size?: number) => Promise<LocalizedUssdMenu[]> = async (
-    page,
-    size
-  ) => {
+  const getUssdLocalizedMenus: (
+    page?: number,
+    size?: number
+  ) => Promise<LocalizedUssdMenu[]> = async (page, size) => {
     try {
-      const { data, pending, error, status } = await useFetch<LocalizedUssdMenu[]>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu`,
+      const { data, pending, error, status } = await useFetch<
+        LocalizedUssdMenu[]
+      >(
+        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/by-language`,
         {
           method: "GET",
           // headers: {
@@ -49,17 +55,20 @@ export const useUssdLocalizedMenus = () => {
     }
   };
 
-  const getUssdLocalizedMenuById: (id: string) => Promise<LocalizedUssdMenu> = async (id) => {
+  const getUssdLocalizedMenuById: (
+    id: string
+  ) => Promise<LocalizedUssdMenu> = async (id) => {
     try {
-      const { data, pending, error, status } = await useFetch<LocalizedUssdMenu>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/${id}`,
-        {
-          method: "GET",
-          // headers: {
-          //   Authorization: `Bearer ${store.accessToken}`,
-          // },
-        }
-      );
+      const { data, pending, error, status } =
+        await useFetch<LocalizedUssdMenu>(
+          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/${id}`,
+          {
+            method: "GET",
+            // headers: {
+            //   Authorization: `Bearer ${store.accessToken}`,
+            // },
+          }
+        );
 
       isLoading.value = pending.value;
 
@@ -86,18 +95,21 @@ export const useUssdLocalizedMenus = () => {
     }
   };
 
-  const createNewUssdLocalizedMenu: (defaultMessageData: any) => Promise<LocalizedUssdMenu> = async (defaultMessageData) => {
+  const createNewUssdLocalizedMenu: (
+    defaultMessageData: any
+  ) => Promise<LocalizedUssdMenu> = async (defaultMessageData) => {
     try {
-      const { data, pending, error, status } = await useFetch<LocalizedUssdMenu>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu`,
-        {
-          method: "POST",
-          // headers: {
-          //   Authorization: `Bearer ${store.accessToken}`,
-          // },
-          body: JSON.stringify(defaultMessageData),
-        }
-      );
+      const { data, pending, error, status } =
+        await useFetch<LocalizedUssdMenu>(
+          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu`,
+          {
+            method: "POST",
+            // headers: {
+            //   Authorization: `Bearer ${store.accessToken}`,
+            // },
+            body: JSON.stringify(defaultMessageData),
+          }
+        );
 
       isLoading.value = pending.value;
 
@@ -111,7 +123,10 @@ export const useUssdLocalizedMenus = () => {
           variant: "destructive",
         });
 
-        console.log("Creating new localized menu error: ", error.value?.data.detail);
+        console.log(
+          "Creating new localized menu error: ",
+          error.value?.data.detail
+        );
 
         if (error.value?.data?.type == "/constraint-violation") {
           console.log(
@@ -138,22 +153,26 @@ export const useUssdLocalizedMenus = () => {
     }
   };
 
-  const updateUssdLocalizedMenu: (menuId: string, menuData: any) => Promise<LocalizedUssdMenu> = async (
+  const updateUssdLocalizedMenu: (
+    menuId: string,
+    menuData: any
+  ) => Promise<LocalizedUssdMenu> = async (
     menuId,
-    menuData,
+    menuData
     // menuData
   ) => {
     try {
-      const { data, pending, error, status } = await useFetch<LocalizedUssdMenu>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/edit-localized-menu-byId/${menuId}`,
-        {
-          method: "PUT",
-          // headers: {
-          //   Authorization: `Bearer ${store.accessToken}`,
-          // },
-          body: JSON.stringify(menuData),
-        }
-      );
+      const { data, pending, error, status } =
+        await useFetch<LocalizedUssdMenu>(
+          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/edit-localized-menu-byId/${menuId}`,
+          {
+            method: "PUT",
+            // headers: {
+            //   Authorization: `Bearer ${store.accessToken}`,
+            // },
+            body: JSON.stringify(menuData),
+          }
+        );
 
       isSubmitting.value = pending.value;
 
@@ -173,7 +192,10 @@ export const useUssdLocalizedMenus = () => {
             error.value?.data?.fieldErrors[0].message
           );
         } else {
-          console.log("Updating localized menu errorrr: ", error.value?.data?.message);
+          console.log(
+            "Updating localized menu errorrr: ",
+            error.value?.data?.message
+          );
         }
         throw new Error(error.value?.data);
       }
@@ -189,12 +211,17 @@ export const useUssdLocalizedMenus = () => {
     }
   };
 
-  const updateUssdLocalizedMenuStatus: (id: string, status: string) => Promise<LocalizedUssdMenu> = async (
-    id,
-    status
-  ) => {
+  const updateUssdLocalizedMenuStatus: (
+    id: string,
+    status: string
+  ) => Promise<LocalizedUssdMenu> = async (id, status) => {
     try {
-      const { data, pending, error, status: statusCode } = await useFetch<LocalizedUssdMenu>(
+      const {
+        data,
+        pending,
+        error,
+        status: statusCode,
+      } = await useFetch<LocalizedUssdMenu>(
         `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/update-enable-disable?menuId=${id}&status=${status}`,
         {
           method: "PUT",
@@ -222,7 +249,10 @@ export const useUssdLocalizedMenus = () => {
             error.value?.data?.fieldErrors[0].message
           );
         } else {
-          console.log("Updating ussd localized menu status errorrr: ", error.value?.data?.message);
+          console.log(
+            "Updating ussd localized menu status errorrr: ",
+            error.value?.data?.message
+          );
         }
         throw new Error(error.value?.data);
       }
@@ -239,18 +269,19 @@ export const useUssdLocalizedMenus = () => {
   };
 
   const deleteUssdLocalizedMenu: (
-    menuId: string,
-    ) => Promise<LocalizedUssdMenu | null> = async (menuId) => {
+    menuId: string
+  ) => Promise<LocalizedUssdMenu | null> = async (menuId) => {
     try {
-      const { data, pending, error, status } = await useFetch<LocalizedUssdMenu>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/${menuId}`,
-        {
-          method: "DELETE",
-          // headers: {
-          //   Authorization: `Bearer ${store.accessToken}`,
-          // },
-        }
-      );
+      const { data, pending, error, status } =
+        await useFetch<LocalizedUssdMenu>(
+          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/${menuId}`,
+          {
+            method: "DELETE",
+            // headers: {
+            //   Authorization: `Bearer ${store.accessToken}`,
+            // },
+          }
+        );
 
       isSubmitting.value = pending.value;
 
@@ -284,7 +315,6 @@ export const useUssdLocalizedMenus = () => {
       throw err;
     }
   };
-
 
   return {
     isLoading,

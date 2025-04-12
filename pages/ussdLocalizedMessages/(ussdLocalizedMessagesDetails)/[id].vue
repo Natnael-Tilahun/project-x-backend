@@ -11,22 +11,33 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import type { DefaultMessage, LocalizedDefaultMessage, UssdLanguage } from "~/types";
+import type {
+  DefaultMessage,
+  LocalizedDefaultMessage,
+  UssdLanguage,
+} from "~/types";
 import { LanguageRelatedStatus } from "~/global-types";
 
 const route = useRoute();
-  const { getUssdLocalizedDefaultMessageById, updateUssdLocalizedDefaultMessage, isLoading, isSubmitting, getUssdLocalizedDefaultMessages, updateUssdLocalizedDefaultMessageStatus } =
-  useUssdLocalizedDefaultMessage();
+const {
+  getUssdLocalizedDefaultMessageById,
+  updateUssdLocalizedDefaultMessage,
+  isLoading,
+  isSubmitting,
+  getUssdLocalizedDefaultMessages,
+  updateUssdLocalizedDefaultMessageStatus,
+} = useUssdLocalizedDefaultMessage();
 const { getUssdDefaultMessages, isLoading: isLoadingUssdDefaultMessages } =
   useUssdDefaultMessage();
-const { getUssdLanguages, isLoading: isLoadingUssdLanguages } = useUssdLanguages();
+const { getUssdLanguages, isLoading: isLoadingUssdLanguages } =
+  useUssdLanguages();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
 const ussdLocalizedDefaultMessageId = ref<string>("");
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
 const isError = ref(false);
-const data = ref<LocalizedDefaultMessage>();
+const data = ref<LocalizedDefaultMessage>({});
 const ussdDefaultMessages = ref<DefaultMessage[]>([]);
 const ussdLanguages = ref<UssdLanguage[]>([]);
 
@@ -43,25 +54,27 @@ const form = useForm({
 });
 
 const getUssdLocalizedDefaultMessageByIdData = async () => {
-try {
-  isLoading.value = true;
-  loading.value = true;
-  data.value = await getUssdLocalizedDefaultMessageById(ussdLocalizedDefaultMessageId.value);
-  form.setValues({
-    id: data.value?.id,
-    ...data.value,
-    defaultMessageId: data.value?.defaultMessageId?.id,
-    languageId: data.value?.languageId,
-    status: data.value?.status == "Visible" ? true : false,
-  });
-} catch (err) {
-  console.error("Error fetching ussd localized default message:", err);
-  isError.value = true;
-} finally {
-  isLoading.value = false;
-  loading.value = false;
-}
-}
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    data.value = await getUssdLocalizedDefaultMessageById(
+      ussdLocalizedDefaultMessageId.value
+    );
+    form.setValues({
+      id: data.value?.id,
+      ...data.value,
+      defaultMessageId: data.value?.defaultMessageId?.id,
+      languageId: data.value?.languageId,
+      status: data.value?.status == "Visible" ? true : false,
+    });
+  } catch (err) {
+    console.error("Error fetching ussd localized default message:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
 
 const getUssdDefaultMessagesData = async () => {
   try {
@@ -100,9 +113,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = true;
     isSubmitting.value = true;
     const newValues = {
-        ...values,
-        status: values.status ? "Visible" : "Disable",
-    }
+      ...values,
+      status: values.status ? "Visible" : "Disable",
+    };
     console.log("newValues: ", newValues);
     data.value = await updateUssdLocalizedDefaultMessage(values.id, newValues); // Call your API function to fetch profile
     // navigateTo(`/ussdLocalizedMessages/${data.value.id}`);
@@ -123,14 +136,19 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   }
 });
 
-
-const updatingUssdLocalizedDefaultMessageStatus = async (menuId: string, status: boolean) => {
+const updatingUssdLocalizedDefaultMessageStatus = async (
+  menuId: string,
+  status: boolean
+) => {
   try {
     console.log("menuId", menuId);
     console.log("status", status);
     const statusValue = status ? "Visible" : "Disable";
-    const response = await updateUssdLocalizedDefaultMessageStatus(menuId, statusValue);
-   console.log("response", response);
+    const response = await updateUssdLocalizedDefaultMessageStatus(
+      menuId,
+      statusValue
+    );
+    console.log("response", response);
     toast({
       title: "Ussd localized menu status updated",
       description: "Ussd localized menu status updated successfully",
@@ -146,9 +164,7 @@ const updatingUssdLocalizedDefaultMessageStatus = async (menuId: string, status:
     });
     isError.value = true;
   }
-}
-
-
+};
 </script>
 
 <template>
@@ -159,23 +175,27 @@ const updatingUssdLocalizedDefaultMessageStatus = async (menuId: string, status:
     <UiCard v-else-if="data && !isError" class="w-full p-6">
       <form @submit.prevent="onSubmit" class="space-y-6 flex flex-col">
         <FormField v-slot="{ value, handleChange }" name="status">
-              <FormItem
-                class="flex flex-row items-end justify-between self-end rounded-xl border pb-2 px-4 w-fit gap-10"
-              >
-                <FormLabel class="text-base "> Status </FormLabel>
-                <FormControl>
-                  <UiSwitch :checked="value"   
-                  class="self-center"
-                  @update:checked="
-                          (checked) => {
-                            handleChange;
-                            updatingUssdLocalizedDefaultMessageStatus(data?.id || '', checked);
-                          }
-                  " 
-                  />
-                </FormControl>
-              </FormItem>
-            </FormField>
+          <FormItem
+            class="flex flex-row items-end justify-between self-end rounded-xl border pb-2 px-4 w-fit gap-10"
+          >
+            <FormLabel class="text-base"> Status </FormLabel>
+            <FormControl>
+              <UiSwitch
+                :checked="value"
+                class="self-center"
+                @update:checked="
+                  (checked) => {
+                    handleChange;
+                    updatingUssdLocalizedDefaultMessageStatus(
+                      data?.id || '',
+                      checked
+                    );
+                  }
+                "
+              />
+            </FormControl>
+          </FormItem>
+        </FormField>
         <div class="grid grid-cols-2 gap-6">
           <FormField v-slot="{ componentField }" name="id">
             <FormItem>
@@ -192,58 +212,60 @@ const updatingUssdLocalizedDefaultMessageStatus = async (menuId: string, status:
             </FormItem>
           </FormField>
           <FormField v-slot="{ componentField }" name="defaultMessageId">
-              <FormItem>
-                <FormLabel> Ussd Default Message </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a ussd default message" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in ussdDefaultMessages"
-                        :value="item.id || ''"
-                      >
-                        {{ item.title }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField v-slot="{ componentField }" name="languageId">
-              <FormItem>
-                <FormLabel> Language </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a language" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in ussdLanguages"
-                        :value="item.id || ''"
-                      >
-                        {{ item.languageName }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
-              </FormItem>
-            </FormField>
+            <FormItem>
+              <FormLabel> Ussd Default Message </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue
+                      placeholder="Select a ussd default message"
+                    />
+                  </UiSelectTrigger>
+                </FormControl>
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-for="item in ussdDefaultMessages"
+                      :value="item.id || ''"
+                    >
+                      {{ item.title }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="languageId">
+            <FormItem>
+              <FormLabel> Language </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue placeholder="Select a language" />
+                  </UiSelectTrigger>
+                </FormControl>
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-for="item in ussdLanguages"
+                      :value="item.id || ''"
+                    >
+                      {{ item.languageName }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+              <FormMessage />
+            </FormItem>
+          </FormField>
           <FormField v-slot="{ componentField }" name="message">
             <FormItem>
-              <FormLabel>Ussd Default Message Message </FormLabel>
+              <FormLabel>Ussd Localized Message </FormLabel>
               <FormControl>
                 <UiTextarea
                   type="text"
-                  placeholder="Enter ussd default message message"
+                  placeholder="Enter ussd localized message"
                   v-bind="componentField"
                 />
               </FormControl>
@@ -274,7 +296,7 @@ const updatingUssdLocalizedDefaultMessageStatus = async (menuId: string, status:
                 <FormMessage />
               </FormItem>
             </FormField> -->
-    
+
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"
@@ -297,8 +319,8 @@ const updatingUssdLocalizedDefaultMessageStatus = async (menuId: string, status:
         </div>
       </form>
     </UiCard>
-    <div v-else-if="data == null || data == undefined">
-      <UiNoResultFound title="Sorry, No ussd language found." />
+    <div v-else-if="!loading && (data == null || data == undefined)">
+      <UiNoResultFound title="Sorry, No localized message found." />
     </div>
     <div v-else-if="isError">
       <ErrorMessage title="Something went wrong." />
