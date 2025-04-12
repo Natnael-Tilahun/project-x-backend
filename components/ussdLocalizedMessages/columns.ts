@@ -61,15 +61,19 @@ export const columns: ColumnDef<LocalizedDefaultMessage>[] = [
       if (status == "Visible") {
         return h(Badge, { class: "bg-green-600 " }, row.getValue("status"));
       } else {
-        return h(Badge, { class: "bg-red-500 whitespace-nowrap" }, row.getValue("status"));
+        return h(
+          Badge,
+          { class: "bg-red-500 whitespace-nowrap" },
+          row.getValue("status")
+        );
       }
     },
   },
   {
-    accessorKey: "languageId",
+    accessorKey: "language",
     header: "Language",
     cell: ({ row }) => {
-      const language = row.getValue("languageId");
+      const language = row.getValue("language").id;
       return language
         ? h(
             NuxtLink,
@@ -78,7 +82,25 @@ export const columns: ColumnDef<LocalizedDefaultMessage>[] = [
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `/ussdLanguages/${language}`,
             },
-            row.getValue("languageId")
+            row.getValue("language").languageName
+          )
+        : h("p", "-");
+    },
+  },
+  {
+    accessorKey: "defaultMessage",
+    header: "Default Message",
+    cell: ({ row }) => {
+      const menuLanguage = row.original.defaultMessage.id;
+      return menuLanguage
+        ? h(
+            NuxtLink,
+            {
+              class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `/ussdMenus/${menuLanguage}`,
+            },
+            row.original.defaultMessage.message
           )
         : h("p", "-");
     },

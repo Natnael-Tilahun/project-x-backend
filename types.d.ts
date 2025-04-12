@@ -82,7 +82,7 @@ interface User {
 interface Device {
   id?: string | null;
   deviceId: string;
-  deviceName?: string | null  ;
+  deviceName?: string | null;
   deviceType?: DeviceType | null;
   osVersion?: string | null;
   country?: string | null;
@@ -772,10 +772,10 @@ interface ServiceDefinition {
 }
 
 interface ServiceDefinitionRole {
-  id?: string
-  isDefault?: boolean
-  serviceDefinition: ServiceDefinition
-  role?: Role
+  id?: string;
+  isDefault?: boolean;
+  serviceDefinition: ServiceDefinition;
+  role?: Role;
 }
 
 interface PermissionGroup {
@@ -816,7 +816,6 @@ interface ContractAccount {
   account?: Account;
 }
 
-
 interface ContractUser {
   id?: string;
   enable?: boolean;
@@ -845,78 +844,78 @@ interface Account {
   postingRestrictId?: string;
   accountType?: string | null;
   availableBalance?: string | null;
-  lastUpdated?:string | Data | null
-  accountHolder?: string | null
+  lastUpdated?: string | Data | null;
+  accountHolder?: string | null;
 }
 
 interface Staff {
-  id?:	string | null;
-  firstname: string 
-  lastname:string
-  displayName?:	string | null
-  mobileNo?: string | null
-  emailAddress:	string | null
-  active?: boolean | null
-  joiningDate?:	string | null 
-  }
+  id?: string | null;
+  firstname: string;
+  lastname: string;
+  displayName?: string | null;
+  mobileNo?: string | null;
+  emailAddress: string | null;
+  active?: boolean | null;
+  joiningDate?: string | null;
+}
 
 interface Office {
-  id: string
-name:	string
-code?:	string | null
-state?:	string | null
-organizationRegion?:	string | null
-districtName?:	string | null
-description?:	string | null
-hierarchy?:	string | null
-openingDate:	string 
-parent	?:string | null
+  id: string;
+  name: string;
+  code?: string | null;
+  state?: string | null;
+  organizationRegion?: string | null;
+  districtName?: string | null;
+  description?: string | null;
+  hierarchy?: string | null;
+  openingDate: string;
+  parent?: string | null;
 }
 
 interface StaffAssignment {
-  id: string
-  startDate?: string | null
-  endDate?: string | null
-  staff: Staff
-  supervisor?: Staff
-  office: Office
-  role: Role
+  id: string;
+  startDate?: string | null;
+  endDate?: string | null;
+  staff: Staff;
+  supervisor?: Staff;
+  office: Office;
+  role: Role;
 }
 
 interface UssdLanguage {
-  id?: string  
-  languageType: string
-  languageName: string
-  status: LanguageRelatedStatus
+  id?: string;
+  languageType: string;
+  languageName: string;
+  status: LanguageRelatedStatus;
 }
 
 interface DefaultMessage {
-  id?: string
-  message: string
-  title: string
-  language: Language
+  id?: string;
+  message: string;
+  title: string;
+  language: Language;
 }
 
 interface LocalizedDefaultMessage {
-  id?: string
-  defaultMessageId: string
-  languageId:string
-  message: string
-  status: any
+  id?: string;
+  defaultMessage: DefaultMessage;
+  language: UssdLanguage;
+  message: string;
+  status: any;
 }
 
-interface UssdMenuList{
-  id: string
-  menuName: string
-  visible: boolean
-  displayOrder: number
-  child?: UssdMenuList[] | null
+interface UssdMenuList {
+  id: string;
+  menuName: string;
+  visible: boolean;
+  displayOrder: number;
+  child?: UssdMenuList[] | null;
 }
 
-interface LocalizedUssdMenu{
-  id?: string
-  menuLanguageId: any
-  languageId: string
-  message: string
-  status: LanguageRelatedStatus
+interface LocalizedUssdMenu {
+  id?: string;
+  defaultMenu: any;
+  language: UssdLanguage;
+  message: string;
+  status: LanguageRelatedStatus;
 }
