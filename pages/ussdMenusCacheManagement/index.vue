@@ -17,13 +17,14 @@ const { storeUssdMenusToCache, isLoading } =
 const isError = ref(false);
 const data = ref<UssdMenuList>();
 const isSubmitting = ref(false);
+const storeAllUssdMenu = ref(false);
 
 const form = useForm({
   validationSchema: newUssdMenuNamesFormSchema,
 });
 
 const storeUssdMenu = async () => {
-  console.log("storeUssdMenu", true);
+  console.log("storeUssdMenu", storeAllUssdMenu.value);
   try {
     isLoading.value = true;
     data.value = await storeUssdMenusToCache();
@@ -89,20 +90,20 @@ const stopRedisCache = async () => {
 
     <UiCard class="w-full flex border-[1px] rounded-lg h-full p-6 pb-20">
         <form class="grid grid-cols-2 gap-6 w-full">
-            <FormField v-slot="{ value, handleChange }" name="visible">
+            <FormField v-slot="{ value, handleChange }" name="storeAllUssdMenu">
           <FormItem class="flex flex-row items-end justify-between rounded-lg border pb-2 px-4 w-full gap-10 self-end">
             <FormLabel class="text-base"> Store All Ussd Menu to Cache </FormLabel>
             <FormControl>
-              <UiSwitch :checked="value" @update:checked="
+              <UiSwitch :checked="storeAllUssdMenu" @update:checked="
                 (checked) => {
-                  handleChange;
+                  storeAllUssdMenu = checked;
                   storeUssdMenu();
                 }
               " />
             </FormControl>
           </FormItem>
         </FormField>
-    
+<!--     
         <FormField v-slot="{ value, handleChange }" name="visible">
           <FormItem class="flex flex-row items-end justify-between rounded-lg border pb-2 px-4 w-full gap-10 self-end">
             <FormLabel class="text-base"> Start Redis Cache </FormLabel>
@@ -129,7 +130,7 @@ const stopRedisCache = async () => {
               " />
             </FormControl>
           </FormItem>
-        </FormField>
+        </FormField> -->
 
             <!-- <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
