@@ -914,8 +914,10 @@ interface UssdMenuList {
 
 interface LocalizedUssdMenu {
   id?: string;
-  defaultMenu: any;
-  language: UssdLanguage;
+  menuLanguageId: any;
+  languageId: string;
   message: string;
   status: LanguageRelatedStatus;
+  language: UssdLanguage;
+  defaultMenu: DefaultMessage;
 }

@@ -73,7 +73,7 @@ export const columns: ColumnDef<LocalizedDefaultMessage>[] = [
     accessorKey: "language",
     header: "Language",
     cell: ({ row }) => {
-      const language = row.getValue("language").id;
+      const language = row.original.language.id;
       return language
         ? h(
             NuxtLink,
@@ -82,7 +82,7 @@ export const columns: ColumnDef<LocalizedDefaultMessage>[] = [
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `/ussdLanguages/${language}`,
             },
-            row.getValue("language").languageName
+            row.original.language.languageName
           )
         : h("p", "-");
     },
@@ -91,14 +91,14 @@ export const columns: ColumnDef<LocalizedDefaultMessage>[] = [
     accessorKey: "defaultMessage",
     header: "Default Message",
     cell: ({ row }) => {
-      const menuLanguage = row.original.defaultMessage.id;
-      return menuLanguage
+      const defaultMessageId = row.original.defaultMessage.id;
+      return defaultMessageId
         ? h(
             NuxtLink,
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/ussdMenus/${menuLanguage}`,
+              to: `/ussdDefaultMessages/${defaultMessageId}`,
             },
             row.original.defaultMessage.message
           )
