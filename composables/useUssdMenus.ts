@@ -324,6 +324,42 @@ export const useUssdMenus = () => {
     }
   };
 
+  const storeUssdMenusToCache: () => Promise<any> = async () => {
+    try {
+      const { data, pending, error, status } = await useFetch<UssdMenuList[]>(
+        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-catch/store-all-to-catch`,
+        {
+          method: "GET",
+          // headers: {
+          //   Authorization: `Bearer ${store.accessToken}`,
+          // },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No ussd menus data received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
 
   return {
     isLoading,
@@ -335,5 +371,6 @@ export const useUssdMenus = () => {
     updateUssdMenuStatus,
     deleteUssdMenu,
     isSubmitting,
+    storeUssdMenusToCache,
   };
 };

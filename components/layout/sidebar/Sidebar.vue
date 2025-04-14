@@ -238,6 +238,7 @@ const mainLinks = [
       { title: "USSD Localized Default Messages", link: "/ussdLocalizedMessages", permission: "READ_USSD_LOCALIZED_DEFAULT_MESSAGE" },
       { title: "USSD Menus", link: "/ussdMenus", permission: "READ_USSD_MENU" },
       { title: "USSD Localized Menus", link: "/ussdLocalizedMenus", permission: "READ_USSD_LOCALIZED_MENU" },
+      { title: "Ussd Menus Cache Management", link: "/ussdMenusCacheManagement", permission: "READ_STORE_USSD_MENU" },
     ],
   },
   {

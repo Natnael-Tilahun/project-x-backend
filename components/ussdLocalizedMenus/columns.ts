@@ -73,16 +73,16 @@ export const columns: ColumnDef<LocalizedUssdMenu>[] = [
     accessorKey: "language",
     header: "Language",
     cell: ({ row }) => {
-      const language = row.getValue("language").id;
+      const language = row.original.language;
       return language
         ? h(
             NuxtLink,
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/ussdLanguages/${language}`,
+              to: `/ussdLanguages/${language.id}`,
             },
-            row.getValue("language").languageName
+            row.original.language.languageName
           )
         : h("p", "-");
     },
