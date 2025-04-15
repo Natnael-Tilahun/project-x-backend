@@ -122,10 +122,10 @@ const stopRedisCache = async () => {
         </FormField>
     
         <FormField v-slot="{ value, handleChange }" name="startRedisCache">
-          <FormItem class="flex flex-row items-end justify-between rounded-lg border pb-2 px-4 w-full gap-10 self-end">
+          <FormItem class="flex flex-row  items-end justify-between rounded-lg border border-green-500 pb-2 px-4 w-full gap-10 self-end">
             <FormLabel class="text-base"> Start Redis Scheduler </FormLabel>
             <FormControl>
-              <UiSwitch :checked="value" @update:checked="
+              <UiSwitch class=" data-[state=checked]:bg-green-500" :checked="value" @update:checked="
                 (checked) => {
                   handleChange;
                   startRedisCache();
@@ -136,10 +136,10 @@ const stopRedisCache = async () => {
         </FormField>
 
         <FormField v-slot="{ value, handleChange }" name="stopRedisCache">
-          <FormItem class="flex flex-row items-end justify-between rounded-lg border pb-2 px-4 w-full gap-10 self-end">
+          <FormItem class="flex flex-row items-end justify-between rounded-lg border border-red-500 pb-2 px-4 w-full gap-10 self-end">
             <FormLabel class="text-base"> Stop Redis Scheduler </FormLabel>
             <FormControl>
-              <UiSwitch :checked="value" @update:checked="
+              <UiSwitch class=" data-[state=checked]:bg-red-500" :checked="value" @update:checked="
                 (checked) => {
                   handleChange;
                   stopRedisCache();
