@@ -12,7 +12,7 @@ import { toast } from "~/components/ui/toast";
 import { newUssdMenuNamesFormSchema } from "~/validations/newUssdMenuNamesFormSchema";
 import type { UssdMenuList } from "~/types";
 
-const { storeUssdMenusToCache, isLoading } =
+const { storeUssdMenusToCache, changeUssdMenusToCacheStatus, isLoading } =
   useUssdMenus();
 const isError = ref(false);
 const data = ref<UssdMenuList>();
@@ -46,37 +46,54 @@ const storeUssdMenu = async () => {
 }
 
 const startRedisCache = async () => {
-  console.log("startRedisCache", true);
+  try {
+    isLoading.value = true;
+    const status ={
+      "command": "START"
+    };
+    const response = await changeUssdMenusToCacheStatus(status);
+    console.log("response", response);
+    toast({
+      title: "Redis Scheduler Started",
+      description: "Redis scheduler started successfully",
+    }); 
+  } catch (err) {
+    console.error("Error starting Redis Scheduler:", err);
+    toast({
+      title: "Error Starting Redis Scheduler",
+      description: "Error starting Redis Scheduler",  
+      variant: "destructive",
+    }); 
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
 }
 
 const stopRedisCache = async () => {
-  console.log("stopRedisCache", true);
+  try {
+    isLoading.value = true;
+    const status ={
+      "command": "STOP"
+    };
+    const response = await changeUssdMenusToCacheStatus(status);
+    console.log("response", response);
+    toast({
+      title: "Redis Scheduler Stopped",
+      description: "Redis scheduler stopped successfully",
+    }); 
+  } catch (err) {
+    console.error("Error stopping Redis Scheduler:", err);
+    toast({
+      title: "Error Stopping Redis Scheduler",
+      description: "Error stopping Redis Scheduler",
+      variant: "destructive",
+    }); 
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
 }
-// const onSubmit = form.handleSubmit(async (values: any) => {
-//   console.log("values: ", values);
-
-//   try {
-//     isSubmitting.value = true;
-//     isLoading.value = true;
-//     const updatedValues = {
-//       ...values,
-//     };
-//     console.log("updatedValues: ", updatedValues);
-//     data.value = await createNewUssdMenu(updatedValues); // Call your API function to fetch profile
-//     navigateTo(`/ussdMenus/${data.value.id}`);
-//     console.log("New ussd menu data; ", data.value);
-//     toast({
-//       title: "Ussd Menu Created",
-//       description: "Ussd Menu created successfully",
-//     });
-//   } catch (err: any) {
-//     console.error("Error creating new ussd menu:", err.message);
-//     isError.value = true;
-//   } finally {
-//     isLoading.value = false;
-//     isSubmitting.value = false;
-//   }
-// });
 </script>
 
 <template>
@@ -103,10 +120,10 @@ const stopRedisCache = async () => {
             </FormControl>
           </FormItem>
         </FormField>
-<!--     
-        <FormField v-slot="{ value, handleChange }" name="visible">
+    
+        <FormField v-slot="{ value, handleChange }" name="startRedisCache">
           <FormItem class="flex flex-row items-end justify-between rounded-lg border pb-2 px-4 w-full gap-10 self-end">
-            <FormLabel class="text-base"> Start Redis Cache </FormLabel>
+            <FormLabel class="text-base"> Start Redis Scheduler </FormLabel>
             <FormControl>
               <UiSwitch :checked="value" @update:checked="
                 (checked) => {
@@ -118,9 +135,9 @@ const stopRedisCache = async () => {
           </FormItem>
         </FormField>
 
-        <FormField v-slot="{ value, handleChange }" name="visible">
+        <FormField v-slot="{ value, handleChange }" name="stopRedisCache">
           <FormItem class="flex flex-row items-end justify-between rounded-lg border pb-2 px-4 w-full gap-10 self-end">
-            <FormLabel class="text-base"> Stop Redis Cache </FormLabel>
+            <FormLabel class="text-base"> Stop Redis Scheduler </FormLabel>
             <FormControl>
               <UiSwitch :checked="value" @update:checked="
                 (checked) => {
@@ -130,27 +147,7 @@ const stopRedisCache = async () => {
               " />
             </FormControl>
           </FormItem>
-        </FormField> -->
-
-            <!-- <div class="col-span-full w-full py-4 flex justify-between">
-              <UiButton
-                :disabled="isSubmitting"
-                variant="outline"
-                type="button"
-                @click="$router.go(-1)"
-              >
-                Cancel
-              </UiButton>
-              <UiButton :disabled="isSubmitting" type="submit">
-                <Icon
-                  name="svg-spinners:8-dots-rotate"
-                  v-if="isSubmitting"
-                  class="mr-2 h-4 w-4 animate-spin"
-                ></Icon>
-
-                Submit
-              </UiButton>
-            </div> -->
+        </FormField>
         </form>
     </UiCard>
   </div>
