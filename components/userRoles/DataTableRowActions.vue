@@ -58,17 +58,23 @@ async function deleteRole(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
+      <UiPermissionGuard permission="VIEW_ROLES_LIST" >
       <UiDropdownMenuItem @click="viewRollDetails(row.original.name)"
         >View</UiDropdownMenuItem
       >
+      </UiPermissionGuard>
+      <UiPermissionGuard permission="UPDATE_ROLES" >
       <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
+      </UiPermissionGuard>
       <UiDropdownMenuItem>Deactivate</UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
       <UiDropdownMenuSeparator />
+      <UiPermissionGuard permission="DELETE_ROLES" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-500">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>
+      </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 

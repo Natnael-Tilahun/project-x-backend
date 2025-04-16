@@ -43,12 +43,14 @@ await useAsyncData("permissionGroupsData", async () => {
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
+  <UiPermissionGuard permission="CREATE_PERMISSION_GROUPS" >
     <NuxtLink to="/permissionGroups/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
         Permission Group</UiButton
       >
     </NuxtLink>
+    </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
 
     </UiDataTable>

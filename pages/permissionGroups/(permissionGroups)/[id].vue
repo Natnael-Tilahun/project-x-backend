@@ -169,6 +169,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
+            <UiPermissionGuard permission="UPDATE_PERMISSION_GROUPS" >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"
@@ -188,6 +189,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               Update
             </UiButton>
           </div>
+          </UiPermissionGuard>
         </div>
       </form>
     </UiCard>

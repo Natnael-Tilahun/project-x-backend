@@ -41,7 +41,7 @@ await useAsyncData("rolesData", async () => {
     v-else-if="data && !isError && data?.length > 0"
     class="py-4 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard permission="CREATE_ROLE" >
+    <UiPermissionGuard permission="CREATE_ROLES" >
     <NuxtLink to="/userRoles/new" class="w-fit self-end"
       ><UiButton
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add New

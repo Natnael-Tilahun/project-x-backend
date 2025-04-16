@@ -54,16 +54,22 @@ async function deletePermissionGroup(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
+      <UiPermissionGuard permission="VIEW_PERMISSION_GROUPS" >
       <UiDropdownMenuItem @click="viewPermissionGroupDetail(row.original.groupCode)"
         >View</UiDropdownMenuItem
       >
+      </UiPermissionGuard>
+      <UiPermissionGuard permission="UPDATE_PERMISSION_GROUPS" >
       <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
+      </UiPermissionGuard>
       <UiDropdownMenuSeparator />
       <UiDropdownMenuSeparator />
+      <UiPermissionGuard permission="DELETE_PERMISSION_GROUPS" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>
+      </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 
