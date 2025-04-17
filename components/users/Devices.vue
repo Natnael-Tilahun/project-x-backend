@@ -22,6 +22,12 @@ const userId = ref<string>();
 const route = useRoute();
 // Update the interface to match the actual data structure
 userId.value = getIdFromPath(route.fullPath);
+const openEditModal = ref(false);
+const setOpenEditModal = (value: boolean) => {
+  openEditModal.value = value;
+};
+const selectedDeviceSuspended = ref(false);
+const deviceId = ref<string>("");
 
 const displayApiDataOnLabel = (data: any) => {
   if (data == null || data == "") {
@@ -79,17 +85,19 @@ const fetchDevices = async () => {
 }
 };
 
-const manageDevice = async (deviceId: string, suspended: boolean) => {
+const manageDevice = async () => {
   try {
-    if (suspended) {
-      await restoreDevicesByDeviceId(userId.value as string, deviceId);
+    isLoading.value = true;
+    loading.value = true;
+    if (selectedDeviceSuspended.value) {
+      await restoreDevicesByDeviceId(userId.value as string, deviceId.value);
     } else {
-      await suspendDevicesByDeviceId(userId.value as string, deviceId);
+      await suspendDevicesByDeviceId(userId.value as string, deviceId.value);
     }
     fetchDevices();
     toast({
-      title: suspended ? "Device restored" : "Device suspended",
-      description: suspended ? "The device has been restored" : "The device has been suspended",
+      title: selectedDeviceSuspended.value ? "Device restored" : "Device suspended",
+      description: selectedDeviceSuspended.value ? "The device has been restored" : "The device has been suspended",
       variant: "default",
     });
   } catch (err) {
@@ -100,6 +108,10 @@ const manageDevice = async (deviceId: string, suspended: boolean) => {
       variant: "destructive",
     });
     isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+    setOpenEditModal(false);
   }
 };
 
@@ -160,19 +172,17 @@ onMounted(() => {
                 class="h-5 w-5"
               /> -->
               <div class="flex-1 grid grid-cols-7 gap-4">
-                <div>
+                <div class="space-y-2">
                   <p class="text-sm text-muted-foreground">Device ID</p>
-                  <p class="font-medium">{{ device.deviceId }}</p>
+                  <p class="font-medium text-nowrap text-ellipsis overflow-hidden text-base">{{ device.deviceId }}</p>
                 </div>
                 <div>
                   <p class="text-sm text-muted-foreground">Device Name</p>
-                  <p class="font-medium">{{ device.deviceName }}</p>
+                  <p class="font-medium text-nowrap text-ellipsis overflow-hidden text-base">{{ device.deviceName }}</p>
                 </div>
                 <div>
                   <p class="text-sm text-muted-foreground">Device Type</p>
-                  <p class="font-medium">
-                    {{ device.deviceType }}
-                  </p>
+                  <p class="font-medium text-nowrap text-ellipsis overflow-hidden text-sm">{{ device.deviceType }}</p>
                 </div>
                 <div>
                   <p class="text-sm text-muted-foreground">OS Version</p>
@@ -192,9 +202,11 @@ onMounted(() => {
                     {{ device.suspended ? 'Suspended' : 'Not Suspended' }}
                   </UiBadge>
                 </div>
+                <UiPermissionGuard :permission=" device.suspended ? 'RESTORE_USER_DEVICE' : 'SUSPEND_USER_DEVICE'" >
                 <div class="flex items-start">
-                  <UiButton size="sm" class="w-fit self-center px-8" :class="{ 'bg-green-500': device.suspended, 'bg-red-500': !device.suspended }" @click="manageDevice(device.id, device?.suspended ?? false)">{{ device.suspended ? 'Restore' : 'Suspend' }}</UiButton>
+                  <UiButton  @click=" () => {deviceId = device.id ?? ''; selectedDeviceSuspended = device.suspended ?? false; setOpenEditModal(true)}" size="sm" class="w-fit self-center px-8" :class="{ 'bg-green-500': device.suspended, 'bg-red-500': !device.suspended }" >{{ device.suspended ? 'Restore' : 'Suspend' }}</UiButton>
                 </div>
+                </UiPermissionGuard>
               </div>
               <UiAccordionTrigger class="ml-auto" />
             </div>
@@ -351,6 +363,31 @@ onMounted(() => {
     <ErrorMessage :retry="fetchDevices" title="Something went wrong." />
   </div>
   </div>
+
+  <UiAlertDialog :open="openEditModal" :onOpenChange="setOpenEditModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          This will {{ selectedDeviceSuspended ? 'restore' : 'suspend' }} the device.
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenEditModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction @click="manageDevice()">
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="loading"
+            :disabled="loading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
 </template>
 
 <style lang="css" scoped></style>
