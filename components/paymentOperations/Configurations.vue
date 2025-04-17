@@ -18,6 +18,7 @@ import {
   MaximumAmountVariableType,
   MinimumAmountVariableType,
   CreditAccountNumberVariableType,
+  PaymentIntegrationType,
 } from "@/global-types";
 
 const route = useRoute();
@@ -606,7 +607,7 @@ watch(
           >
             <FormItem>
               <FormLabel> API Operation </FormLabel>
-              <UiSelect v-bind="componentField">
+              <UiSelect :required="integrationData?.integrationType !== PaymentIntegrationType.INTERNAL_TRANSFER" v-bind="componentField">
                 <FormControl>
                   <UiSelectTrigger>
                     <UiSelectValue placeholder="Select an API operation" />

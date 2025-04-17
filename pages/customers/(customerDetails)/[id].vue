@@ -3,6 +3,7 @@ const openItems = ref(["item-1"]);
 
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
+import type { Customer } from "~/types";
 
 const route = useRoute();
 const {

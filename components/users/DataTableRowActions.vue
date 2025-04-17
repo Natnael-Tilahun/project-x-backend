@@ -56,12 +56,8 @@ async function deleteUser(id: string) {
     <UiDropdownMenuContent align="end" class="w-[160px]">
       <UiPermissionGuard permission="VIEW_USERS" >
       <UiDropdownMenuItem @click="viewUserDetail(row.original.id)"
-        >View</UiDropdownMenuItem
+        >View and Edit</UiDropdownMenuItem
       >
-      <UiDropdownMenuSeparator />
-    </UiPermissionGuard>
-      <UiPermissionGuard permission="UPDATE_USERS" >
-      <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
     </UiPermissionGuard>
       <UiPermissionGuard permission="DELETE_USERS" >

@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import { columns } from "~/components/customers/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-
+import type { Customer } from "~/types";
 const { getCustomers, searchCustomers, isLoading } = useCustomers();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -19,7 +19,7 @@ const fetchData = async () => {
     loading.value = true;
     const customers = await getCustomers(0, 10000000000); // Call your API function to fetch roles
     // Sort integrations by name alphabetically, handling null values
-    data.value = customers.sort((a, b) => {
+    data.value = customers.sort((a:Customer, b:Customer) => {
       // Handle cases where fullName might be null
       const nameA = a.fullName?.toLowerCase() || "";
       const nameB = b.fullName?.toLowerCase() || "";
