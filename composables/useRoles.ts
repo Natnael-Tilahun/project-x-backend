@@ -7,7 +7,7 @@ export const useRoles = () => {
   const userAdmin = useState<boolean>("userAdmin", () => false);
   const isLoading = ref<boolean>(false);
   const isUpdating = ref<boolean>(false);
-  const { getRefreshToken } = useAuth();
+  const { getRefreshToken, getAuthorities } = useAuth();
 
   const store = useAuthStore();
   const { toast } = useToast();
@@ -168,6 +168,7 @@ export const useRoles = () => {
       if (!data.value) {
         throw new Error("No roles data received");
       }
+      await getAuthorities()
       return data.value;
     } catch (err) {
       // Throw the error to be caught and handled by the caller
@@ -199,6 +200,7 @@ export const useRoles = () => {
       if (!data.value) {
         throw new Error("No roles data received");
       }
+      await getAuthorities()
       return data.value;
     } catch (err) {
       // Throw the error to be caught and handled by the caller

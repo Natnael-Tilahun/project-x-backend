@@ -50,7 +50,7 @@
               class="dropdown-menu rounded-none flex flex-col gap-0 py-2 px-4"
             >
               <template v-for="(item, dropdownIndex) in link.dropdown" :key="dropdownIndex">
-                <!-- <UiPermissionGuard :permission="item?.permission"> -->
+                <UiPermissionGuard :permission="item?.permission">
                   <NuxtLink
                     :to="item.link"
                     @click="closeMenuNav"
@@ -61,13 +61,13 @@
                   >
                     {{ item.title }}
                   </NuxtLink>
-                <!-- </UiPermissionGuard> -->
+                </UiPermissionGuard>
               </template>
             </ul>
           </UiCollapsibleContent>
         </UiCollapsible>
 
-        <!-- <UiPermissionGuard v-if="link?.dropdown" :permission="link?.permission"> -->
+        <UiPermissionGuard v-if="!link?.dropdown" :permission="link?.permission">
         <NuxtLink
          v-if="!link.dropdown"
           :to="link.link"
@@ -80,7 +80,7 @@
           <span><Icon :name="link.icon" :size="link.size"></Icon></span>
           <p>{{ link.title }}</p>
         </NuxtLink>
-        <!-- </UiPermissionGuard> -->
+        </UiPermissionGuard>
       </template>
     </ul>
   </NuxtScrollbar>
@@ -96,7 +96,7 @@ const mainLinks = [
     link: "/",
     size: "22",
     showDropdown: false,
-    permission: "READ_DASHBOARD",
+    // permission: "VIEW_DASHBOARD",
   },
   // {
   //   title: "Alerts",
@@ -109,11 +109,11 @@ const mainLinks = [
     title: "Role Management",
     icon: "solar:user-bold",
     size: "22",
-    showDropdown: false,
+    showDropdown: true,
     dropdown: [
-      { title: "Roles", link: "/userRoles", permission: "READ_ROLE" },
-      { title: "Permissions", link: "/userPermissions", permission: "READ_PERMISSION" },
-      { title: "Permission Groups", link: "/permissionGroups", permission: "READ_PERMISSION_GROUP" },
+      { title: "Roles", link: "/userRoles", permission: "VIEW_ROLES_LIST" },
+      { title: "Permissions", link: "/userPermissions", permission: "VIEW_PERMISSIONS" },
+      { title: "Permission Groups", link: "/permissionGroups", permission: "VIEW_PERMISSION_GROUPS" },
     ],
   },
   {
@@ -123,7 +123,7 @@ const mainLinks = [
     showDropdown: false,
     dropdown: [
       // { title: "Customers Roles", link: "/customerRoles" },
-      { title: "Customers", link: "/customers", permission: "READ_CUSTOMER" },
+      { title: "Customers", link: "/customers", permission: "VIEW_CUSTOMERS" },
       // { title: "Permissions", link: "/permissions" },
     ],
   },
@@ -134,7 +134,7 @@ const mainLinks = [
     showDropdown: false,
     dropdown: [
       // { title: "Customers Roles", link: "/customerRoles" },
-      { title: "Users", link: "/users", permission: "READ_USER" },
+      { title: "Users", link: "/users", permission: "VIEW_USERS" },
       // { title: "Permissions", link: "/permissions" },
     ],
   },
@@ -144,9 +144,9 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Staffs", link: "/staffs", permission: "READ_STAFF" },
-      { title: "Offices", link: "/offices", permission: "READ_OFFICE" },
-      { title: "Staff Assignments", link: "/staffAssignments", permission: "READ_STAFF_ASSIGNMENT" },
+      { title: "Staffs", link: "/staffs", permission: "VIEW_STAFF" },
+      { title: "Offices", link: "/offices", permission: "VIEW_OFFICES" },
+      { title: "Staff Assignments", link: "/staffAssignments", permission: "VIEW_STAFF_ASSIGNMENTS" },
     ],
   },
   // {
@@ -165,8 +165,8 @@ const mainLinks = [
     icon: "material-symbols:partner-exchange-outline-rounded",
     link: "/merchants",
     size: "22",
-    permission: "READ_MERCHANT",
-    showDropdown: false,
+    permission: "VIEW_MERCHANTS",
+    showDropdown: true,
   },
   // {
   //   title: "Api Integrations",
@@ -195,9 +195,9 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Api Integrations", link: "/integrations", permission: "READ_INTEGRATION" },
-      { title: "Payment Integrations", link: "/paymentIntegrations", permission: "READ_PAYMENT_INTEGRATION" },
-      { title: "Menu Categories", link: "/menuCategories", permission: "READ_MENU_CATEGORY" },
+      { title: "Api Integrations", link: "/integrations", permission: "VIEW_API_INTEGRATIONS" },
+      { title: "Payment Integrations", link: "/paymentIntegrations", permission: "VIEW_PAYMENT_INTEGRATIONS" },
+      { title: "Menu Categories", link: "/menuCategories", permission: "VIEW_INTEGRATION_MENUS" },
       // { title: "Auth Configurations", link: "/authConfigurations" },
     ],
   },
@@ -206,7 +206,7 @@ const mainLinks = [
     icon: "material-symbols:phone-android",
     size: "22",
     showDropdown: false,
-    dropdown: [{ title: "Applications", link: "/applications", permission: "READ_APPLICATION" }],
+    dropdown: [{ title: "Applications", link: "/applications", permission: "VIEW_APPLICATIONS" }],
   },
   {
     title: "Contract Management",
@@ -214,7 +214,7 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Contracts", link: "/contracts", permission: "READ_CONTRACT" },
+      { title: "Contracts", link: "/contracts", permission: "VIEW_CONTRACTS" },
     ],
   },
   {
@@ -223,8 +223,8 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Banking Services", link: "/bankingServices", permission: "READ_BANKING_SERVICE" },
-      { title: "Service Definitions", link: "/serviceDefinitions", permission: "READ_SERVICE_DEFINITION" },
+      { title: "Banking Services", link: "/bankingServices", permission: "VIEW_BANKING_SERVICES" },
+      { title: "Service Definitions", link: "/serviceDefinitions", permission: "VIEW_SERVICE_DEFINITIONS" },
     ],
   },
   {
@@ -233,12 +233,12 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "USSD Languages", link: "/ussdLanguages", permission: "READ_USSD_LANGUAGE" },
-      { title: "USSD Default Messages", link: "/ussdDefaultMessages", permission: "READ_USSD_DEFAULT_MESSAGE" },
-      { title: "USSD Localized Default Messages", link: "/ussdLocalizedMessages", permission: "READ_USSD_LOCALIZED_DEFAULT_MESSAGE" },
-      { title: "USSD Menus", link: "/ussdMenus", permission: "READ_USSD_MENU" },
-      { title: "USSD Localized Menus", link: "/ussdLocalizedMenus", permission: "READ_USSD_LOCALIZED_MENU" },
-      { title: "Ussd Menus Cache Management", link: "/ussdMenusCacheManagement", permission: "READ_STORE_USSD_MENU" },
+      { title: "USSD Languages", link: "/ussdLanguages", permission: "VIEW_USSD_LANGUAGES" },
+      { title: "USSD Default Messages", link: "/ussdDefaultMessages", permission: "VIEW_USSD_DEFAULT_MESSAGES" },
+      { title: "USSD Localized Default Messages", link: "/ussdLocalizedMessages", permission: "VIEW_USSD_LOCALIZED_DEFAULT_MESSAGES" },
+      { title: "USSD Menus", link: "/ussdMenus", permission: "VIEW_USSD_MENUS" },
+      { title: "USSD Localized Menus", link: "/ussdLocalizedMenus", permission: "VIEW_USSD_LOCALIZED_MENUS" },
+      { title: "Ussd Menus Cache Management", link: "/ussdMenusCacheManagement", permission: "VIEW_USSD_MENU_CACHE_MANAGEMENT" },
     ],
   },
   {
@@ -247,23 +247,23 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "FAQs", link: "/applicationContentManagement/faqs", permission: "READ_FAQ" },
+      { title: "FAQs", link: "/applicationContentManagement/faqs", permission: "VIEW_FAQS" },
       {
         title: "Privacy Policies",
         link: "/applicationContentManagement/privacy-policies",
-        permission: "READ_PRIVACY_POLICY",
+        permission: "VIEW_PRIVACY_POLICIES",
       },
       {
         title: "Term & Conditions",
         link: "/applicationContentManagement/term-conditions",
-        permission: "READ_TERM_CONDITION",
+        permission: "VIEW_TERM_CONDITIONS",
       },
       {
         title: "Service Outage Messages",
         link: "/applicationContentManagement/service-outage-messages",
-        permission: "READ_SERVICE_OUTAGE_MESSAGE",
+        permission: "VIEW_SERVICE_OUTAGE_MESSAGES",
       },
-      { title: "Locations", link: "/applicationContentManagement/locations", permission: "READ_LOCATION" },
+      { title: "Locations", link: "/applicationContentManagement/locations", permission: "VIEW_LOCATIONS" },
       // {
       //   title: "Customer Care Informations",
       //   link: "/applicationContentManagement/customer-care-info",
@@ -271,7 +271,7 @@ const mainLinks = [
       {
         title: "Ad Campaigns",
         link: "/applicationContentManagement/ad-campaigns",
-        permission: "READ_AD_CAMPAIGN",
+        permission: "VIEW_AD_CAMPAIGNS",
       },
     ],
   },
@@ -281,7 +281,7 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Logs", link: "/logs", permission: "READ_LOG" },
+      { title: "Logs", link: "/logs", permission: "VIEW_AUDIT_LOGS" },
       // { title: "Reports", link: "/reports" },
     ],
   },

@@ -17,7 +17,9 @@ import {
   MaximumAmountVariableType,
   MinimumAmountVariableType,
   CreditAccountNumberVariableType,
+  PaymentIntegrationType,
 } from "@/global-types";
+import type { PaymentOperation, PaymentIntegration, ApiOperation, ApiIntegration } from "~/types";
 
 const openItems = ref("info");
 const route = useRoute();
@@ -37,7 +39,7 @@ const allPaymentOperations = ref<PaymentOperation[]>([]);
 const allPaymentIntegrations = ref<PaymentIntegration[]>([]);
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
-integrationId.value = route.params.id;
+integrationId.value = route.params.id as string;
 const activeTab = route.query.activeTab as string;
 const operationId = ref<string>("");
 const isPreview = ref<boolean>(false);
@@ -122,12 +124,12 @@ const fetchData = async () => {
       allPaymentIntegrations.value,
       apiIntegrations.value,
     ] = await Promise.all([
-      getOperations(0, 1000).catch(() => []),
+      getOperations(0, 10000).catch(() => []),
       getPaymentIntegrationPaymentOperations(integrationId.value).catch(
         () => []
       ),
-      getPaymentIntegrations().catch(() => []),
-      getIntegrations(0, 1000).catch(() => []),
+      getPaymentIntegrations(0,10000).catch(() => []),
+      getIntegrations(0, 10000).catch(() => []),
     ]);
     selectedApiIntegration.value = apiIntegrations.value[0].id;
     selectedApiOperations.value = apiOperations.value.filter(
@@ -525,8 +527,8 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
             name="apiOperation"
           >
             <FormItem>
-              <FormLabel> API Operation </FormLabel>
-              <UiSelect v-bind="componentField">
+              <FormLabel> API Operation</FormLabel>
+              <UiSelect :required="paymentIntegrationData?.[0]?.integrationType !== PaymentIntegrationType.INTERNAL_TRANSFER" v-bind="componentField">
                 <FormControl>
                   <UiSelectTrigger>
                     <UiSelectValue placeholder="Select an API operation" />

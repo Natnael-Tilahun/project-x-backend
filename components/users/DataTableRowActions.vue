@@ -54,16 +54,18 @@ async function deleteUser(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
+      <UiPermissionGuard permission="VIEW_USERS" >
       <UiDropdownMenuItem @click="viewUserDetail(row.original.id)"
-        >View</UiDropdownMenuItem
+        >View and Edit</UiDropdownMenuItem
       >
-      <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
-      <UiDropdownMenuSeparator />
+    </UiPermissionGuard>
+      <UiPermissionGuard permission="DELETE_USERS" >
       <UiDropdownMenuItem @click="setOpenDeleteModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>
+    </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 

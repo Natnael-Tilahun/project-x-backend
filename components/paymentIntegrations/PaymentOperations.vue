@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 import { PaymentOperationType } from "@/global-types";
 import { columns } from "~/components/paymentOperations/columns";
+import type { PaymentOperation } from "~/types";
 
 const {
   getPaymentIntegrations,
@@ -17,7 +18,7 @@ const integrationId = ref<string>("");
 const loading = ref(false);
 const isError = ref(false);
 const data = ref<PaymentOperation[]>([]);
-integrationId.value = route.params.id;
+integrationId.value = route.params.id as string;
 const activeTab = route.query.activeTab as string;
 console.log("integrationId: ", integrationId.value);
 

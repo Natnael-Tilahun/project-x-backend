@@ -120,7 +120,7 @@ export const useAuth = () => {
           permissions: data?.value && data?.value?.permissions
         });
 
-        navigateTo('/')
+        // navigateTo('/')
 
       }
 
@@ -241,9 +241,6 @@ export const useAuth = () => {
       throw err;
     }
   };
-  
-
-
 
   return {
     login,
@@ -256,5 +253,6 @@ export const useAuth = () => {
     getProfile,
     getRefreshToken,
     setNewPassword,
+    getAuthorities,
   };
 };

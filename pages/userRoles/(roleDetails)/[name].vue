@@ -14,7 +14,7 @@ import type { Role, Permission } from "~/types";
 
 const { toast } = useToast();
 
-const openItems = ref(["item-1"]);
+const topAccordionItem = ref("item-1");
 const {
   getRolePermissions,
   updateRolePermissions,
@@ -22,6 +22,7 @@ const {
   isLoading,
   isUpdating,
 } = useRoles();
+const { getAuthorities } = useAuth();
 const loading = ref(isLoading.value);
 const updating = ref(isLoading.value);
 const isError = ref(false);
@@ -221,6 +222,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isUpdating.value = true;
     updating.value = true;
     await updateRolePermissions(name, updatedRoleData); // Call your API function to fetch roles
+    // await getAuthorities()
     toast({
       title: "Role permissions updated successfully.",
     });
@@ -244,6 +246,7 @@ const updadateRoleStatus = async (status: boolean) => {
     isUpdating.value = true;
     updating.value = true;
     await updateRoleStatus(name, status); // Call your API function to fetch roles
+    await getAuthorities()
     toast({
       title: "Role status updated successfully.",
     });
@@ -277,7 +280,7 @@ const updadateRoleStatus = async (status: boolean) => {
         Edit</UiButton
       > -->
       <UiCard class="w-full p-6">
-        <UiAccordion type="single" default-value="item-1" collapsible>
+        <UiAccordion type="single" :default-value="topAccordionItem" collapsible>
           <UiAccordionItem value="item-1">
             <div class="flex justify-between items-center">
               <UiAccordionTrigger class="md:text-lg gap-2">
@@ -306,7 +309,7 @@ const updadateRoleStatus = async (status: boolean) => {
               </div>
             </div>
 
-            <UiAccordionContent class="w-full" v-model="openItems">
+            <UiAccordionContent class="w-full">
               <div class="grid grid-cols-1 rounded-xl gap-2 w-full p-6 border">
                 <div class="grid grid-cols-2 gap-2 items-center">
                   <FormField v-slot="{ value, handleChange }" name="enforce2fa">
@@ -386,9 +389,9 @@ const updadateRoleStatus = async (status: boolean) => {
             class="space-y-4 text-sm md:text-base"
           >
                 <UiAccordion
-                  type="single"
+                  type="multiple"
                   class="border-none space-y-2"
-                  :default-value="Object.keys(groupedPermissions())[0]"
+                  :default-value="[Object.keys(groupedPermissions())[0]]"
                   collapsible
                 >
                   <template
@@ -403,7 +406,7 @@ const updadateRoleStatus = async (status: boolean) => {
                         class="flex justify-between items-center bg-secondary rounded-lg px-4"
                       >
                         <UiAccordionTrigger
-                          class="md:text-lg gap-2 flex-row-reverse"
+                          class="md:text-base gap-2 flex-row-reverse"
                         >
                           <p class="mr-auto">
                             Grouping:
@@ -438,9 +441,9 @@ const updadateRoleStatus = async (status: boolean) => {
                         </FormField>
                       </div>
 
-                      <UiAccordionContent class="w-full border border-t-0 mt-2 rounded-lg" v-model="openItems">
+                      <UiAccordionContent class="w-full border border-t-0 mt-2 rounded-lg">
                           <div
-                            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-x-6 px-4 py-2"
+                            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-x-8 px-4 py-2"
                           >
                             <div
                               v-for="permission in permissions"
@@ -453,7 +456,7 @@ const updadateRoleStatus = async (status: boolean) => {
                                   :name="`${permission.code}`"
                                 >
                                 <FormItem className="flex flex-row w-full items-start gap-x-3">                                   
-                                   <FormLabel class="self-center">{{ permission.code }}</FormLabel>
+                                   <FormLabel class="self-center text-xs">{{ permission.code }}</FormLabel>
                                     <FormControl> 
                                       <UiCheckbox
                                         :checked="value"
