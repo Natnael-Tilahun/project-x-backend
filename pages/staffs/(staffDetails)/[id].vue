@@ -117,6 +117,7 @@ watch(
       <UiTabsList
         class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
+      <UiPermissionGuard permission="VIEW_STAFF" >
         <UiTabsTrigger
           value="staffDetails"
           @click="
@@ -131,6 +132,8 @@ watch(
         >
           Detail Info
         </UiTabsTrigger>
+        </UiPermissionGuard>
+        <UiPermissionGuard permission="VIEW_STAFF_ASSIGNMENTS" >
         <UiTabsTrigger
           value="staffAssignments"
           @click="
@@ -145,7 +148,9 @@ watch(
         >
           Assignments
         </UiTabsTrigger>
+        </UiPermissionGuard>
       </UiTabsList>
+      <UiPermissionGuard permission="VIEW_STAFF" >
       <UiTabsContent
         value="staffDetails"
         class="text-base bg-background rounded-lg"
@@ -206,7 +211,7 @@ watch(
               <FormMessage />
             </FormItem>
           </FormField>
-
+          <UiPermissionGuard permission="UPDATE_STAFF" >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"
@@ -226,10 +231,13 @@ watch(
               Update
             </UiButton>
           </div>
+          </UiPermissionGuard>
         </div>
       </form>
     </UiCard>
     </UiTabsContent>
+    </UiPermissionGuard>
+    <UiPermissionGuard permission="VIEW_STAFF_ASSIGNMENTS" >
     <UiTabsContent
         value="staffAssignments"
         class="text-base bg-background rounded-lg"
@@ -238,6 +246,7 @@ watch(
         Staff Assignments
       </UiCard>
     </UiTabsContent>
+    </UiPermissionGuard>
     </UiTabs>
     <div v-else-if="data == null || data == undefined">
       <UiNoResultFound title="Sorry, No staff found." />

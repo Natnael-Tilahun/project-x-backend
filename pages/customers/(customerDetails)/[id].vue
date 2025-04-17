@@ -3,6 +3,7 @@ const openItems = ref(["item-1"]);
 
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
+import type { Customer } from "~/types";
 
 const route = useRoute();
 const {
@@ -253,6 +254,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
         </h1>
       </div>
 
+        <UiPermissionGuard :permission="data?.customerActivated ? 'DEACTIVATE_CUSTOMER' : 'ACTIVATE_CUSTOMER'">
       <div class="flex flex-col gap-2">
         <UiButton
           size="sm"
@@ -268,6 +270,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
           {{ data?.customerActivated ? "Deactivate" : "Activate" }}</UiButton
         >
       </div>
+      </UiPermissionGuard>
     </div>
 
     <UiCard class="w-full p-6">
@@ -275,32 +278,41 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
         <UiTabsList
           class="w-full bg-backgroung flex justify-start py- px-0 border-[1px]"
         >
+        <UiPermissionGuard permission="VIEW_CUSTOMER_PROFILE" >
           <UiTabsTrigger
             value="profile"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Profile
           </UiTabsTrigger>
+        </UiPermissionGuard>
+        <UiPermissionGuard permission="LINK_CUSTOMER_CORE_BANKING" >
           <UiTabsTrigger
             value="linkWithCoreBank"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Link with core bank
           </UiTabsTrigger>
+        </UiPermissionGuard>
+        <UiPermissionGuard permission="VIEW_CUSTOMER_ACCOUNTS" >
           <UiTabsTrigger
             value="manageAccounts"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Manage Account
           </UiTabsTrigger>
+        </UiPermissionGuard>
+        <UiPermissionGuard permission="RESET_CUSTOMER_PIN" >
           <UiTabsTrigger
             value="pinReset"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             PIN Reset
           </UiTabsTrigger>
+        </UiPermissionGuard>
         </UiTabsList>
 
+        <UiPermissionGuard permission="VIEW_CUSTOMER_PROFILE" >
         <UiTabsContent
           value="profile"
           class="space-y-4 pt-4 text-base border-0"
@@ -586,7 +598,8 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
             </UiAccordion>
           </div>
         </UiTabsContent>
-
+      </UiPermissionGuard>
+      
         <UiTabsContent value="linkWithCoreBank" class="space-y-4 py-8">
           <div class="flex flex-col space-y-8">
             <div class="flex gap-8 items-center">
@@ -615,6 +628,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                   >
                 </div>
               </div>
+              <UiPermissionGuard permission="LINK_CUSTOMER_CORE_BANKING" >
               <div class="grid w-full max-w-sm items-center gap-2">
                 <UiLabel for="search" class="font-normal text-muted-foreground"
                   >Link with core bank</UiLabel
@@ -638,7 +652,8 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                   </UiButton>
                 </div>
               </div>
-
+              </UiPermissionGuard>
+              <UiPermissionGuard permission="UNLINK_CUSTOMER_CORE_BANKING" >
               <div class="grid w-full max-w-sm items-center gap-2">
                 <UiLabel for="search" class="font-normal text-muted-foreground"
                   >Unlink</UiLabel
@@ -662,6 +677,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                   </UiButton>
                 </div>
               </div>
+              </UiPermissionGuard>
             </div>
 
             <UiCard

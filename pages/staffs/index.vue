@@ -63,12 +63,14 @@ const searchHandler = async () => {
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
+    <UiPermissionGuard permission="CREATE_STAFF" >
     <NuxtLink to="/staffs/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
         Staff</UiButton
       >
     </NuxtLink>
+    </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <!-- <CustomersDataTableSearchbar :table="table" /> -->

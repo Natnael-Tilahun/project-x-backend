@@ -171,32 +171,39 @@ const searchCoreAccountHandler = async () => {
         <UiTabsList
           class="w-full bg-backgroung flex justify-start py- px-0 border-[1px]"
         >
+          <UiPermissionGuard permission="VIEW_USER_PROFILE" >
           <UiTabsTrigger
             value="profile"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Profile
           </UiTabsTrigger>
+          </UiPermissionGuard>
           <UiTabsTrigger
             value="devices"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Devices
           </UiTabsTrigger>
+          <UiPermissionGuard permission="RESET_USER_PIN" >
           <UiTabsTrigger
             value="pinReset"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             PIN Reset
           </UiTabsTrigger>
+          </UiPermissionGuard>
+          <!-- <UiPermissionGuard permission="VIEW_USER_CONTRACTS" > -->
           <UiTabsTrigger
             value="linkWithCoreBank"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Contracts
           </UiTabsTrigger>
+          <!-- </UiPermissionGuard> -->
         </UiTabsList>
 
+        <UiPermissionGuard permission="VIEW_USER_PROFILE" >
         <UiTabsContent value="profile" class="space-y-4 pt-4 text-sm border-0">
           <UiCard class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full p-6">
             <div class="space-y-1">
@@ -448,20 +455,27 @@ const searchCoreAccountHandler = async () => {
             </div>
           </UiCard>
         </UiTabsContent>
+        </UiPermissionGuard>
 
+        <!-- <UiPermissionGuard permission="VIEW_USER_CONTRACTS" > -->
         <UiTabsContent value="linkWithCoreBank" class="space-y-4 py-8">
           <UiCard class="flex justify-center items-center w-full p-6">
        User Contracts
           </UiCard>
         </UiTabsContent>
+        <!-- </UiPermissionGuard> -->
 
+        <!-- <UiPermissionGuard permission="VIEW_USER_DEVICES" > -->
         <UiTabsContent value="devices" class="space-y-4 py-8">
           <UsersDevices />
         </UiTabsContent>
+        <!-- </UiPermissionGuard> -->
 
+        <UiPermissionGuard permission="RESET_USER_PIN" >
         <UiTabsContent value="pinReset" class="space-y-4 py-8">
           <UsersPinReset />
         </UiTabsContent>
+        </UiPermissionGuard>
       </UiTabs>
     </UiCard>
   </div>

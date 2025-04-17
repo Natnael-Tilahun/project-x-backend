@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import { columns } from "~/components/customers/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-
+import type { Customer } from "~/types";
 const { getCustomers, searchCustomers, isLoading } = useCustomers();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -19,7 +19,7 @@ const fetchData = async () => {
     loading.value = true;
     const customers = await getCustomers(0, 10000000000); // Call your API function to fetch roles
     // Sort integrations by name alphabetically, handling null values
-    data.value = customers.sort((a, b) => {
+    data.value = customers.sort((a:Customer, b:Customer) => {
       // Handle cases where fullName might be null
       const nameA = a.fullName?.toLowerCase() || "";
       const nameB = b.fullName?.toLowerCase() || "";
@@ -63,12 +63,14 @@ const searchHandler = async () => {
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
+  <UiPermissionGuard permission="REGISTER_CUSTOMERS" >
     <NuxtLink to="/customers/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
         Customer</UiButton
       >
     </NuxtLink>
+    </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <!-- <CustomersDataTableSearchbar :table="table" /> -->

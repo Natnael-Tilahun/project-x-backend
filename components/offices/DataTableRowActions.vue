@@ -54,16 +54,18 @@ async function deleteOffices(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
+      <UiPermissionGuard permission="VIEW_OFFICES" >
       <UiDropdownMenuItem @click="viewCustomerDetail(row.original.id)"
-        >View</UiDropdownMenuItem
+        >View and Edit</UiDropdownMenuItem
       >
-      <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
-      <UiDropdownMenuSeparator />
+      </UiPermissionGuard>
+      <UiPermissionGuard permission="DELETE_OFFICE" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>
+      </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 

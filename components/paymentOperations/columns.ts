@@ -41,7 +41,15 @@ export const columns: ColumnDef<PaymentOperation>[] = [
             },
             name
           )
-        : h("p", "-");
+        : h(
+          NuxtLink,
+          {
+            class:
+              "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+            to: `${route.path}?activeTab=configurePaymentOperations&operationId=${row.original.id}`,
+          },
+          "View"
+        );
     },
   },
   {

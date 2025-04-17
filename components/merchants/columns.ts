@@ -42,7 +42,15 @@ export const columns: ColumnDef<Merchant>[] = [
             },
             row.getValue("businessName")
           )
-        : h("p", "-");
+        : h(
+          NuxtLink,
+          {
+            class:
+              "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+            to: `${route.path}/${merchantId}`,
+          },
+          "View"
+        );
     },
   },
   {
@@ -218,7 +226,7 @@ export const columns: ColumnDef<Merchant>[] = [
     header: "Status",
     cell: ({ row }) => {
       const status = row.getValue("status");
-      return status ? h("p", status) : h("p", "-");
+      return status ? h(Badge, status) : h(Badge, "-");
     },
   },
   // {
