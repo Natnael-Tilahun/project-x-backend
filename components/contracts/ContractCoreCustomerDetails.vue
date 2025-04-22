@@ -264,6 +264,8 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
                 </FormControl>
               </FormItem>
             </FormField>
+
+  <UiPermissionGuard permission="UPDATE_CONTRACT_CORE_CUSTOMER" >
             <FormField v-slot="{ value, handleChange }" name="coreCustomerStatus">
               <FormItem
                 class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
@@ -281,6 +283,9 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
                 </FormControl>
               </FormItem>
             </FormField>
+            </UiPermissionGuard>
+
+  <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER_PERMISSIONS" >
             <div class="w-full space-y-2">
               <UiLabel for="enable">Permissions</UiLabel>
               <UiSheet class="w-full">
@@ -306,7 +311,7 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
                 </UiSheetContent>
               </UiSheet>
             </div>
-
+</UiPermissionGuard>
           </div>
         </form>
       </UiCard>
@@ -335,6 +340,7 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
           >
             Permissions
           </UiTabsTrigger> -->
+  <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS" >
           <UiTabsTrigger
             value="accounts"
             @click="
@@ -350,6 +356,7 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
           >
             Contract Accounts
           </UiTabsTrigger>
+          </UiPermissionGuard>
         </UiTabsList>
 
         <!-- <UiTabsContent
@@ -362,6 +369,7 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
           />
           
         </UiTabsContent> -->
+  <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS" >
         <UiTabsContent
           value="accounts"
           class="text-base bg-background rounded-lg p-4"
@@ -373,6 +381,7 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
             @refresh="refetch"
           />
         </UiTabsContent>
+        </UiPermissionGuard>
       </UiTabs>
     </div>
 

@@ -341,6 +341,8 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                     <FormMessage />
                   </FormItem>
                 </FormField>
+
+  <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS_PERMISSIONS" >
                 <div class="flex items-center">
                   <UiSheet>
                     <UiSheetTrigger>
@@ -365,6 +367,7 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                     </UiSheetContent>
                   </UiSheet>
                 </div>
+                </UiPermissionGuard>
               </div>
               <UiAccordionTrigger />
             </div>
@@ -527,9 +530,12 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
             </div>
           </UiAccordionContent>
         </UiAccordionItem>
+
+  <UiPermissionGuard permission="CREATE_CONTRACT_ACCOUNTS" >
         <div class="flex justify-end pt-4">
       <UiButton @click="addAccounts" type="submit" class="w-fit self-end px-8">Add Accounts</UiButton>
       </div>
+      </UiPermissionGuard>
       </UiAccordion>
       <!-- </div> -->
       <UiCard

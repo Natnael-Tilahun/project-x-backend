@@ -115,6 +115,7 @@ watch(
       <UiTabsList
         class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
+  <UiPermissionGuard permission="VIEW_APPLICATIONS" >
         <UiTabsTrigger
           value="applicationDetails"
           @click="
@@ -129,6 +130,8 @@ watch(
         >
           Application Details
         </UiTabsTrigger>
+        </UiPermissionGuard>
+  <UiPermissionGuard permission="VIEW_APPLICATION_VERSIONS" >
         <UiTabsTrigger
           value="applicationVersions"
           @click="
@@ -143,6 +146,8 @@ watch(
         >
           Application Versions
         </UiTabsTrigger>
+        </UiPermissionGuard>
+  <UiPermissionGuard permission="CREATE_APPLICATION_VERSIONS" >
         <UiTabsTrigger
           value="newApplicationVersion"
           @click="
@@ -159,6 +164,8 @@ watch(
         >
           New Application Version
         </UiTabsTrigger>
+        </UiPermissionGuard>
+  <UiPermissionGuard permission="VIEW_APPLICATION_VERSIONS" >
         <UiTabsTrigger
           value="applicationVersionDetails"
           @click="
@@ -175,8 +182,10 @@ watch(
         >
           Application Version Details
         </UiTabsTrigger>
+        </UiPermissionGuard>
       </UiTabsList>
 
+  <UiPermissionGuard permission="VIEW_APPLICATIONS" >
       <UiTabsContent
         value="applicationDetails"
         class="text-base bg-background p-6 rounded-lg"
@@ -364,6 +373,7 @@ watch(
                   <FormMessage />
                 </FormItem>
               </FormField>
+              <UiPermissionGuard permission="UPDATE_APPLICATIONS" >
               <div class="col-span-full w-full py-4 flex justify-between">
                 <UiButton
                   :disabled="isSubmitting"
@@ -383,6 +393,7 @@ watch(
                   Update
                 </UiButton>
               </div>
+              </UiPermissionGuard>
             </div>
           </form>
         </UiCard>
@@ -393,12 +404,17 @@ watch(
           <ErrorMessage :retry="refetch" title="Something went wrong." />
         </div>
       </UiTabsContent>
+      </UiPermissionGuard>
+
+  <UiPermissionGuard permission="VIEW_APPLICATION_VERSIONS" >
       <UiTabsContent
         value="applicationVersions"
         class="text-base bg-background p-6 rounded-lg"
       >
         <ApplicationVersion :applicationId="applicationId" />
       </UiTabsContent>
+      </UiPermissionGuard>
+  <UiPermissionGuard permission="CREATE_APPLICATION_VERSIONS" >
       <UiTabsContent
         value="newApplicationVersion"
         class="text-base bg-background p-6 rounded-lg"
@@ -407,12 +423,15 @@ watch(
           :applicationId="applicationId"
         />
       </UiTabsContent>
+      </UiPermissionGuard>
+  <UiPermissionGuard permission="VIEW_APPLICATION_VERSIONS" >
       <UiTabsContent
         value="applicationVersionDetails"
         class="text-base bg-background p-6 rounded-lg"
       >
         <ApplicationVersionDetails :applicationId="applicationId" />
       </UiTabsContent>
+      </UiPermissionGuard>
     </UiTabs>
     <div v-else-if="isError">
       <ErrorMessage :retry="refetch" title="Something went wrong." />

@@ -718,7 +718,7 @@ watch(
                 <FormMessage />
               </FormItem>
             </FormPropsField> -->
-
+            <UiPermissionGuard permission="UPDATE_PAYMENT_OPERATIONS" >
           <div class="col-span-full w-full py-4 flex justify-end gap-4">
             <UiButton
               :disabled="loading"
@@ -739,6 +739,7 @@ watch(
               Update
             </UiButton>
           </div>
+          </UiPermissionGuard>
         </div>
       </div>
       <UiTabs defaultValue="form" class="w-full">

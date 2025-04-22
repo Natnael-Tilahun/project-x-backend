@@ -16,6 +16,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { MenuLayoutType, PaginationType, SystemMenuType } from "@/global-types";
 import { useDocuments } from "~/composables/useDocuments";
 import IconPicker from "~/components/IconPicker.vue";
+import type { Menu, PaymentIntegration } from "~/types";
 
 const route = useRoute();
 const {
@@ -867,6 +868,7 @@ watch(
                   <FormMessage />
                 </FormItem>
               </FormField>
+  <UiPermissionGuard permission="UPDATE_INTEGRATION_MENUS" >
               <div class="col-span-full w-full py-4 flex justify-between">
                 <UiButton
                   :disabled="submitting"
@@ -886,6 +888,7 @@ watch(
                   Update
                 </UiButton>
               </div>
+              </UiPermissionGuard>
             </div>
           </form>
         </UiCard>

@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { columns } from "~/components/menus/columns";
 import { useMenus } from "~/composables/useMenus";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import type { Menu } from "~/types";
 
 const { getMenus, isLoading } = useMenus();
 const keyword = ref<string>("");
@@ -48,12 +49,14 @@ const refetch = async () => {
     v-else-if="data && !isError && !isLoading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
+  <UiPermissionGuard permission="CREATE_INTEGRATION_MENUS" >
     <NuxtLink to="/menuCategories/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
         >Configure New</UiButton
       >
     </NuxtLink>
+    </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <div class="flex items-center gap-4">
