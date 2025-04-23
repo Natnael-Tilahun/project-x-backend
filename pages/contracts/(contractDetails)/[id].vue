@@ -188,7 +188,7 @@ watch(
           Contract Core Customer Details
         </UiTabsTrigger>
         </UiPermissionGuard>
-  <UiPermissionGuard permission="VIEW_CONTRACT_USERS" >
+  <!-- <UiPermissionGuard permission="VIEW_CONTRACT_USERS" > -->
         <UiTabsTrigger
           value="contractUsers"
           @click="
@@ -203,7 +203,7 @@ watch(
         >
           Contract Users
         </UiTabsTrigger>
-        </UiPermissionGuard>
+        <!-- </UiPermissionGuard> -->
   <UiPermissionGuard permission="CREATE_CONTRACT_USERS" >
         <UiTabsTrigger
           value="newUser"
@@ -392,14 +392,14 @@ watch(
     <ContractsContractCoreCustomerDetails :contractProps="data" :contractId="contractId" />
     </UiTabsContent>
     </UiPermissionGuard>
-  <UiPermissionGuard permission="VIEW_CONTRACT_USERS" >
+  <!-- <UiPermissionGuard permission="VIEW_CONTRACT_USERS" > -->
     <UiTabsContent
     value="contractUsers"
     class="text-base bg-background rounded-lg p-6"
     >
     <ContractsUsers :contractProps="data" :contractId="contractId" />
     </UiTabsContent>
-    </UiPermissionGuard>
+    <!-- </UiPermissionGuard> -->
   <UiPermissionGuard permission="CREATE_CONTRACT_USERS" >
     <UiTabsContent
     value="newUser"

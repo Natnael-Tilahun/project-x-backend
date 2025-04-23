@@ -186,6 +186,7 @@ const deselectAll = () => {
                   <FormMessage />
                 </FormItem>
               </FormField>
+              <UiPermissionGuard permission="UPDATE_CONTRACT_PERMISSIONS" >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"
@@ -205,6 +206,7 @@ const deselectAll = () => {
               Update
             </UiButton>
           </div>
+          </UiPermissionGuard>
         </div>
       </form>
     </UiCard>

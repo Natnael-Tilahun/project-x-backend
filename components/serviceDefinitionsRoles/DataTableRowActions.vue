@@ -57,16 +57,18 @@ async function deleteServiceDefinitionRoles(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
+      <UiPermissionGuard permission="VIEW_SERVICE_DEFINITION_ROLES" >
       <UiDropdownMenuItem @click="viewServiceDefinitionRoleDetail(row.original.id)"
-        >View</UiDropdownMenuItem
+        >View and Edit</UiDropdownMenuItem
       >
-      <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
-      <UiDropdownMenuSeparator />
-      <UiDropdownMenuSeparator />
+      </UiPermissionGuard>
+      <UiPermissionGuard permission="DELETE_SERVICE_DEFINITION_ROLES" >
+        <UiDropdownMenuSeparator />
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>
+      </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 

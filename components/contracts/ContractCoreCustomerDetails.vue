@@ -285,7 +285,7 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
             </FormField>
             </UiPermissionGuard>
 
-  <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER_PERMISSIONS" >
+  <!-- <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER_PERMISSIONS" > -->
             <div class="w-full space-y-2">
               <UiLabel for="enable">Permissions</UiLabel>
               <UiSheet class="w-full">
@@ -311,7 +311,7 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
                 </UiSheetContent>
               </UiSheet>
             </div>
-</UiPermissionGuard>
+<!-- </UiPermissionGuard> -->
           </div>
         </form>
       </UiCard>

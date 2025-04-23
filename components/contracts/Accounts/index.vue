@@ -320,6 +320,8 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                     {{ account?.accountHolder }}
                   </p>
                 </div>
+
+  <UiPermissionGuard permission="UPDATE_CONTRACT_ACCOUNTS" >
                 <FormField
                   :model-value="enable"
                   v-slot="{ handleChange }"
@@ -341,7 +343,7 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                     <FormMessage />
                   </FormItem>
                 </FormField>
-
+</UiPermissionGuard>
   <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS_PERMISSIONS" >
                 <div class="flex items-center">
                   <UiSheet>
