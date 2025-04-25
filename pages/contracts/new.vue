@@ -91,9 +91,14 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     // Format accounts into the correct structure for each core customer
     const coreAccounts = selectedAccounts.value.map((account) => ({
       accountNumber: account.accountNumber,
-      inheritContractCustomerPermissions: form.values.coreCustomers?.[0]?.coreAccounts?.[account.accountNumber]?.inheritContractCustomerPermissions ?? true,
-      permissionCodes: !form.values.coreCustomers?.[0]?.coreAccounts?.[account.accountNumber]?.inheritContractCustomerPermissions 
-        ? form.values.coreCustomers?.[0]?.coreAccounts?.[account.accountNumber]?.permissionCodes || []
+      inheritContractCustomerPermissions:
+        form.values.coreCustomers?.[0]?.coreAccounts?.[account.accountNumber]
+          ?.inheritContractCustomerPermissions ?? true,
+      permissionCodes: !form.values.coreCustomers?.[0]?.coreAccounts?.[
+        account.accountNumber
+      ]?.inheritContractCustomerPermissions
+        ? form.values.coreCustomers?.[0]?.coreAccounts?.[account.accountNumber]
+            ?.permissionCodes || []
         : [],
     }));
 
@@ -105,17 +110,23 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       serviceDefinition: {
         id: values.serviceDefinition,
       },
-      permissionCodes: !values.inheritParentServicePermissions ? values.permissionCodes || [] : [],
+      permissionCodes: !values.inheritParentServicePermissions
+        ? values.permissionCodes || []
+        : [],
       inheritParentServicePermissions: values.inheritParentServicePermissions,
       coreCustomers: coreCustomerId.value
         ? [
             {
               coreCustomerId: coreCustomerId.value,
-              inheritParentContractPermissions: values.coreCustomers?.[0]?.inheritParentContractPermissions ?? true,
-              permissionCodes: !values.coreCustomers?.[0]?.inheritParentContractPermissions 
-                ? values.coreCustomers?.[0]?.permissionCodes || [] 
+              inheritParentContractPermissions:
+                values.coreCustomers?.[0]?.inheritParentContractPermissions ??
+                true,
+              permissionCodes: !values.coreCustomers?.[0]
+                ?.inheritParentContractPermissions
+                ? values.coreCustomers?.[0]?.permissionCodes || []
                 : [],
-              primaryCoreCustomer: values.coreCustomers?.[0]?.primaryCoreCustomer ?? false,
+              primaryCoreCustomer:
+                values.coreCustomers?.[0]?.primaryCoreCustomer ?? false,
               coreAccounts: coreAccounts.length > 0 ? coreAccounts : null,
             },
           ]
@@ -142,7 +153,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
     console.log("newValues: ", newValues);
     data.value = await createNewContract(newValues);
-    // navigateTo(`/contracts/${data.value.id}`);
+    navigateTo(`/contracts`);
     toast({
       title: "Contract Created",
       description: "Contract created successfully",
@@ -412,8 +423,12 @@ watch(
                       <UiCommandList>
                         <UiCommandEmpty>
                           <div class="text-sm text-muted-foreground p-6">
-                            <p>No permissions found. </p>
-                            <p>Please select a service definition. If you have selected a service definition, please check your permissions.</p>
+                            <p>No permissions found.</p>
+                            <p>
+                              Please select a service definition. If you have
+                              selected a service definition, please check your
+                              permissions.
+                            </p>
                           </div>
                         </UiCommandEmpty>
                         <UiCommandGroup>
@@ -527,7 +542,10 @@ watch(
                     {{ selectedAccounts.length }} selected
                   </p>
                 </div>
-                <div v-if="coreCustomerId" class="grid md:grid-cols-2 w-full gap-x-8 gap-y-4 pb-6">
+                <div
+                  v-if="coreCustomerId"
+                  class="grid md:grid-cols-2 w-full gap-x-8 gap-y-4 pb-6"
+                >
                   <FormField
                     v-slot="{ value, handleChange }"
                     name="coreCustomers[0].inheritParentContractPermissions"
@@ -567,7 +585,10 @@ watch(
                   <FormField
                     v-slot="{ componentField, errorMessage }"
                     name="coreCustomers[0].permissionCodes"
-                    v-if="!form.values?.coreCustomers?.[0]?.inheritParentContractPermissions"
+                    v-if="
+                      !form.values?.coreCustomers?.[0]
+                        ?.inheritParentContractPermissions
+                    "
                   >
                     <FormItem>
                       <FormLabel>Select Core Customer permissions</FormLabel>
@@ -579,7 +600,9 @@ watch(
                               role="combobox"
                               class="w-full text-sm text-left border flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
                               :class="{
-                                'text-muted-foreground': !form.values?.coreCustomers?.[0]?.permissionCodes?.length,
+                                'text-muted-foreground':
+                                  !form.values?.coreCustomers?.[0]
+                                    ?.permissionCodes?.length,
                               }"
                             >
                               {{
@@ -696,7 +719,9 @@ watch(
                           "
                         />
                         <!-- <UiAccordionTrigger class="ml-auto hover:no-underline"> -->
-                        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-x-4 gap-y-5 py-2">
+                        <div
+                          class="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-x-4 gap-y-5 py-2"
+                        >
                           <div>
                             <p class="text-sm text-muted-foreground">
                               Account Number
@@ -731,18 +756,24 @@ watch(
                             v-slot="{ value, handleChange }"
                             :name="`coreCustomers[0].coreAccounts[${account.accountNumber}].inheritContractCustomerPermissions`"
                           >
-                            <FormItem
-                            >
-                              <FormLabel class="text-sm text-muted-foreground font-normal">
+                            <FormItem>
+                              <FormLabel
+                                class="text-sm text-muted-foreground font-normal"
+                              >
                                 Inherit Contract Customer Permissions
                               </FormLabel>
                               <FormControl>
                                 <UiSwitch
                                   :checked="value !== false"
-                                  @update:checked="(val) => {
-                                    handleChange(val);
-                                    form.setFieldValue(`coreCustomers[0].coreAccounts[${account.accountNumber}].inheritContractCustomerPermissions`, val);
-                                  }"
+                                  @update:checked="
+                                    (val) => {
+                                      handleChange(val);
+                                      form.setFieldValue(
+                                        `coreCustomers[0].coreAccounts[${account.accountNumber}].inheritContractCustomerPermissions`,
+                                        val
+                                      );
+                                    }
+                                  "
                                 />
                               </FormControl>
                             </FormItem>
@@ -755,10 +786,17 @@ watch(
                             "
                             v-slot="{ componentField, errorMessage }"
                             :name="`coreCustomers[0].coreAccounts[${account.accountNumber}].permissionCodes`"
-                            v-if="!form.values?.coreCustomers?.[0]?.coreAccounts?.[account.accountNumber]?.inheritContractCustomerPermissions"
+                            v-if="
+                              !form.values?.coreCustomers?.[0]?.coreAccounts?.[
+                                account.accountNumber
+                              ]?.inheritContractCustomerPermissions
+                            "
                           >
                             <FormItem>
-                              <FormLabel class="text-sm text-muted-foreground font-normal">Select Account Permissions</FormLabel>
+                              <FormLabel
+                                class="text-sm text-muted-foreground font-normal"
+                                >Select Account Permissions</FormLabel
+                              >
                               <UiPopover>
                                 <UiPopoverTrigger asChild>
                                   <FormControl>
@@ -767,7 +805,11 @@ watch(
                                       role="combobox"
                                       class="w-full text-sm text-left border flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
                                       :class="{
-                                        'text-muted-foreground': !form.values?.coreCustomers?.[0]?.coreAccounts?.[account.accountNumber]?.permissionCodes?.length,
+                                        'text-muted-foreground':
+                                          !form.values?.coreCustomers?.[0]
+                                            ?.coreAccounts?.[
+                                            account.accountNumber
+                                          ]?.permissionCodes?.length,
                                       }"
                                     >
                                       {{
@@ -798,7 +840,7 @@ watch(
                                       >
                                       <UiCommandGroup>
                                         <UiCommandItem
-                                            v-for="permission in selectedCoreCustomerPermissions"
+                                          v-for="permission in selectedCoreCustomerPermissions"
                                           :key="permission.code"
                                           :value="permission.code"
                                           @select="
