@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { columns } from "~/components/applications/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import type { Application } from "~/types";
 
 const { getApplications, isLoading } = useApplications();
 const loading = ref(isLoading.value);
@@ -40,12 +41,14 @@ await useAsyncData("applicationsData", async () => {
     v-else-if="data && !isError"
     class="py-4 flex flex-col space-y-10 mx-auto"
   >
+  <UiPermissionGuard permission="CREATE_APPLICATIONS" >
     <NuxtLink to="/applications/new" class="w-fit self-end"
       ><UiButton
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add New
         Application</UiButton
       >
     </NuxtLink>
+    </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <div class="flex items-center justify-between">

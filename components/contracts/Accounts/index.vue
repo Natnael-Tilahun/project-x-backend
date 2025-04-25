@@ -40,6 +40,7 @@ const contractCoreCustomerId = ref<any>();
 const selectedAccounts = ref<Account[]>([]);
 const selectedContractAccount = ref<ContractAccount[]>([]);
 const coreCustomerPermissions = ref<any>();
+const store = useAuthStore();
 
 const props = defineProps<{
   contractId?: string;
@@ -305,6 +306,7 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                 :checked="isAccountSelected(account)"
                 @click.stop="handleAccountSelect(account)"
                 class="h-5 w-5"
+                :disabled="(isAccountSelected(account) && !store.permissions.includes('DELETE_CONTRACT_ACCOUNTS')) || (!isAccountSelected(account) && !store.permissions.includes('CREATE_CONTRACT_ACCOUNTS'))"
               />
               <!-- <UiAccordionTrigger class="ml-auto hover:no-underline"> -->
               <div class="flex-1 grid grid-cols-4 gap-4 py-2">
@@ -320,6 +322,8 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                     {{ account?.accountHolder }}
                   </p>
                 </div>
+
+  <UiPermissionGuard permission="UPDATE_CONTRACT_ACCOUNTS" >
                 <FormField
                   :model-value="enable"
                   v-slot="{ handleChange }"
@@ -341,6 +345,8 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                     <FormMessage />
                   </FormItem>
                 </FormField>
+</UiPermissionGuard>
+  <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS_PERMISSIONS" >
                 <div class="flex items-center">
                   <UiSheet>
                     <UiSheetTrigger>
@@ -365,6 +371,7 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                     </UiSheetContent>
                   </UiSheet>
                 </div>
+                </UiPermissionGuard>
               </div>
               <UiAccordionTrigger />
             </div>
@@ -441,6 +448,7 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                 :checked="isAccountSelected(account)"
                 @click.stop="handleAccountSelect(account)"
                 class="h-5 w-5"
+                :disabled="(isAccountSelected(account) && !store.permissions.includes('DELETE_CONTRACT_ACCOUNTS')) || (!isAccountSelected(account) && !store.permissions.includes('CREATE_CONTRACT_ACCOUNTS'))"
               />
               <!-- <UiAccordionTrigger class="ml-auto hover:no-underline"> -->
               <div class="flex-1 grid grid-cols-4 gap-4 py-2">
@@ -527,9 +535,12 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
             </div>
           </UiAccordionContent>
         </UiAccordionItem>
+
+  <UiPermissionGuard permission="CREATE_CONTRACT_ACCOUNTS" >
         <div class="flex justify-end pt-4">
       <UiButton @click="addAccounts" type="submit" class="w-fit self-end px-8">Add Accounts</UiButton>
       </div>
+      </UiPermissionGuard>
       </UiAccordion>
       <!-- </div> -->
       <UiCard

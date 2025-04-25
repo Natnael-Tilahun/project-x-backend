@@ -198,6 +198,7 @@ watch(
             <UiAlertDialogCancel >
                 Cancel
           </UiAlertDialogCancel>
+          <UiPermissionGuard permission="UPDATE_CONTRACT_USERS" >
 
           <UiAlertDialogCancel  class="w-fit p-0">
             <UiButton :disabled="submitting" class="w-fit" type="submit">
@@ -211,6 +212,8 @@ watch(
               Update
             </UiButton>
           </UiAlertDialogCancel >
+        </UiPermissionGuard>
+
           </div>
         </div>
       </form>

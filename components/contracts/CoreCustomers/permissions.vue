@@ -178,6 +178,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                   <FormMessage />
                 </FormItem>
               </FormField>
+  <UiPermissionGuard permission="UPDATE_CONTRACT_CORE_CUSTOMER_PERMISSIONS" >
               <div class="col-span-full w-full py-4 flex justify-between">
                 <UiButton
                   :disabled="submitting"
@@ -197,6 +198,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                   Update
                 </UiButton>
               </div>
+              </UiPermissionGuard>
             </div>
           </form>
         </UiCard>

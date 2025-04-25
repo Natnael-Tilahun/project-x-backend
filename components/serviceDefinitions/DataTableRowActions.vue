@@ -54,16 +54,18 @@ async function deleteServiceDefinitions(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
+  <UiPermissionGuard permission="VIEW_SERVICE_DEFINITIONS" >
       <UiDropdownMenuItem @click="viewServiceDefinitionDetail(row.original.id)"
-        >View</UiDropdownMenuItem
+        >View and Edit</UiDropdownMenuItem
       >
-      <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
-      <UiDropdownMenuSeparator />
+      </UiPermissionGuard>
+      <UiPermissionGuard permission="DELETE_SERVICE_DEFINITIONS" >
       <UiDropdownMenuSeparator />
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>
+      </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 

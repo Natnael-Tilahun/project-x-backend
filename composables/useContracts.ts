@@ -91,6 +91,60 @@ export const useContracts = () => {
   ) => Promise<Contract> = async (contractData) => {
     try {
       const { data, pending, error, status } = await useFetch<Contract>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contracts/full`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+          body: JSON.stringify(contractData),
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message || error.value?.data?.detail,
+          variant: "destructive",
+        });
+
+        console.log("Creating new contract error: ", error.value?.data.detail);
+
+        if (error.value?.data?.type == "/constraint-violation") {
+          console.log(
+            "Creating new contract error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Creating new contract errorrr: ",
+            error.value?.data?.message
+          );
+        }
+        throw new Error(error.value?.data.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No contract with this customer id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
+  const createNewContracts: (
+    contractData: any
+  ) => Promise<Contract> = async (contractData) => {
+    try {
+      const { data, pending, error, status } = await useFetch<Contract>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contracts`,
         {
           method: "POST",
@@ -139,6 +193,7 @@ export const useContracts = () => {
       throw err;
     }
   };
+
 
   const updateContract: (
     contractId: string,

@@ -132,6 +132,7 @@ watch(
       <UiTabsList
         class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
+  <UiPermissionGuard permission="VIEW_SERVICE_DEFINITIONS" >
         <UiTabsTrigger
           value="serviceDefinitionDetails"
           @click="
@@ -146,6 +147,8 @@ watch(
         >
           Service Definition Details
         </UiTabsTrigger>
+        </UiPermissionGuard>
+        <UiPermissionGuard permission="VIEW_SERVICE_DEFINITION_PERMISSIONS" >
         <UiTabsTrigger
           value="serviceDefinitionPermissions"
           @click="
@@ -160,6 +163,8 @@ watch(
         >
           Service Definition Permissions
         </UiTabsTrigger>
+        </UiPermissionGuard>
+        <UiPermissionGuard permission="VIEW_SERVICE_DEFINITION_ROLES" >
         <UiTabsTrigger
           value="serviceDefinitionRoles"
           @click="
@@ -174,6 +179,8 @@ watch(
         >
           Service Definition Roles
         </UiTabsTrigger>
+        </UiPermissionGuard>
+        <UiPermissionGuard permission="VIEW_SERVICE_DEFINITION_ROLES" >
         <UiTabsTrigger
           value="serviceDefinitionRoleDetails"
           @click="
@@ -191,6 +198,8 @@ watch(
         >
           Service Definition Role Details
         </UiTabsTrigger>
+        </UiPermissionGuard>
+        <UiPermissionGuard permission="CREATE_SERVICE_DEFINITION_ROLES" >
         <UiTabsTrigger
           value="newServiceDefinitionRole"
           @click="
@@ -208,7 +217,7 @@ watch(
         >
           New Service Definition Role
         </UiTabsTrigger>
-
+        </UiPermissionGuard>
       </UiTabsList>
       <UiTabsContent
         value="serviceDefinitionDetails"
@@ -392,6 +401,7 @@ watch(
               </FormItem>
             </FormField>
       
+            <UiPermissionGuard permission="UPDATE_SERVICE_DEFINITIONS" >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"
@@ -411,35 +421,44 @@ watch(
               Update
             </UiButton>
           </div>
+          </UiPermissionGuard>
         </div>
       </form>
     </UiCard>
 
     </UiTabsContent>
+    <UiPermissionGuard permission="VIEW_SERVICE_DEFINITION_PERMISSIONS" >
     <UiTabsContent
     value="serviceDefinitionPermissions"
     class="text-base bg-background rounded-lg"
     >
     <ServiceDefinitionsPermissions :serviceDefinitionProps="data" />
     </UiTabsContent>
+    </UiPermissionGuard>
+    <UiPermissionGuard permission="VIEW_SERVICE_DEFINITION_ROLES" >
     <UiTabsContent
     value="serviceDefinitionRoles"
     class="text-base bg-background rounded-lg"
     >
     <ServiceDefinitionsRoles :serviceDefinitionProps="data" />
     </UiTabsContent>
+    </UiPermissionGuard>  
+    <UiPermissionGuard permission="VIEW_SERVICE_DEFINITION_ROLES" >
     <UiTabsContent
     value="serviceDefinitionRoleDetails"
     class="text-base bg-background rounded-lg"
     >
     <ServiceDefinitionsRolesDetails :serviceDefinitionProps="data" />
     </UiTabsContent>
+    </UiPermissionGuard>
+    <UiPermissionGuard permission="CREATE_SERVICE_DEFINITION_ROLES" >
     <UiTabsContent
     value="newServiceDefinitionRole"
     class="text-base bg-background rounded-lg"
     >
     <ServiceDefinitionsRolesNew :serviceDefinitionProps="data" />
     </UiTabsContent>
+    </UiPermissionGuard>
     </UiTabs>
     <div v-else-if="data == null || data == undefined">
       <UiNoResultFound title="Sorry, No contract found." />

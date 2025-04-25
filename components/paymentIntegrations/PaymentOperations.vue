@@ -58,6 +58,8 @@ const refetch = async () => {
     v-else-if="data && !isError && !loading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
+<UiPermissionGuard permission="CREATE_PAYMENT_OPERATIONS" >
+  
     <UiButton
       @click="
         navigateTo({
@@ -71,6 +73,7 @@ const refetch = async () => {
       ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Configure
       New</UiButton
     >
+    </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }"> </template>
     </UiDataTable>

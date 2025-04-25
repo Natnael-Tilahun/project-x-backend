@@ -162,7 +162,7 @@ await useAsyncData("permissionsData", async () => {
                 </FormItem>
               </FormField>
 
-
+          <UiPermissionGuard permission="UPDATE_SERVICE_DEFINITION_ROLES" >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"
@@ -182,6 +182,7 @@ await useAsyncData("permissionsData", async () => {
               Update
             </UiButton>
           </div>
+          </UiPermissionGuard>
         </div>
       </form>
     </UiCard>

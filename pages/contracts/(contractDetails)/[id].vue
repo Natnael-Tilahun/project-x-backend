@@ -118,6 +118,7 @@ watch(
       <UiTabsList
         class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
+  <UiPermissionGuard permission="VIEW_CONTRACTS" >
         <UiTabsTrigger
           value="contractDetails"
           @click="
@@ -132,6 +133,8 @@ watch(
         >
           Contract Details
         </UiTabsTrigger>
+        </UiPermissionGuard>
+  <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER" >
         <UiTabsTrigger
           value="contractCoreCustomers"
           @click="
@@ -146,6 +149,8 @@ watch(
         >
           Contract Core Customers
         </UiTabsTrigger>
+        </UiPermissionGuard>
+  <UiPermissionGuard permission="CREATE_CONTRACT_CORE_CUSTOMER" >
         <UiTabsTrigger
           value="newCoreCustomer"
           @click="
@@ -163,6 +168,8 @@ watch(
         >
           New Contract Core Customer
         </UiTabsTrigger>
+        </UiPermissionGuard>
+  <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER" >
         <UiTabsTrigger
           value="contractCoreCustomerDetails"
           @click="
@@ -180,6 +187,8 @@ watch(
         >
           Contract Core Customer Details
         </UiTabsTrigger>
+        </UiPermissionGuard>
+  <UiPermissionGuard permission="VIEW_CONTRACT_USERS" >
         <UiTabsTrigger
           value="contractUsers"
           @click="
@@ -194,6 +203,8 @@ watch(
         >
           Contract Users
         </UiTabsTrigger>
+        </UiPermissionGuard>
+  <UiPermissionGuard permission="CREATE_CONTRACT_USERS" >
         <UiTabsTrigger
           value="newUser"
           @click="
@@ -211,7 +222,10 @@ watch(
         >
           New Contract User
         </UiTabsTrigger>
+        </UiPermissionGuard>
       </UiTabsList>
+
+  <UiPermissionGuard permission="VIEW_CONTRACTS" >
       <UiTabsContent
         value="contractDetails"
         class="text-base bg-background rounded-lg"
@@ -305,6 +319,7 @@ watch(
                 <FormMessage />
               </FormItem>
             </FormField>
+            <UiPermissionGuard permission="VIEW_CONTRACT_PERMISSIONS" >
             <div class="w-full space-y-2">
               <UiLabel for="enable">Permissions</UiLabel>
               <UiSheet class="w-full">
@@ -326,6 +341,8 @@ watch(
                 </UiSheetContent>
               </UiSheet>
             </div>
+            </UiPermissionGuard>
+            <UiPermissionGuard permission="UPDATE_CONTRACTS" >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"
@@ -345,41 +362,52 @@ watch(
               Update
             </UiButton>
           </div>
+          </UiPermissionGuard>
         </div>
       </form>
     </UiCard>
     </UiTabsContent>
+    </UiPermissionGuard>
+  <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER" >
     <UiTabsContent
     value="contractCoreCustomers"
     class="text-base bg-background rounded-lg p-6"
     >
     <ContractsCoreCustomers :contractProps="data" />
     </UiTabsContent>
+    </UiPermissionGuard>
+  <UiPermissionGuard permission="CREATE_CONTRACT_CORE_CUSTOMER" >
     <UiTabsContent
     value="newCoreCustomer"
     class="text-base bg-background rounded-lg p-6"
     >
     <ContractsNewCoreCustomers :contractProps="data" />
     </UiTabsContent>
-
+</UiPermissionGuard>
+<UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER" >
     <UiTabsContent
     value="contractCoreCustomerDetails"
     class="text-base bg-background rounded-lg p-6"
     >
     <ContractsContractCoreCustomerDetails :contractProps="data" :contractId="contractId" />
     </UiTabsContent>
+    </UiPermissionGuard>
+  <UiPermissionGuard permission="VIEW_CONTRACT_USERS" >
     <UiTabsContent
     value="contractUsers"
     class="text-base bg-background rounded-lg p-6"
     >
     <ContractsUsers :contractProps="data" :contractId="contractId" />
     </UiTabsContent>
+    </UiPermissionGuard>
+  <UiPermissionGuard permission="CREATE_CONTRACT_USERS" >
     <UiTabsContent
     value="newUser"
     class="text-base bg-background rounded-lg p-6"
     >
     <ContractsUsersNewUser :contractProps="data" :contractId="contractId" />
     </UiTabsContent>
+    </UiPermissionGuard>
     </UiTabs>
     <div v-else-if="data == null || data == undefined">
       <UiNoResultFound title="Sorry, No contract found." />

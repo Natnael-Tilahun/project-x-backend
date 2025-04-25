@@ -61,6 +61,7 @@ const searchHandler = async () => {
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
+  <UiPermissionGuard permission="CREATE_CONTRACT_CORE_CUSTOMER" >
     <!-- <NuxtLink to="/contracts/newCoreCustomer" class="w-fit self-end"> -->
       <UiButton   
       @click="
@@ -75,6 +76,7 @@ const searchHandler = async () => {
         Contract Core Customer</UiButton
       >
     <!-- </NuxtLink> -->
+     </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <!-- <CustomersDataTableSearchbar :table="table" /> -->

@@ -51,6 +51,7 @@ onMounted(async () => {
     v-else-if="data && !isError"
     class="py-4 flex flex-col space-y-10 mx-auto"
   >
+  <UiPermissionGuard permission="CREATE_APPLICATION_VERSIONS" >
     <NuxtLink
       class="w-fit self-end"
       @click="
@@ -67,6 +68,7 @@ onMounted(async () => {
         Add New Application Version
       </UiButton>
     </NuxtLink>
+    </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data" :loading="loading">
       <template v-slot:toolbar="{ table }">
         <div class="flex items-center justify-between">
