@@ -15,6 +15,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { IntegrationType, Protocol, RetryStrategy } from "@/global-types";
 import AuthConfig from "~/components/operations/AuthConfig.vue";
+import type { ApiIntegration, AuthConfiguration } from "~/types";
 
 const route = useRoute();
 const { getIntegrationById, updateIntegration, isSubmitting, isLoading } =
@@ -27,7 +28,7 @@ const integrationId = ref<string>("");
 const loading = ref(false);
 const isError = ref(false);
 const data = ref<ApiIntegration>();
-const allAuthConfigs = ref<AuthConfig[]>();
+const allAuthConfigs = ref<AuthConfiguration[]>();
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
 integrationId.value = route.params.id;
@@ -131,7 +132,7 @@ const refetch = async () => {
         {{ data?.name }}
       </h1>
     </div>
-
+    <UiPermissionGuard permission="VIEW_API_INTEGRATIONS" >
     <UiTabs v-model="openItems" class="w-full space-y-0">
       <UiTabsList
         class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
@@ -522,6 +523,7 @@ const refetch = async () => {
                   />
                 </UiSheetContent>
               </UiSheet>
+              <UiPermissionGuard permission="UPDATE_API_INTEGRATION" >
               <div class="col-span-full w-full py-4 flex justify-between">
                 <UiButton
                   :disabled="loading"
@@ -542,6 +544,7 @@ const refetch = async () => {
                   Update
                 </UiButton>
               </div>
+              </UiPermissionGuard>
             </div>
           </form>
         </div>
@@ -571,6 +574,7 @@ const refetch = async () => {
         <OperationsNewOperation :integrationId="integrationId" />
       </UiTabsContent>
     </UiTabs>
+    </UiPermissionGuard>
   </div>
 </template>
 

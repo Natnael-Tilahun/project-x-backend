@@ -57,16 +57,18 @@ async function deleteContractCoreCustomers(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
+  <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER" >
       <UiDropdownMenuItem @click="viewContractCoreCustomerDetail(row.original.contractId)"
-        >View</UiDropdownMenuItem
+        >View and Edit</UiDropdownMenuItem
       >
-      <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
-      <UiDropdownMenuSeparator />
+      </UiPermissionGuard>
+  <UiPermissionGuard permission="DELETE_CONTRACT_CORE_CUSTOMER" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>
+      </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 
