@@ -50,6 +50,7 @@ async function deletingContractsUser(id: string) {
     <UiDropdownMenuContent align="end" class="w-[160px]">
       <!-- <UiDropdownMenuItem @click="viewContractDetail(row.original.contractId)" -->
         <!-- > -->
+        <UiPermissionGuard permission="VIEW_CONTRACT_USERS" >
         <UiAlertDialog>
           <UiAlertDialogTrigger class="px-2 text-sm">
             View & Edit
@@ -58,12 +59,14 @@ async function deletingContractsUser(id: string) {
             <ContractsUsersDetails :id="row.original.id || ''"  />
           </UiAlertDialogContent>
         </UiAlertDialog>
-        <!-- </UiDropdownMenuItem> -->
+        </UiPermissionGuard>
+        <UiPermissionGuard permission="DELETE_CONTRACT_USERS" >
       <UiDropdownMenuSeparator />
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>
+      </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 

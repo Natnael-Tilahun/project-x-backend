@@ -285,7 +285,7 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
             </FormField>
             </UiPermissionGuard>
 
-  <!-- <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER_PERMISSIONS" > -->
+  <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER_PERMISSIONS" >
             <div class="w-full space-y-2">
               <UiLabel for="enable">Permissions</UiLabel>
               <UiSheet class="w-full">
@@ -311,10 +311,11 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
                 </UiSheetContent>
               </UiSheet>
             </div>
-<!-- </UiPermissionGuard> -->
+          </UiPermissionGuard>
           </div>
         </form>
       </UiCard>
+  <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS" >
       <UiTabs v-model="openItems" class="w-full space-y-0 border rounded-lg p-">
         <UiTabsList
           class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
@@ -340,7 +341,6 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
           >
             Permissions
           </UiTabsTrigger> -->
-  <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS" >
           <UiTabsTrigger
             value="accounts"
             @click="
@@ -356,7 +356,6 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
           >
             Contract Accounts
           </UiTabsTrigger>
-          </UiPermissionGuard>
         </UiTabsList>
 
         <!-- <UiTabsContent
@@ -383,6 +382,8 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
         </UiTabsContent>
         </UiPermissionGuard>
       </UiTabs>
+    </UiPermissionGuard>
+
     </div>
 
     <div v-else-if="data == null || data == undefined">

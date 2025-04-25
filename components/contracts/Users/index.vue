@@ -63,6 +63,7 @@ const searchHandler = async () => {
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
     <!-- <NuxtLink to="/contracts/newCoreCustomer" class="w-fit self-end"> -->
+      <UiPermissionGuard permission="CREATE_CONTRACT_USERS" >
       <UiButton   
       @click="
             navigateTo({
@@ -75,6 +76,7 @@ const searchHandler = async () => {
           ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
           Contract User</UiButton
       >
+      </UiPermissionGuard>
     <!-- </NuxtLink> -->
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">

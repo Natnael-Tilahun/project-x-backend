@@ -40,6 +40,7 @@ const contractCoreCustomerId = ref<any>();
 const selectedAccounts = ref<Account[]>([]);
 const selectedContractAccount = ref<ContractAccount[]>([]);
 const coreCustomerPermissions = ref<any>();
+const store = useAuthStore();
 
 const props = defineProps<{
   contractId?: string;
@@ -305,6 +306,7 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                 :checked="isAccountSelected(account)"
                 @click.stop="handleAccountSelect(account)"
                 class="h-5 w-5"
+                :disabled="(isAccountSelected(account) && !store.permissions.includes('DELETE_CONTRACT_ACCOUNTS')) || (!isAccountSelected(account) && !store.permissions.includes('CREATE_CONTRACT_ACCOUNTS'))"
               />
               <!-- <UiAccordionTrigger class="ml-auto hover:no-underline"> -->
               <div class="flex-1 grid grid-cols-4 gap-4 py-2">
@@ -446,6 +448,7 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                 :checked="isAccountSelected(account)"
                 @click.stop="handleAccountSelect(account)"
                 class="h-5 w-5"
+                :disabled="(isAccountSelected(account) && !store.permissions.includes('DELETE_CONTRACT_ACCOUNTS')) || (!isAccountSelected(account) && !store.permissions.includes('CREATE_CONTRACT_ACCOUNTS'))"
               />
               <!-- <UiAccordionTrigger class="ml-auto hover:no-underline"> -->
               <div class="flex-1 grid grid-cols-4 gap-4 py-2">
