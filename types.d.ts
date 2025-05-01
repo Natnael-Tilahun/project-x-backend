@@ -733,16 +733,25 @@ interface Contract {
   serviceDefinition?: ServiceDefinition | null;
   permissionCodes?: string[] | null;
   inheritParentServicePermissions?: boolean | null;
-  coreCustomers?: [{
-    coreCustomerId: string;
-    inheritParentContractPermissions: boolean;
-    permissionCodes?: string[] | null;
-    coreAccounts: [{
-      inheritContractCustomerPermissions: boolean;
-      permissionCodes?: string[] | null;
-      accountNumber: string;
-    }] | null;
-  }] | null;
+  coreCustomers?:
+    | [
+        {
+          coreCustomerId: string;
+          inheritParentContractPermissions: boolean;
+          permissionCodes?: string[] | null;
+          coreAccounts:
+            | [
+                {
+                  inheritContractCustomerPermissions: boolean;
+                  permissionCodes?: string[] | null;
+                  accountNumber: string;
+                }
+              ]
+            | null;
+        }
+      ]
+    | null;
+  permissions?: Permissions[];
 }
 
 interface ServiceDefinition {

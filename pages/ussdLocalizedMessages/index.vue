@@ -4,7 +4,8 @@ import { columns } from "~/components/ussdLocalizedMessages/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { LocalizedDefaultMessage } from "~/types";
 
-const { getUssdLocalizedDefaultMessages, isLoading } = useUssdLocalizedDefaultMessage();
+const { getUssdLocalizedDefaultMessages, isLoading } =
+  useUssdLocalizedDefaultMessage();
 const keyword = ref<string>("");
 const data = ref<LocalizedDefaultMessage[]>([]);
 const loading = ref(isLoading.value);
@@ -16,7 +17,10 @@ const getUssdLocalizedDefaultMessagesData = async () => {
     isLoading.value = true;
     loading.value = true;
     isError.value = false;
-    const ussdLocalizedDefaultMessages = await getUssdLocalizedDefaultMessages(0, 100);
+    const ussdLocalizedDefaultMessages = await getUssdLocalizedDefaultMessages(
+      0,
+      100
+    );
     // Sort integrations by name alphabetically
     data.value = ussdLocalizedDefaultMessages.sort((a, b) =>
       a.message.toLowerCase().localeCompare(b.message.toLowerCase())
@@ -48,12 +52,14 @@ const refetch = async () => {
     v-else-if="data && !isError && !isLoading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <NuxtLink to="/ussdLocalizedMessages/new" class="w-fit self-end">
-      <UiButton class="w-fit self-end px-5"
-        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
-        >Create New Localized Default Message</UiButton
-      >
-    </NuxtLink>
+    <UiPermissionGuard permission="CREATE_USSD_LOCALIZED_DEFAULT_MESSAGES">
+      <NuxtLink to="/ussdLocalizedMessages/new" class="w-fit self-end">
+        <UiButton class="w-fit self-end px-5"
+          ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
+          >Create New Localized Default Message</UiButton
+        >
+      </NuxtLink>
+    </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <div class="flex items-center gap-4">

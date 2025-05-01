@@ -15,13 +15,18 @@ import type { UssdLanguage } from "~/types";
 import { LanguageRelatedStatus } from "~/global-types";
 
 const route = useRoute();
-const { getUssdLanguageById, updateUssdLanguageStatus, isLoading, isSubmitting, getUssdLanguages } =
-  useUssdLanguages();
+const {
+  getUssdLanguageById,
+  updateUssdLanguageStatus,
+  isLoading,
+  isSubmitting,
+  getUssdLanguages,
+} = useUssdLanguages();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
 const ussdLanguageId = ref<string>("");
 const loading = ref(isLoading.value);
-const submitting = ref(isLoading.value);
+const submitting = ref(false);
 const isError = ref(false);
 const data = ref<UssdLanguage>();
 
@@ -39,27 +44,30 @@ const form = useForm({
 
 const getUssdLanguageByIdHandler = async () => {
   try {
-  isLoading.value = true;
-  loading.value = true;
-  data.value = await getUssdLanguageById(ussdLanguageId.value);
-  form.setValues(data.value);
-} catch (err) {
-  console.error("Error fetching ussd language:", err);
-  isError.value = true;
-} finally {
-  isLoading.value = false;
-  loading.value = false;
-}
-}
+    isLoading.value = true;
+    loading.value = true;
+    data.value = await getUssdLanguageById(ussdLanguageId.value);
+    form.setValues(data.value);
+  } catch (err) {
+    console.error("Error fetching ussd language:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
 
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
-    isSubmitting.value = true;
+    submitting.value = true;
     isLoading.value = true;
     const updatedValues = {
       ...values,
     };
-    data.value = await updateUssdLanguageStatus(ussdLanguageId.value, updatedValues.status); // Call your API function to fetch profile
+    data.value = await updateUssdLanguageStatus(
+      ussdLanguageId.value,
+      updatedValues.status
+    ); // Call your API function to fetch profile
     navigateTo(`/ussdLanguages`);
     toast({
       title: "Ussd Language Updated",
@@ -70,15 +78,13 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isError.value = true;
   } finally {
     isLoading.value = false;
-    isSubmitting.value = false;
+    submitting.value = false;
   }
 });
-
 
 onMounted(async () => {
   await getUssdLanguageByIdHandler();
 });
-
 </script>
 
 <template>
@@ -132,48 +138,50 @@ onMounted(async () => {
             </FormItem>
           </FormField>
 
-              <FormField v-slot="{ componentField }" name="status">
-              <FormItem>
-                <FormLabel> Status </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a status" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in Object.values(LanguageRelatedStatus)"
-                        :value="item"
-                      >
-                        {{ item }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-          <div class="col-span-full w-full py-4 flex justify-between">
-            <UiButton
-              :disabled="submitting"
-              variant="outline"
-              type="button"
-              @click="$router.go(-1)"
-            >
-              Cancel
-            </UiButton>
-            <UiButton :disabled="submitting" type="submit">
-              <Icon
-                name="svg-spinners:8-dots-rotate"
-                v-if="submitting"
-                class="mr-2 h-4 w-4 animate-spin"
-              ></Icon>
+          <FormField v-slot="{ componentField }" name="status">
+            <FormItem>
+              <FormLabel> Status </FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue placeholder="Select a status" />
+                  </UiSelectTrigger>
+                </FormControl>
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-for="item in Object.values(LanguageRelatedStatus)"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <UiPermissionGuard permission="UPDATE_USSD_LANGUAGES">
+            <div class="col-span-full w-full py-4 flex justify-between">
+              <UiButton
+                :disabled="submitting"
+                variant="outline"
+                type="button"
+                @click="$router.go(-1)"
+              >
+                Cancel
+              </UiButton>
+              <UiButton :disabled="submitting" type="submit">
+                <Icon
+                  name="svg-spinners:8-dots-rotate"
+                  v-if="submitting"
+                  class="mr-2 h-4 w-4 animate-spin"
+                ></Icon>
 
-              Update
-            </UiButton>
-          </div>
+                Update
+              </UiButton>
+            </div>
+          </UiPermissionGuard>
         </div>
       </form>
     </UiCard>

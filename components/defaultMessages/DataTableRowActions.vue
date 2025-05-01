@@ -56,16 +56,22 @@ async function deleteUssdDefaultMessageHandler(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiDropdownMenuItem @click="viewUssdDefaultMessageDetail(row.original.id)"
-        >View</UiDropdownMenuItem
-      >
-      <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
-      <UiDropdownMenuSeparator />
-      <UiDropdownMenuSeparator />
-      <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
-        Delete
-        <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
-      </UiDropdownMenuItem>
+      <UiPermissionGuard permission="VIEW_USSD_DEFAULT_MESSAGES">
+        <UiDropdownMenuItem
+          @click="viewUssdDefaultMessageDetail(row.original.id)"
+          >View and Edit</UiDropdownMenuItem
+        >
+      </UiPermissionGuard>
+      <UiPermissionGuard permission="DELETE_USSD_DEFAULT_MESSAGES">
+        <UiDropdownMenuSeparator />
+        <UiDropdownMenuItem
+          @click="setOpenEditModal(true)"
+          class="text-red-600"
+        >
+          Delete
+          <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
+        </UiDropdownMenuItem>
+      </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 
@@ -82,7 +88,9 @@ async function deleteUssdDefaultMessageHandler(id: string) {
         <UiAlertDialogCancel @click="setOpenEditModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="deleteUssdDefaultMessageHandler(row.original.id)">
+        <UiAlertDialogAction
+          @click="deleteUssdDefaultMessageHandler(row.original.id)"
+        >
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"
