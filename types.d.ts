@@ -795,7 +795,9 @@ interface ServiceDefinitionRole {
   id?: string;
   isDefault?: boolean;
   serviceDefinition: ServiceDefinition;
-  role?: Role;
+  permissions?: Permission[];
+  roleName: string,
+  roleDescription: string,
 }
 
 interface PermissionGroup {

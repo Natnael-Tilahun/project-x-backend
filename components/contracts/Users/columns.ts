@@ -130,41 +130,41 @@ export const columns: ColumnDef<ContractUser>[] = [
         : h("p", "-");
     },
   },
-  {
-    accessorKey: "accounts",
-    header: "Accounts",
-    cell: ({ row }) => {
-      const userId = row.original.user?.id;
-      const id = row.getValue("id");
-      const contractUserId = row.original.id;
-      const contract = row.original.contract;
-      return id
-        ? h(
-            Sheet,
-            {
-            },
-            [
-              h(
-                SheetTrigger,
-                {
-                  class: "font-medium text-primary w-fit whitespace-nowrap",
-                },
-                "View Accounts"
-              ),
-              h(
-                SheetContent,
-                {
-                  class: "md:w-3/4 md:max-w-none w-screen",    
-                },
-                [
-                  h(ContractsUsersAccounts, { userId: userId || "", contractUserId: contractUserId || "", contract: contract || "" }), // Pass the `id` as a prop
-                ]
-              ),
-            ]
-          )
-        : h("p", "-");
-    },
-  },
+  // {
+  //   accessorKey: "accounts",
+  //   header: "Accounts",
+  //   cell: ({ row }) => {
+  //     const userId = row.original.user?.id;
+  //     const id = row.getValue("id");
+  //     const contractUserId = row.original.id;
+  //     const contract = row.original.contract;
+  //     return id
+  //       ? h(
+  //           Sheet,
+  //           {
+  //           },
+  //           [
+  //             h(
+  //               SheetTrigger,
+  //               {
+  //                 class: "font-medium text-primary w-fit whitespace-nowrap",
+  //               },
+  //               "View Accounts"
+  //             ),
+  //             h(
+  //               SheetContent,
+  //               {
+  //                 class: "md:w-3/4 md:max-w-none w-screen",    
+  //               },
+  //               [
+  //                 h(ContractsUsersAccounts, { userId: userId || "", contractUserId: contractUserId || "", contract: contract || "" }), // Pass the `id` as a prop
+  //               ]
+  //             ),
+  //           ]
+  //         )
+  //       : h("p", "-");
+  //   },
+  // },
   {
     header: "Actions",
     id: "actions",

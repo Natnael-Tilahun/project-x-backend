@@ -37,7 +37,7 @@ const form = useForm({
   validationSchema: newContractUserFormSchema,
 });
 
-const fetchContract = async() => {
+const fetchContractUser = async() => {
 try {
   loading.value = true;
   data.value = await getContractUserById(contractUserId.value);
@@ -65,7 +65,7 @@ const fetchServiceDefinitionRoles = async () => {
 };
 
 onMounted(() => {
-  fetchContract();
+  fetchContractUser();
   fetchServiceDefinitionRoles();
 });
 
@@ -98,11 +98,16 @@ watch(
     if (newActiveTab) {
       openItems.value = newActiveTab as string; // Update the active tab when the query param
     if (newActiveTab == "contractDetails" || newActiveTab == "contractPermissions" || newActiveTab == "contractCoreCustomers" || newActiveTab == "contractRoleDetails" || newActiveTab == "newContractRole") {
-      fetchContract();
+      fetchContractUser();
     }
   }
   }
 );
+
+const refetch = async() => {
+  await fetchContractUser();
+  await fetchServiceDefinitionRoles();
+}
 </script>
 
 <template>
@@ -193,6 +198,37 @@ watch(
                 </FormControl>
               </FormItem>
             </FormField>
+
+            <UiPermissionGuard
+              permission="VIEW_CONTRACT_CORE_CUSTOMER_PERMISSIONS"
+            >
+              <div class="w-full space-y-2">
+                <UiLabel for="enable">User Accounts</UiLabel>
+                <UiSheet class="w-full">
+                  <UiSheetTrigger class="w-full">
+                    <UiButton
+                      size="lg"
+                      variant="outline"
+                      type="button"
+                      class="font-medium bg-[#8C2A7C]/15 text-primary hover:bg-[#8C2A7C]/20 cursor-pointer w-full"
+                    >
+                      <Icon name="lucide:shield" class="h-4 w-4 mr-2" />
+                      View Accounts
+                    </UiButton>
+                  </UiSheetTrigger>
+                  <UiSheetContent
+                    class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
+                  >
+                    <ContractsUsersAccounts
+                      :userId = "data?.user?.id || '' "
+                      :contractUserId= "contractUserId ||  '' "
+                      :contract= "data?.contract || '' "
+                      @refresh="refetch"
+                    />
+                  </UiSheetContent>
+                </UiSheet>
+              </div>
+            </UiPermissionGuard>
 
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiAlertDialogCancel >

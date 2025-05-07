@@ -4,6 +4,7 @@ import { Checkbox } from "../ui/checkbox";
 import ServiceDefinitionsRolesDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { ServiceDefinitionRole } from "~/types";
+import Badge from "../ui/badge/Badge.vue";
 
 export const columns: ColumnDef<ServiceDefinitionRole>[] = [
   {
@@ -45,6 +46,47 @@ export const columns: ColumnDef<ServiceDefinitionRole>[] = [
     },
   },
   {
+    accessorKey: "roleName",
+    header: "Role Name",
+    cell: ({ row }) => {
+      const serviceDefinitionRoleId = row.original.id;
+      const roleName = row.original.serviceDefinition.roleName;
+      const route = useRoute();
+      return roleName
+        ? h(
+            NuxtLink,
+            {
+              class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `${route.path}?activeTab=serviceDefinitionRoleDetails&serviceDefinitionRoleId=${serviceDefinitionRoleId}`,
+            },
+            "View Details"
+          )
+        : h("p", "-");
+    },
+  },
+  {
+    accessorKey: "roleDescription",
+    header: "Role Description",
+    cell: ({ row }) => {
+      const serviceDefinitionRoleId = row.original.id;
+      const roleDescription = row.original.serviceDefinition.roleDescription;
+      const route = useRoute();
+      return roleDescription
+        ? h(
+            NuxtLink,
+            {
+              class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `${route.path}?activeTab=serviceDefinitionRoleDetails&serviceDefinitionRoleId=${serviceDefinitionRoleId}`,
+            },
+            "View Details"
+          )
+        : h("p", "-");
+    },
+  },
+  
+  {
     accessorKey: "service",
     header: "Service Definition",
     cell: ({ row }) => {
@@ -69,22 +111,19 @@ export const columns: ColumnDef<ServiceDefinitionRole>[] = [
     },
   },
   {
-    accessorKey: "role",
-    header: "Role",
+    accessorKey: "permissions",
+    header: "Permissions",
     cell: ({ row }) => {
-      const route = useRoute();
-      const name = row.getValue("role")?.name;
-      return name
-        ? h(
-            NuxtLink,
+      const permissions	 = row.original.permissions
+   return h(
+            "div",
             {
               class:
               "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/userRoles/${name}`,
             },
-            row.getValue("role")?.name
+           permissions?.length
           )
-        : h("p", "-");
+       
     },
   },
   {
@@ -92,16 +131,15 @@ export const columns: ColumnDef<ServiceDefinitionRole>[] = [
     header: "Is Default",
     cell: ({ row }) => {
       const isDefault = row.getValue("isDefault");
-      return isDefault
-        ? h(
-            "div",
+      return h(
+            Badge,
             {
               class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+                `max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium ${isDefault ? "bg-green-500": "bg-red-500"}`,
             },
             row.getValue("isDefault")
           )
-        : h("p", "-");
+        
     },
   },
   {

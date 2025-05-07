@@ -60,6 +60,8 @@ const props = defineProps<{
   contract?: any;
 }>();
 
+console.log("props: ", props)
+
 const userAccountPermissions = ref<{ [userAccountId: string]: string[] }>({});
 
 const emit = defineEmits(["refresh"]);
@@ -135,19 +137,27 @@ const fetchContractCoreCustomers = async () => {
   try {
     loading.value = true;
     const response = await getContractCoreCustomers(contractId.value);
+    console.log("response: ", response);
+
+    // Handle the Proxy object by accessing its target
+    const responseData = Array.isArray(response) ? response : response?.target || [];
 
     // Structure data as customer -> contract accounts
-    contractAccountsData.value = response.map((item: any) => {
+    contractAccountsData.value = responseData.map((item: any) => {
       return {
         coreCustomerId: item.id,
         customerId: item.coreCustomerId,
-        contractAccounts:
-          item.coreAccounts?.map((coreAccount: any) => ({
-            id: coreAccount.id,
-            enable: coreAccount.enable,
-            permissions: coreAccount.permissions,
-            account: coreAccount.account,
-          })) || [],
+        contractAccounts: item.coreAccounts?.map((coreAccount: any) => ({
+          id: coreAccount.id,
+          enable: coreAccount.enable,
+          permissions: coreAccount.permissions,
+          // Map the account properties directly from coreAccount
+          accountNumber: coreAccount.accountNumber,
+          accountHolder: coreAccount.accountHolder,
+          accountCategory: coreAccount.accountCategory,
+          // Keep the original coreAccount data
+          ...coreAccount
+        })) || [],
       };
     });
 
@@ -271,10 +281,15 @@ const addAccounts = async () => {
     loading.value = true;
 
     const newValues = {
-      contractAccounts: selectedAccounts.value.map(
-        (account) => account.contractAccountId
+      accounts: selectedAccounts.value.map(
+        (account) =>  ({ 
+          inheritAccountPermissions: true,
+          permissionCodes: [],
+          accountId: account.contractAccountId
+        }
       ),
-    };
+      )}
+    console.log("new valuesss: ", newValues)
 
     // Make your API call here to add the accounts with permissions
     const response = await addUserAccounts(
@@ -282,6 +297,7 @@ const addAccounts = async () => {
       newValues
     );
     
+    refetch()
     await fetchContractCoreCustomers();
     await getUserAccountByContractUserIdHandler();
 
@@ -549,7 +565,7 @@ const refetchPage = async () => {
                                 Account Number
                               </p>
                               <p class="font-medium">
-                                {{ contractAccount.account?.accountNumber }}
+                                {{ contractAccount.accountNumber }}
                               </p>
                             </div>
                             <div class=" w-full">
@@ -557,11 +573,7 @@ const refetchPage = async () => {
                                 Account Holder
                               </p>
                               <p class="font-medium">
-                                {{
-                                  displayApiDataOnLabel(
-                                    contractAccount.account?.accountHolder
-                                  )
-                                }}
+                                {{ displayApiDataOnLabel(contractAccount.accountHolder) }}
                               </p>
                             </div>
                             <div class=" w-full">
@@ -569,11 +581,7 @@ const refetchPage = async () => {
                                 Account Category
                               </p>
                               <p class="font-medium">
-                                {{
-                                  displayApiDataOnLabel(
-                                    contractAccount.account?.accountCategory?.description
-                                  )
-                                }}
+                                {{ displayApiDataOnLabel(contractAccount.accountCategory?.description) }}
                               </p>
                             </div>
                             <div class="flex w-full col-span-2 justify-between items-start gap-8">
@@ -700,7 +708,7 @@ const refetchPage = async () => {
                             Account Number
                           </p>
                           <p class="font-medium text-left">
-                            {{ contractAccount.account?.accountNumber }}
+                            {{ contractAccount.accountNumber }}
                           </p>
                         </div>
                       </div>
@@ -709,11 +717,7 @@ const refetchPage = async () => {
                             Account Holder
                           </p>
                           <p class="font-medium text-left">
-                            {{
-                              displayApiDataOnLabel(
-                                contractAccount.account?.accountHolder
-                              )
-                            }}
+                            {{ displayApiDataOnLabel(contractAccount.accountHolder) }}
                           </p>
                         </div>
                         <div>
@@ -721,11 +725,7 @@ const refetchPage = async () => {
                             Account Category
                           </p>
                           <p class="font-medium text-left">
-                            {{
-                              displayApiDataOnLabel(
-                                contractAccount.account?.accountCategory?.description
-                              )
-                            }}
+                            {{ displayApiDataOnLabel(contractAccount.accountCategory?.description) }}
                           </p>
                         </div>
                       </div>

@@ -48,6 +48,10 @@ onMounted(() => {
     v-else-if="data && !isError"
     class="p-6 flex flex-col space-y-10 mx-auto"
   >
+  
+  <UiPermissionGuard
+              permission="CREATE_SERVICE_DEFINITION_ROLES"
+            >
     <UiButton
       @click="
         navigateTo({
@@ -61,6 +65,7 @@ onMounted(() => {
       ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add
       New Role</UiButton
     >
+    </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data || []">
       <template v-slot:toolbar="{ table }"> </template>
     </UiDataTable>

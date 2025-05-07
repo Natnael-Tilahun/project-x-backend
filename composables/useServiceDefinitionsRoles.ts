@@ -193,6 +193,59 @@ export const useServiceDefinitionsRoles = () => {
     }
   };
 
+  const updateServiceDefinitionRolePermissions: (
+    serviceDefinitionRoleId: string,
+    permissionsData: any
+  ) => Promise<ServiceDefinitionRole> = async (serviceDefinitionRoleId, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await useFetch<ServiceDefinitionRole>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/service-definition-roles/${serviceDefinitionRoleId}/permissions`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+          body: JSON.stringify(permissionsData),
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+
+        if (error.value?.data?.type == "/constraint-violation") {
+          console.log(
+            "Updating service definition role permissions error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Updating service definition role permission errorrr: ",
+            error.value?.data?.message
+          );
+        }
+        throw new Error(error.value?.data);
+      }
+
+      if (!data.value) {
+        throw new Error("No service definition role with this service definition role id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
   const deleteServiceDefinitionRole: (id: string) => Promise<any> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<any>(
@@ -234,6 +287,7 @@ export const useServiceDefinitionsRoles = () => {
     createNewServiceDefinitionRole,
     deleteServiceDefinitionRole,
     updateServiceDefinitionRole,
+    updateServiceDefinitionRolePermissions,
     isSubmitting,
   };
 };

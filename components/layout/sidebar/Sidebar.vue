@@ -283,32 +283,32 @@ const mainLinks = [
       {
         title: "USSD Languages",
         link: "/ussdLanguages",
-        // permission: "VIEW_USSD_LANGUAGES",
+        permission: "VIEW_USSD_LANGUAGES",
       },
       {
         title: "USSD Default Messages",
         link: "/ussdDefaultMessages",
-        // permission: "VIEW_USSD_DEFAULT_MESSAGES",
+        permission: "VIEW_USSD_DEFAULT_MESSAGES",
       },
       {
         title: "USSD Localized Default Messages",
         link: "/ussdLocalizedMessages",
-        // permission: "VIEW_USSD_LOCALIZED_DEFAULT_MESSAGES",
+        permission: "VIEW_USSD_LOCALIZED_DEFAULT_MESSAGES",
       },
       {
         title: "USSD Menus",
         link: "/ussdMenus",
-        // permission: "VIEW_USSD_MENUS",
+        permission: "VIEW_USSD_MENUS",
       },
       {
         title: "USSD Localized Menus",
         link: "/ussdLocalizedMenus",
-        // permission: "VIEW_USSD_LOCALIZED_MENUS",
+        permission: "VIEW_USSD_LOCALIZED_MENUS",
       },
       {
         title: "Ussd Menus Cache Management",
         link: "/ussdMenusCacheManagement",
-        // permission: "VIEW_USSD_MENU_CACHE_MANAGEMENT",
+        permission: "VIEW_USSD_MENU_CACHE_MANAGEMENT",
       },
     ],
   },

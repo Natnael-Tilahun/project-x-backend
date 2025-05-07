@@ -92,12 +92,11 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     const coreAccounts = selectedAccounts.value.map((account) => ({
       accountNumber: account.accountNumber,
       inheritContractCustomerPermissions:
-        form.values.coreCustomers?.[0]?.coreAccounts?.[account.accountNumber]
+        form.values.coreCustomers?.[0]?.coreAccounts?.accountNumber
           ?.inheritContractCustomerPermissions ?? true,
-      permissionCodes: !form.values.coreCustomers?.[0]?.coreAccounts?.[
-        account.accountNumber
-      ]?.inheritContractCustomerPermissions
-        ? form.values.coreCustomers?.[0]?.coreAccounts?.[account.accountNumber]
+      permissionCodes: !form.values.coreCustomers?.[0]?.coreAccounts?.accountNumber
+      ?.inheritContractCustomerPermissions
+        ? form.values.coreCustomers?.[0]?.coreAccounts?.accountNumber
             ?.permissionCodes || []
         : [],
     }));
