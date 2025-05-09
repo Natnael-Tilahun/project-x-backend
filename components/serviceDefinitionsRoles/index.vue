@@ -4,7 +4,7 @@ import { columns } from "~/components/serviceDefinitionsRoles/columns";
 import type { ServiceDefinitionRole, ServiceDefinition } from "~/types";
 
 
-const { getServiceDefinitionsRoles, getServiceDefinitionRoleById, updateServiceDefinitionRole } =
+const { getServiceDefinitionsRoles, getServiceDefinitionRoleById, updateServiceDefinitionRole, getServiceDefinitionRolesByServiceDefinitionId } =
   useServiceDefinitionsRoles();
 
 const route = useRoute();
@@ -12,6 +12,7 @@ const route = useRoute();
 const isLoading = ref(false);
 const isError = ref(false);
 const serviceDefinition = ref<ServiceDefinition>();
+  const serviceDefinitionId = ref<string>("");
 const data = ref<ServiceDefinitionRole[]>([]);
 
 const props = defineProps<{
@@ -20,12 +21,13 @@ const props = defineProps<{
 
 if (props?.serviceDefinitionProps) {
   serviceDefinition.value = props?.serviceDefinitionProps;
+  serviceDefinitionId.value = serviceDefinition.value.id || ""
 }
 
 const getServiceDefinitionRolesData = async () => {
   try {
     isLoading.value = true;
-    const serviceDefinitionRoles = await getServiceDefinitionsRoles(0, 100000000);
+    const serviceDefinitionRoles = await getServiceDefinitionRolesByServiceDefinitionId(serviceDefinitionId.value, 0, 1000000);
     data.value = serviceDefinitionRoles;
   } catch (err) {
     console.error("Error fetching service definition roles:", err);

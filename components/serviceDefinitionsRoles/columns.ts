@@ -30,7 +30,6 @@ export const columns: ColumnDef<ServiceDefinitionRole>[] = [
     header: "Info",
     cell: ({ row }) => {
       const serviceDefinitionRoleId = row.original.id;
-      const serviceDefinitionId = row.original.serviceDefinition.id;
       const route = useRoute();
       return serviceDefinitionRoleId
         ? h(
@@ -50,18 +49,17 @@ export const columns: ColumnDef<ServiceDefinitionRole>[] = [
     header: "Role Name",
     cell: ({ row }) => {
       const serviceDefinitionRoleId = row.original.id;
-      const roleName = row.original.serviceDefinition.roleName;
+      const roleName = row.original.roleName;
       const route = useRoute();
       return roleName
         ? h(
-            NuxtLink,
-            {
-              class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}?activeTab=serviceDefinitionRoleDetails&serviceDefinitionRoleId=${serviceDefinitionRoleId}`,
-            },
-            "View Details"
-          )
+          "div",
+          {
+            class:
+            "w-fit whitespace-nowrap truncate hover:w-full",
+          },
+          roleName
+        )
         : h("p", "-");
     },
   },
@@ -70,62 +68,21 @@ export const columns: ColumnDef<ServiceDefinitionRole>[] = [
     header: "Role Description",
     cell: ({ row }) => {
       const serviceDefinitionRoleId = row.original.id;
-      const roleDescription = row.original.serviceDefinition.roleDescription;
+      const roleDescription = row.original.roleDescription;
       const route = useRoute();
       return roleDescription
-        ? h(
-            NuxtLink,
-            {
-              class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}?activeTab=serviceDefinitionRoleDetails&serviceDefinitionRoleId=${serviceDefinitionRoleId}`,
-            },
-            "View Details"
-          )
+        ?  h(
+          "div",
+          {
+            class:
+            "w-fit whitespace-nowrap truncate hover:w-full",
+          },
+          roleDescription
+        )
         : h("p", "-");
     },
   },
-  
-  {
-    accessorKey: "service",
-    header: "Service Definition",
-    cell: ({ row }) => {
-      const serviceDefinitionId = row.original.id;
-      const route = useRoute();
-      const name = row.getValue("serviceDefinition")?.name;
-      return name
-        ? h(
-            NuxtLink,
-            {
-              class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}/${serviceDefinitionId}`,
-            },
-            row.getValue("serviceDefinition")?.name
-          )
-        : h(NuxtLink, {
-            class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-            to: `${route.path}?activeTab=serviceDefinitionDetails&serviceDefinitionId=${serviceDefinitionId}`,
-          }, "View Service Definition Details");
-    },
-  },
-  {
-    accessorKey: "permissions",
-    header: "Permissions",
-    cell: ({ row }) => {
-      const permissions	 = row.original.permissions
-   return h(
-            "div",
-            {
-              class:
-              "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-            },
-           permissions?.length
-          )
-       
-    },
-  },
+
   {
     accessorKey: "isDefault",
     header: "Is Default",

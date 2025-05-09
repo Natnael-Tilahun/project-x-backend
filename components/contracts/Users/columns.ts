@@ -60,20 +60,20 @@ export const columns: ColumnDef<ContractUser>[] = [
     },
   },
   {
-    accessorKey: "user",
-    header: "User",
+    accessorKey: "customer",
+    header: "Customer",
     cell: ({ row }) => {
-      const userId = row.original.user?.id;
+      const customerId = row.original?.customer?.id;
       const route = useRoute();
-      return userId
+      return customerId
         ? h(
             NuxtLink,
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/users/${userId}`,
+              to: `/customers/${customerId}`,
             },
-            row.getValue("user")?.phone
+            row.getValue("customer")?.fullName
           )
         : h("p", "-");
     },
@@ -91,7 +91,7 @@ export const columns: ColumnDef<ContractUser>[] = [
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `/serviceDefinitions/${serviceDefinitionRole?.serviceDefinition?.id}?activeTab=serviceDefinitionRoleDetails&serviceDefinitionRoleId=${serviceDefinitionRole?.id}`,
             },
-            serviceDefinitionRole?.role?.name || "View Service Definition Role"
+            serviceDefinitionRole?.roleName || "View Service Definition Role"
           )
         : h("p", "-");
     },

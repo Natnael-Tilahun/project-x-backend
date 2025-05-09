@@ -4,7 +4,6 @@ const openItems = ref("accounts");
 import { useForm } from "vee-validate";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
-import { newContractUserFormSchema } from "~/validations/newContractUserFormSchema";
 import { newContractUserAndCustomerFormSchema } from "~/validations/newContractUserAndCustomerFormSchema";
 import {
   FormControl,
@@ -23,7 +22,7 @@ import type {
 import { copyToClipboard, getIdFromPath } from "~/lib/utils";
 
 const route = useRoute();
-const { createNewContractForExistingUser, createNewContractForNewUser } =
+const {  createNewContractForNewUser } =
   useContractsUsers();
 const { searchUsers } = useUsers();
 const { searchCustomers } = useCustomers();
@@ -37,7 +36,6 @@ const data = ref<User | null>(null);
 const usersData = ref<User[]>([]);
 const contractData = ref<Contract>();
 const permissionsData = ref<Permission[]>([]);
-const coreCustomerPermissionsData = ref<Permission[]>([]);
 const searchUser = ref<string>("");
 const openNewUserModal = ref(false);
 const openExistingUserModal = ref(false);
@@ -55,16 +53,11 @@ if (props.contractProps) {
   permissionsData.value = contractData?.value?.permissions;
 }
 
-console.log("contractData: ", contractData.value);
 console.log("contractId: ", contractId.value);
 console.log("contractCoreCustomerId: ", contractCoreCustomerId.value);
 console.log("permissionsData: ", permissionsData.value);
 console.log("contractProps: ", contractData.value);
 console.log("data: ", data.value);
-
-const existingUserform = useForm({
-  validationSchema: newContractUserFormSchema,
-});
 
 const newCustomerForm = useForm({
   validationSchema: newContractUserAndCustomerFormSchema,
@@ -126,55 +119,6 @@ onMounted(() => {
   fetchServiceDefinitionRoles();
 });
 
-const existingUserOnSubmit = existingUserform.handleSubmit(
-  async (values: any) => {
-    try {
-      loading.value = true;
-      if (!data.value || !contractId.value) {
-        toast({
-          title: "Uh oh! Something went wrong.",
-          description: "User or contract not found.",
-          variant: "destructive",
-        });
-        return;
-      }
-
-      const newValues = {
-        ...values,
-        contract: {
-          id: contractId.value,
-        },
-        customerId: data.value?.id,
-        serviceDefinitionRoleId: values.serviceDefinitionRoleId,
-      };
-      console.log("values: ", values);
-      console.log("newValues: ", newValues);
-
-      const response = await createNewContractForExistingUser(
-        contractId.value,
-        newValues
-      ); // Call your API function to fetch roles
-      console.log("response: ", response);
-      // usersData.value = response;
-      //  data.value = usersData.value[0]  || {}
-      // console.log("usersData: ", usersData.value);
-      // console.log("dataa: ", data.value);
-      //   userCustomerId.value = userData.value?.customerId;
-      navigateTo(`${route.path}?activeTab=contractUsers`);
-      toast({
-        title: "Contract Created",
-        description: "Contract user created successfully",
-      });
-    } catch (err: any) {
-      console.error("Error creating contract user:", err);
-      isError.value = true;
-    } finally {
-      loading.value = false;
-      openNewUserModal.value = false;
-    }
-  }
-);
-
 const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
   try {
     loading.value = true;
@@ -187,17 +131,10 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
       return;
     }
 
-    console.log("valuess: ", values);
-
     const newValues = {
       ...values,
-      // contract: {
-      //   id: contractId.value,
-      // },
-      // customerId: data.value?.id,
       serviceDefinitionRoleId: values.serviceDefinitionRoleId,
     };
-    console.log("values: ", values);
     console.log("newValues: ", newValues);
 
     const response = await createNewContractForNewUser(
@@ -326,9 +263,10 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
                             <UiSelectGroup>
                               <UiSelectItem
                                 v-for="item in serviceDefinitionRolesData"
-                                :value="item?.id || ''"
+                                :key="item.id"
+                                :value="item.id"
                               >
-                                {{ item?.role?.name }}
+                                {{ item?.roleName }}
                               </UiSelectItem>
                             </UiSelectGroup>
                           </UiSelectContent>
@@ -393,93 +331,15 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
       >
         <UiAlertDialogTrigger class="self-end">
           <UiButton class="w-full" @click="setOpenExistingUserModal(true)">
-            Create new contract user for this customer</UiButton
-          >
+            Create new contract user for this customer
+          </UiButton>
         </UiAlertDialogTrigger>
         <UiAlertDialogContent>
-          <form @submit="existingUserOnSubmit">
-            <UiAlertDialogHeader>
-              <UiAlertDialogTitle>Add New User To Contract</UiAlertDialogTitle>
-              <UiSeparator />
-              <UiAlertDialogDescription>
-                <div class="grid grid-cols-2 gap-6">
-                  <div class="col-span-full">
-                    <FormField
-                      v-slot="{ componentField }"
-                      name="serviceDefinitionRoleId"
-                    >
-                      <FormItem>
-                        <FormLabel> Service Definition Role </FormLabel>
-                        <UiSelect v-bind="componentField">
-                          <FormControl>
-                            <UiSelectTrigger>
-                              <UiSelectValue
-                                placeholder="Select a service definition role"
-                              />
-                            </UiSelectTrigger>
-                          </FormControl>
-                          <UiSelectContent>
-                            <UiSelectGroup>
-                              <UiSelectItem
-                                v-for="item in serviceDefinitionRolesData"
-                                :value="item?.id || ''"
-                              >
-                                {{ item?.role?.name }}
-                              </UiSelectItem>
-                            </UiSelectGroup>
-                          </UiSelectContent>
-                        </UiSelect>
-                        <FormMessage />
-                      </FormItem>
-                    </FormField>
-                  </div>
-                  <FormField
-                    v-slot="{ value, handleChange }"
-                    name="isPrimaryUser"
-                  >
-                    <FormItem
-                      class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
-                    >
-                      <FormLabel class="text-base"> Is Primary User </FormLabel>
-                      <FormControl>
-                        <UiSwitch
-                          :checked="value"
-                          @update:checked="handleChange"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  </FormField>
-                  <FormField v-slot="{ value, handleChange }" name="enable">
-                    <FormItem
-                      class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
-                    >
-                      <FormLabel class="text-base"> Enable </FormLabel>
-                      <FormControl>
-                        <UiSwitch
-                          :checked="value"
-                          @update:checked="handleChange"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  </FormField>
-                </div>
-              </UiAlertDialogDescription>
-            </UiAlertDialogHeader>
-            <UiAlertDialogFooter class="flex justify-end pt-8">
-              <UiAlertDialogCancel @click="setOpenExistingUserModal(false)">
-                Cancel
-              </UiAlertDialogCancel>
-              <UiButton type="submit">
-                <Icon
-                  name="svg-spinners:8-dots-rotate"
-                  v-if="loading"
-                  :disabled="loading"
-                  class="mr-2 h-4 w-4 animate-spin"
-                ></Icon>
-                Continue
-              </UiButton>
-            </UiAlertDialogFooter>
-          </form>
+          <ContractsUsersNewUserForExistingCustomer 
+            @close="setOpenExistingUserModal(false)"
+            :contractProps="contractData" 
+            :data="data" 
+          />
         </UiAlertDialogContent>
       </UiAlertDialog>
     </div>

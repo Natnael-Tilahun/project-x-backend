@@ -844,6 +844,7 @@ interface ContractUser {
   isPrimaryUser?: boolean;
   contract?: Contract;
   user?: User;
+  customer?: Customer
   serviceDefinitionRole?: ServiceDefinitionRole;
 }
 

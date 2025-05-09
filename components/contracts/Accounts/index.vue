@@ -32,6 +32,7 @@ contractId.value = getIdFromPath();
 const { getCoreAccountsByCustomerId, isLoading } = useCustomers();
 
 const loading = ref(isLoading.value);
+const submitting = ref(false)
 const isError = ref(false);
 const errorMessage = ref("");
 const accountsData = ref<any>();
@@ -48,12 +49,9 @@ const props = defineProps<{
   coreCustomerPermissions?: any;
 }>();
 const emit = defineEmits(["refresh"]);
-
 const refetch = async () => {
   await emit("refresh");
 };
-
-console.log("props dataaa: ", props.contractCoreCustomerProps)
 
 coreCustomerId.value = props.contractCoreCustomerProps.coreCustomerId;
 contractCoreCustomerId.value = props.contractCoreCustomerProps.id;
@@ -128,7 +126,6 @@ const fetchContractCoreCustomerAccounts = async () => {
     if (coreCustomerId.value) {
       // Get accounts from props instead of API
       const contractAccount = props.contractCoreCustomerProps.coreAccounts;
-      console.log("contractAccounts: ", contractAccount);
       
       selectedContractAccount.value = contractAccount;
       selectedAccounts.value = contractAccount || [];
@@ -178,7 +175,7 @@ const isAccountSelected = (account: Account | undefined) => {
 
 const addAccounts = async () => {
   try {
-    isSubmitting.value = true;
+    submitting.value = true;
     isLoading.value = true;
     const newValues = {
       coreAccounts: selectedAccounts.value.map((account: Account) => ({
@@ -204,7 +201,7 @@ const addAccounts = async () => {
     isError.value = true;
   } finally {
     isLoading.value = false;
-    isSubmitting.value = false;
+    submitting.value = false;
   }
 };
 
@@ -511,7 +508,14 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
 
   <UiPermissionGuard permission="CREATE_CONTRACT_ACCOUNTS" >
         <div class="flex justify-end pt-4">
-      <UiButton @click="addAccounts" type="submit" class="w-fit self-end px-8">Add Accounts</UiButton>
+      <UiButton :disabled="submitting"  @click="addAccounts" type="submit" class="w-fit self-end px-8">
+        <Icon
+                name="svg-spinners:8-dots-rotate"
+                v-if="submitting"
+                class="mr-2 h-4 w-4 animate-spin"
+              ></Icon>
+
+        Add Accounts</UiButton>
       </div>
       </UiPermissionGuard>
       </UiAccordion>

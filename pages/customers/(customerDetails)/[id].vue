@@ -310,7 +310,16 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
             PIN Reset
           </UiTabsTrigger>
         </UiPermissionGuard>
+        <UiPermissionGuard permission="VIEW_CUSTOMER_DEVICES" >
+        <UiTabsTrigger
+            value="devices"
+            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+          >
+            Devices
+          </UiTabsTrigger>
+          </UiPermissionGuard>
         </UiTabsList>
+        
 
         <UiPermissionGuard permission="VIEW_CUSTOMER_PROFILE" >
         <UiTabsContent
@@ -875,6 +884,12 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
         <UiTabsContent value="pinReset" class="space-y-4 py-8">
           <CustomersPinReset :customerId="customerId" />
         </UiTabsContent>
+
+           <UiPermissionGuard permission="VIEW_CUSTOMER_DEVICES" >
+            <UiTabsContent value="devices" class="space-y-4 py-8">
+          <CustomersDevices />
+        </UiTabsContent>
+        </UiPermissionGuard>
       </UiTabs>
     </UiCard>
   </div>

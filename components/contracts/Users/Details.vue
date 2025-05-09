@@ -4,7 +4,7 @@ const openItems = ref("contractDetails");
 import { useForm } from "vee-validate";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
-import { newContractUserFormSchema } from "~/validations/newContractUserFormSchema";
+import { updateContractUserFormSchema } from "~/validations/updateContractUserFormSchema";
 import {
   FormControl,
   FormField,
@@ -14,16 +14,25 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type {  ContractUser, ServiceDefinitionRole } from "~/types";
+import { getIdFromPath } from "~/lib/utils";
 
 const route = useRoute();
-const { getServiceDefinitionsRoles } = useServiceDefinitionsRoles();
+const {  getServiceDefinitionRolesByServiceDefinitionId } = useServiceDefinitionsRoles();
 const { getContractUserById, updateContractUser } = useContractsUsers();
+const { getContractById } = useContracts();
+
 const contractUserId = ref<string>("");
 const loading = ref(false);
 const submitting = ref(false);
 const serviceDefinitionRolesData = ref<ServiceDefinitionRole[]>([]);
 const isError = ref(false);
 const data = ref<ContractUser>({});
+const openUpdateUserModal = ref(false);
+const contractId = ref<string>()
+const serviceDefinitionId = ref<string>()
+
+
+contractId.value = getIdFromPath()
 
 const props = defineProps<{
   id: string;
@@ -34,28 +43,38 @@ if (props.id) {
 }
 
 const form = useForm({
-  validationSchema: newContractUserFormSchema,
+  validationSchema: updateContractUserFormSchema,
 });
 
+const setOpenNewUserModal = (value: boolean) => {
+  openUpdateUserModal.value = value;
+};
+
+
 const fetchContractUser = async() => {
-try {
-  loading.value = true;
-  data.value = await getContractUserById(contractUserId.value);
-  console.log("data: ", data.value);
-  form.setValues(data.value);
-} catch (err) {
-  console.error("Error fetching contract:", err);
-  isError.value = true;
-} finally {
-  loading.value = false;
-}
+  try {
+    loading.value = true;
+    data.value = await getContractUserById(contractUserId.value);
+    console.log("data: ", data.value);
+    form.setValues({
+      ...data.value,
+      serviceDefinitionRole: data.value.serviceDefinitionRole?.id
+    });
+  } catch (err) {
+    console.error("Error fetching contract:", err);
+    isError.value = true;
+  } finally {
+    loading.value = false;
+  }
 }
 
 const fetchServiceDefinitionRoles = async () => {
   try {
     loading.value = true;
-    const response = await getServiceDefinitionsRoles();
-    serviceDefinitionRolesData.value = response;
+    if(serviceDefinitionId.value){
+      const response = await getServiceDefinitionRolesByServiceDefinitionId(serviceDefinitionId.value);
+      serviceDefinitionRolesData.value = response;
+    }
   } catch (err) {
     console.error("Error fetching service definition roles:", err);
     isError.value = true;
@@ -64,9 +83,25 @@ const fetchServiceDefinitionRoles = async () => {
   }
 };
 
-onMounted(() => {
-  fetchContractUser();
-  fetchServiceDefinitionRoles();
+const fetchContractDetails = async () => {
+  try {
+    loading.value = true;
+    if(contractId.value){
+      const response = await getContractById(contractId.value);
+      serviceDefinitionId.value = response?.serviceDefinition?.id || ""
+    }
+  } catch (err) {
+    console.error("Error fetching service definition roles:", err);
+    isError.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
+
+onMounted(async () => {
+  await fetchContractDetails()
+  await fetchServiceDefinitionRoles();
+  await fetchContractUser();
 });
 
 const onSubmit = form.handleSubmit(async (values: any) => {
@@ -74,7 +109,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = true;
     const newValues = {
       ...values,
-      serviceDefinitionRole: serviceDefinitionRolesData.value.find((service: ServiceDefinitionRole) => service.id === values.serviceDefinitionRole.id),
+      serviceDefinitionRole: serviceDefinitionRolesData.value.find((service: ServiceDefinitionRole) => service.id === values.serviceDefinitionRole),
     }
     console.log("newValues: ", newValues);
     data.value = await updateContractUser(contractUserId.value, newValues); // Call your API function to fetch profile
@@ -88,30 +123,37 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isError.value = true;
   } finally {
     submitting.value = false;
+    openUpdateUserModal.value = false;
   }
 });
 
 // Watch for changes in the route's query parameters
 watch(
   () => route.query.activeTab,
-  (newActiveTab) => {
+  async (newActiveTab) => {
     if (newActiveTab) {
       openItems.value = newActiveTab as string; // Update the active tab when the query param
     if (newActiveTab == "contractDetails" || newActiveTab == "contractPermissions" || newActiveTab == "contractCoreCustomers" || newActiveTab == "contractRoleDetails" || newActiveTab == "newContractRole") {
-      fetchContractUser();
+      await fetchContractDetails()
+      await fetchServiceDefinitionRoles();
+      await fetchContractUser();
     }
   }
   }
 );
 
 const refetch = async() => {
-  await fetchContractUser();
+  await fetchContractDetails()
   await fetchServiceDefinitionRoles();
+  await fetchContractUser();
 }
 </script>
 
 <template>
-  <AlertDialog>
+  <AlertDialog 
+        :open="openUpdateUserModal"
+        :onOpenChange="setOpenNewUserModal"
+  >
   <div class="flex flex-col gap-6 items-center">
     <div v-if="loading" class="py-10 flex justify-center w-full">
       <UiLoading />
@@ -139,9 +181,9 @@ const refetch = async() => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="user.id">
+          <FormField v-slot="{ componentField }" name="customer.fullName">
             <FormItem>
-              <FormLabel>User </FormLabel>
+              <FormLabel>Customer</FormLabel>
               <FormControl>
                 <UiInput
                   type="text"
@@ -154,7 +196,7 @@ const refetch = async() => {
             </FormItem>
           </FormField>
           <div class="col-span-full w-full">
-          <FormField v-slot="{ componentField }" name="serviceDefinitionRole.id">
+          <FormField v-slot="{ componentField }" name="serviceDefinitionRole">
               <FormItem>
                 <FormLabel> Service Definition Role </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -167,9 +209,9 @@ const refetch = async() => {
                     <UiSelectGroup>
                       <UiSelectItem
                                 v-for="item in serviceDefinitionRolesData"
-                                :value="item?.id || ''"
+                                :value="item.id"
                               >
-                                {{ item?.role?.name }}
+                                {{ item?.roleName }}
                               </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
@@ -231,23 +273,23 @@ const refetch = async() => {
             </UiPermissionGuard>
 
           <div class="col-span-full w-full py-4 flex justify-between">
-            <UiAlertDialogCancel >
+            <UiAlertDialogCancel  @click="setOpenNewUserModal(false)">
                 Cancel
           </UiAlertDialogCancel>
           <UiPermissionGuard permission="UPDATE_CONTRACT_USERS" >
 
-          <UiAlertDialogCancel  class="w-fit p-0">
+          <!-- <UiAlertDialogCancel  class="w-fit p-0"> -->
             <UiButton :disabled="submitting" class="w-fit" type="submit">
               <Icon
                 name="svg-spinners:8-dots-rotate"
-                v-if="loading"
-                :diabled = "loading"
+                v-if="submitting"
+                :diabled = "submitting"
                 class="mr-2 h-4 w-4 animate-spin"
               ></Icon>
 
               Update
             </UiButton>
-          </UiAlertDialogCancel >
+          <!-- </UiAlertDialogCancel > -->
         </UiPermissionGuard>
 
           </div>

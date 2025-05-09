@@ -60,8 +60,6 @@ const props = defineProps<{
   contract?: any;
 }>();
 
-console.log("props: ", props)
-
 const userAccountPermissions = ref<{ [userAccountId: string]: string[] }>({});
 
 const emit = defineEmits(["refresh"]);
@@ -137,8 +135,6 @@ const fetchContractCoreCustomers = async () => {
   try {
     loading.value = true;
     const response = await getContractCoreCustomers(contractId.value);
-    console.log("response: ", response);
-
     // Handle the Proxy object by accessing its target
     const responseData = Array.isArray(response) ? response : response?.target || [];
 
@@ -289,7 +285,6 @@ const addAccounts = async () => {
         }
       ),
       )}
-    console.log("new valuesss: ", newValues)
 
     // Make your API call here to add the accounts with permissions
     const response = await addUserAccounts(

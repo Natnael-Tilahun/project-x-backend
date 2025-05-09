@@ -126,7 +126,6 @@ const refetch = async() => {
               <FormControl>
                 <UiInput
                   type="text"
-                  disabled
                   placeholder="Enter service definition role name"
                   v-bind="componentField"
                 />
@@ -138,9 +137,8 @@ const refetch = async() => {
             <FormItem>
               <FormLabel>Role Description </FormLabel>
               <FormControl>
-                <UiInput
+                <UiTextarea
                   type="text"
-                  disabled
                   placeholder="Enter service definition role description"
                   v-bind="componentField"
                 />
