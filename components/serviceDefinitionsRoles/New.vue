@@ -10,12 +10,12 @@ import {
 import { ref, onBeforeUnmount } from "vue";
 import { toast } from "~/components/ui/toast";
 import { newServiceDefinitionRoleFormSchema } from "~/validations/newServiceDefinitionRoleFormSchema";
-import type { ServiceDefinition, ServiceDefinitionRole, Role } from "~/types";
+import type { ServiceDefinition, ServiceDefinitionRole, Role, Permission } from "~/types";
 
 const { createNewServiceDefinitionRole, isLoading } = useServiceDefinitionsRoles();
-const { getRoles } = useRoles();
 
-const rolesData = ref<Role[]>([]);
+const serviceDefinitionPermissionsData = ref<Permission[]>([]);
+  const selectedPermissions = ref<Permission[]>([]);
 const isError = ref(false);
 const data = ref<ServiceDefinitionRole>();
 const isSubmitting = ref(false);
@@ -28,26 +28,13 @@ const props = defineProps<{
 
 if (props?.serviceDefinitionProps) {
   serviceDefinition.value = props?.serviceDefinitionProps;
+  serviceDefinitionPermissionsData.value = serviceDefinition.value.permissions || []
 }
 const form = useForm({
   validationSchema: newServiceDefinitionRoleFormSchema,
 });
 
-const fetchData = async () => {
-  try {
-    const roles = await getRoles();
-    rolesData.value = roles.sort((a: Role, b: Role) =>
-      a?.name?.toLowerCase().localeCompare(b?.name?.toLowerCase())
-    );
-  } catch (err) {
-    console.error("Error fetching permissions:", err);
-    isError.value = true;
-  } 
-};
 
-await useAsyncData("permissionsData", async () => {
-  await fetchData();
-});
 
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
@@ -55,7 +42,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isLoading.value = true;
     const newValues = {
       ...values,
-      role: rolesData.value.find((role: Role) => role.name === values.role),
+      permissions: selectedPermissions.value,
       serviceDefinition: serviceDefinition.value,
     }
     data.value = await createNewServiceDefinitionRole(newValues); // Call your API function to fetch profile
@@ -99,29 +86,131 @@ onBeforeUnmount(() => {
       <div class="text-sm md:text-base p-6 basis-full">
         <form @submit="onSubmit">
           <div class="grid gap-6">
-            <FormField v-slot="{ componentField }" name="role">
+            <FormField v-slot="{ componentField }" name="roleName">
+            <FormItem>
+              <FormLabel>Role Name </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="text"
+                  placeholder="Enter service definition role name"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="roleDescription">
+            <FormItem>
+              <FormLabel>Role Description </FormLabel>
+              <FormControl>
+                <UiTextarea
+                  type="text"
+                  placeholder="Enter service definition role description"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+            <FormField
+              :model-value="data?.permissions"
+              v-slot="{ componentField, errorMessage }"
+              name="permissions"
+            >
               <FormItem>
-                <FormLabel> Role </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a role" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in rolesData"
-                        :value="item.name"
+                <FormLabel>Select Permissions</FormLabel>
+                <UiPopover>
+                  <UiPopoverTrigger asChild>
+                    <FormControl>
+                      <div
+                        variant="outline"
+                        role="combobox"
+                        class="w-full text-sm text-left border flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
+                        :class="{
+                          'text-muted-foreground':
+                            !data?.permissions?.length,
+                        }"
                       >
-                        {{ item.name }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
+                        {{
+                          selectedPermissions?.length
+                            ? selectedPermissions
+                                .map(
+                                  (permission: Permission) => permission.code
+                                )
+                                .join(", ")
+                            : "Select permissions"
+                        }}
+                        <Icon
+                          name="material-symbols:unfold-more-rounded"
+                          class="ml-2 h-4 w-4 shrink-0 opacity-50"
+                        />
+                      </div>
+                    </FormControl>
+                  </UiPopoverTrigger>
+                  <UiPopoverContent class="w-full self-start p-0">
+                    <UiCommand>
+                      <UiCommandInput placeholder="Search product menus..." />
+                      <UiCommandList>
+                        <UiCommandEmpty>
+                          <div class="text-sm text-muted-foreground p-6">
+                            <p>No permissions found.</p>
+                            <p>
+                              Please select a service definition. If you have
+                              selected a service definition, please check your
+                              permissions.
+                            </p>
+                          </div>
+                        </UiCommandEmpty>
+                        <UiCommandGroup>
+                          <UiCommandItem
+                            v-for="permission in serviceDefinitionPermissionsData"
+                            :key="permission.code"
+                            :value="permission.code"
+                            @select="
+                              () => {
+                                const isSelected =
+                                  selectedPermissions.some(
+                                    (selected: Permission) => selected.code === permission.code
+                                  );
+
+                                if (isSelected) {
+                                  selectedPermissions =
+                                      selectedPermissions.filter(
+                                      (selected: Permission) =>
+                                        selected.code !== permission.code
+                                    );
+                                } else {
+                                  selectedPermissions.push(permission);
+                                }
+
+                                form.setFieldValue(
+                                  'permissions',
+                                  selectedPermissions.map(
+                                    (permission: Permission) => permission.code
+                                  )
+                                );
+                              }
+                            "
+                          >
+                            {{ permission.code }}
+                            <UiCheckbox
+                              :checked="
+                                selectedPermissions.some(
+                                  (selected: Permission) => selected.code === permission.code
+                                )
+                              "
+                              class="ml-auto"
+                            />
+                          </UiCommandItem>
+                        </UiCommandGroup>
+                      </UiCommandList>
+                    </UiCommand>
+                  </UiPopoverContent>
+                </UiPopover>
+                <FormMessage>{{ errorMessage }}</FormMessage>
               </FormItem>
             </FormField>
+
 
             <FormField
                 :model-value="data?.isDefault"

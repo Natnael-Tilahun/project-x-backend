@@ -34,18 +34,6 @@ const setOpenLinkModal = (value: boolean) => {
 
 customerId.value = getIdFromPath(route.fullPath);
 
-const displayApiDataOnLabel = (data: any) => {
-  if (data == null || data == "") {
-    return "-";
-  }
-  if (data == false) {
-    return "false";
-  }
-  if (data == true) {
-    return "true";
-  }
-  return data; // Default case if customerActivated is undefined or any other value
-};
 
 const copyToClipboard = (data: any) => {
   navigator.clipboard.writeText(data);
@@ -130,35 +118,6 @@ const handleUnlinkCoreBankCustomer = async () => {
     }
   } else {
     return true;
-  }
-};
-
-const searchCoreAccountHandler = async () => {
-  try {
-    isLoading.value = true;
-    loading.value = true;
-    coreData.value = "";
-    if (accountNumber.value) {
-      coreData.value = await getCoreCustomerByAccountNumber(
-        accountNumber.value
-      ); // Call your API function to fetch roles
-      accountCustomerId.value = coreData.value?.customerId;
-    } else {
-      return true;
-    }
-  } catch (err: any) {
-    console.error("Error fetching customers:", err);
-    toast({
-      title: "Uh oh! Something went wrong.",
-      description: `${
-        err.message == "404 NOT_FOUND" ? "Customer not found." : err.message
-      }`,
-      variant: "destructive",
-    });
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-    loading.value = false;
   }
 };
 

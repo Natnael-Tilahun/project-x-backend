@@ -56,16 +56,21 @@ async function deleteUssdMenuHandler(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiDropdownMenuItem @click="viewUssdMenuDetail(row.original.id)"
-        >View</UiDropdownMenuItem
-      >
-      <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
-      <UiDropdownMenuSeparator />
-      <UiDropdownMenuSeparator />
-      <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
-        Delete
-        <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
-      </UiDropdownMenuItem>
+      <UiPermissionGuard permission="VIEW_USSD_MENUS">
+        <UiDropdownMenuItem @click="viewUssdMenuDetail(row.original.id)"
+          >View and Edit</UiDropdownMenuItem
+        >
+      </UiPermissionGuard>
+      <UiPermissionGuard permission="DELETE_USSD_MENUS">
+        <UiDropdownMenuSeparator />
+        <UiDropdownMenuItem
+          @click="setOpenEditModal(true)"
+          class="text-red-600"
+        >
+          Delete
+          <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
+        </UiDropdownMenuItem>
+      </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 

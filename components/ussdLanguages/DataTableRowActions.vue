@@ -56,16 +56,21 @@ async function deleteUssdLanguageHandler(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiDropdownMenuItem @click="viewUssdLanguageDetail(row.original.id)"
-        >View</UiDropdownMenuItem
-      >
-      <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
-      <UiDropdownMenuSeparator />
-      <UiDropdownMenuSeparator />
-      <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
-        Delete
-        <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
-      </UiDropdownMenuItem>
+      <UiPermissionGuard permission="VIEW_USSD_LANGUAGES">
+        <UiDropdownMenuItem @click="viewUssdLanguageDetail(row.original.id)"
+          >View and Edit</UiDropdownMenuItem
+        >
+      </UiPermissionGuard>
+      <UiPermissionGuard permission="DELETE_USSD_LANGUAGES">
+        <UiDropdownMenuSeparator />
+        <UiDropdownMenuItem
+          @click="setOpenEditModal(true)"
+          class="text-red-600"
+        >
+          Delete
+          <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
+        </UiDropdownMenuItem>
+      </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 
@@ -82,7 +87,9 @@ async function deleteUssdLanguageHandler(id: string) {
         <UiAlertDialogCancel @click="setOpenEditModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="deleteUssdLanguageHandler(row.original.id)">
+        <UiAlertDialogAction
+          @click="deleteUssdLanguageHandler(row.original.id)"
+        >
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"

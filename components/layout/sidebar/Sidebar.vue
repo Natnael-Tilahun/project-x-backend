@@ -3,7 +3,9 @@
     tag="aside"
     class="bg-background text-sm text-secondary-foreground py-0 font-medium border-r shadow-xl shrink-0"
   >
-    <div class="flex w-full items-center h-16 justify-between px-3 py-0 border-b">
+    <div
+      class="flex w-full items-center h-16 justify-between px-3 py-0 border-b"
+    >
       <h1
         class="lg:text-3xl text-xl font-black px-4 md:px-5 text-primary self-center"
       >
@@ -28,10 +30,8 @@
           <UiCollapsibleTrigger
             class="p-3 shadow-none w-full hover:text-primary"
           >
-      
             <NuxtLink
               :to="link.link"
-      
               class="flex gap-3 items-center w-full py-0 rounded-lg transition text-left"
             >
               <span><Icon :name="link.icon" :size="link.size"></Icon></span>
@@ -49,14 +49,18 @@
             <ul
               class="dropdown-menu rounded-none flex flex-col gap-0 py-2 px-4"
             >
-              <template v-for="(item, dropdownIndex) in link.dropdown" :key="dropdownIndex">
+              <template
+                v-for="(item, dropdownIndex) in link.dropdown"
+                :key="dropdownIndex"
+              >
                 <UiPermissionGuard :permission="item?.permission">
                   <NuxtLink
                     :to="item.link"
                     @click="closeMenuNav"
                     class="w-full border-l-2 hover:rounded-r-lg group-hover:border-primary hover:bg-accent px-4 py-3 hover:text-primary"
                     :class="{
-                      'text-primary bg-[#8C2A7C]/15 rounded-lg font-bold': isRouteActive(item.link),
+                      'text-primary bg-[#8C2A7C]/15 rounded-lg font-bold':
+                        isRouteActive(item.link),
                     }"
                   >
                     {{ item.title }}
@@ -67,19 +71,24 @@
           </UiCollapsibleContent>
         </UiCollapsible>
 
-        <UiPermissionGuard v-if="!link?.dropdown" :permission="link?.permission">
-        <NuxtLink
-         v-if="!link.dropdown"
-          :to="link.link"
-          @click="closeMenuNav"
-          :class="{
-                  'text-primary-foreground bg-primary font-bold': isRouteActive(link?.link ?? ''),
-                }"
-          class="flex gap-3 py-3 px-2 hover:bg-popover hover:text-primary rounded-lg transition"
+        <UiPermissionGuard
+          v-if="!link?.dropdown"
+          :permission="link?.permission"
         >
-          <span><Icon :name="link.icon" :size="link.size"></Icon></span>
-          <p>{{ link.title }}</p>
-        </NuxtLink>
+          <NuxtLink
+            v-if="!link.dropdown"
+            :to="link.link"
+            @click="closeMenuNav"
+            :class="{
+              'text-primary-foreground bg-primary font-bold': isRouteActive(
+                link?.link ?? ''
+              ),
+            }"
+            class="flex gap-3 py-3 px-2 hover:bg-popover hover:text-primary rounded-lg transition"
+          >
+            <span><Icon :name="link.icon" :size="link.size"></Icon></span>
+            <p>{{ link.title }}</p>
+          </NuxtLink>
         </UiPermissionGuard>
       </template>
     </ul>
@@ -112,8 +121,16 @@ const mainLinks = [
     showDropdown: true,
     dropdown: [
       { title: "Roles", link: "/userRoles", permission: "VIEW_ROLES_LIST" },
-      { title: "Permissions", link: "/userPermissions", permission: "VIEW_PERMISSIONS" },
-      { title: "Permission Groups", link: "/permissionGroups", permission: "VIEW_PERMISSION_GROUPS" },
+      {
+        title: "Permissions",
+        link: "/userPermissions",
+        permission: "VIEW_PERMISSIONS",
+      },
+      {
+        title: "Permission Groups",
+        link: "/permissionGroups",
+        permission: "VIEW_PERMISSION_GROUPS",
+      },
     ],
   },
   {
@@ -146,7 +163,11 @@ const mainLinks = [
     dropdown: [
       { title: "Staffs", link: "/staffs", permission: "VIEW_STAFF" },
       { title: "Offices", link: "/offices", permission: "VIEW_OFFICES" },
-      { title: "Staff Assignments", link: "/staffAssignments", permission: "VIEW_STAFF_ASSIGNMENTS" },
+      {
+        title: "Staff Assignments",
+        link: "/staffAssignments",
+        permission: "VIEW_STAFF_ASSIGNMENTS",
+      },
     ],
   },
   // {
@@ -195,9 +216,21 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Api Integrations", link: "/integrations", permission: "VIEW_API_INTEGRATIONS" },
-      { title: "Payment Integrations", link: "/paymentIntegrations", permission: "VIEW_PAYMENT_INTEGRATIONS" },
-      { title: "Menu Categories", link: "/menuCategories", permission: "VIEW_INTEGRATION_MENUS" },
+      {
+        title: "Api Integrations",
+        link: "/integrations",
+        permission: "VIEW_API_INTEGRATIONS",
+      },
+      {
+        title: "Payment Integrations",
+        link: "/paymentIntegrations",
+        permission: "VIEW_PAYMENT_INTEGRATIONS",
+      },
+      {
+        title: "Menu Categories",
+        link: "/menuCategories",
+        permission: "VIEW_INTEGRATION_MENUS",
+      },
       // { title: "Auth Configurations", link: "/authConfigurations" },
     ],
   },
@@ -206,7 +239,13 @@ const mainLinks = [
     icon: "material-symbols:phone-android",
     size: "22",
     showDropdown: false,
-    dropdown: [{ title: "Applications", link: "/applications", permission: "VIEW_APPLICATIONS" }],
+    dropdown: [
+      {
+        title: "Applications",
+        link: "/applications",
+        permission: "VIEW_APPLICATIONS",
+      },
+    ],
   },
   {
     title: "Contract Management",
@@ -223,8 +262,16 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Banking Services", link: "/bankingServices", permission: "VIEW_BANKING_SERVICES" },
-      { title: "Service Definitions", link: "/serviceDefinitions", permission: "VIEW_SERVICE_DEFINITIONS" },
+      {
+        title: "Banking Services",
+        link: "/bankingServices",
+        permission: "VIEW_BANKING_SERVICES",
+      },
+      {
+        title: "Service Definitions",
+        link: "/serviceDefinitions",
+        permission: "VIEW_SERVICE_DEFINITIONS",
+      },
     ],
   },
   {
@@ -233,48 +280,68 @@ const mainLinks = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "USSD Languages", link: "/ussdLanguages", permission: "VIEW_USSD_LANGUAGES" },
-      { title: "USSD Default Messages", link: "/ussdDefaultMessages", permission: "VIEW_USSD_DEFAULT_MESSAGES" },
-      { title: "USSD Localized Default Messages", link: "/ussdLocalizedMessages", permission: "VIEW_USSD_LOCALIZED_DEFAULT_MESSAGES" },
-      { title: "USSD Menus", link: "/ussdMenus", permission: "VIEW_USSD_MENUS" },
-      { title: "USSD Localized Menus", link: "/ussdLocalizedMenus", permission: "VIEW_USSD_LOCALIZED_MENUS" },
-      { title: "Ussd Menus Cache Management", link: "/ussdMenusCacheManagement", permission: "VIEW_USSD_MENU_CACHE_MANAGEMENT" },
-    ],
-  },
-  {
-    title: "Application Content Management",
-    icon: "material-symbols:create-new-folder",
-    size: "22",
-    showDropdown: false,
-    dropdown: [
-      { title: "FAQs", link: "/applicationContentManagement/faqs", permission: "VIEW_FAQS" },
       {
-        title: "Privacy Policies",
-        link: "/applicationContentManagement/privacy-policies",
-        permission: "VIEW_PRIVACY_POLICIES",
+        title: "USSD Languages",
+        link: "/ussdLanguages",
+        permission: "VIEW_USSD_LANGUAGES",
       },
       {
-        title: "Term & Conditions",
-        link: "/applicationContentManagement/term-conditions",
-        permission: "VIEW_TERM_CONDITIONS",
+        title: "USSD Default Messages",
+        link: "/ussdDefaultMessages",
+        permission: "VIEW_USSD_DEFAULT_MESSAGES",
       },
       {
-        title: "Service Outage Messages",
-        link: "/applicationContentManagement/service-outage-messages",
-        permission: "VIEW_SERVICE_OUTAGE_MESSAGES",
+        title: "USSD Localized Default Messages",
+        link: "/ussdLocalizedMessages",
+        permission: "VIEW_USSD_LOCALIZED_DEFAULT_MESSAGES",
       },
-      { title: "Locations", link: "/applicationContentManagement/locations", permission: "VIEW_LOCATIONS" },
-      // {
-      //   title: "Customer Care Informations",
-      //   link: "/applicationContentManagement/customer-care-info",
-      // },
       {
-        title: "Ad Campaigns",
-        link: "/applicationContentManagement/ad-campaigns",
-        permission: "VIEW_AD_CAMPAIGNS",
+        title: "USSD Menus",
+        link: "/ussdMenus",
+        permission: "VIEW_USSD_MENUS",
+      },
+      {
+        title: "USSD Localized Menus",
+        link: "/ussdLocalizedMenus",
+        permission: "VIEW_USSD_LOCALIZED_MENUS",
+      },
+      {
+        title: "Ussd Menus Cache Management",
+        link: "/ussdMenusCacheManagement",
+        permission: "VIEW_USSD_MENU_CACHE_MANAGEMENT",
       },
     ],
   },
+  // {
+  //   title: "Application Content Management",
+  //   icon: "material-symbols:create-new-folder",
+  //   size: "22",
+  //   showDropdown: false,
+  //   dropdown: [
+  //     { title: "FAQs", link: "/applicationContentManagement/faqs" },
+  //     {
+  //       title: "Privacy Policies",
+  //       link: "/applicationContentManagement/privacy-policies",
+  //     },
+  //     {
+  //       title: "Term & Conditions",
+  //       link: "/applicationContentManagement/term-conditions",
+  //     },
+  //     {
+  //       title: "Service Outage Messages",
+  //       link: "/applicationContentManagement/service-outage-messages",
+  //     },
+  //     { title: "Locations", link: "/applicationContentManagement/locations" },
+  //     // {
+  //     //   title: "Customer Care Informations",
+  //     //   link: "/applicationContentManagement/customer-care-info",
+  //     // },
+  //     {
+  //       title: "Ad Campaigns",
+  //       link: "/applicationContentManagement/ad-campaigns",
+  //     },
+  //   ],
+  // },
   {
     title: "Logs & Reports",
     icon: "iconoir:reports-solid",
@@ -365,9 +432,9 @@ const closeMenuNav = () => {
 const route = useRoute();
 // Function to check if route is active, including parent routes
 function isRouteActive(path: string) {
-  if (path === '/') {
+  if (path === "/") {
     // For dashboard, only return true if we're exactly at the root
-    return route.path === '/';
+    return route.path === "/";
   }
   // For other routes, keep the existing behavior
   return route.path.startsWith(path);

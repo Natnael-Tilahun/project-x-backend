@@ -4,6 +4,7 @@ import { Checkbox } from "../ui/checkbox";
 import ServiceDefinitionsRolesDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { ServiceDefinitionRole } from "~/types";
+import Badge from "../ui/badge/Badge.vue";
 
 export const columns: ColumnDef<ServiceDefinitionRole>[] = [
   {
@@ -29,7 +30,6 @@ export const columns: ColumnDef<ServiceDefinitionRole>[] = [
     header: "Info",
     cell: ({ row }) => {
       const serviceDefinitionRoleId = row.original.id;
-      const serviceDefinitionId = row.original.serviceDefinition.id;
       const route = useRoute();
       return serviceDefinitionRoleId
         ? h(
@@ -45,63 +45,58 @@ export const columns: ColumnDef<ServiceDefinitionRole>[] = [
     },
   },
   {
-    accessorKey: "service",
-    header: "Service Definition",
+    accessorKey: "roleName",
+    header: "Role Name",
     cell: ({ row }) => {
-      const serviceDefinitionId = row.original.id;
+      const serviceDefinitionRoleId = row.original.id;
+      const roleName = row.original.roleName;
       const route = useRoute();
-      const name = row.getValue("serviceDefinition")?.name;
-      return name
+      return roleName
         ? h(
-            NuxtLink,
-            {
-              class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}/${serviceDefinitionId}`,
-            },
-            row.getValue("serviceDefinition")?.name
-          )
-        : h(NuxtLink, {
+          "div",
+          {
             class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-            to: `${route.path}?activeTab=serviceDefinitionDetails&serviceDefinitionId=${serviceDefinitionId}`,
-          }, "View Service Definition Details");
-    },
-  },
-  {
-    accessorKey: "role",
-    header: "Role",
-    cell: ({ row }) => {
-      const route = useRoute();
-      const name = row.getValue("role")?.name;
-      return name
-        ? h(
-            NuxtLink,
-            {
-              class:
-              "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/userRoles/${name}`,
-            },
-            row.getValue("role")?.name
-          )
+            "w-fit whitespace-nowrap truncate hover:w-full",
+          },
+          roleName
+        )
         : h("p", "-");
     },
   },
+  {
+    accessorKey: "roleDescription",
+    header: "Role Description",
+    cell: ({ row }) => {
+      const serviceDefinitionRoleId = row.original.id;
+      const roleDescription = row.original.roleDescription;
+      const route = useRoute();
+      return roleDescription
+        ?  h(
+          "div",
+          {
+            class:
+            "w-fit whitespace-nowrap truncate hover:w-full",
+          },
+          roleDescription
+        )
+        : h("p", "-");
+    },
+  },
+
   {
     accessorKey: "isDefault",
     header: "Is Default",
     cell: ({ row }) => {
       const isDefault = row.getValue("isDefault");
-      return isDefault
-        ? h(
-            "div",
+      return h(
+            Badge,
             {
               class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+                `max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium ${isDefault ? "bg-green-500": "bg-red-500"}`,
             },
             row.getValue("isDefault")
           )
-        : h("p", "-");
+        
     },
   },
   {

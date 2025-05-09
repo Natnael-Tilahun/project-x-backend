@@ -80,8 +80,10 @@ onMounted(() => {
   fetchContractCoreCustomer();
 });
 
-
-const updatingContractCoreCustomerStatus = async (id: string, status: boolean) => {
+const updatingContractCoreCustomerStatus = async (
+  id: string,
+  status: boolean
+) => {
   try {
     loading.value = true;
     if (id) {
@@ -103,6 +105,10 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
   }
 };
 
+console.log(
+  "has permissions: ",
+  useHasPermissions("UPDATE_CONTRACT_CORE_CUSTOMER")
+);
 </script>
 
 <template>
@@ -260,73 +266,90 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
               >
                 <FormLabel class="text-base"> Is Primary </FormLabel>
                 <FormControl>
-                  <UiSwitch disabled :checked="value" @update:checked="handleChange" />
+                  <UiSwitch
+                    disabled
+                    :checked="value"
+                    @update:checked="handleChange"
+                  />
                 </FormControl>
               </FormItem>
             </FormField>
 
-  <UiPermissionGuard permission="UPDATE_CONTRACT_CORE_CUSTOMER" >
-            <FormField v-slot="{ value, handleChange }" name="coreCustomerStatus">
+            <FormField
+              v-slot="{ value, handleChange }"
+              name="coreCustomerStatus"
+            >
               <FormItem
                 class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
               >
                 <FormLabel class="text-base"> Enable </FormLabel>
                 <FormControl>
-                  <UiSwitch :checked="value"           
-                  @update:checked="
-                          (checked) => {
-                            handleChange;
-                            updatingContractCoreCustomerStatus(data?.id || '', checked);
-                          }
-                  " 
+                  <UiSwitch
+                    :disabled="
+                      !useHasPermissions('UPDATE_CONTRACT_CORE_CUSTOMER')
+                    "
+                    :checked="value"
+                    @update:checked="
+                      (checked) => {
+                        handleChange;
+                        updatingContractCoreCustomerStatus(
+                          data?.id || '',
+                          checked
+                        );
+                      }
+                    "
                   />
                 </FormControl>
               </FormItem>
             </FormField>
-            </UiPermissionGuard>
 
-  <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER_PERMISSIONS" >
-            <div class="w-full space-y-2">
-              <UiLabel for="enable">Permissions</UiLabel>
-              <UiSheet class="w-full">
-                <UiSheetTrigger class="w-full">
-                  <UiButton
-                    size="lg"
-                    variant="outline"
-                    type="button"
-                    class="font-medium bg-[#8C2A7C]/15 text-primary hover:bg-[#8C2A7C]/20 cursor-pointer w-full"
+            <UiPermissionGuard
+              permission="VIEW_CONTRACT_CORE_CUSTOMER_PERMISSIONS"
+            >
+              <div class="w-full space-y-2">
+                <UiLabel for="enable">Permissions</UiLabel>
+                <UiSheet class="w-full">
+                  <UiSheetTrigger class="w-full">
+                    <UiButton
+                      size="lg"
+                      variant="outline"
+                      type="button"
+                      class="font-medium bg-[#8C2A7C]/15 text-primary hover:bg-[#8C2A7C]/20 cursor-pointer w-full"
+                    >
+                      <Icon name="lucide:shield" class="h-4 w-4 mr-2" />
+                      Contract Core Customer Permissions
+                    </UiButton>
+                  </UiSheetTrigger>
+                  <UiSheetContent
+                    class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
                   >
-                    <Icon name="lucide:shield" class="h-4 w-4 mr-2" />
-                    Contract Core Customer Permissions
-                  </UiButton>
-                </UiSheetTrigger>
-                <UiSheetContent
-                  class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
-                >
-                  <ContractsCoreCustomersPermissions
-                    :contractCoreCustomerProps="data"
-                    :permissionsData="permissionsData"
-                    @refresh="refetch"
-                  />
-                </UiSheetContent>
-              </UiSheet>
-            </div>
-          </UiPermissionGuard>
+                    <ContractsCoreCustomersPermissions
+                      :contractCoreCustomerProps="data"
+                      :permissionsData="permissionsData"
+                      @refresh="refetch"
+                    />
+                  </UiSheetContent>
+                </UiSheet>
+              </div>
+            </UiPermissionGuard>
           </div>
         </form>
       </UiCard>
-  <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS" >
-      <UiTabs v-model="openItems" class="w-full space-y-0 border rounded-lg p-">
-        <UiTabsList
-          class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
+      <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS">
+        <UiTabs
+          v-model="openItems"
+          class="w-full space-y-0 border rounded-lg p-"
         >
-          <!-- <UiTabsTrigger
+          <UiTabsList
+            class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
+          >
+            <!-- <UiTabsTrigger
           value="details"
           class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
         >
           Details
         </UiTabsTrigger> -->
-          <!-- <UiTabsTrigger
+            <!-- <UiTabsTrigger
             value="permissions"
             @click="
               navigateTo({
@@ -341,24 +364,24 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
           >
             Permissions
           </UiTabsTrigger> -->
-          <UiTabsTrigger
-            value="accounts"
-            @click="
-              navigateTo({
-                path: route.fullPath,
-                query: {
-                  ...route.query,
-                  coreCustomerActiveTab: 'accounts',
-                },
-              })
-            "
-            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-          >
-            Contract Accounts
-          </UiTabsTrigger>
-        </UiTabsList>
+            <UiTabsTrigger
+              value="accounts"
+              @click="
+                navigateTo({
+                  path: route.fullPath,
+                  query: {
+                    ...route.query,
+                    coreCustomerActiveTab: 'accounts',
+                  },
+                })
+              "
+              class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+            >
+              Contract Accounts
+            </UiTabsTrigger>
+          </UiTabsList>
 
-        <!-- <UiTabsContent
+          <!-- <UiTabsContent
           value="permissions"
           class="text-base bg-background rounded-lg p-4"
         >
@@ -368,22 +391,21 @@ const updatingContractCoreCustomerStatus = async (id: string, status: boolean) =
           />
           
         </UiTabsContent> -->
-  <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS" >
-        <UiTabsContent
-          value="accounts"
-          class="text-base bg-background rounded-lg p-4"
-        >
-          <ContractsAccounts
-            :contractCoreCustomerProps="data"
-            :contractId="contractId"
-            :coreCustomerPermissions="coreCustomerPermissionsData"
-            @refresh="refetch"
-          />
-        </UiTabsContent>
-        </UiPermissionGuard>
-      </UiTabs>
-    </UiPermissionGuard>
-
+          <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS">
+            <UiTabsContent
+              value="accounts"
+              class="text-base bg-background rounded-lg p-4"
+            >
+              <ContractsAccounts
+                :contractCoreCustomerProps="data"
+                :contractId="contractId"
+                :coreCustomerPermissions="coreCustomerPermissionsData"
+                @refresh="refetch"
+              />
+            </UiTabsContent>
+          </UiPermissionGuard>
+        </UiTabs>
+      </UiPermissionGuard>
     </div>
 
     <div v-else-if="data == null || data == undefined">

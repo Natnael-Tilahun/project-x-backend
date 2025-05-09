@@ -13,22 +13,21 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import type { ServiceDefinitionRole, ServiceDefinition, Role } from "~/types";
+import type { ServiceDefinitionRole, ServiceDefinition, Role, Permission } from "~/types";
 import { useServiceDefinitionsRoles } from "@/composables/useServiceDefinitionsRoles";
 import { useRoles } from "@/composables/useRoles";
 
 const route = useRoute();
 const { getServiceDefinitionRoleById, updateServiceDefinitionRole, isLoading, isSubmitting } =
   useServiceDefinitionsRoles();
-const { getRoles } = useRoles();
 
 const serviceDefinitionRoleId = ref<string>("");
 serviceDefinitionRoleId.value = route.query.serviceDefinitionRoleId as string;
 
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
-const rolesData = ref<Role[]>([]);
 const serviceDefinition = ref<ServiceDefinition>();
+const permissionsData = ref<Permission[]>([])
 
 const props = defineProps<{
   serviceDefinitionProps?: ServiceDefinition;
@@ -45,14 +44,17 @@ const form = useForm({
   validationSchema: newServiceDefinitionRoleFormSchema,
 });
 
+console.log("serviceDefinitionProps: ",serviceDefinition.value)
 
+const fetchServiceDefinitionRole = async() => {
 try {
   isLoading.value = true;
   loading.value = true;
   data.value = await getServiceDefinitionRoleById(serviceDefinitionRoleId.value);
+  permissionsData.value = data.value?.permissions || []
   const newValues = {
     ...data.value,
-    role: data.value?.role?.name,
+    permissions: data.value?.permissions,
   }
   form.setValues(newValues);
 } catch (err) {
@@ -62,6 +64,7 @@ try {
   isLoading.value = false;
   loading.value = false;
 }
+}
 
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
@@ -69,7 +72,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     const newValues = {
         ...values,
-        role: rolesData.value?.find((role: Role) => role.name === values.role)
+        serviceDefinition: serviceDefinition.value
     }
     data.value = await updateServiceDefinitionRole(values.id, newValues); // Call your API function to fetch profile
     toast({
@@ -85,21 +88,14 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   }
 });
 
-const fetchData = async () => {
-  try {
-    const roles = await getRoles();
-    rolesData.value = roles.sort((a: Role, b: Role) =>
-      a?.name?.toLowerCase().localeCompare(b?.name?.toLowerCase())
-    );
-  } catch (err) {
-    console.error("Error fetching permissions:", err);
-    isError.value = true;
-  } 
-};
 
 await useAsyncData("permissionsData", async () => {
-  await fetchData();
+  await fetchServiceDefinitionRole()
 });
+
+const refetch = async() => {
+  await fetchServiceDefinitionRole()
+}
 </script>
 
 <template>
@@ -124,30 +120,32 @@ await useAsyncData("permissionsData", async () => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="role">
-              <FormItem>
-                <FormLabel> Role </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a role" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in rolesData"
-                        :value="item.name"
-                      >
-                        {{ item.name }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
+          <FormField v-slot="{ componentField }" name="roleName">
+            <FormItem>
+              <FormLabel>Role Name </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="text"
+                  placeholder="Enter service definition role name"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="roleDescription">
+            <FormItem>
+              <FormLabel>Role Description </FormLabel>
+              <FormControl>
+                <UiTextarea
+                  type="text"
+                  placeholder="Enter service definition role description"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
             <FormField
                 :model-value="data?.isDefault"
                 v-slot="{ value, handleChange }"
@@ -161,6 +159,36 @@ await useAsyncData("permissionsData", async () => {
                   <FormMessage />
                 </FormItem>
               </FormField>
+
+              <UiPermissionGuard
+              permission="UPDATE_SERVICE_DEFINITION_ROLES"
+            >
+              <div class="w-full space-y-2">
+                <UiLabel for="enable">Permissions</UiLabel>
+                <UiSheet class="w-full">
+                  <UiSheetTrigger class="w-full">
+                    <UiButton
+                      size="lg"
+                      variant="outline"
+                      type="button"
+                      class="font-medium bg-[#8C2A7C]/15 text-primary hover:bg-[#8C2A7C]/20 cursor-pointer w-full"
+                    >
+                      <Icon name="lucide:shield" class="h-4 w-4 mr-2" />
+                      Service Definition Role Permissions
+                    </UiButton>
+                  </UiSheetTrigger>
+                  <UiSheetContent
+                    class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
+                  >
+                    <ServiceDefinitionsRolesPermissions
+                      :serviceDefinitionsProps="serviceDefinition"
+                      :permissionsData="permissionsData"
+                      @refresh="refetch"
+                    />
+                  </UiSheetContent>
+                </UiSheet>
+              </div>
+            </UiPermissionGuard>
 
           <UiPermissionGuard permission="UPDATE_SERVICE_DEFINITION_ROLES" >
           <div class="col-span-full w-full py-4 flex justify-between">
@@ -187,7 +215,7 @@ await useAsyncData("permissionsData", async () => {
       </form>
     </UiCard>
     <div v-else-if="data == null || data == undefined">
-      <UiNoResultFound title="Sorry, No merchant found." />
+      <UiNoResultFound title="Sorry, No Roles found." />
     </div>
     <div v-else-if="isError">
       <ErrorMessage title="Something went wrong." />

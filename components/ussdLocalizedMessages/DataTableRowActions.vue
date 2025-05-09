@@ -2,7 +2,8 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { useUssdLocalizedDefaultMessage } from "~/composables/useUssdLocalizedDefaultMessage";
-const { deleteUssdLocalizedDefaultMessage, isLoading } = useUssdLocalizedDefaultMessage();
+const { deleteUssdLocalizedDefaultMessage, isLoading } =
+  useUssdLocalizedDefaultMessage();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const openEditModal = ref(false);
@@ -56,14 +57,22 @@ async function deleteUssdLocalizedDefaultMessageHandler(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiDropdownMenuItem @click="viewUssdLocalizedDefaultMessageDetail(row.original.id)"
-        >View and Edit</UiDropdownMenuItem
-      >
-      <UiDropdownMenuSeparator /> 
-      <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
-        Delete
-        <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
-      </UiDropdownMenuItem>
+      <UiPermissionGuard permission="VIEW_USSD_LOCALIZED_DEFAULT_MESSAGES">
+        <UiDropdownMenuItem
+          @click="viewUssdLocalizedDefaultMessageDetail(row.original.id)"
+          >View and Edit</UiDropdownMenuItem
+        >
+      </UiPermissionGuard>
+      <UiPermissionGuard permission="DELETE_USSD_LOCALIZED_DEFAULT_MESSAGES">
+        <UiDropdownMenuSeparator />
+        <UiDropdownMenuItem
+          @click="setOpenEditModal(true)"
+          class="text-red-600"
+        >
+          Delete
+          <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
+        </UiDropdownMenuItem>
+      </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 
@@ -80,7 +89,9 @@ async function deleteUssdLocalizedDefaultMessageHandler(id: string) {
         <UiAlertDialogCancel @click="setOpenEditModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="deleteUssdLocalizedDefaultMessageHandler(row.original.id)">
+        <UiAlertDialogAction
+          @click="deleteUssdLocalizedDefaultMessageHandler(row.original.id)"
+        >
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"

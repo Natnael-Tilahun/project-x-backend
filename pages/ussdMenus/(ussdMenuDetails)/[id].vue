@@ -14,8 +14,13 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { UssdMenuList } from "~/types";
 
 const route = useRoute();
-const { getUssdMenuById, updateUssdMenuName, updateUssdMenuStatus, isLoading, isSubmitting } =
-  useUssdMenus();
+const {
+  getUssdMenuById,
+  updateUssdMenuName,
+  updateUssdMenuStatus,
+  isLoading,
+  isSubmitting,
+} = useUssdMenus();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
 const ussdMenuId = ref<string>("");
@@ -51,12 +56,11 @@ const getUssdMenuByIdData = async () => {
     isLoading.value = false;
     loading.value = false;
   }
-}
+};
 
 await useAsyncData("ussdMenuByIdData", async () => {
   await getUssdMenuByIdData();
 });
-
 
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
@@ -64,8 +68,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     const newValues = {
       id: data.value?.id,
-      ...values
-    }
+      ...values,
+    };
     console.log("newValues", newValues);
     data.value = await updateUssdMenuName(newValues); // Call your API function to fetch profile
     await getUssdMenuByIdData();
@@ -100,10 +104,7 @@ const updatingUssdMenuVisible = async (menuId: string, visible: boolean) => {
     });
     isError.value = true;
   }
-}
-
-
-
+};
 </script>
 
 <template>
@@ -113,25 +114,37 @@ const updatingUssdMenuVisible = async (menuId: string, visible: boolean) => {
     </div>
     <UiCard v-else-if="data && !isError" class="w-full p-6">
       <form @submit.prevent="onSubmit" class="space-y-6 flex flex-col">
-        <FormField v-slot="{ value, handleChange }" name="visible">
-          <FormItem class="flex flex-row items-end justify-between rounded-lg border pb-2 px-4 w-fit gap-10 self-end">
-            <FormLabel class="text-base"> Status </FormLabel>
-            <FormControl>
-              <UiSwitch :checked="value" @update:checked="
-                (checked) => {
-                  handleChange;
-                  updatingUssdMenuVisible(data?.id || '', checked);
-                }
-              " />
-            </FormControl>
-          </FormItem>
-        </FormField>
+        <UiPermissionGuard permission="UPDATE_USSD_MENUS">
+          <FormField v-slot="{ value, handleChange }" name="visible">
+            <FormItem
+              class="flex flex-row items-end justify-between rounded-lg border pb-2 px-4 w-fit gap-10 self-end"
+            >
+              <FormLabel class="text-base"> Status </FormLabel>
+              <FormControl>
+                <UiSwitch
+                  :checked="value"
+                  @update:checked="
+                    (checked) => {
+                      handleChange;
+                      updatingUssdMenuVisible(data?.id || '', checked);
+                    }
+                  "
+                />
+              </FormControl>
+            </FormItem>
+          </FormField>
+        </UiPermissionGuard>
         <div class="grid grid-cols-2 gap-6">
           <FormField v-slot="{ componentField }" name="id">
             <FormItem>
               <FormLabel>Ussd Menu Id </FormLabel>
               <FormControl>
-                <UiInput type="text" disabled placeholder="Enter ussd menu Id" v-bind="componentField" />
+                <UiInput
+                  type="text"
+                  disabled
+                  placeholder="Enter ussd menu Id"
+                  v-bind="componentField"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -141,7 +154,11 @@ const updatingUssdMenuVisible = async (menuId: string, visible: boolean) => {
             <FormItem>
               <FormLabel>Ussd Menu Name </FormLabel>
               <FormControl>
-                <UiInput type="text" placeholder="Enter ussd menu name" v-bind="componentField" />
+                <UiInput
+                  type="text"
+                  placeholder="Enter ussd menu name"
+                  v-bind="componentField"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -150,7 +167,11 @@ const updatingUssdMenuVisible = async (menuId: string, visible: boolean) => {
             <FormItem>
               <FormLabel>Ussd Menu Display Order </FormLabel>
               <FormControl>
-                <UiInput type="number" placeholder="Enter ussd menu display order" v-bind="componentField" />
+                <UiInput
+                  type="number"
+                  placeholder="Enter ussd menu display order"
+                  v-bind="componentField"
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -160,73 +181,81 @@ const updatingUssdMenuVisible = async (menuId: string, visible: boolean) => {
             <FormItem>
               <FormLabel> Childs </FormLabel>
               <UiPopover>
-                  <UiPopoverTrigger asChild>
-                    <FormControl>
-                      <div
-                        variant="outline"
-                        role="combobox"
-                        class="w-full text-sm text-left border flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
-                        :class="{
-                          'text-muted-foreground':
-                            !data?.child?.length,
-                        }"
-                      >
-                        {{
-                          data?.child?.length
-                            ? data?.child
-                                .map(
-                                  (child: UssdMenuList) => child.menuName
-                                )
-                                .join(", ")
-                            : "Select childs"
-                        }}
-                        <Icon
-                          name="material-symbols:unfold-more-rounded"
-                          class="ml-2 h-4 w-4 shrink-0 opacity-50"
-                        />
-                      </div>
-                    </FormControl>
-                  </UiPopoverTrigger>
-                  <UiPopoverContent class="w-full self-start p-0">
-                    <UiCommand>
-                      <UiCommandInput placeholder="Search product menus..." />
-                      <UiCommandList>
-                        <UiCommandEmpty>No childs found.</UiCommandEmpty>
-                        <UiCommandGroup>
-                          <UiCommandItem
-                            v-for="child in data?.child"
-                            :key="child.id"
-                            :value="child.id"
-                            disabled
-                          >
-                            {{ child.menuName }}
-                            <UiCheckbox
-                              :checked="
+                <UiPopoverTrigger asChild>
+                  <FormControl>
+                    <div
+                      variant="outline"
+                      role="combobox"
+                      class="w-full text-sm text-left border flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
+                      :class="{
+                        'text-muted-foreground': !data?.child?.length,
+                      }"
+                    >
+                      {{
+                        data?.child?.length
+                          ? data?.child
+                              .map((child: UssdMenuList) => child.menuName)
+                              .join(", ")
+                          : "Select childs"
+                      }}
+                      <Icon
+                        name="material-symbols:unfold-more-rounded"
+                        class="ml-2 h-4 w-4 shrink-0 opacity-50"
+                      />
+                    </div>
+                  </FormControl>
+                </UiPopoverTrigger>
+                <UiPopoverContent class="w-full self-start p-0">
+                  <UiCommand>
+                    <UiCommandInput placeholder="Search product menus..." />
+                    <UiCommandList>
+                      <UiCommandEmpty>No childs found.</UiCommandEmpty>
+                      <UiCommandGroup>
+                        <UiCommandItem
+                          v-for="child in data?.child"
+                          :key="child.id"
+                          :value="child.id"
+                          disabled
+                        >
+                          {{ child.menuName }}
+                          <UiCheckbox
+                            :checked="
                                 data?.child?.some(
                                     (selected: UssdMenuList) => selected.id === child.id
                                 )
                               "
-                              class="ml-auto"
-                            />
-                          </UiCommandItem>
-                        </UiCommandGroup>
-                      </UiCommandList>
-                    </UiCommand>
-                  </UiPopoverContent>
-                </UiPopover>
+                            class="ml-auto"
+                          />
+                        </UiCommandItem>
+                      </UiCommandGroup>
+                    </UiCommandList>
+                  </UiCommand>
+                </UiPopoverContent>
+              </UiPopover>
               <FormMessage />
             </FormItem>
           </FormField>
 
-          <div class="col-span-full w-full py-4 flex justify-between">
-            <UiButton :disabled="submitting" variant="outline" type="button" @click="$router.go(-1)">
-              Cancel
-            </UiButton>
-            <UiButton :disabled="submitting" type="submit">
-              <Icon name="svg-spinners:8-dots-rotate" v-if="submitting" class="mr-2 h-4 w-4 animate-spin"></Icon>
-              Update
-            </UiButton>
-          </div>
+          <UiPermissionGuard permission="UPDATE_USSD_MENUS">
+            <div class="col-span-full w-full py-4 flex justify-between">
+              <UiButton
+                :disabled="submitting"
+                variant="outline"
+                type="button"
+                @click="$router.go(-1)"
+              >
+                Cancel
+              </UiButton>
+              <UiButton :disabled="submitting" type="submit">
+                <Icon
+                  name="svg-spinners:8-dots-rotate"
+                  v-if="submitting"
+                  class="mr-2 h-4 w-4 animate-spin"
+                ></Icon>
+                Update
+              </UiButton>
+            </div>
+          </UiPermissionGuard>
         </div>
       </form>
     </UiCard>

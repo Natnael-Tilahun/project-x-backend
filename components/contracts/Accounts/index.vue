@@ -32,6 +32,7 @@ contractId.value = getIdFromPath();
 const { getCoreAccountsByCustomerId, isLoading } = useCustomers();
 
 const loading = ref(isLoading.value);
+const submitting = ref(false)
 const isError = ref(false);
 const errorMessage = ref("");
 const accountsData = ref<any>();
@@ -123,24 +124,26 @@ const fetchContractCoreCustomerAccounts = async () => {
   try {
     loading.value = true;
     if (coreCustomerId.value) {
-      const response = await getContractCoreCustomerAccounts(0, 100000000);
-      const contractAccount = response.filter(
-        (item: any) => item.coreCustomer?.id === contractCoreCustomerId.value
-      );
+      // Get accounts from props instead of API
+      const contractAccount = props.contractCoreCustomerProps.coreAccounts;
+      
       selectedContractAccount.value = contractAccount;
-      selectedAccounts.value =
-        contractAccount.map((item: any) => item.account) || [];
-      accountsData.value = accountsData.value.filter(
-        (acc: Account) =>
-          !selectedAccounts.value.some(
-            (selectedAcc) => selectedAcc.accountNumber === acc.accountNumber
-          )
-      );
+      selectedAccounts.value = contractAccount || [];
+      
+      // Filter out already selected accounts from accountsData
+      if (accountsData.value) {
+        accountsData.value = accountsData.value.filter(
+          (acc: Account) =>
+            !selectedAccounts.value.some(
+              (selectedAcc) => selectedAcc.accountNumber === acc.accountNumber
+            )
+        );
+      }
     } else {
       return true;
     }
   } catch (err: any) {
-    console.error("Error fetching contract core customers accounts:", err);
+    console.error("Error processing contract core customers accounts:", err);
     isError.value = true;
   } finally {
     loading.value = false;
@@ -172,11 +175,13 @@ const isAccountSelected = (account: Account | undefined) => {
 
 const addAccounts = async () => {
   try {
-    isSubmitting.value = true;
+    submitting.value = true;
     isLoading.value = true;
     const newValues = {
       coreAccounts: selectedAccounts.value.map((account: Account) => ({
         accountNumber: account.accountNumber,
+        inheritContractCustomerPermissions: true,
+        permissionCodes: [],
       })),
     };
     console.log(newValues);
@@ -184,6 +189,7 @@ const addAccounts = async () => {
       contractCoreCustomerId.value,
       newValues
     ); // Call your API function to fetch profile
+    emit("refresh");
     await getContractCoreCustomerAccountsByIdHandler();
     await fetchContractCoreCustomerAccounts();
     toast({
@@ -195,7 +201,7 @@ const addAccounts = async () => {
     isError.value = true;
   } finally {
     isLoading.value = false;
-    isSubmitting.value = false;
+    submitting.value = false;
   }
 };
 
@@ -207,6 +213,7 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
       console.log("value: ", value);  
       await updateContractCoreCustomerAccountStatus(id, value);
       await fetchContractCoreCustomerAccounts();
+      emit("refresh");
       toast({
         title: "Contract Account Status Updated.",
         description: "Contract Account staus updated successfully",
@@ -290,17 +297,12 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
       "
       type="single" collapsible v-model:value="openItems">
         <UiAccordionItem
-        
-          v-for="(
-            { account, enable, id, permissions }, index
-          ) in selectedContractAccount"
+          v-for="(account, index) in selectedContractAccount"
           :key="account?.accountNumber"
           :value="`item-${index + 1}`"
           class="border rounded-lg mb-4 px-2 data-[state=open]:bg-muted/50"
         >
-          <div
-            class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors"
-          >
+          <div class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors">
             <div class="flex items-center gap-4 w-full">
               <UiCheckbox
                 :checked="isAccountSelected(account)"
@@ -308,7 +310,6 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                 class="h-5 w-5"
                 :disabled="(isAccountSelected(account) && !store.permissions.includes('DELETE_CONTRACT_ACCOUNTS')) || (!isAccountSelected(account) && !store.permissions.includes('CREATE_CONTRACT_ACCOUNTS'))"
               />
-              <!-- <UiAccordionTrigger class="ml-auto hover:no-underline"> -->
               <div class="flex-1 grid grid-cols-4 gap-4 py-2">
                 <div>
                   <p class="text-sm text-muted-foreground">Account Number</p>
@@ -323,54 +324,55 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                   </p>
                 </div>
 
-  <UiPermissionGuard permission="UPDATE_CONTRACT_ACCOUNTS" >
-                <FormField
-                  :model-value="enable"
-                  v-slot="{ handleChange }"
-                  name="enable"
-                >
-                  <FormItem>
-                    <FormLabel> Enable </FormLabel>
-                    <FormControl>
-                      <UiSwitch
-                        :checked="enable"
-                        @update:checked="
-                          (checked) => {
-                            handleChange;
-                            updatingContractAccountStatus(id || '', checked);
-                          }
-                        "
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-</UiPermissionGuard>
-  <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS_PERMISSIONS" >
-                <div class="flex items-center">
-                  <UiSheet>
-                    <UiSheetTrigger>
-                      <UiButton
-                        size="sm"
-                        class="font-medium cursor-pointer px-2 h-fit py-1 bg-[#8C2A7C]/15 text-primary hover:bg-[#8C2A7C]/20"
+                <UiPermissionGuard permission="UPDATE_CONTRACT_ACCOUNTS">
+                  <FormField
+                    :model-value="account.enable"
+                    v-slot="{ handleChange }"
+                    name="enable"
+                  >
+                    <FormItem>
+                      <FormLabel>Enable</FormLabel>
+                      <FormControl>
+                        <UiSwitch
+                          :checked="account.enable"
+                          @update:checked="
+                            (checked) => {
+                              handleChange;
+                              updatingContractAccountStatus(account.id, checked);
+                            }
+                          "
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </UiPermissionGuard>
+
+                <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS_PERMISSIONS">
+                  <div class="flex items-center">
+                    <UiSheet>
+                      <UiSheetTrigger>
+                        <UiButton
+                          size="sm"
+                          class="font-medium cursor-pointer px-2 h-fit py-1 bg-[#8C2A7C]/15 text-primary hover:bg-[#8C2A7C]/20"
+                        >
+                          <Icon name="lucide:shield" class="h-4 w-4 mr-2" />
+                          Permissions
+                        </UiButton>
+                      </UiSheetTrigger>
+                      <UiSheetContent
+                        class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
                       >
-                        <Icon name="lucide:shield" class="h-4 w-4 mr-2" />
-                        Permissions
-                      </UiButton>
-                    </UiSheetTrigger>
-                    <UiSheetContent
-                      class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
-                    >
-                      <ContractsAccountsPermissions
-                        :contractAccountId="id"
-                        :coreCustomerPermissions="coreCustomerPermissions"
-                        :accountPermissions="permissions"
-                        :contractId="contractId"
-                        @refresh="refetch"
-                      />
-                    </UiSheetContent>
-                  </UiSheet>
-                </div>
+                        <ContractsAccountsPermissions
+                          :contractAccountId="account.id"
+                          :coreCustomerPermissions="coreCustomerPermissions"
+                          :accountPermissions="account.permissions"
+                          :contractId="contractId"
+                          @refresh="refetch"
+                        />
+                      </UiSheetContent>
+                    </UiSheet>
+                  </div>
                 </UiPermissionGuard>
               </div>
               <UiAccordionTrigger />
@@ -378,34 +380,18 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
           </div>
 
           <UiAccordionContent class="px-4 pb-4">
-            <div
-              class="grid grid-cols-2 md:grid-cols-4 gap-4 px-8 py-4 border-t"
-            >
-              <div>
-                <p class="text-sm text-muted-foreground">Customer ID</p>
-                <p class="font-medium">{{ account?.customerId }}</p>
-              </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 px-8 py-4 border-t">
               <div>
                 <p class="text-sm text-muted-foreground">Account Category</p>
-                <p class="font-medium">{{ account?.accountCategoryId }}</p>
+                <p class="font-medium">{{ account?.accountCategory?.shortName }}</p>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">Joint Holder 1</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account?.jointAccountHolder1) }}
-                </p>
+                <p class="text-sm text-muted-foreground">Currency</p>
+                <p class="font-medium">{{ account?.currencyCode }}</p>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">Joint Holder 2</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account?.jointAccountHolder2) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Cleared Balance</p>
-                <p class="font-medium">
-                  {{ account?.onlineClearedBalance }} {{ account?.currency }}
-                </p>
+                <p class="text-sm text-muted-foreground">Available Balance</p>
+                <p class="font-medium">{{ account?.availableBalance }}</p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Last Updated</p>
@@ -413,27 +399,11 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
                   {{ new Date(account?.lastUpdated).toLocaleDateString() }}
                 </p>
               </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Account Type</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account?.accountType) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Inactive Marker</p>
-                <p class="font-medium">
-                  {{ displayApiDataOnLabel(account?.inactivMarker) }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Posting Restrict Id</p>
-                <p class="font-medium">
-                  {{ account?.postingRestrictId || "-" }}
-                </p>
-              </div>
+              <!-- Add other account details as needed -->
             </div>
           </UiAccordionContent>
         </UiAccordionItem>
+
         <UiAccordionItem
           v-for="(account, index) in accountsData"
           :key="account?.accountNumber"
@@ -538,7 +508,14 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
 
   <UiPermissionGuard permission="CREATE_CONTRACT_ACCOUNTS" >
         <div class="flex justify-end pt-4">
-      <UiButton @click="addAccounts" type="submit" class="w-fit self-end px-8">Add Accounts</UiButton>
+      <UiButton :disabled="submitting"  @click="addAccounts" type="submit" class="w-fit self-end px-8">
+        <Icon
+                name="svg-spinners:8-dots-rotate"
+                v-if="submitting"
+                class="mr-2 h-4 w-4 animate-spin"
+              ></Icon>
+
+        Add Accounts</UiButton>
       </div>
       </UiPermissionGuard>
       </UiAccordion>

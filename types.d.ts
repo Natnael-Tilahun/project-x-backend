@@ -733,16 +733,25 @@ interface Contract {
   serviceDefinition?: ServiceDefinition | null;
   permissionCodes?: string[] | null;
   inheritParentServicePermissions?: boolean | null;
-  coreCustomers?: [{
-    coreCustomerId: string;
-    inheritParentContractPermissions: boolean;
-    permissionCodes?: string[] | null;
-    coreAccounts: [{
-      inheritContractCustomerPermissions: boolean;
-      permissionCodes?: string[] | null;
-      accountNumber: string;
-    }] | null;
-  }] | null;
+  coreCustomers?:
+    | [
+        {
+          coreCustomerId: string;
+          inheritParentContractPermissions: boolean;
+          permissionCodes?: string[] | null;
+          coreAccounts:
+            | [
+                {
+                  inheritContractCustomerPermissions: boolean;
+                  permissionCodes?: string[] | null;
+                  accountNumber: string;
+                }
+              ]
+            | null;
+        }
+      ]
+    | null;
+  permissions?: Permissions[];
 }
 
 interface ServiceDefinition {
@@ -786,7 +795,9 @@ interface ServiceDefinitionRole {
   id?: string;
   isDefault?: boolean;
   serviceDefinition: ServiceDefinition;
-  role?: Role;
+  permissions?: Permission[];
+  roleName: string,
+  roleDescription: string,
 }
 
 interface PermissionGroup {
@@ -833,6 +844,7 @@ interface ContractUser {
   isPrimaryUser?: boolean;
   contract?: Contract;
   user?: User;
+  customer?: Customer
   serviceDefinitionRole?: ServiceDefinitionRole;
 }
 

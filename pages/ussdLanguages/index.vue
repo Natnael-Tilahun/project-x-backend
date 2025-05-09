@@ -49,12 +49,14 @@ const refetch = async () => {
     v-else-if="data && !isError && !isLoading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <NuxtLink to="/ussdLanguages/new" class="w-fit self-end">
-      <UiButton class="w-fit self-end px-5"
-        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
-        >Create New USSD Language</UiButton
-      >
-    </NuxtLink>
+    <UiPermissionGuard permission="CREATE_USSD_LANGUAGES">
+      <NuxtLink to="/ussdLanguages/new" class="w-fit self-end">
+        <UiButton class="w-fit self-end px-5"
+          ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
+          >Create New USSD Language</UiButton
+        >
+      </NuxtLink>
+    </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <div class="flex items-center gap-4">
