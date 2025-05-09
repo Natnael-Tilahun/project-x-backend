@@ -1,40 +1,42 @@
 <script lang="ts" setup>
-const openItems = ref(["item-1"]);
-
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 
-const { getCoreAccountsByCustomerId, resetPin, isLoading } = useCustomers();
+const { resetPin, isLoading } = useCustomers();
 
 const loading = ref(isLoading.value);
 const isError = ref(false);
-const coreCustomerId = ref<string>();
-const pinReset = ref(false);
 const openEditModal = ref(false);
+const showSuccess = ref(false);
+const responseData = ref()
+const phoneNumber = ref("")
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const customerId = ref<string>();
-
 const props = defineProps<{
   customerId: string;
+  phone?: string
 }>();
 
-customerId.value = props.customerId;
+
+if(props.phone){
+phoneNumber.value = props.phone
+}
+
+
+
 const handlePinReset = async () => {
   try {
     loading.value = true;
-    if (customerId.value) {
-      const response = await resetPin(customerId.value); // Call your API function to fetch roles
-      console.log("response: ", response);
-      toast({
-        title: "Pin reset successful",
-        description: "The pin has been reset successfully.",
-      });
-    } else {
-      return true;
-    }
+    const response = await resetPin(props.customerId);
+    responseData.value = response
+    console.log("response: ", response);
+    showSuccess.value = true;
+    toast({
+      title: "PIN Reset Successful",
+      description: "A new PIN has been sent to the customer's phone number.",
+    });
   } catch (err: any) {
     console.error("Error resetting pin:", err);
     toast({
@@ -54,21 +56,34 @@ const handlePinReset = async () => {
 
 <template>
   <div class="flex flex-col space-y-8">
-    <div class="flex gap-8 items-center">
-      <div class="grid w-full max-w-sm items-center gap-2">
-        <UiLabel for="search" class="font-normal text-muted-foreground"
-          >Enter customer id</UiLabel
-        >
-        <div class="flex items-center gap-4">
-          <UiInput
-            id="search"
-            type="search"
-            placeholder="Enter customer id"
-            class="md:w-[100px] lg:w-[300px]"
-            v-model="customerId"
-          />
+    <UiCard v-if="!showSuccess" class="rounded-lg border  border bg-purple-50 text-card-foreground shadow-sm">
+      <div class="p-6 flex flex-col space-y-4">
+        <div class="flex items-center space-x-4">
+          <div class="p-2 bg-red-100 rounded-full">
+            <Icon name="heroicons:key" class="h-6 w-6 text-red-600" />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold">Reset Customer PIN</h3>
+            <p class="text-sm text-muted-foreground">
+              Reset the PIN for Phone Number: <strong>{{phoneNumber }} </strong> and Customer ID: <strong>{{ customerId }}</strong>
+            </p>
+          </div>
+        </div>
+        
+        <div class="bg-muted/50 p-4 rounded-md">
+          <p class="text-sm text-muted-foreground">
+            This operation will:
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li>Generate a new temporary PIN</li>
+              <li>Send the new PIN to the customer's registered phone number via SMS</li>
+              <li>Force the customer to change their PIN on their next login</li>
+            </ul>
+          </p>
+        </div>
+
+        <div class="flex justify-end">
           <UiButton
-            :disabled="customerId == '' || loading"
+            :disabled="loading"
             @click="setOpenEditModal(true)"
             class="w-fit whitespace-nowrap"
           >
@@ -76,12 +91,49 @@ const handlePinReset = async () => {
               name="svg-spinners:8-dots-rotate"
               v-if="loading"
               class="mr-2 h-4 w-4 animate-spin"
-            ></Icon>
-            Reset PIN</UiButton
-          >
+            />
+            Reset PIN
+          </UiButton>
         </div>
       </div>
-    </div>
+    </UiCard>
+
+    <!-- Success Message -->
+    <UiCard v-else class="rounded-lg border bg-green-50 text-green-900 shadow-sm">
+      <div class="p-6 flex flex-col space-y-4">
+        <div class="flex items-center space-x-4">
+          <div class="p-2 bg-green-100 rounded-full">
+            <Icon name="heroicons:check-circle" class="h-6 w-6 text-green-600" />
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold">PIN Reset Successful</h3>
+            <p class="text-sm text-green-700">
+              A new PIN has been sent to the customer's phone number: {{responseData.maskedIdentifier  }}
+            </p>
+          </div>
+        </div>
+        
+        <div class="bg-green-100/50 p-4 rounded-md">
+          <p class="text-sm text-green-700">
+            <strong>What happens next:</strong>
+            <ul class="list-disc list-inside mt-2 space-y-1">
+              <li>The customer will receive an SMS with their new temporary PIN</li>
+              <li>They will be required to change this PIN on their next login</li>
+              <li>The old PIN is no longer valid</li>
+            </ul>
+          </p>
+        </div>
+
+        <div class="flex justify-end">
+          <UiButton
+            @click="showSuccess = false"
+            class="w-fit whitespace-nowrap bg-green-600 hover:bg-green-700"
+          >
+            Send Another PIN Reset
+          </UiButton>
+        </div>
+      </div>
+    </UiCard>
   </div>
 
   <UiAlertDialog :open="openEditModal" :onOpenChange="setOpenEditModal">
@@ -89,8 +141,7 @@ const handlePinReset = async () => {
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
-          This action cannot be undone. This will permanently reset the pin for
-          the customer.
+          This action will send a new PIN to the customer's phone number and force them to change it on their next login.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>
@@ -107,7 +158,7 @@ const handlePinReset = async () => {
             v-if="loading"
             :disabled="loading"
             class="mr-2 h-4 w-4 animate-spin"
-          ></Icon>
+          />
           Continue
         </UiAlertDialogAction>
       </UiAlertDialogFooter>
