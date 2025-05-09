@@ -42,6 +42,7 @@ pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
 customerId.value = pathSegments.value[pathLength - 1];
 
+
 function splitPath(path: any) {
   return path.split("/").filter(Boolean);
 }
@@ -236,6 +237,8 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
     loading.value = false;
   }
 };
+
+
 </script>
 
 <template>
@@ -294,14 +297,6 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
             Link with core bank
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_CUSTOMER_ACCOUNTS" >
-          <UiTabsTrigger
-            value="manageAccounts"
-            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
-          >
-            Manage Account
-          </UiTabsTrigger>
-        </UiPermissionGuard>
         <UiPermissionGuard permission="RESET_CUSTOMER_PIN" >
           <UiTabsTrigger
             value="pinReset"
@@ -318,6 +313,14 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
             Devices
           </UiTabsTrigger>
           </UiPermissionGuard>
+               <!-- <UiPermissionGuard permission="VIEW_CUSTOMER_CONTRACTS" > -->
+                <UiTabsTrigger
+            value="contracts"
+            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+          >
+            Contracts
+          </UiTabsTrigger>
+          <!-- </UiPermissionGuard> -->
         </UiTabsList>
         
 
@@ -877,12 +880,8 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
           </div>
         </UiTabsContent>
 
-        <UiTabsContent value="manageAccounts" class="space-y-4 py-8">
-          <CustomersManageAccounts />
-        </UiTabsContent>
-
         <UiTabsContent value="pinReset" class="space-y-4 py-8">
-          <CustomersPinReset :customerId="customerId" />
+          <CustomersPinReset :phone="data?.phone" :customerId="customerId" />
         </UiTabsContent>
 
            <UiPermissionGuard permission="VIEW_CUSTOMER_DEVICES" >
@@ -890,6 +889,15 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
           <CustomersDevices />
         </UiTabsContent>
         </UiPermissionGuard>
+
+        <!-- <UiPermissionGuard permission="VIEW_CUSTOMER_CONTRACTS" > -->
+          <UiTabsContent value="contracts" class="space-y-4 py-8">
+          <!-- <UiCard class="flex justify-center items-center w-full p-6">
+       Customer Contracts
+          </UiCard> -->
+          <CustomersContracts :coreCustomerId="data?.coreCustomerId || ''" :customerId="customerId"  />
+        </UiTabsContent>
+        <!-- </UiPermissionGuard> -->
       </UiTabs>
     </UiCard>
   </div>

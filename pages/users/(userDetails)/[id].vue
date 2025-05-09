@@ -138,12 +138,6 @@ const handleUnlinkCoreBankCustomer = async () => {
             Profile
           </UiTabsTrigger>
           </UiPermissionGuard>
-          <UiTabsTrigger
-            value="devices"
-            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
-          >
-            Devices
-          </UiTabsTrigger>
           <UiPermissionGuard permission="RESET_USER_PIN" >
           <UiTabsTrigger
             value="pinReset"
@@ -152,14 +146,7 @@ const handleUnlinkCoreBankCustomer = async () => {
             PIN Reset
           </UiTabsTrigger>
           </UiPermissionGuard>
-          <!-- <UiPermissionGuard permission="VIEW_USER_CONTRACTS" > -->
-          <UiTabsTrigger
-            value="linkWithCoreBank"
-            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
-          >
-            Contracts
-          </UiTabsTrigger>
-          <!-- </UiPermissionGuard> -->
+   
         </UiTabsList>
 
         <UiPermissionGuard permission="VIEW_USER_PROFILE" >
@@ -416,19 +403,7 @@ const handleUnlinkCoreBankCustomer = async () => {
         </UiTabsContent>
         </UiPermissionGuard>
 
-        <!-- <UiPermissionGuard permission="VIEW_USER_CONTRACTS" > -->
-        <UiTabsContent value="linkWithCoreBank" class="space-y-4 py-8">
-          <UiCard class="flex justify-center items-center w-full p-6">
-       User Contracts
-          </UiCard>
-        </UiTabsContent>
-        <!-- </UiPermissionGuard> -->
 
-        <!-- <UiPermissionGuard permission="VIEW_USER_DEVICES" > -->
-        <UiTabsContent value="devices" class="space-y-4 py-8">
-          <UsersDevices />
-        </UiTabsContent>
-        <!-- </UiPermissionGuard> -->
 
         <UiPermissionGuard permission="RESET_USER_PIN" >
         <UiTabsContent value="pinReset" class="space-y-4 py-8">
