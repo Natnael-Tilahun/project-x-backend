@@ -86,6 +86,82 @@ export const useContracts = () => {
     }
   };
 
+  const getContractByCustomerId: (id: string) => Promise<Contract[]> = async (id) => {
+    try {
+      const { data, pending, error, status } = await useFetch<Contract[]>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contracts/customer/${id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No contract with this customer id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
+  const getContractByCoreCustomerId: (id: string) => Promise<Contract[]> = async (id) => {
+    try {
+      const { data, pending, error, status } = await useFetch<Contract[]>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contracts/coreCustomer/${id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No contract with this coreCustomer id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
+
+
   const createNewContract: (
     contractData: any
   ) => Promise<Contract> = async (contractData) => {
@@ -343,6 +419,8 @@ export const useContracts = () => {
     deleteContract,
     updateContract,
     updateContractPermissions,
+    getContractByCoreCustomerId,
+    getContractByCustomerId,
     isSubmitting,
   };
 };
