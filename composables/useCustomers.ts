@@ -1,6 +1,6 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { Customer } from "~/types";
+import type { Customer, Device, User } from "~/types";
 
 export const useCustomers = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -482,6 +482,165 @@ export const useCustomers = () => {
     }
   };
 
+  const getCustomerDevices: (
+    customerId: string
+  ) => Promise<Device[]> = async (customerId) => {
+    try {
+      const { data, pending, error, status } = await useFetch<Device[]>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/${customerId}/devices`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No devices with this customer id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
+  const getCustomerDevicesByDeviceId: (
+    customerId: string,
+    deviceId: string
+  ) => Promise<User> = async (customerId, deviceId) => {
+    try {
+      const { data, pending, error, status } = await useFetch<User>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/${customerId}/devices/${deviceId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No device with this customer id and device id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
+  const suspendCustomerDevicesByDeviceId: (
+    customerId: string,
+    deviceId: string
+  ) => Promise<User> = async (customerId, deviceId) => {
+    try {
+      const { data, pending, error, status } = await useFetch<User>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/${customerId}/devices/${deviceId}/suspend`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No device with this customer id and device id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
+  const restoreCustomerDevicesByDeviceId: (
+    customerId: string,
+    deviceId: string
+  ) => Promise<User> = async (customerId, deviceId) => {
+    try {
+      const { data, pending, error, status } = await useFetch<User>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/customers/${customerId}/devices/${deviceId}/restore`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No device with this customer id and device id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
   return {
     isLoading,
     getCustomers,
@@ -496,5 +655,9 @@ export const useCustomers = () => {
     createNeweCustomer,
     deleteCustomerById,
     searchCustomers,
+    getCustomerDevices,
+    getCustomerDevicesByDeviceId,
+    suspendCustomerDevicesByDeviceId,
+    restoreCustomerDevicesByDeviceId
   };
 };

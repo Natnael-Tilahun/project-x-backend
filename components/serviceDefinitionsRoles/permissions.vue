@@ -13,26 +13,28 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import type { Permission, ContractCoreCustomer } from "~/types";
+import type { Permission, ContractCoreCustomer, ServiceDefinition, ServiceDefinitionRole } from "~/types";
 import { getIdFromPath } from "~/lib/utils";
 
 const route = useRoute();
-const { updateContractCoreCustomerPermissions, isLoading, isSubmitting } =
-  useContractsCoreCustomers();
+const { updateServiceDefinitionRolePermissions, isLoading, isSubmitting } =
+  useServiceDefinitionsRoles();
 
 const contractId = ref<string>("");
 contractId.value = getIdFromPath();
 
-const contractCoreCustomerId = ref<string>("");
-contractCoreCustomerId.value = route.query.coreCustomerId as string;
+const serviceDefinitionRoleId = ref<string>("");
+serviceDefinitionRoleId.value = route.query.serviceDefinitionRoleId as string;
 
 const selectedPermissions = ref<Permission[]>([]);
 const permissionsData = ref<Permission[]>([]);
 const isError = ref(false);
-const data = ref<ContractCoreCustomer>();
+const data = ref<ServiceDefinitionRole>();
+const serviceDefinition = ref<ServiceDefinition>()
 
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
+
 
 // Add computed property to check if all permissions are selected
 const allSelected = computed(() => {
@@ -54,20 +56,22 @@ const deselectAll = () => {
 };
 
 const props = defineProps<{
-  contractCoreCustomerProps?: ContractCoreCustomer;
+  serviceDefinitionsProps?: ServiceDefinition;
   permissionsData?: Permission[];
 }>();
 
+
 const emit = defineEmits(["refresh"]);
 
-if (props?.contractCoreCustomerProps) {
-  data.value = props?.contractCoreCustomerProps;
-  selectedPermissions.value = data.value?.permissions || [];
+if (props?.serviceDefinitionsProps) {
+  serviceDefinition.value = props?.serviceDefinitionsProps;
+  permissionsData.value = serviceDefinition.value?.permissions || [];
 }
 
 if (props?.permissionsData) {
-  permissionsData.value = props?.permissionsData;
+  selectedPermissions.value = props?.permissionsData;
 }
+
 
 const form = useForm({
   validationSchema: "",
@@ -82,8 +86,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         (permission: any) => permission.code
       ),
     };
-    data.value = await updateContractCoreCustomerPermissions(
-      contractCoreCustomerId.value,
+    data.value = await updateServiceDefinitionRolePermissions(
+      serviceDefinitionRoleId.value,
       newValues
     );
     toast({
@@ -105,7 +109,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   <UiSheet class="flex flex-col gap-6 items-center">
     <UiSheetHeader>
       <UiSheetTitle class="border-b-2"
-        >Contract Core Customer Permissions</UiSheetTitle
+        >Service Definition Role Permissions</UiSheetTitle
       >
       <UiSheetDescription class="py-4 space-y-4">
         <div v-if="loading" class="py-10 flex justify-center w-full">
@@ -190,7 +194,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 </FormItem>
               </FormField>
               <UiPermissionGuard
-                permission="UPDATE_CONTRACT_CORE_CUSTOMER_PERMISSIONS"
+                permission="UPDATE_SERVICE_DEFINITION_ROLES"
               >
                 <div class="col-span-full w-full py-4 flex justify-between">
                   <UiButton
@@ -221,7 +225,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           "
         >
           <UiNoResultFound
-            title="Sorry, No core customer level permissions found."
+            title="Sorry, No service definition role permission found."
           />
         </div>
         <div v-else-if="isError">

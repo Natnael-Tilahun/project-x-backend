@@ -178,9 +178,12 @@ const updatingUssdLocalizedDefaultMessageStatus = async (
           <FormItem
             class="flex flex-row items-end justify-between self-end rounded-xl border pb-2 px-4 w-fit gap-10"
           >
-            <FormLabel class="text-base"> Status </FormLabel>
+            <FormLabel class="text-base"> Statusd </FormLabel>
             <FormControl>
               <UiSwitch
+                :disabled="
+                  !useHasPermissions('UPDATE_USSD_LOCALIZED_DEFAULT_MESSAGES')
+                "
                 :checked="value"
                 class="self-center"
                 @update:checked="
@@ -297,25 +300,29 @@ const updatingUssdLocalizedDefaultMessageStatus = async (
               </FormItem>
             </FormField> -->
 
-          <div class="col-span-full w-full py-4 flex justify-between">
-            <UiButton
-              :disabled="submitting"
-              variant="outline"
-              type="button"
-              @click="$router.go(-1)"
-            >
-              Cancel
-            </UiButton>
-            <UiButton :disabled="submitting" type="submit">
-              <Icon
-                name="svg-spinners:8-dots-rotate"
-                v-if="submitting"
-                class="mr-2 h-4 w-4 animate-spin"
-              ></Icon>
+          <UiPermissionGuard
+            permission="UPDATE_USSD_LOCALIZED_DEFAULT_MESSAGES"
+          >
+            <div class="col-span-full w-full py-4 flex justify-between">
+              <UiButton
+                :disabled="submitting"
+                variant="outline"
+                type="button"
+                @click="$router.go(-1)"
+              >
+                Cancel
+              </UiButton>
+              <UiButton :disabled="submitting" type="submit">
+                <Icon
+                  name="svg-spinners:8-dots-rotate"
+                  v-if="submitting"
+                  class="mr-2 h-4 w-4 animate-spin"
+                ></Icon>
 
-              Update
-            </UiButton>
-          </div>
+                Update
+              </UiButton>
+            </div>
+          </UiPermissionGuard>
         </div>
       </form>
     </UiCard>

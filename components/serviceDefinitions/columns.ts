@@ -172,10 +172,10 @@ export const columns: ColumnDef<ServiceDefinition>[] = [
       const status = row.getValue("status");
       return status
         ? h(
-            "div",
+            Badge,
             {
               class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+                `max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium ${status == "ACTIVE" ? "bg-green-500": "bg-red-500"}`,
             },
             row.getValue("status")
           )

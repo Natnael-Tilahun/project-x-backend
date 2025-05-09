@@ -49,7 +49,9 @@ export const useContractsUsers = () => {
     }
   };
 
-  const getContractUserById: (contractUserId: string) => Promise<ContractUser> = async (contractUserId) => {
+  const getContractUserById: (
+    contractUserId: string
+  ) => Promise<ContractUser> = async (contractUserId) => {
     try {
       const { data, pending, error, status } = await useFetch<ContractUser>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-users/${contractUserId}`,
@@ -86,7 +88,9 @@ export const useContractsUsers = () => {
     }
   };
 
-  const getContractUserByContractId: (contractId: string) => Promise<ContractUser[]> = async (contractId) => {
+  const getContractUserByContractId: (
+    contractId: string
+  ) => Promise<ContractUser[]> = async (contractId) => {
     try {
       const { data, pending, error, status } = await useFetch<ContractUser[]>(
         `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contracts/${contractId}/contract-users`,
@@ -123,12 +127,13 @@ export const useContractsUsers = () => {
     }
   };
 
-  const createNewContractUser: (
+  const createNewContractForExistingUser: (
+    contractId: string,
     contractUserData: any
-  ) => Promise<ContractUser> = async (contractUserData) => {
+  ) => Promise<ContractUser> = async (contractId, contractUserData) => {
     try {
       const { data, pending, error, status } = await useFetch<ContractUser>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-users`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contracts/${contractId}/contract-users/add-existing`,
         {
           method: "POST",
           headers: {
@@ -150,7 +155,10 @@ export const useContractsUsers = () => {
           variant: "destructive",
         });
 
-        console.log("Creating new contract user error: ", error.value?.data.detail);
+        console.log(
+          "Creating new contract user error: ",
+          error.value?.data.detail
+        );
 
         if (error.value?.data?.type == "/constraint-violation") {
           console.log(
@@ -177,8 +185,66 @@ export const useContractsUsers = () => {
     }
   };
 
+  const createNewContractForNewUser: (
+    contractId: string,
+    contractUserData: any
+  ) => Promise<ContractUser> = async (contractId, contractUserData) => {
+    try {
+      const { data, pending, error, status } = await useFetch<ContractUser>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contracts/${contractId}/contract-users/create-new`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+          body: JSON.stringify(contractUserData),
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message || error.value?.data?.detail,
+          variant: "destructive",
+        });
+
+        console.log(
+          "Creating new contract and new user error: ",
+          error.value?.data.detail
+        );
+
+        if (error.value?.data?.type == "/constraint-violation") {
+          console.log(
+            "Creating new contract user error: ",
+            error.value?.data?.fieldErrors[0].message
+          );
+        } else {
+          console.log(
+            "Creating new contract and new user errorrr: ",
+            error.value?.data?.message
+          );
+        }
+        throw new Error(error.value?.data.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No contract user with this contract user id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
   const updateContractUser: (
-      contractUserId: string,
+    contractUserId: string,
     contractUserData: any
   ) => Promise<ContractUser> = async (contractUserId, contractUserData) => {
     try {
@@ -245,7 +311,10 @@ export const useContractsUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        console.log("Deleting contract user error: ", error.value?.data?.message);
+        console.log(
+          "Deleting contract user error: ",
+          error.value?.data?.message
+        );
         toast({
           title: error.value?.data?.type || "Something went wrong!",
           description:
@@ -324,12 +393,11 @@ export const useContractsUsers = () => {
     getContractUsers,
     getContractUserById,
     getContractUserByContractId,
-    createNewContractUser,
+    createNewContractForNewUser,
     deleteContractUser,
     updateContractUser,
     addUserAccounts,
+    createNewContractForExistingUser,
     isSubmitting,
   };
 };
-
-

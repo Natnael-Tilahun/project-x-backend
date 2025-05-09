@@ -67,16 +67,17 @@ export const columns: ColumnDef<Contract>[] = [
     accessorKey: "serviceDefinition",
     header: "Service Definition",
     cell: ({ row }) => {
-      const serviceDefinition = row.getValue("serviceDefinition")?.name;
+      const serviceDefinition = row.getValue("serviceDefinition")?.id;
       return serviceDefinition
         ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            row.getValue("serviceDefinition")?.name
-          )
+          NuxtLink,
+          {
+            class:
+              "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+            to: `serviceDefinitions/${serviceDefinition}`,
+          },
+          "View Service Definition"
+        )
         : h("p", "-");
     },
   },

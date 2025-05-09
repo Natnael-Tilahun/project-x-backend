@@ -29,7 +29,7 @@ const props = defineProps<{
 
 if(props.contractProps){
   contractData.value = props.contractProps;
-  permissionsData.value =contractData.value?.permissions as Permission[];
+  permissionsData.value =contractData.value?.permissions as Permission[] ;
 }
 
 
@@ -44,7 +44,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     const newValues = {
         "coreCustomers": [
             {
-            "coreCustomerId": values.coreCustomerId
+            ...values,
+            "permissionCodes": selectedPermissions.value,
+            "coreCustomerId": values.coreCustomerId,
             }
         ]
     }
@@ -103,10 +105,22 @@ onBeforeUnmount(() => {
               </FormItem>
             </FormField>
 
+            <FormField v-slot="{ value, handleChange }" name="inheritParentContractPermissions">
+              <FormItem
+                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
+              >
+                <FormLabel class="text-base"> Inherit Parent Contract Permissions </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value" @update:checked="handleChange" />
+                </FormControl>
+              </FormItem>
+            </FormField>
+
             <FormField
+            v-if="!form.values.inheritParentContractPermissions"
               :model-value="data?.permissions"
               v-slot="{ componentField, errorMessage }"
-              name="permissions"
+              name="permissionCodes"
             >
               <FormItem>
                 <FormLabel>Select Permissions</FormLabel>
@@ -126,7 +140,7 @@ onBeforeUnmount(() => {
                           selectedPermissions?.length
                             ? selectedPermissions
                                 .map(
-                                  (permission: Permission) => permission.code
+                                  (permission: Permission) => permission
                                 )
                                 .join(", ")
                             : "Select permissions"
@@ -152,17 +166,17 @@ onBeforeUnmount(() => {
                               () => {
                                 const isSelected =
                                   selectedPermissions.some(
-                                    (selected: Permission) => selected.code === permission.code
+                                    (selected: Permission) => selected === permission.code
                                   );
 
                                 if (isSelected) {
                                   selectedPermissions =
                                       selectedPermissions.filter(
                                       (selected: Permission) =>
-                                        selected.code !== permission.code
+                                        selected !== permission.code
                                     );
                                 } else {
-                                  selectedPermissions.push(permission);
+                                  selectedPermissions.push(permission.code);
                                 }
 
                                 form.setFieldValue(
@@ -178,7 +192,7 @@ onBeforeUnmount(() => {
                             <UiCheckbox
                               :checked="
                                 selectedPermissions.some(
-                                  (selected: Permission) => selected.code === permission.code
+                                  (selected: Permission) => selected === permission.code
                                 )
                               "
                               class="ml-auto"
@@ -194,11 +208,11 @@ onBeforeUnmount(() => {
             </FormField>
       
 
-            <FormField v-slot="{ value, handleChange }" name="enable">
+            <FormField v-slot="{ value, handleChange }" name="primaryCoreCustomer">
               <FormItem
-                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
+                class="flex flex-row items-center justify-between rounded-lg border px-4 py-2 w-full"
               >
-                <FormLabel class="text-base"> Enable </FormLabel>
+                <FormLabel class="text-base"> Primary Core Customer </FormLabel>
                 <FormControl>
                   <UiSwitch :checked="value" @update:checked="handleChange" />
                 </FormControl>

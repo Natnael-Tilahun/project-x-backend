@@ -16,7 +16,8 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { ServiceDefinition, Permission } from "~/types";
 
 const route = useRoute();
-const { updateServiceDefinition, isLoading, isSubmitting } = useServiceDefinitions();
+const { updateServiceDefinition, isLoading, isSubmitting } =
+  useServiceDefinitions();
 const { getPermissions } = usePermissions();
 
 const pathSegments = ref([]);
@@ -49,7 +50,7 @@ if (props?.serviceDefinitionProps) {
 }
 
 const form = useForm({
-  validationSchema: '',
+  validationSchema: "",
 });
 
 const onSubmit = form.handleSubmit(async (values: any) => {
@@ -58,9 +59,12 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     const newValues = {
       ...data.value,
-      permissions: selectedPermissions.value
-    }
-    data.value = await updateServiceDefinition(serviceDefinitionId.value, newValues);
+      permissions: selectedPermissions.value,
+    };
+    data.value = await updateServiceDefinition(
+      serviceDefinitionId.value,
+      newValues
+    );
     toast({
       title: "Service Definition Permissions Updated",
       description: "Service Definition Permissions updated successfully",
@@ -76,17 +80,17 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
 const fetchData = async () => {
   try {
-  isLoading.value = true;
-  loading.value = true;
-  permissionsData.value = await getPermissions(0,100000);
-  console.log("permissionsData.value: ", permissionsData.value);
-} catch (err) {
-  console.error("Error fetching permissions:", err);
-  isError.value = true;
-} finally {
-  isLoading.value = false;
-  loading.value = false;
-}
+    isLoading.value = true;
+    loading.value = true;
+    permissionsData.value = await getPermissions(0, 100000);
+    console.log("permissionsData.value: ", permissionsData.value);
+  } catch (err) {
+    console.error("Error fetching permissions:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
 };
 
 await useAsyncData("permissionsData", async () => {
@@ -95,9 +99,10 @@ await useAsyncData("permissionsData", async () => {
 
 // Add computed property to check if all permissions are selected
 const allSelected = computed(() => {
-  if (!permissionsData.value || permissionsData.value.length === 0) return false;
-  return permissionsData.value.every(permission => 
-    selectedPermissions.value.some(p => p.code === permission.code)
+  if (!permissionsData.value || permissionsData.value.length === 0)
+    return false;
+  return permissionsData.value.every((permission) =>
+    selectedPermissions.value.some((p) => p.code === permission.code)
   );
 });
 
@@ -119,26 +124,27 @@ const deselectAll = () => {
     </div>
     <UiCard v-else-if="permissionsData && !isError" class="w-full p-6">
       <form @submit="onSubmit">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <div class="col-span-full flex justify-between items-center mb-4">
             <p class="font-medium">Available Permissions</p>
             <div class="flex items-center gap-2">
               <p class="text-sm text-muted-foreground">
-                {{ selectedPermissions.length }} of {{ permissionsData.length }} selected
+                {{ selectedPermissions.length }} of
+                {{ permissionsData.length }} selected
               </p>
               <div class="flex gap-2">
-                <UiButton 
-                  variant="outline" 
-                  size="sm" 
+                <UiButton
+                  variant="outline"
+                  size="sm"
                   @click="selectAll"
                   :disabled="allSelected"
                   type="button"
                 >
                   Select All
                 </UiButton>
-                <UiButton 
-                  variant="outline" 
-                  size="sm" 
+                <UiButton
+                  variant="outline"
+                  size="sm"
                   @click="deselectAll"
                   :disabled="selectedPermissions.length === 0"
                   type="button"
@@ -148,52 +154,64 @@ const deselectAll = () => {
               </div>
             </div>
           </div>
-          
+
           <FormField
             v-for="permission in permissionsData"
             :key="permission.code"
-            :model-value="selectedPermissions.some(p => p.code === permission.code)"
+            :model-value="
+              selectedPermissions.some((p) => p.code === permission.code)
+            "
             v-slot="{ handleChange }"
             name="permissions"
           >
-            <FormItem class="flex items-start space-x-3 space-y-0 p-2 rounded-md hover:bg-muted/50">
+            <FormItem
+              class="flex items-start space-x-3 space-y-0 p-2 rounded-md hover:bg-muted/50"
+            >
               <FormControl>
                 <UiCheckbox
                   class="order-first self-center"
-                  :checked="selectedPermissions.some(p => p.code === permission.code)"
-                  @update:checked="(checked) => {
-                    if (checked) {
-                      selectedPermissions.push(permission);
-                    } else {
-                      selectedPermissions = selectedPermissions.filter(p => p.code !== permission.code);
+                  :checked="
+                    selectedPermissions.some((p) => p.code === permission.code)
+                  "
+                  @update:checked="
+                    (checked) => {
+                      if (checked) {
+                        selectedPermissions.push(permission);
+                      } else {
+                        selectedPermissions = selectedPermissions.filter(
+                          (p) => p.code !== permission.code
+                        );
+                      }
                     }
-                  }"
+                  "
                 />
               </FormControl>
-              <FormLabel class="font-normal text-sm"> {{ permission.code }} </FormLabel>
+              <FormLabel class="font-normal text-sm">
+                {{ permission.code }}
+              </FormLabel>
               <FormMessage />
             </FormItem>
           </FormField>
-          <UiPermissionGuard permission="UPDATE_SERVICE_DEFINITION_PERMISSIONS" >
-          <div class="col-span-full w-full py-4 flex justify-between">
-            <UiButton
-              :disabled="submitting"
-              variant="outline"
-              type="button"
-              @click="$router.go(-1)"
-            >
-              Cancel
-            </UiButton>
-            <UiButton :disabled="submitting" type="submit">
-              <Icon
-                name="svg-spinners:8-dots-rotate"
-                v-if="submitting"
-                class="mr-2 h-4 w-4 animate-spin"
-              ></Icon>
+          <UiPermissionGuard permission="UPDATE_SERVICE_DEFINITION_PERMISSIONS">
+            <div class="col-span-full w-full py-4 flex justify-between">
+              <UiButton
+                :disabled="submitting"
+                variant="outline"
+                type="button"
+                @click="$router.go(-1)"
+              >
+                Cancel
+              </UiButton>
+              <UiButton :disabled="submitting" type="submit">
+                <Icon
+                  name="svg-spinners:8-dots-rotate"
+                  v-if="submitting"
+                  class="mr-2 h-4 w-4 animate-spin"
+                ></Icon>
 
-              Update
-            </UiButton>
-          </div>
+                Update
+              </UiButton>
+            </div>
           </UiPermissionGuard>
         </div>
       </form>

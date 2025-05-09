@@ -70,7 +70,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     };
     data.value = await updateContractAccountsPermissions(
       contractAccountId.value,
-      newValues,
+      newValues
     );
     selectedPermissions.value = data.value?.permissions || [];
     emit("refresh");
@@ -89,9 +89,10 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
 // Add computed property to check if all permissions are selected
 const allSelected = computed(() => {
-  if (!permissionsData.value || permissionsData.value.length === 0) return false;
-  return permissionsData.value.every(permission => 
-    selectedPermissions.value.some(p => p.code === permission.code)
+  if (!permissionsData.value || permissionsData.value.length === 0)
+    return false;
+  return permissionsData.value.every((permission) =>
+    selectedPermissions.value.some((p) => p.code === permission.code)
   );
 });
 
@@ -116,28 +117,34 @@ const deselectAll = () => {
         <div v-if="loading" class="py-10 flex justify-center w-full">
           <UiLoading />
         </div>
-        <UiCard v-else-if="permissionsData && permissionsData.length > 0 && !isError" class="w-full p-6">
+        <UiCard
+          v-else-if="permissionsData && permissionsData.length > 0 && !isError"
+          class="w-full p-6"
+        >
           <form @submit="onSubmit">
-            <div class="grid grid-cols-2 lg:grid-cols-5 gap-6">
+            <div
+              class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+            >
               <div class="col-span-full flex justify-between items-center mb-4">
                 <p class="font-medium">Available Permissions</p>
                 <div class="flex items-center gap-2">
                   <p class="text-sm text-muted-foreground">
-                    {{ selectedPermissions.length }} of {{ permissionsData.length }} selected
+                    {{ selectedPermissions.length }} of
+                    {{ permissionsData.length }} selected
                   </p>
                   <div class="flex gap-2">
-                    <UiButton 
-                      variant="outline" 
-                      size="sm" 
+                    <UiButton
+                      variant="outline"
+                      size="sm"
                       @click="selectAll"
                       :disabled="allSelected"
                       type="button"
                     >
                       Select All
                     </UiButton>
-                    <UiButton 
-                      variant="outline" 
-                      size="sm" 
+                    <UiButton
+                      variant="outline"
+                      size="sm"
                       @click="deselectAll"
                       :disabled="selectedPermissions.length === 0"
                       type="button"
@@ -156,7 +163,9 @@ const deselectAll = () => {
                 v-slot="{ handleChange }"
                 name="permissions"
               >
-                <FormItem class="flex items-start space-x-3 space-y-0 p-2 rounded-md hover:bg-muted/50">
+                <FormItem
+                  class="flex items-start space-x-3 space-y-0 p-2 rounded-md hover:bg-muted/50"
+                >
                   <FormControl>
                     <UiCheckbox
                       :checked="
@@ -177,30 +186,34 @@ const deselectAll = () => {
                       "
                     />
                   </FormControl>
-                  <FormLabel class="font-normal text-sm"> {{ permission.code }} </FormLabel>
+                  <FormLabel class="font-normal text-sm">
+                    {{ permission.code }}
+                  </FormLabel>
                   <FormMessage />
                 </FormItem>
               </FormField>
-              <UiPermissionGuard permission="UPDATE_CONTRACT_ACCOUNTS_PERMISSIONS" >
-              <div class="col-span-full w-full py-4 flex justify-between">
-                <UiButton
-                  :disabled="submitting"
-                  variant="outline"
-                  type="button"
-                  @click="$router.go(-1)"
-                >
-                  Cancel
-                </UiButton>
-                <UiButton :disabled="submitting" type="submit">
-                  <Icon
-                    name="svg-spinners:8-dots-rotate"
-                    v-if="submitting"
-                    class="mr-2 h-4 w-4 animate-spin"
-                  ></Icon>
+              <UiPermissionGuard
+                permission="UPDATE_CONTRACT_ACCOUNTS_PERMISSIONS"
+              >
+                <div class="col-span-full w-full py-4 flex justify-between">
+                  <UiButton
+                    :disabled="submitting"
+                    variant="outline"
+                    type="button"
+                    @click="$router.go(-1)"
+                  >
+                    Cancel
+                  </UiButton>
+                  <UiButton :disabled="submitting" type="submit">
+                    <Icon
+                      name="svg-spinners:8-dots-rotate"
+                      v-if="submitting"
+                      class="mr-2 h-4 w-4 animate-spin"
+                    ></Icon>
 
-                  Update
-                </UiButton>
-              </div>
+                    Update
+                  </UiButton>
+                </div>
               </UiPermissionGuard>
             </div>
           </form>

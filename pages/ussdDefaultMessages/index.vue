@@ -48,12 +48,14 @@ const refetch = async () => {
     v-else-if="data && !isError && !isLoading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <NuxtLink to="/ussdDefaultMessages/new" class="w-fit self-end">
-      <UiButton class="w-fit self-end px-5"
-        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
-        >Create New Default Message</UiButton
-      >
-    </NuxtLink>
+    <UiPermissionGuard permission="CREATE_USSD_DEFAULT_MESSAGES">
+      <NuxtLink to="/ussdDefaultMessages/new" class="w-fit self-end">
+        <UiButton class="w-fit self-end px-5"
+          ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
+          >Create New Default Message</UiButton
+        >
+      </NuxtLink>
+    </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <div class="flex items-center gap-4">

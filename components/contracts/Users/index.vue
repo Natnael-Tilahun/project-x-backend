@@ -5,7 +5,8 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { getIdFromPath } from "~/lib/utils";
 import type { ContractCoreCustomer, Contract, ContractUser } from "~/types";
 
-const { getContractUserById, getContractUserByContractId, isLoading } = useContractsUsers();
+const { getContractUserById, getContractUserByContractId, isLoading } =
+  useContractsUsers();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<ContractUser[]>([]);
@@ -63,25 +64,26 @@ const searchHandler = async () => {
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
     <!-- <NuxtLink to="/contracts/newCoreCustomer" class="w-fit self-end"> -->
-      <UiPermissionGuard permission="CREATE_CONTRACT_USERS" >
-      <UiButton   
-      @click="
-            navigateTo({
-              path: route.path,
-              query: {
-                activeTab: 'newUser',
-              },
-            })"
-             class="w-fit self-end px-5"
-          ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
-          Contract User</UiButton
+    <UiPermissionGuard permission="CREATE_CONTRACT_USERS">
+      <UiButton
+        @click="
+          navigateTo({
+            path: route.path,
+            query: {
+              activeTab: 'newUser',
+            },
+          })
+        "
+        class="w-fit self-end px-5"
+        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
+        Contract User</UiButton
       >
-      </UiPermissionGuard>
+    </UiPermissionGuard>
     <!-- </NuxtLink> -->
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <!-- <CustomersDataTableSearchbar :table="table" /> -->
-        <div class="flex items-center gap-4">
+        <!-- <div class="flex items-center gap-4">
           <UiInput
             type="search"
             placeholder="Search by phone number or email"
@@ -96,7 +98,7 @@ const searchHandler = async () => {
             ></Icon>
             Search</UiButton
           >
-        </div>
+        </div> -->
       </template>
     </UiDataTable>
   </div>

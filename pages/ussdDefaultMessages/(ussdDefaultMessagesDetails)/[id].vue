@@ -14,8 +14,13 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { DefaultMessage } from "~/types";
 
 const route = useRoute();
-const { getUssdDefaultMessageById, updateUssdDefaultMessage, isLoading, isSubmitting, getUssdDefaultMessages } =
-  useUssdDefaultMessage();
+const {
+  getUssdDefaultMessageById,
+  updateUssdDefaultMessage,
+  isLoading,
+  isSubmitting,
+  getUssdDefaultMessages,
+} = useUssdDefaultMessage();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
 const ussdDefaultMessageId = ref<string>("");
@@ -40,10 +45,7 @@ try {
   isLoading.value = true;
   loading.value = true;
   data.value = await getUssdDefaultMessageById(ussdDefaultMessageId.value);
-  console.log(
-    "ussdDefaultMessage.value data: ",
-  data.value
-  );
+  console.log("ussdDefaultMessage.value data: ", data.value);
   form.setValues({
     id: data.value?.id,
     ...data.value,
@@ -61,8 +63,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = true;
     isSubmitting.value = true;
     const newValues = {
-        ...values,
-    }
+      ...values,
+    };
     console.log("newValues: ", newValues);
     data.value = await updateUssdDefaultMessage(values.id, newValues); // Call your API function to fetch profile
     navigateTo(`/ussdDefaultMessages/${data.value.id}`);
@@ -79,9 +81,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = false;
   }
 });
-
-
-
 </script>
 
 <template>
@@ -132,26 +131,28 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
-    
-          <div class="col-span-full w-full py-4 flex justify-between">
-            <UiButton
-              :disabled="submitting"
-              variant="outline"
-              type="button"
-              @click="$router.go(-1)"
-            >
-              Cancel
-            </UiButton>
-            <UiButton :disabled="submitting" type="submit">
-              <Icon
-                name="svg-spinners:8-dots-rotate"
-                v-if="submitting"
-                class="mr-2 h-4 w-4 animate-spin"
-              ></Icon>
 
-              Update
-            </UiButton>
-          </div>
+          <UiPermissionGuard permission="UPDATE_USSD_DEFAULT_MESSAGES">
+            <div class="col-span-full w-full py-4 flex justify-between">
+              <UiButton
+                :disabled="submitting"
+                variant="outline"
+                type="button"
+                @click="$router.go(-1)"
+              >
+                Cancel
+              </UiButton>
+              <UiButton :disabled="submitting" type="submit">
+                <Icon
+                  name="svg-spinners:8-dots-rotate"
+                  v-if="submitting"
+                  class="mr-2 h-4 w-4 animate-spin"
+                ></Icon>
+
+                Update
+              </UiButton>
+            </div>
+          </UiPermissionGuard>
         </div>
       </form>
     </UiCard>

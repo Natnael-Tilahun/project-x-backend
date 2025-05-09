@@ -5,8 +5,11 @@ export const newContractCoreCustomerFormSchema = toTypedSchema(
   z.object({
     id: z.string().optional().nullable(),
     coreCustomerStatus: z.boolean().optional().nullable(),
+    primaryCoreCustomer: z.boolean().optional().nullable().default(true),
+    inheritParentContractPermissions: z.boolean().optional().nullable().default(false),
     coreCustomerId: z.string(),
-    contract: z.any(),
-    permissions: z.array(z.any()).optional().nullable(),
+    contract: z.any().optional().nullable(),
+    permissionCodes: z.array(z.string()).optional().nullable(),
+    coreAccounts: z.array(z.string()).optional().nullable(),
   })
 );
