@@ -438,3 +438,15 @@ export enum LanguageRelatedStatus {
   VISIBLE = "Visible",
   DISABLE = "Disable",
 }
+
+export enum ChargeType {
+  CORE = "CORE",
+  CUSTOM = "CUSTOM",
+  NONE = "NONE",
+}
+
+export enum RuleType {
+  FIXED = "FIXED",
+  PERCENTAGE = "PERCENTAGE",
+  NONE = "NONE",
+}

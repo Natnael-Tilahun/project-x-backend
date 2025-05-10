@@ -22,7 +22,7 @@
     <ul class="flex flex-col gap-4 p-5">
       <template v-for="(link, index) in mainLinks" :key="index">
         <UiCollapsible
-          v-if="link.dropdown && link.dropdown.length > 0"
+          v-if="link.dropdown && hasVisibleDropdownItems(link)"
           class="w-full p-0 rounded-lg hover:bg-popover px-0 shadow-none group"
           type="single"
           v-model:open="isOpen[index]"
@@ -97,6 +97,8 @@
 
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
+import { useAuthStore } from "@/stores/auth"; // Add your auth store import
+const { hasPermissions } = useAuthStore();
 
 const mainLinks = [
   {
@@ -255,6 +257,14 @@ const mainLinks = [
     dropdown: [
       { title: "Contracts", link: "/contracts", permission: "VIEW_CONTRACTS" },
     ],
+  },
+  {
+    title: "Charges",
+    icon: "material-symbols:money-off",
+    link: "/charges",
+    size: "22",
+    permission: "VIEW_CHARGES",
+    showDropdown: true,
   },
   {
     title: "Service Management",
@@ -439,6 +449,13 @@ function isRouteActive(path: string) {
   // For other routes, keep the existing behavior
   return route.path.startsWith(path);
 }
+
+const authStore = useAuthStore();
+
+// Add this helper function
+const hasVisibleDropdownItems = (link) => {
+  return link.dropdown?.some((item) => hasPermissions(item?.permission));
+};
 </script>
 
 <style scoped>

@@ -1,4 +1,8 @@
-import { LanguageRelatedStatus, PaymentIntegrationType } from "@/global-types";
+import {
+  ChargeType,
+  LanguageRelatedStatus,
+  PaymentIntegrationType,
+} from "@/global-types";
 import { TransactionAmountType } from "@/global-types";
 import {
   Visibility,
@@ -45,6 +49,8 @@ import {
   DeviceType,
   Gender,
   PaymentCategory,
+  RuleType,
+  ChargeType,
 } from "@/global-types";
 
 interface User {
@@ -796,8 +802,8 @@ interface ServiceDefinitionRole {
   isDefault?: boolean;
   serviceDefinition: ServiceDefinition;
   permissions?: Permission[];
-  roleName: string,
-  roleDescription: string,
+  roleName: string;
+  roleDescription: string;
 }
 
 interface PermissionGroup {
@@ -844,7 +850,7 @@ interface ContractUser {
   isPrimaryUser?: boolean;
   contract?: Contract;
   user?: User;
-  customer?: Customer
+  customer?: Customer;
   serviceDefinitionRole?: ServiceDefinitionRole;
 }
 
@@ -943,4 +949,26 @@ interface LocalizedUssdMenu {
   status: LanguageRelatedStatus;
   language: UssdLanguage;
   defaultMenu: DefaultMessage;
+}
+
+interface Charge {
+  id?: number;
+  chargeId?: string;
+  type: ChargeType;
+  description: string;
+  shortDescription: string;
+  categoryAccount?: string;
+  isActive: boolean;
+  rules?: ChargeRule[] | null;
+}
+
+interface ChargeRule {
+  id?: number;
+  ruleType: RuleType;
+  amountRangeStart?: number;
+  amountRangeEnd?: number;
+  fixedAmount?: number;
+  percentage?: number;
+  priority: number;
+  charge?: Charge | null;
 }
