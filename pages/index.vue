@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DashboardDateRangePicker from "~/components/dashboard/DateRangePicker.vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import type { Customer, Integration, Merchant, Role } from "~/types";
 
 const { hasPermissions } = useAuthStore();
 console.log("hjkjk: ", hasPermissions("BYPASS_TWOFACTOR"));
