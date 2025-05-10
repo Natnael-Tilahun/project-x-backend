@@ -1,5 +1,6 @@
 import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
+import type { Application } from "~/types";
 
 export const useApplications = () => {
   const runtimeConfig = useRuntimeConfig();
