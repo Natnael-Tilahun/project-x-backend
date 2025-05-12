@@ -240,11 +240,12 @@ watch(
     <UiPermissionGuard permission="VIEW_STAFF_ASSIGNMENTS" >
     <UiTabsContent
         value="staffAssignments"
-        class="text-base bg-background rounded-lg"
+        class="text-base bg-background rounded-lg p-6"
       >
-      <UiCard class="w-full p-6">
+      <!-- <UiCard class="w-full p-6">
         Staff Assignments
-      </UiCard>
+      </UiCard> -->
+      <StaffsAssignments />
     </UiTabsContent>
     </UiPermissionGuard>
     </UiTabs>

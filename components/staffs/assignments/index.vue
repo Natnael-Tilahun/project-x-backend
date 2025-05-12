@@ -1,20 +1,25 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/staffAssignments/columns";
+import { columns } from "~/components/staffs/assignments/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { StaffAssignment } from "~/types";
+import { getIdFromPath } from "~/lib/utils";
 
-const { getStaffAssignments, getStaffAssignmentById, isLoading } = useStaffAssignments();
+const { getStaffAssignments, getStaffAssignmentById,getStaffAssignmentByStaffId, isLoading } = useStaffAssignments();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<StaffAssignment[]>([]);
 const keyword = ref<string>("");
+const staffId = ref<string>("")
+
+staffId.value = getIdFromPath()
+console.log("staff id: ", staffId.value)
 
 const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    const staffAssignments = await getStaffAssignments(0, 100000000);
+    const staffAssignments = await getStaffAssignmentByStaffId(staffId.value);
     // Sort integrations by name alphabetically
     data.value = staffAssignments.sort((a:StaffAssignment, b:StaffAssignment) => {
       if (a?.staff?.firstname && b?.staff?.firstname) {
@@ -39,19 +44,6 @@ await useAsyncData("staffsData", async () => {
   await fetchData();
 });
 
-const searchHandler = async () => {
-  try {
-    isLoading.value = true;
-    loading.value = true;
-    data.value[0] = await getStaffAssignmentById(keyword.value); // Call your API function to fetch roles
-  } catch (err: any) {
-    console.error("Error fetching staff assignments:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-    loading.value = false;
-  }
-};
 </script>
 
 <!-- Render DataTable only if data is available -->
@@ -73,23 +65,6 @@ const searchHandler = async () => {
     </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
-        <!-- <CustomersDataTableSearchbar :table="table" /> -->
-        <div class="flex items-center gap-4">
-          <UiInput
-            type="search"
-            placeholder="Search by staff id"
-            class="md:w-[100px] lg:w-[300px]"
-            v-model="keyword"
-          />
-          <UiButton @click="searchHandler">
-            <Icon
-              name="svg-spinners:8-dots-rotate"
-              v-if="isLoading"
-              class="mr-2 h-4 w-4 animate-spin"
-            ></Icon>
-            Search</UiButton
-          >
-        </div>
       </template>
     </UiDataTable>
   </div>

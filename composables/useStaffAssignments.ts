@@ -86,6 +86,43 @@ export const useStaffAssignments = () => {
     }
   };
 
+  const getStaffAssignmentByStaffId: (id: string) => Promise<StaffAssignment> = async (staffId) => {
+    try {
+      const { data, pending, error, status } = await useFetch<StaffAssignment>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/staff-assignments/staff/${staffId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No Staff Assignment with this staff id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
   const createNewStaffAssignment: (
     staffAssignmentData: any
   ) => Promise<StaffAssignment> = async (staffAssignmentData) => {
@@ -287,6 +324,7 @@ export const useStaffAssignments = () => {
     deleteStaffAssignment,
     updateStaffAssignment,
     staffAssign,
+    getStaffAssignmentByStaffId,
     isSubmitting,
   };
 };
