@@ -109,11 +109,10 @@ export const useStaffs = () => {
           description:
             error.value?.data?.type == "/constraint-violation"
               ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message || error.value?.data?.detail,
+              : error.value?.data?.detail || error.value?.data?.message,
           variant: "destructive",
         });
 
-        console.log("Creating new staff error: ", error.value?.data.detail);
 
         if (error.value?.data?.type == "/constraint-violation") {
           console.log(
@@ -123,7 +122,7 @@ export const useStaffs = () => {
         } else {
           console.log(
             "Creating new staff errorrr: ",
-            error.value?.data?.message
+            error.value?.data.detail
           );
         }
         throw new Error(error.value?.data.detail);

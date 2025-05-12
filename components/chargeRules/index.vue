@@ -5,7 +5,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { getIdFromPath, splitPath } from "~/lib/utils";
 import type { ChargeRule } from "~/types";
 
-const { getChargeById } = useCharges();
+const { getChargeById, getChargeRulesByChargeId } = useCharges();
 const { pageNumber } = usePagesInfoStore();
 
 const loading = ref(false);
@@ -20,8 +20,8 @@ const fetchData = async () => {
 
   try {
     loading.value = true;
-    const response = await getChargeById(chargeId.value);
-    data.value = response?.rules ?? [];
+    const response = await getChargeRulesByChargeId(chargeId.value);
+    data.value = response ||  [];
   } catch (err) {
     console.error("Error fetching charge rules:", err);
     isError.value = true;

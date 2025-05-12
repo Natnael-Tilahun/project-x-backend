@@ -39,7 +39,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     });
     navigateTo(`/staffs`);
   } catch (err: any) {
-    console.error("Error creating new staff:", err.message);
+    console.error("Error creating new staff:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;

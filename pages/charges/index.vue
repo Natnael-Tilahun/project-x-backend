@@ -87,12 +87,12 @@ await useAsyncData("chargesData", async () => {
         <div class="flex items-center justify-between">
           <div class="flex flex-1 items-center space-x-2">
             <UiInput
-              placeholder="Filter by charge Id"
-              :model-value="(table?.getColumn('chargeId')?.getFilterValue() as string) ?? ''"
+              placeholder="Filter by charge code"
+              :model-value="(table?.getColumn('chargeCode')?.getFilterValue() as string) ?? ''"
               class="h-8 w-[150px] lg:w-[250px]"
               @input="
                 table
-                  ?.getColumn('chargeId')
+                  ?.getColumn('chargeCode')
                   ?.setFilterValue($event.target.value)
               "
             />

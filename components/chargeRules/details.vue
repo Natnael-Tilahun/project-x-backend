@@ -14,7 +14,7 @@ import { RuleType } from "@/global-types";
 import { getIdFromPath } from "~/lib/utils";
 import type { ChargeRule } from "~/types";
 
-const { getChargeById, updateChargeRule } = await useCharges();
+const { getChargeRuleById, updateChargeRule } = await useCharges();
 
 const isError = ref(false);
 const loading = ref(false);
@@ -38,12 +38,14 @@ const form = useForm({
 const fetchChargeData = async () => {
   try {
     loading.value = true;
-
-    const response = await getChargeById(chargeId.value);
-    data.value = response?.rules?.find(
-      (rule: ChargeRule) => rule.id == chargeRuleId.value
-    );
-
+    if (chargeRuleId.value) {
+      const response = await getChargeRuleById(chargeRuleId.value);
+      console.log("respnse: ", response);
+      data.value = response;
+      // data.value = response?.find(
+      //   (rule: ChargeRule) => rule.id == chargeRuleId.value
+      // );
+    }
     if (data.value) {
       form.setValues(data.value);
     }
@@ -132,7 +134,10 @@ const onSubmit = form.handleSubmit(async (values: any) => {
             </FormField>
 
             <FormField
-              v-if="form.values.ruleType == RuleType.NONE"
+              v-if="
+                form.values.ruleType == RuleType.FIXED ||
+                form.values.ruleType == RuleType.PERCENTAGE
+              "
               v-slot="{ componentField }"
               name="amountRangeStart"
             >
@@ -150,7 +155,10 @@ const onSubmit = form.handleSubmit(async (values: any) => {
             </FormField>
 
             <FormField
-              v-if="form.values.ruleType == RuleType.NONE"
+              v-if="
+                form.values.ruleType == RuleType.FIXED ||
+                form.values.ruleType == RuleType.PERCENTAGE
+              "
               v-slot="{ componentField }"
               name="amountRangeEnd"
             >
