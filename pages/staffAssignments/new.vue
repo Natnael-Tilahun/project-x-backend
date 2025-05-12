@@ -32,12 +32,10 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     isSubmitting.value = true;
     isLoading.value = true;
-    console.log("values: ", values);
     const newValues = {
       ...values,
-      supervisor: values.supervisor?.id ? values.supervisor : null,
-      startDate: new Date(values.startDate).toISOString(),
-      endDate: values.endDate ? new Date(values.endDate).toISOString() : null,
+      assignmentDate: new Date(values.assignmentDate).toISOString(),
+      // endDate: values.endDate ? new Date(values.endDate).toISOString() : null,
     };
     console.log("newValues: ", newValues);
     const response = await createNewStaffAssignment(newValues); // Call your API function to fetch profile
@@ -100,7 +98,7 @@ onMounted(() => {
       <div value="roleDetails" class="text-sm md:text-base p-6 basis-full">
         <form @submit="onSubmit">
           <div class="grid grid-cols-2 gap-6">
-            <FormField v-slot="{ componentField }" name="staff.id">
+            <FormField v-slot="{ componentField }" name="staffId">
               <FormItem class="w-full">
                 <FormLabel> Staff </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -111,7 +109,7 @@ onMounted(() => {
                   </FormControl>
                   <UiSelectContent>
                     <UiSelectGroup>
-                      <UiSelectItem v-for="item in staffs" :value="item.id">
+                      <UiSelectItem v-for="item in staffs" :value="item.id || ''">
                         {{ item.firstname }} {{ item.lastname }}
                       </UiSelectItem>
                     </UiSelectGroup>
@@ -121,7 +119,7 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="office.id">
+            <FormField v-slot="{ componentField }" name="newOfficeId">
               <FormItem class="w-full">
                 <FormLabel> Office </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -142,7 +140,7 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="role.name">
+            <FormField v-slot="{ componentField }" name="newRoleId">
               <FormItem class="w-full">
                 <FormLabel> Role </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -163,7 +161,7 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="supervisor.id">
+            <FormField v-slot="{ componentField }" name="supervisorStaffId">
               <FormItem class="w-full">
                 <FormLabel> Supervisor </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -174,7 +172,7 @@ onMounted(() => {
                   </FormControl>
                   <UiSelectContent>
                     <UiSelectGroup>
-                      <UiSelectItem v-for="item in staffs" :value="item.id">
+                      <UiSelectItem v-for="item in staffs" :value="item.id || ''">
                         {{ item.firstname }} {{ item.lastname }}
                       </UiSelectItem>
                     </UiSelectGroup>
@@ -184,32 +182,38 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="startDate">
+            <FormField v-slot="{ componentField }" name="assignmentDate">
               <FormItem>
-                <FormLabel> Start Date </FormLabel>
+                <FormLabel> Assignment Date </FormLabel>
                 <FormControl>
                   <UiInput
                     type="date"
-                    placeholder="Enter start date"
+                    placeholder="Enter assignment date"
                     v-bind="componentField"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="endDate">
-              <FormItem>
-                <FormLabel> End Date </FormLabel>
+
+
+            <FormField
+              v-slot="{ componentField }"
+              name="remarks"
+            >
+              <FormItem class="w-full">
+                <FormLabel> Remarks </FormLabel>
                 <FormControl>
                   <UiInput
-                    type="date"
-                    placeholder="Enter end date"
+                    type="number"
+                    placeholder="Enter remarks"
                     v-bind="componentField"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             </FormField>
+
 
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton

@@ -91,7 +91,7 @@ export const useStaffAssignments = () => {
   ) => Promise<StaffAssignment> = async (staffAssignmentData) => {
     try {
       const { data, pending, error, status } = await useFetch<StaffAssignment>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/staff-assignments`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/staff-assignments/assign`,
         {
           method: "POST",
           headers: {
