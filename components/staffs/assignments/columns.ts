@@ -1,6 +1,6 @@
 import type { ColumnDef } from "@tanstack/vue-table";
 
-import { Checkbox } from "../ui/checkbox";
+import { Checkbox } from "~/components/ui/checkbox";
 import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import StaffAssignmentsDataTableRowActionsVue from "./DataTableRowActions.vue";
@@ -37,7 +37,7 @@ export const columns: ColumnDef<StaffAssignment>[] = [
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}/${staffAssignmentId}`,
+              to: `/staffAssignments/${staffAssignmentId}`,
             },
             "View Details"
           )
@@ -56,7 +56,7 @@ export const columns: ColumnDef<StaffAssignment>[] = [
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `staffs/${staffId}`,
+              to: `/staffs/${staffId}`,
             },
             "View Staff"
           )
@@ -75,7 +75,7 @@ export const columns: ColumnDef<StaffAssignment>[] = [
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `offices/${officeId}`,
+              to: `/offices/${officeId}`,
             },
            "View Office"
           )
@@ -94,7 +94,7 @@ export const columns: ColumnDef<StaffAssignment>[] = [
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `userRoles/${roleName}`,
+              to: `/userRoles/${roleName}`,
             },
             row.getValue("role")?.name
           )
