@@ -40,11 +40,7 @@ const fetchChargeData = async () => {
     loading.value = true;
     if (chargeRuleId.value) {
       const response = await getChargeRuleById(chargeRuleId.value);
-      console.log("respnse: ", response);
       data.value = response;
-      // data.value = response?.find(
-      //   (rule: ChargeRule) => rule.id == chargeRuleId.value
-      // );
     }
     if (data.value) {
       form.setValues(data.value);

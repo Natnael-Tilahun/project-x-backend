@@ -50,9 +50,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     const newValues = {
       ...values,
-      supervisor: values.supervisor?.id ? values.supervisor : null,
-      startDate: new Date(values.startDate).toISOString(),
-      endDate: values.endDate ? new Date(values.endDate).toISOString() : null,
+      // supervisorId: values.supervisor?.id ? values.supervisor : null,
+      assignmentDate: new Date(values.assignmentDate).toISOString(),
     };
     data.value = await updateStaffAssignment(values.id, newValues); // Call your API function to fetch profile
     navigateTo(`/staffAssignments/${data.value.id}`);
@@ -80,12 +79,13 @@ const fetchStaffAssignmentData = async () => {
     roles.value = await getRoles();
   let a = {
     ...data.value,
-    startDate : data.value.startDate
+    staffId: data.value.staff.id,
+    newRoleId: data.value.role.name,
+    newOfficeId: data.value.office.id,
+    supervisorStaffId: data.value.supervisor?.id,
+    assignmentDate : data.value.startDate
         ? dateFormatter(data.value.startDate)
         : "",
-    endDate : data.value.endDate
-        ? dateFormatter(data.value.endDate)
-        : ""
   };
   form.setValues(a);
 } catch (err) {
@@ -128,7 +128,7 @@ onMounted(() => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="staff.id">
+          <FormField v-slot="{ componentField }" name="staffId">
               <FormItem class="w-full">
                 <FormLabel> Staff </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -149,7 +149,7 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="office.id">
+            <FormField v-slot="{ componentField }" name="newOfficeId">
               <FormItem class="w-full">
                 <FormLabel> Office </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -170,7 +170,7 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="role.name">
+            <FormField v-slot="{ componentField }" name="newRoleId">
               <FormItem class="w-full">
                 <FormLabel> Role </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -191,7 +191,7 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="supervisor.id">
+            <FormField v-slot="{ componentField }" name="supervisorStaffId">
               <FormItem class="w-full">
                 <FormLabel> Supervisor </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -212,9 +212,9 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-          <FormField v-slot="{ componentField }" name="startDate">
+          <FormField v-slot="{ componentField }" name="assignmentDate">
             <FormItem>
-              <FormLabel> Start Date </FormLabel>
+              <FormLabel> Assignment Date </FormLabel>
               <FormControl>
                 <UiInput
                   type="date"
@@ -225,19 +225,23 @@ onMounted(() => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="endDate">
-            <FormItem>
-              <FormLabel> End Date </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="date"
-                  placeholder="Enter end date"
-                  v-bind="componentField"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
+
+          <FormField
+              v-slot="{ componentField }"
+              name="remarks"
+            >
+              <FormItem class="w-full">
+                <FormLabel> Remarks </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter remarks"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
           <UiPermissionGuard permission="UPDATE_STAFF_ASSIGNMENTS" >
           <div class="col-span-full w-full py-4 flex justify-between">

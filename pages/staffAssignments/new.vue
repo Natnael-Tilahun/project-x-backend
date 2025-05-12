@@ -205,7 +205,7 @@ onMounted(() => {
                 <FormLabel> Remarks </FormLabel>
                 <FormControl>
                   <UiInput
-                    type="number"
+                    type="text"
                     placeholder="Enter remarks"
                     v-bind="componentField"
                   />
