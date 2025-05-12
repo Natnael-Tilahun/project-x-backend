@@ -189,13 +189,13 @@ watch(
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField v-slot="{ componentField }" name="chargeId">
+                <FormField v-slot="{ componentField }" name="chargeCode">
                   <FormItem>
-                    <FormLabel>Charge Id </FormLabel>
+                    <FormLabel>Charge Code </FormLabel>
                     <FormControl>
                       <UiInput
                         type="text"
-                        placeholder="Enter Charge Id"
+                        placeholder="Enter Charge Code"
                         v-bind="componentField"
                       />
                     </FormControl>
@@ -209,19 +209,6 @@ watch(
                       <UiInput
                         type="text"
                         placeholder="Enter charge description"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                <FormField v-slot="{ componentField }" name="shortDescription">
-                  <FormItem>
-                    <FormLabel>Charge Short Description </FormLabel>
-                    <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter charge short description"
                         v-bind="componentField"
                       />
                     </FormControl>
@@ -251,6 +238,21 @@ watch(
                     <FormMessage />
                   </FormItem>
                 </FormField>
+
+                <FormField v-slot="{ componentField }" name="category">
+              <FormItem class="w-full">
+                <FormLabel>Category</FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter Category"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            
                 <FormField v-slot="{ componentField }" name="categoryAccount">
                   <FormItem>
                     <FormLabel>Category Account </FormLabel>

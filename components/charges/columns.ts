@@ -26,13 +26,13 @@ export const columns: ColumnDef<Charge>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "chargeId",
-    header: "Charge Id",
+    accessorKey: "chargeCode",
+    header: "Charge Code",
     cell: ({ row }) => {
       const route = useRoute();
-      const chargeId = row.getValue("chargeId");
+      const chargeCode = row.getValue("chargeCode");
       const id = row.original.id;
-      return chargeId
+      return chargeCode
         ? h(
             NuxtLink,
             {
@@ -40,7 +40,7 @@ export const columns: ColumnDef<Charge>[] = [
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `${route.path}/${id}`,
             },
-            chargeId
+            chargeCode
           )
         : h("p", "-");
     },
@@ -50,12 +50,12 @@ export const columns: ColumnDef<Charge>[] = [
     header: "Application Description",
   },
   {
-    accessorKey: "shortDescription",
-    header: "Short Description",
-  },
-  {
     accessorKey: "type",
     header: "Type",
+  },
+  {
+    accessorKey: "category",
+    header: "Category",
   },
   {
     accessorKey: "categoryAccount",

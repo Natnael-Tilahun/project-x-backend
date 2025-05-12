@@ -88,7 +88,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
             </FormField>
 
             <FormField
-              v-if="form.values.ruleType == RuleType.NONE"
+              v-if="form.values.ruleType == RuleType.FIXED || form.values.ruleType == RuleType.PERCENTAGE"
               v-slot="{ componentField }"
               name="amountRangeStart"
             >
@@ -106,7 +106,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
             </FormField>
 
             <FormField
-              v-if="form.values.ruleType == RuleType.NONE"
+              v-if="form.values.ruleType == RuleType.FIXED || form.values.ruleType == RuleType.PERCENTAGE"
               v-slot="{ componentField }"
               name="amountRangeEnd"
             >

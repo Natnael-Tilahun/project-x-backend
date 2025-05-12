@@ -59,13 +59,13 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       <div value="roleDetails" class="text-sm md:text-base p-6 basis-full">
         <form @submit="onSubmit">
           <div class="grid grid-cols-2 gap-6">
-            <FormField v-slot="{ componentField }" name="chargeId">
+            <FormField v-slot="{ componentField }" name="chargeCode">
               <FormItem class="w-full">
-                <FormLabel> Charge Id </FormLabel>
+                <FormLabel> Charge Code </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
-                    placeholder="Enter Charge Id"
+                    placeholder="Enter Charge Code"
                     v-bind="componentField"
                   />
                 </FormControl>
@@ -111,13 +111,13 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="shortDescription">
+            <FormField v-slot="{ componentField }" name="category">
               <FormItem class="w-full">
-                <FormLabel>Short Description</FormLabel>
+                <FormLabel>Category</FormLabel>
                 <FormControl>
-                  <UiTextarea
-                    placeholder="Enter a Short  Description"
-                    class="resize-y"
+                  <UiInput
+                    type="text"
+                    placeholder="Enter Category"
                     v-bind="componentField"
                   />
                 </FormControl>

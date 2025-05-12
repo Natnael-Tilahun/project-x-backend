@@ -902,13 +902,14 @@ interface Office {
 }
 
 interface StaffAssignment {
-  id: string;
-  startDate?: string | null;
-  endDate?: string | null;
-  staff: Staff;
-  supervisor?: Staff;
-  office: Office;
-  role: Role;
+  id?: string;
+  assignmentDate?: string | null;
+  // endDate?: string | null;
+  staffId: string;
+  supervisorStaffId?: string | null;
+  newOfficeId: string;
+  newRoleId: string;
+  remarks?: string | null
 }
 
 interface UssdLanguage {
@@ -953,10 +954,11 @@ interface LocalizedUssdMenu {
 
 interface Charge {
   id?: number;
-  chargeId?: string;
+  chargeCode?: string;
+  category?:string;
   type: ChargeType;
   description: string;
-  shortDescription: string;
+  shortDescription?: string;
   categoryAccount?: string;
   isActive: boolean;
   rules?: ChargeRule[] | null;
