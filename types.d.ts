@@ -953,10 +953,11 @@ interface LocalizedUssdMenu {
 
 interface Charge {
   id?: number;
-  chargeId?: string;
+  chargeCode?: string;
+  category?:string;
   type: ChargeType;
   description: string;
-  shortDescription: string;
+  shortDescription?: string;
   categoryAccount?: string;
   isActive: boolean;
   rules?: ChargeRule[] | null;

@@ -1,6 +1,6 @@
 import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { Charge } from "~/types";
+import type { Charge, ChargeRule } from "~/types";
 
 export const useCharges = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -88,6 +88,33 @@ export const useCharges = () => {
       }
       if (!data.value) {
         throw new Error("No charge data received");
+      }
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
+  const getChargeRulesByChargeId: (id: string) => Promise<ChargeRule[]> = async (id) => {
+    try {
+      const { data, pending, error, status } = await useFetch<ChargeRule[]>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/charges/${id}/rules`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        throw new Error("Getting charge rule data error: " + error.value);
+      }
+      if (!data.value) {
+        throw new Error("No charge rule data received");
       }
       return data.value;
     } catch (err) {
@@ -262,6 +289,33 @@ export const useCharges = () => {
     }
   };
 
+  const getChargeRuleById: (id: number) => Promise<ChargeRule> = async (id) => {
+    try {
+      const { data, pending, error, status } = await useFetch<ChargeRule>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/charges/rules/${id}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        throw new Error("Getting charge rule data error: " + error.value);
+      }
+      if (!data.value) {
+        throw new Error("No charge rule data received");
+      }
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
   const updateChargeRule: (
     ruleId: number,
     ruleDetail: any
@@ -405,11 +459,13 @@ export const useCharges = () => {
     isUpdating,
     getCharges,
     getChargesCount,
+    getChargeRulesByChargeId,
     getChargeById,
     deleteChargeById,
     createNewCharge,
     updateCharge,
     createNewChargeRule,
+    getChargeRuleById,
     updateChargeRule,
     deleteChargeRuleById,
     deleteAllChargeRules,

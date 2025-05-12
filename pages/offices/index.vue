@@ -76,19 +76,15 @@ const searchHandler = async () => {
         <!-- <CustomersDataTableSearchbar :table="table" /> -->
         <div class="flex items-center gap-4">
           <UiInput
-            type="search"
-            placeholder="Search by office id"
-            class="md:w-[100px] lg:w-[300px]"
-            v-model="keyword"
-          />
-          <UiButton @click="searchHandler">
-            <Icon
-              name="svg-spinners:8-dots-rotate"
-              v-if="isLoading"
-              class="mr-2 h-4 w-4 animate-spin"
-            ></Icon>
-            Search</UiButton
-          >
+              placeholder="Filter by office name"
+              :model-value="(table?.getColumn('name')?.getFilterValue() as string) ?? ''"
+              class="h-8 w-[150px] lg:w-[250px]"
+              @input="
+                table
+                  ?.getColumn('name')
+                  ?.setFilterValue($event.target.value)
+              "
+            />
         </div>
       </template>
     </UiDataTable>

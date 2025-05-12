@@ -225,9 +225,6 @@ export const useAuth = () => {
         `${runtimeConfig.public.API_BASE_URL}/api/v1/users/reset-password/finish`,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
           body: newData,
         }
       );
@@ -237,7 +234,6 @@ export const useAuth = () => {
       }
       return data.value;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
