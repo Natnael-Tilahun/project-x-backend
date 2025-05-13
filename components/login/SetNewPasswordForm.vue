@@ -43,7 +43,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   };
 console.log("userCredentials: ",userCredentials)
   try {
-    // const data = await setNewPassword(userCredentials);
+    const data = await setNewPassword(userCredentials);
     // Get the current base URL from the runtime config
     const runtimeConfig = useRuntimeConfig();
     const homeUrl = runtimeConfig.public.HOME_URL;
