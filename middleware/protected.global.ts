@@ -15,7 +15,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   if (!authStore.isAuthenticated || !authStore.accessToken) {
     console.log("No auth or token, redirecting to login");
     authStore.$reset();
-    return navigateTo("/login");
+    return navigateTo('/login', { replace: true });
   }
 
   // Check if access token is expired
