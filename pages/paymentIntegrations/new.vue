@@ -23,7 +23,8 @@ import {
   PaymentCategory,
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import type { PaymentIntegration } from "~/types";
+import type { Charge, PaymentIntegration } from "~/types";
+import ChargeSelect from "~/components/charges/ChargeSelect.vue";   
 
 const route = useRoute();
 const {
@@ -33,6 +34,7 @@ const {
   isSubmitting,
   isLoading,
 } = usePaymentIntegrations();
+const {getCharges, isLoading:isChargeLoading} = useCharges()
 
 const openItems = ref("serviceDefinition");
 const fullPath = ref(route.fullPath);
@@ -45,7 +47,7 @@ pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
 const activeTab = route.query.activeTab as string;
 openItems.value = activeTab || "serviceDefinition";
-
+const chargesData = ref<Charge[]>([])
 const paymentIntegrationName = ref<string>("Create New Payment Integration");
 
 // Watch for changes in the route's query parameters
@@ -66,17 +68,24 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   console.log("values: ", values);
   try {
     loading.value = true;
-    data.value = await createNewPaymentIntegration(values); // Call your API function to fetch profile
-    form.setValues(data.value);
-    paymentIntegrationId.value = data.value.id;
-    paymentIntegrationName.value = data.value.companyName;
-    // openItems.value = "newOperation";
-    navigateTo({
-      path: `/paymentIntegrations/${data.value.id}`,
-      query: {
-        activeTab: "paymentOperations",
-      },
-    });
+    const newValues = {
+      ...values,
+      charge: {
+        id: values.charge
+      }
+    }
+    console.log("newValues: ", newValues)
+    // data.value = await createNewPaymentIntegration(newValues); // Call your API function to fetch profile
+    // form.setValues(data.value);
+    // paymentIntegrationId.value = data.value.id;
+    // paymentIntegrationName.value = data.value.companyName;
+    // // openItems.value = "newOperation";
+    // navigateTo({
+    //   path: `/paymentIntegrations/${data.value.id}`,
+    //   query: {
+    //     activeTab: "paymentOperations",
+    //   },
+    // });
 
     console.log("Created Payment Integration data; ", data.value);
     toast({
@@ -94,6 +103,25 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 function splitPath(path: any) {
   return path.split("/").filter(Boolean);
 }
+
+const fetchChargeData = async () => {
+  try {
+  isLoading.value = true;
+  loading.value = true;
+  chargesData.value = await getCharges(0,100000);
+} catch (err) {
+  console.error("Error fetching charges:", err);
+  isError.value = true;
+} finally {
+  isLoading.value = false;
+  loading.value = false;
+}
+}
+
+onMounted(() => {
+  fetchChargeData();
+})
+
 </script>
 
 <template>
@@ -648,6 +676,21 @@ function splitPath(path: any) {
                 <FormMessage />
               </FormItem>
             </FormField>
+
+            <FormField
+              v-slot="{ componentField }"
+              name="charge"
+            >
+              <FormItem>
+                <FormLabel>Charge</FormLabel>
+                <ChargeSelect
+                  v-bind="componentField"
+                  :charges="chargesData"
+                />
+                <FormMessage />
+              </FormItem>
+            </FormField>
+
 
             <FormField
               :model-value="data?.defaultPaymentReason"

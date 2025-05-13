@@ -47,6 +47,23 @@ export const columns: ColumnDef<Staff>[] = [
     },
   },
   {
+    accessorKey: "username",
+    header: "Username",
+    cell: ({ row }) => {
+      const username = row.getValue("username");
+      return username
+        ? h(
+            "div",
+            {
+              class:
+                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("username")
+          )
+        : h("p", "-");
+    },
+  },
+  {
     accessorKey: "displayName",
     header: "Display Name",
     cell: ({ row }) => {
