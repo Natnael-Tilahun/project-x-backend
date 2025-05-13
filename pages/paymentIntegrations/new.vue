@@ -75,17 +75,17 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       }
     }
     console.log("newValues: ", newValues)
-    // data.value = await createNewPaymentIntegration(newValues); // Call your API function to fetch profile
-    // form.setValues(data.value);
-    // paymentIntegrationId.value = data.value.id;
-    // paymentIntegrationName.value = data.value.companyName;
-    // // openItems.value = "newOperation";
-    // navigateTo({
-    //   path: `/paymentIntegrations/${data.value.id}`,
-    //   query: {
-    //     activeTab: "paymentOperations",
-    //   },
-    // });
+    data.value = await createNewPaymentIntegration(newValues); // Call your API function to fetch profile
+    form.setValues(data.value);
+    paymentIntegrationId.value = data.value.id;
+    paymentIntegrationName.value = data.value.companyName;
+    // openItems.value = "newOperation";
+    navigateTo({
+      path: `/paymentIntegrations/${data.value.id}`,
+      query: {
+        activeTab: "paymentOperations",
+      },
+    });
 
     console.log("Created Payment Integration data; ", data.value);
     toast({
