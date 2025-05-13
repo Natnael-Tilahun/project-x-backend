@@ -13,6 +13,7 @@ import { newUserPasswordFormSchema } from "~/validations/newUserPasswordFormSche
 import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuth } from "~/composables/useAuth";
 import { useRoute } from "vue-router";
+import { useRuntimeConfig } from "nuxt/app";
 
 const store = useAuthStore();
 const { setNewPassword, isLoading } = useAuth();
@@ -42,8 +43,13 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   };
 console.log("userCredentials: ",userCredentials)
   try {
-    const data = await setNewPassword(userCredentials);
-    navigateTo("/login", { replace: true });
+    // const data = await setNewPassword(userCredentials);
+    // Get the current base URL from the runtime config
+    const runtimeConfig = useRuntimeConfig();
+    const homeUrl = runtimeConfig.public.HOME_URL;
+    // Extract the domain from the API base URL    // Construct the login URL with the current domain
+    const loginUrl = `${homeUrl}/login`;
+    navigateTo(loginUrl, { replace: true, external:true });
     toast({
       title: "Password updated successfully",
       description: "You can now login with your new password",
@@ -55,7 +61,6 @@ console.log("userCredentials: ",userCredentials)
       description: "Please try again",
     });
   } finally {
-    // Ensure to stop loading state whether login is successful or not
     isLoading.value = false;
   }
 });
