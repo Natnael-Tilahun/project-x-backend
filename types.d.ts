@@ -477,6 +477,7 @@ interface PaymentIntegration {
   dailyLimitPerAccount?: number | null;
   limitPerTransaction?: number | null;
   category?: PaymentCategory | null;
+  charge?: Charge | null
 }
 
 interface Menu {
@@ -882,6 +883,7 @@ interface Staff {
   firstname: string;
   lastname: string;
   displayName?: string | null;
+  username?: string | null
   mobileNo?: string | null;
   emailAddress: string | null;
   active?: boolean | null;

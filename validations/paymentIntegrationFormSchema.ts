@@ -42,6 +42,7 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     integrationName: z.string(),
     companyName: z.string(),
     description: z.string().optional().nullable(),
+    charge: z.number().optional().nullable(),
     iconPath: z.string().optional().nullable(),
     isDraft: z.boolean().optional().nullable().default(false),
     enabled: z.boolean().optional().nullable().default(false),
