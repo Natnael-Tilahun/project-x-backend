@@ -24,6 +24,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { useDocuments } from "~/composables/useDocuments";
 import type { PaymentIntegration, ApiOperation } from "~/types";
+import ChargeSelect from "~/components/charges/ChargeSelect.vue";
 
 const route = useRoute();
 const {
@@ -33,6 +34,7 @@ const {
   isLoading,
 } = usePaymentIntegrations();
 const { uploadFile, getFile } = useDocuments(); // Get the upload function
+const {getCharges, isLoading:isChargeLoading} = useCharges()
 
 const openItems = ref("IntegrationDetails");
 const fullPath = ref(route.fullPath);
@@ -52,6 +54,7 @@ const operationName = ref<string>("Configure Payment Operations");
 const imagePreview = ref(null);
 const selectedFile = ref(null);
 const uploadLoading = ref(false);
+const chargesData = ref<Charge[]>([])
 
 // Add a ref for the file input
 const fileInput = ref(null);
@@ -78,6 +81,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     loading.value = true;
     const data = {
       ...values,
+      charge: {
+        id: values.charge
+      },
       maximumAmount:
         values?.maximumAmountVariableType == MaximumAmountVariableType.FIXED &&
         values?.transactionAmountType == TransactionAmountType.USER_DEFINED
@@ -250,6 +256,24 @@ watch(
     }
   }
 );
+
+const fetchChargeData = async () => {
+  try {
+  isLoading.value = true;
+  loading.value = true;
+  chargesData.value = await getCharges(0,1000000);
+} catch (err) {
+  console.error("Error fetching charges:", err);
+  isError.value = true;
+} finally {
+  isLoading.value = false;
+  loading.value = false;
+}
+}
+
+onMounted(() => {
+  fetchChargeData();
+})
 </script>
 
 <template>
@@ -915,6 +939,21 @@ watch(
                         </UiSelectGroup>
                       </UiSelectContent>
                     </UiSelect>
+                  </FormItem>
+                </FormField>
+
+                <FormField
+                  :model-value="data?.charge?.id"
+                  v-slot="{ componentField }"
+                  name="charge"
+                >
+                  <FormItem>
+                    <FormLabel>Charge</FormLabel>
+                    <ChargeSelect
+                      v-bind="componentField"
+                      :charges="chargesData"
+                    />
+                    <FormMessage />
                   </FormItem>
                 </FormField>
 

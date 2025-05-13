@@ -211,6 +211,19 @@ watch(
               <FormMessage />
             </FormItem>
           </FormField>
+          <FormField v-slot="{ componentField }" name="username">
+              <FormItem>
+                <FormLabel>Username</FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter staff user name"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
           <UiPermissionGuard permission="UPDATE_STAFF" >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
