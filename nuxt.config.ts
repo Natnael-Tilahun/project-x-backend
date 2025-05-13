@@ -8,6 +8,7 @@ export default defineNuxtConfig({
     public: {
       API_BASE_URL: process.env.API_BASE_URL,
       USSD_API_BASE_URL: process.env.USSD_API_BASE_URL,
+      HOME_URL: process.env.HOME_URL || 'http://localhost:3000',
     },
   },
 
