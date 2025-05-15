@@ -69,13 +69,13 @@ export const columns: ColumnDef<Role>[] = [
     },
   },
   {
-    accessorKey: "disabled",
+    accessorKey: "enabled",
     header: "Status",
     cell: ({ row }) => {
-      const status = row.getValue("disabled");
+      const status = row.getValue("enabled");
       if (status) {
-        return h(Badge, { class: "bg-red-500  " }, "Disabled");
-      } else return h(Badge, { class: "bg-green-600 " }, "Enabled");
+        return h(Badge, { class: " bg-green-600 " }, "Enabled");
+      } else return h(Badge, { class: "bg-red-500 " }, "Disabled");
     },
   },
   {
