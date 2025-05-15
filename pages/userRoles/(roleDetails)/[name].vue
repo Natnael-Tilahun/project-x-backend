@@ -96,7 +96,7 @@ const refetch = async () => {
         name: fetchedData.name,
         description: fetchedData.description,
         enforce2fa: fetchedData.enforce2fa,
-        disabled: !fetchedData.disabled,
+        enabled: fetchedData.enabled,
       };
 
       // Transform permissionUsageData into individual fields
@@ -147,7 +147,7 @@ try {
       name: fetchedData.name,
       description: fetchedData.description,
       enforce2fa: fetchedData.enforce2fa,
-      disabled: !fetchedData.disabled,
+      disabled: !fetchedData.enabled,
       scope: fetchedData.scope,
     };
 
@@ -290,10 +290,10 @@ const updadateRoleStatus = async (status: boolean) => {
               <div class="flex items-center gap-4">
                 <UiPermissionGuard permission="UPDATE_ROLE" >
                 <UiBadge
-                  :class="badgeBg(!data.disabled) + ' font-bold px-2 py-1'"
-                  >{{ !data.disabled ? "Enabled" : "Disabled" }}</UiBadge
+                  :class="badgeBg(data.enabled) + ' font-bold px-2 py-1'"
+                  >{{ data.enabled ? "Enabled" : "Disabled" }}</UiBadge
                 >
-                <FormField v-slot="{ value, handleChange }" name="disabled">
+                <FormField v-slot="{ value, handleChange }" name="enabled">
                   <FormItem>
                     <FormControl>
                       <UiSwitch

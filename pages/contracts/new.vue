@@ -106,9 +106,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       name: values.name,
       description: values.description,
       serviceType: values.serviceType,
-      serviceDefinition: {
-        id: values.serviceDefinition,
-      },
+      serviceDefinitionId: 
+      values.serviceDefinitionId,
       permissionCodes: !values.inheritParentServicePermissions
         ? values.permissionCodes || []
         : [],
@@ -337,7 +336,7 @@ watch(
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="serviceDefinition">
+            <FormField v-slot="{ componentField }" name="serviceDefinitionId">
               <FormItem>
                 <FormLabel> Service Definition </FormLabel>
                 <UiSelect
