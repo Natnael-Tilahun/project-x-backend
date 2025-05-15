@@ -289,14 +289,14 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
             Profile
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="LINK_CUSTOMER_CORE_BANKING" >
+        <!-- <UiPermissionGuard permission="LINK_CUSTOMER_CORE_BANKING" >
           <UiTabsTrigger
             value="linkWithCoreBank"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Link with core bank
           </UiTabsTrigger>
-        </UiPermissionGuard>
+        </UiPermissionGuard> -->
         <UiPermissionGuard permission="RESET_CUSTOMER_PIN" >
           <UiTabsTrigger
             value="pinReset"

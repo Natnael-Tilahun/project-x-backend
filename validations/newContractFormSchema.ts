@@ -6,7 +6,7 @@ export const newContractFormSchema = toTypedSchema(
     id: z.string().optional().nullable(),
     name: z.string().nullable(),
     permissionCodes: z.array(z.string()).optional().nullable(),
-    serviceDefinition: z.string().nullable(),
+    serviceDefinitionId: z.string().nullable(),
     inheritParentServicePermissions: z
       .boolean()
       .default(true)

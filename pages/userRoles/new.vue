@@ -25,7 +25,7 @@ const form = useForm({
   initialValues: {
     name: "",
     description: "",
-    disabled: false,
+    enabled: true,
     enforce2fa: false,
   },
 });
@@ -96,11 +96,11 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ value, handleChange }" name="disabled">
+            <FormField v-slot="{ value, handleChange }" name="enabled">
               <FormItem
                 class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
               >
-                <FormLabel class="text-base"> Disabled </FormLabel>
+                <FormLabel class="text-base"> Enabled </FormLabel>
                 <FormControl>
                   <UiSwitch :checked="value" @update:checked="handleChange" />
                 </FormControl>
