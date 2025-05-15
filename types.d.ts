@@ -132,7 +132,7 @@ interface Role {
   lastModifiedDate?: Date;
   name: string;
   description?: string;
-  disabled: boolean;
+  enabled: boolean;
   enforce2fa: boolean;
   permissionUsageData?: Permission[];
   scope: RoleScope;
