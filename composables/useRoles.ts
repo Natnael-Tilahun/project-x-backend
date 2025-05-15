@@ -179,7 +179,7 @@ export const useRoles = () => {
   const updateRoleStatus: (roleName: string, roleStatus: boolean) => Promise<Role> = async (roleName, roleStatus) => {
     try {
       const { data, pending, error, status } = await useFetch<Role>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/${roleName}?action=${roleStatus ? "enable" : "disable"}`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/${roleName}?action=${roleStatus ? "disable": "enable" }`,
         {
           method: "POST",
           headers: {
