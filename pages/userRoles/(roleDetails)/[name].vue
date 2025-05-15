@@ -147,7 +147,7 @@ try {
       name: fetchedData.name,
       description: fetchedData.description,
       enforce2fa: fetchedData.enforce2fa,
-      disabled: !fetchedData.enabled,
+      enabled: fetchedData.enabled,
       scope: fetchedData.scope,
     };
 
@@ -290,8 +290,8 @@ const updadateRoleStatus = async (status: boolean) => {
               <div class="flex items-center gap-4">
                 <UiPermissionGuard permission="UPDATE_ROLE" >
                 <UiBadge
-                  :class="badgeBg(data.enabled) + ' font-bold px-2 py-1'"
-                  >{{ data.enabled ? "Enabled" : "Disabled" }}</UiBadge
+                  class="font-bold px-2 py-1"
+                  >Enabled</UiBadge
                 >
                 <FormField v-slot="{ value, handleChange }" name="enabled">
                   <FormItem>
