@@ -450,3 +450,15 @@ export enum RuleType {
   PERCENTAGE = "PERCENTAGE",
   NONE = "NONE",
 }
+
+export enum PermissionScope {
+  ACCOUNT_LEVEL = "ACCOUNT_LEVEL",
+  CUSTOMER_LEVEL = "CUSTOMER_LEVEL",
+  NONE = "NONE",
+}
+
+export enum PermissionCategory {
+  CUSTOMER = "CUSTOMER",
+  STAFF = "STAFF",
+  SYSTEM = "SYSTEM",
+}

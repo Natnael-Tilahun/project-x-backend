@@ -2,6 +2,8 @@ import {
   ChargeType,
   LanguageRelatedStatus,
   PaymentIntegrationType,
+  PermissionCategory,
+  PermissionScope,
 } from "@/global-types";
 import { TransactionAmountType } from "@/global-types";
 import {
@@ -83,6 +85,11 @@ interface User {
   lastModifiedDate?: string | null;
   isEnrolled?: boolean | null;
   authorities?: string[] | null;
+  blockExpirationTime?:	string
+  blockLevel?:	integer
+  staff?:	boolean
+  customer?:	boolean
+  operator?:	boolean
 }
 
 interface Device {
@@ -143,6 +150,8 @@ interface Permission {
   createdDate?: Date;
   lastModifiedBy?: string;
   lastModifiedDate?: Date;
+  deletedBy?:	string
+  deletedDate?:	string
   grouping: string;
   code: string;
   entityName: string;
@@ -151,8 +160,12 @@ interface Permission {
     min: 0;
     max: 50;
   };
+  scope?: PermissionScope,
   type: PermissionType;
+  category: PermissionCategory
   selected?: boolean;
+  enabled?:	boolean
+  deleted?:	boolean
 }
 
 enum Status {
@@ -261,6 +274,7 @@ interface Customer {
   olbAllowed?: boolean;
   staffMember?: boolean;
   roles: [Role];
+  contractId?:string
 }
 
 interface Address {
@@ -834,6 +848,34 @@ interface ContractCoreCustomer {
   city?: string;
   state?: string;
   country?: string;
+}
+
+interface CoreCustomerSummery{
+  contractId?: string;
+  customerBranchCode?: string;
+  customerId?: string;
+  mnemonic?: string;
+  fullName?: string;
+  title?: string;
+  givenNames?: string;
+  familyName?: string;
+  gender?: string;
+  dateOfBirth?: string;
+  maritalStatus?: string;
+  phone?: string;
+  email?: string;
+  customerType?: string;
+  street?: string;
+  address?: string;
+  townCountry?: string;
+  nationality?: string;
+  customerStatus?: string;
+  residence?: string;
+  houseNo?: string;
+  language?: string;
+  language?: string;
+  currNo?: string;
+  coreAccounts?: Account[];
 }
 
 interface ContractAccount {
