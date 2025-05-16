@@ -44,21 +44,6 @@ export const columns: ColumnDef<User>[] = [
     enableSorting: false,
     enableHiding: false,
   },
-  // {
-  //   accessorKey: "id",
-  //   header: "Id",
-  //   cell: ({ row }) => {
-  //     const id = row.getValue("id");
-  //     return h(
-  //       "div",
-  //       {
-  //         class:
-  //           "overflow-hidden text-ellipsis whitespace-nowrap w-24  transition-all duration-400 ease-out hover:w-full",
-  //       },
-  //       row.getValue("id")
-  //     );
-  //   },
-  // },
   {
     accessorKey: "login",
     header: ({ column }) =>
@@ -122,18 +107,6 @@ export const columns: ColumnDef<User>[] = [
     },
   },
   {
-    accessorKey: "createdBy",
-    header: ({ column }) =>
-      h(DataTableColumnHeaderVue, { column, title: "Created By" }),
-    cell: ({ row }) => {
-      return h(
-        "div",
-        { class: "max-w-[180px] whitespace-nowrap truncate font-medium" },
-        row.getValue("createdBy")
-      );
-    },
-  },
-  {
     accessorKey: "verified",
     header: ({ column }) =>
       h(DataTableColumnHeaderVue, { column, title: "Verified" }),
@@ -142,42 +115,6 @@ export const columns: ColumnDef<User>[] = [
         "div",
         { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
         row.getValue("verified")
-      );
-    },
-  },
-  {
-    accessorKey: "isEnrolled",
-    header: ({ column }) =>
-      h(DataTableColumnHeaderVue, { column, title: "Enrolled" }),
-    cell: ({ row }) => {
-      return h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
-        row.getValue("isEnrolled")
-      );
-    },
-  },
-  {
-    accessorKey: "isUserAccountLocked",
-    header: ({ column }) =>
-      h(DataTableColumnHeaderVue, { column, title: "Locked" }),
-    cell: ({ row }) => {
-      return h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
-        row.getValue("isUserAccountLocked")
-      );
-    },
-  },
-  {
-    accessorKey: "isPinSet",
-    header: ({ column }) =>
-      h(DataTableColumnHeaderVue, { column, title: "Pin Set" }),
-    cell: ({ row }) => {
-      return h(
-        "div",
-        { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
-        row.getValue("isPinSet")
       );
     },
   },
@@ -202,6 +139,39 @@ export const columns: ColumnDef<User>[] = [
         "div",
         { class: "max-w-[100px] whitespace-nowrap truncate font-medium" },
         row.getValue("emailVerified")
+      );
+    },
+  },
+  {
+    accessorKey: "staff",
+    header: ({ column }) =>
+      h(DataTableColumnHeaderVue, { column, title: "Staff" }),
+    cell: ({ row }) => {
+      return h(
+        "div",
+        row.getValue("staff")
+      );
+    },
+  },
+  {
+    accessorKey: "customer",
+    header: ({ column }) =>
+      h(DataTableColumnHeaderVue, { column, title: "Customer" }),
+    cell: ({ row }) => {
+      return h(
+        "div",
+        row.getValue("customer")
+      );
+    },
+  },
+  {
+    accessorKey: "operator",
+    header: ({ column }) =>
+      h(DataTableColumnHeaderVue, { column, title: "Operator" }),
+    cell: ({ row }) => {
+      return h(
+        "div",
+        row.getValue("operator")
       );
     },
   },

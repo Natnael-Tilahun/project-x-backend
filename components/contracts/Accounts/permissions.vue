@@ -122,6 +122,29 @@ const deselectAll = () => {
           class="w-full p-6"
         >
           <form @submit="onSubmit">
+            <UiPermissionGuard
+                permission="UPDATE_CONTRACT_ACCOUNTS_PERMISSIONS"
+              >
+                <div class="col-span-full w-full pb-4 flex justify-between">
+                  <UiButton
+                    :disabled="submitting"
+                    variant="outline"
+                    type="button"
+                    @click="$router.go(-1)"
+                  >
+                    Cancel
+                  </UiButton>
+                  <UiButton :disabled="submitting" type="submit">
+                    <Icon
+                      name="svg-spinners:8-dots-rotate"
+                      v-if="submitting"
+                      class="mr-2 h-4 w-4 animate-spin"
+                    ></Icon>
+
+                    Update
+                  </UiButton>
+                </div>
+              </UiPermissionGuard>
             <div
               class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
             >
