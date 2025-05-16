@@ -16,15 +16,22 @@ import type {
   Account,
   Contract,
   ContractAccount,
+  ContractCoreCustomer,
+  CoreCustomerSummery,
   Permission,
   ServiceDefinition,
 } from "~/types";
+import { NuxtLink } from "#components";
+
 const { createNewContract, isLoading } = useContracts();
 const { getServiceDefinitions, getServiceDefinitionById } =
   useServiceDefinitions();
 const { getPermissions } = usePermissions();
-const { getCoreAccountsByCustomerId, isLoading: isLoadingAccounts } =
-  useCustomers();
+const {
+  getCoreAccountsByCustomerId,
+  getCoreAccountsByAccount,
+  isLoading: isLoadingAccounts,
+} = useCustomers();
 const {
   getContractCoreCustomerAccounts,
   updateContractCoreCustomerAccountStatus,
@@ -32,6 +39,7 @@ const {
 } = useContractsCoreCustomersAccount();
 
 const isError = ref(false);
+const coreCustomerSummary = ref<CoreCustomerSummery>()
 const data = ref<Contract>();
 const isSubmitting = ref(false);
 const permissionsData = ref<Permission[]>([]);
@@ -42,12 +50,20 @@ const selectedCoreCustomerPermissions = ref<Permission[]>([]);
 const selectedAccountPermissions = ref<Permission[]>([]);
 const selectedAccounts = ref<Account[]>([]);
 const coreCustomerId = ref<string>("");
+const accountNumber = ref<number>();
 const loading = ref(false);
 const errorMessage = ref("");
 const store = useAuthStore();
 const accountsData = ref<any>();
 const selectedContractAccount = ref<ContractAccount[]>([]);
 const contractCoreCustomerId = ref<any>();
+const haveExistingContract = ref<boolean>();
+const contractId = ref<string>();
+const openEditModal = ref(false);
+const setOpenEditModal = (value: boolean) => {
+  openEditModal.value = value;
+};
+const isPhoneConfirmed = ref<boolean>(false);
 
 const handleAccountSelect = (account: Account | undefined) => {
   const index = selectedAccounts.value.findIndex(
@@ -94,20 +110,20 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       inheritContractCustomerPermissions:
         form.values.coreCustomers?.[0]?.coreAccounts?.accountNumber
           ?.inheritContractCustomerPermissions ?? true,
-      permissionCodes: !form.values.coreCustomers?.[0]?.coreAccounts?.accountNumber
-      ?.inheritContractCustomerPermissions
+      permissionCodes: !form.values.coreCustomers?.[0]?.coreAccounts
+        ?.accountNumber?.inheritContractCustomerPermissions
         ? form.values.coreCustomers?.[0]?.coreAccounts?.accountNumber
             ?.permissionCodes || []
         : [],
     }));
+
 
     // Construct the contract according to type definition
     const newValues = {
       name: values.name,
       description: values.description,
       serviceType: values.serviceType,
-      serviceDefinitionId: 
-      values.serviceDefinitionId,
+      serviceDefinitionId: values.serviceDefinitionId,
       permissionCodes: !values.inheritParentServicePermissions
         ? values.permissionCodes || []
         : [],
@@ -149,13 +165,18 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       return;
     }
 
+  
+    if (isPhoneConfirmed.value) {
     console.log("newValues: ", newValues);
-    data.value = await createNewContract(newValues);
-    navigateTo(`/contracts`);
-    toast({
-      title: "Contract Created",
-      description: "Contract created successfully",
-    });
+      // data.value = await createNewContract(newValues);
+      // navigateTo(`/contracts`);
+      toast({
+        title: "Contract Created",
+        description: "Contract created successfully",
+      });
+    } else {
+      return;
+    }
   } catch (err: any) {
     console.error("Error creating new contract:", err.message);
     isError.value = true;
@@ -245,6 +266,49 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
   }
 };
 
+const searchCoreAccountsByAccountNumberHandler = async () => {
+  try {
+    loading.value = true;
+    isError.value = false;
+    accountsData.value = [];
+    selectedAccounts.value = [];
+    if (accountNumber.value) {
+      const response = await getCoreAccountsByAccount(accountNumber.value);
+      haveExistingContract.value = response?.contractId ? true : false;
+      coreCustomerSummary.value = response
+      contractId.value = response.contractId;
+      coreCustomerId.value = response.customerId;
+      accountsData.value = response?.coreAccounts;
+      accountsData.value =
+        accountsData.value.length > 0
+          ? accountsData.value.filter(
+              (acc: Account) =>
+                !selectedAccounts.value.some(
+                  (selectedAcc) =>
+                    selectedAcc.accountNumber === acc.accountNumber
+                )
+            )
+          : [];
+    } else {
+      return true;
+    }
+  } catch (err: any) {
+    isError.value = true;
+    console.error("Error fetching accounts:", err);
+    errorMessage.value =
+      err.message == "404 NOT_FOUND" ? "Account not found." : err.message;
+    toast({
+      title: "Uh oh! Something went wrong.",
+      description: `${
+        err.message == "404 NOT_FOUND" ? "Account not found." : err.message
+      }`,
+      variant: "destructive",
+    });
+  } finally {
+    loading.value = false;
+  }
+};
+
 const fetchContractCoreCustomerAccounts = async () => {
   try {
     loading.value = true;
@@ -307,6 +371,10 @@ watch(
     }
   }
 );
+
+const handlePhoneConfirmation = (value: boolean) => {
+  isPhoneConfirmed.value = value;
+};
 </script>
 
 <template>
@@ -483,7 +551,7 @@ watch(
               class="flex flex-col space-y-8 col-span-full border p-4 rounded-lg"
             >
               <div class="flex gap-8 items-center">
-                <div class="grid w-full max-w-sm items-center gap-2">
+                <!-- <div class="grid w-full max-w-sm items-center gap-2">
                   <UiLabel
                     for="search"
                     class="font-normal text-muted-foreground"
@@ -500,6 +568,33 @@ watch(
                     <UiButton
                       :disabled="coreCustomerId == '' || loading"
                       @click="searchCoreAccountsByCustomerIdHandler"
+                    >
+                      <Icon
+                        name="svg-spinners:8-dots-rotate"
+                        v-if="loading"
+                        class="mr-2 h-4 w-4 animate-spin"
+                      ></Icon>
+                      Search</UiButton
+                    >
+                  </div>
+                </div> -->
+                <div class="grid w-full max-w-sm items-center gap-2">
+                  <UiLabel
+                    for="search"
+                    class="font-normal text-muted-foreground"
+                    >Find account by account number</UiLabel
+                  >
+                  <div class="flex items-center gap-4">
+                    <UiInput
+                      id="search"
+                      type="number"
+                      placeholder="Search..."
+                      class="md:w-[100px] lg:w-[300px]"
+                      v-model="accountNumber"
+                    />
+                    <UiButton
+                      :disabled="!accountNumber || loading"
+                      @click="searchCoreAccountsByAccountNumberHandler"
                     >
                       <Icon
                         name="svg-spinners:8-dots-rotate"
@@ -530,7 +625,10 @@ watch(
                 <UiSkeleton class="h-16 w-full" />
               </UiCard>
 
-              <UiCard class="w-full flex flex-col border-none gap-2">
+              <UiCard
+                v-if="!haveExistingContract"
+                class="w-full flex flex-col border-none gap-2"
+              >
                 <!-- <div class="p-6"> -->
                 <div class="flex justify-between items-center">
                   <h2 class="text-lg font-semibold">
@@ -905,7 +1003,7 @@ watch(
                             Account Category
                           </p>
                           <p class="font-medium">
-                            {{ account.accountCategoryId }}
+                            {{ account.shortName || account.accountCategoryId }}
                           </p>
                         </div>
                         <div>
@@ -1004,6 +1102,29 @@ watch(
                   />
                 </div>
               </UiCard>
+              <UiCard
+                v-else
+                class="w-full px-6 py-12 text-center flex flex-col items-center justify-center gap-4"
+              >
+                <p class="text-muted-foreground">
+                  This account has an contract. Please refer to it for more
+                  info.
+                </p>
+                <UiButton
+                  @click="
+                    navigateTo({
+                      path: `/contracts/${contractId}`,
+                    })
+                  "
+                  class="w-fit px-5"
+                  ><Icon
+                    name="material-symbols:add"
+                    size="24"
+                    class="mr-2"
+                  ></Icon
+                  >View Contract</UiButton
+                >
+              </UiCard>
             </div>
 
             <div class="col-span-full w-full py-4 flex justify-between">
@@ -1030,4 +1151,47 @@ watch(
       </div>
     </UiCard>
   </div>
+
+  <UiAlertDialog :open="openEditModal" :onOpenChange="setOpenEditModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          <p class="font-medium pb-3">
+
+          Please confirm if this phone number is your active phone number.
+          Temporary PIN will be sent to this:
+        </p>
+
+        <div class="flex flex-col gap-1">
+
+          <p >Fullname: <span class="font-bold">{{ coreCustomerSummary?.fullName }}</span></p>
+          <p>Phone Number: <span class="font-bold">{{coreCustomerSummary?.phone}}</span></p>
+        </div>
+
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel
+          @click="
+            () => {
+              handlePhoneConfirmation(false);
+              setOpenEditModal(false);
+            }
+          "
+        >
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction @click="handlePhoneConfirmation(true)">
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="isLoading"
+            :disabled="isLoading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
 </template>

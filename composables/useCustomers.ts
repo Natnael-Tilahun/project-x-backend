@@ -1,6 +1,6 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { Customer, Device, User } from "~/types";
+import type { CoreCustomerSummery, Customer, Device, User } from "~/types";
 
 export const useCustomers = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -157,6 +157,45 @@ export const useCustomers = () => {
 
       if (!data.value) {
         throw new Error("No account with this customer id received");
+      }
+
+      return data.value;
+    } catch (err) {
+      // Throw the error to be caught and handled by the caller
+      throw err;
+    }
+  };
+
+  const getCoreAccountsByAccount: (
+    accountNumber: number
+  ) => Promise<CoreCustomerSummery> = async (accountNumber) => {
+    try {
+      const { data, pending, error, status } = await useFetch<CoreCustomerSummery>(
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-core-customers/by-core-account-number/${accountNumber}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${store.accessToken}`,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description:
+            error.value?.data?.type == "/constraint-violation"
+              ? error.value?.data?.fieldErrors[0]?.message
+              : error.value?.data?.message,
+          variant: "destructive",
+        });
+        throw new Error(error.value?.data?.detail);
+      }
+
+      if (!data.value) {
+        throw new Error("No account with this account number received");
       }
 
       return data.value;
@@ -658,6 +697,7 @@ export const useCustomers = () => {
     getCustomerDevices,
     getCustomerDevicesByDeviceId,
     suspendCustomerDevicesByDeviceId,
-    restoreCustomerDevicesByDeviceId
+    restoreCustomerDevicesByDeviceId,
+    getCoreAccountsByAccount
   };
 };

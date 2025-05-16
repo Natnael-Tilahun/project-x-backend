@@ -21,8 +21,13 @@ const fetchData = async () => {
     isLoading.value = true;
     loading.value = true;
     const users = await getUsers(0, 1000000000); // Call your API function to fetch roles
+    data.value = users.filter(user => {
+      if(!user.staff && !user.operator && !user.customer){
+        return user
+      }
+    })
     // Sort integrations by name alphabetically, handling null values
-    data.value = users.sort((a, b) => {
+    data.value = data.value.sort((a, b) => {
       // Handle cases where fullName might be null
       const nameA = a.login?.toLowerCase() || "";
       const nameB = b.login?.toLowerCase() || "";

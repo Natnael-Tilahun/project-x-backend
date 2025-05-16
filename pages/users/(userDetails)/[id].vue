@@ -238,6 +238,36 @@ const handleUnlinkCoreBankCustomer = async () => {
               </p>
             </div>
             <div class="space-y-0">
+              <h1 class="text-muted-foreground">Staff</h1>
+              <p class="border p-2 bg-muted rounded-md">
+                {{
+                  data?.staff != null
+                    ? data.staff
+                    : "-"
+                }}
+              </p>
+            </div>
+            <div class="space-y-0">
+              <h1 class="text-muted-foreground">Customer</h1>
+              <p class="border p-2 bg-muted rounded-md">
+                {{
+                  data?.customer != null
+                    ? data.customer
+                    : "-"
+                }}
+              </p>
+            </div>
+            <div class="space-y-0">
+              <h1 class="text-muted-foreground">Operator</h1>
+              <p class="border p-2 bg-muted rounded-md">
+                {{
+                  data?.operator != null
+                    ? data.operator
+                    : "-"
+                }}
+              </p>
+            </div>
+            <div class="space-y-0">
               <h1 class="text-muted-foreground">Force PIN Change</h1>
               <p class="border p-2 bg-muted rounded-md">
                 {{ data?.forcePinChange != null ? data.forcePinChange : "-" }}
@@ -385,6 +415,22 @@ const handleUnlinkCoreBankCustomer = async () => {
               <h1 class="text-muted-foreground">Verification Key</h1>
               <p class="border p-2 bg-muted rounded-md">
                 {{ data?.verificationKey != null ? data.verificationKey : "-" }}
+              </p>
+            </div>
+            <div class="space-y-0">
+              <h1 class="text-muted-foreground">Block Level</h1>
+              <p class="border p-2 bg-muted rounded-md">
+                {{
+                  data?.blockLevel != null
+                    ? new Date(data.blockLevel).toLocaleDateString()
+                    : "-"
+                }}
+              </p>
+            </div>
+            <div class="space-y-0">
+              <h1 class="text-muted-foreground">Block Expiration Time</h1>
+              <p class="border p-2 bg-muted rounded-md">
+                {{ data?.blockExpirationTime != null ? data.blockExpirationTime : "-" }}
               </p>
             </div>
             <div class="space-y-0">
