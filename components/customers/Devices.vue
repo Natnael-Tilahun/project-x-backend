@@ -215,15 +215,16 @@ onMounted(() => {
 
           <UiAccordionContent class="px-0 pb-4">
             <div
-              class="grid grid-cols-2 md:grid-cols-4 gap-4 px-8 py-4 border-t"
+              class="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-4 px-8 py-4 border-t"
             >
               <div>
                 <p class="text-sm text-muted-foreground">Device ID</p>
-                <p class="font-medium">{{ device.deviceId || '-' }}</p>
+                <p class="font-medium text-wrap">{{ device.deviceId || '-' }}</p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Device Name</p>
-                <p class="font-medium">{{ device.deviceName || '-' }}</p>
+                <p class="font-medium w-full break-words whitespace-normal">
+                  {{ device.deviceName || '-' }}</p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Device Type</p>
@@ -355,19 +356,19 @@ onMounted(() => {
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Application Id</p>
-                <p class="font-medium">
+                <p class="font-medium text-wrap">
                   {{ device.applicationId || '-' }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">application Version Id</p>
-                <p class="font-medium">
+                <p class="font-medium text-wrap">
                   {{ device.applicationVersionId || '-' }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Package Name</p>
-                <p class="font-medium">
+                <p class="font-medium text-wrap">
                   {{ device.packageName || '-' }}
                 </p>
               </div>
@@ -383,15 +384,15 @@ onMounted(() => {
                   {{ device.buildNumber || '-' }}
                 </p>
               </div>
-              <div>
+              <div class="flex-col items-start w-full flex-wrap">
                 <p class="text-sm text-muted-foreground">Build Signature</p>
-                <p class="font-medium">
+                <p class="font-medium w-full break-words whitespace-normal">
                   {{ device.buildSignature || '-' }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Installer Store</p>
-                <p class="font-medium">
+                <p class="font-medium text-wrap">
                   {{ device.installerStore || '-' }}
                 </p>
               </div>

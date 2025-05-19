@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { ServiceDefinition, Permission } from "~/types";
+import { PermissionCategory } from "~/global-types";
 
 const route = useRoute();
 const { updateServiceDefinition, isLoading, isSubmitting } =
@@ -82,8 +83,9 @@ const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    permissionsData.value = await getPermissions(0, 100000);
-    console.log("permissionsData.value: ", permissionsData.value);
+    const response = await getPermissions(0, 100000);
+    permissionsData.value = response.filter((permission: Permission) => permission.category == PermissionCategory.CUSTOMER)
+    console.log("customer permissionsData.value: ", permissionsData.value);
   } catch (err) {
     console.error("Error fetching permissions:", err);
     isError.value = true;
@@ -122,12 +124,24 @@ const deselectAll = () => {
     <div v-if="loading" class="py-10 flex justify-center w-full">
       <UiLoading />
     </div>
-    <UiCard v-else-if="permissionsData && !isError" class="w-full p-6">
+    <UiCard v-else-if="permissionsData.length > 0 && !isError" class="w-full p-6">
       <form @submit="onSubmit">
+        
         <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          <div class="col-span-full flex justify-between items-center mb-4">
-            <p class="font-medium">Available Permissions</p>
-            <div class="flex items-center gap-2">
+          <div class="col-span-full flex flex-col justify-start w-full gap-4">
+            <p class="font-medium text-lg">Available Permissions</p>
+              <UiPermissionGuard permission="UPDATE_SERVICE_DEFINITION_PERMISSIONS">
+            <div class="col-span-full w-full  p-4 rounded-lg flex justify-between gap-8 border ">
+              <UiButton
+                :disabled="submitting"
+                variant="outline"
+                type="button"
+                @click="$router.go(-1)"
+              >
+                Cancel
+              </UiButton>
+              <div class="flex gap-4 items-center">
+                <div class="flex items-center justify-between  w-full gap-4">
               <p class="text-sm text-muted-foreground">
                 {{ selectedPermissions.length }} of
                 {{ permissionsData.length }} selected
@@ -153,6 +167,19 @@ const deselectAll = () => {
                 </UiButton>
               </div>
             </div>
+              <UiButton :disabled="submitting" type="submit">
+                <Icon
+                  name="svg-spinners:8-dots-rotate"
+                  v-if="submitting"
+                  class="mr-2 h-4 w-4 animate-spin"
+                ></Icon>
+
+                Update
+              </UiButton>
+            </div>
+
+            </div>
+          </UiPermissionGuard>          
           </div>
 
           <FormField
@@ -216,8 +243,8 @@ const deselectAll = () => {
         </div>
       </form>
     </UiCard>
-    <div v-else-if="data == null || data == undefined">
-      <UiNoResultFound title="Sorry, No merchant found." />
+    <div class="w-full p-6" v-else-if="permissionsData.length == 0">
+      <UiNoResultFound title="Sorry, No customer permission found." />
     </div>
     <div v-else-if="isError">
       <ErrorMessage title="Something went wrong." />
