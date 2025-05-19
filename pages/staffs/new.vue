@@ -175,16 +175,11 @@ onMounted(() => {
                   </FormControl>
                   <UiSelectContent>
                     <UiSelectGroup>
-                      <!-- <UiSelectItem class="w-full border-8" v-for="item in offices" :value="item.id">
-                        <div class="w-full flex justify-between items-center border-8">
-                          <div class="border-8 w-full"> {{ item.name }}</div>
-                          <div class="w-full"> {{ item.code }}</div>
-                      </div>
-                      </UiSelectItem> -->
                       <UiSelectItem class="w-full" v-for="item in offices" :value="item.id">
-                        <div class="w-full flex justify-between items-center">
-                          <span class="text-left">{{ item.name }}</span>
-                          <span class="text-right">{{ item.code }}</span>
+                        <div class="flex justify-between md:gap-4 gap-2 items-center">
+                          <span class="text-left ">{{ item.name }}</span>
+                          <span> - </span>
+                          <span class="text-right ">  ( {{ item.code }} )</span>
                         </div>
                       </UiSelectItem>
                     </UiSelectGroup>
