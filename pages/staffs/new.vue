@@ -10,12 +10,20 @@ import {
 import { ref, onBeforeUnmount } from "vue";
 import { toast } from "~/components/ui/toast";
 import { newStaffFormSchema } from "~/validations/newStaffFormSchema";
-import type { Office, Staff } from "~/types";
+import type { Office, Role, Staff } from "~/types";
+
 const { createNewStaff, isLoading } = useStaffs();
+const { getOffices, isLoading: isLoadingOffices } = useOffice();
+const { getRoles, isLoading: isLoadingRoles } = useRoles();
+const { getStaffs, isLoading: isLoadingStaffs } = useStaffs();
+
 const isError = ref(false);
 const data = ref<Staff>();
 const isSubmitting = ref(false);
 const loading = ref(false);
+const offices = ref<Office[]>([]);
+const roles = ref<Role[]>([]);
+const staffs = ref<Staff[]>([]);
 
 const form = useForm({
   validationSchema: newStaffFormSchema,
@@ -28,7 +36,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     console.log("values: ", values);
     const newValues = {
       ...values,
-      joiningDate: new Date().toISOString(),
+      assignmentDate: new Date(values.assignmentDate).toISOString(),
     }
     const response = await createNewStaff(newValues); // Call your API function to fetch profile
     data.value = response
@@ -52,6 +60,27 @@ onBeforeUnmount(() => {
   data.value = undefined;
   isSubmitting.value = false;
 });
+
+const fetchData = async () => {
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    staffs.value = await getStaffs();
+    offices.value = await getOffices();
+    roles.value = await getRoles();
+  } catch (err) {
+    console.error("Error fetching datas:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
+
+
+onMounted(() => {
+  fetchData();
+})
 </script>
 
 <template>
@@ -119,6 +148,124 @@ onBeforeUnmount(() => {
                 <FormMessage />
               </FormItem>
             </FormField>
+            <FormField v-slot="{ value, handleChange }" name="assign">
+              <FormItem
+                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
+              >
+                <FormLabel class="text-base"> Add Assignment </FormLabel>
+                <FormControl>
+                  <UiSwitch
+                    :checked="value"
+                    @update:checked="handleChange"
+                  />
+                </FormControl>
+              </FormItem>
+            </FormField>
+
+            <UiCard v-if="form.values.assign" class="col-span-full grid md:grid-cols-2 p-6 gap-6">
+            <h1 class="col-span-full font-bold text-lg w-full border-b-2 pb-2">Staff Assignment</h1>
+              <FormField v-slot="{ componentField }" name="newOfficeId">
+              <FormItem class="w-full">
+                <FormLabel> Office </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select an office" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <!-- <UiSelectItem class="w-full border-8" v-for="item in offices" :value="item.id">
+                        <div class="w-full flex justify-between items-center border-8">
+                          <div class="border-8 w-full"> {{ item.name }}</div>
+                          <div class="w-full"> {{ item.code }}</div>
+                      </div>
+                      </UiSelectItem> -->
+                      <UiSelectItem class="w-full" v-for="item in offices" :value="item.id">
+                        <div class="w-full flex justify-between items-center">
+                          <span class="text-left">{{ item.name }}</span>
+                          <span class="text-right">{{ item.code }}</span>
+                        </div>
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+
+            <FormField v-slot="{ componentField }" name="newRoleId">
+              <FormItem class="w-full">
+                <FormLabel> Role </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a role" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem v-for="item in roles" :value="item.name">
+                        {{ item.name }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+
+            <FormField v-slot="{ componentField }" name="supervisorStaffId">
+              <FormItem class="w-full">
+                <FormLabel> Supervisor </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a supervisor" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem v-for="item in staffs" :value="item.id || ''">
+                        {{ item.firstname }} {{ item.lastname }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+
+            <FormField v-slot="{ componentField }" name="assignmentDate">
+              <FormItem>
+                <FormLabel> Assignment Date </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="date"
+                    placeholder="Enter assignment date"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              v-slot="{ componentField }"
+              name="remarks"
+            >
+              <FormItem class="w-full">
+                <FormLabel> Remarks </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter remarks"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            </UiCard>
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="isSubmitting"
