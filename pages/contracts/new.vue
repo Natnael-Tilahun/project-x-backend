@@ -64,6 +64,8 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 const isPhoneConfirmed = ref<boolean>(false);
+const formValuesToSubmit = ref<any>(null);
+const isPhoneExist = ref<boolean>(false)
 
 const handleAccountSelect = (account: Account | undefined) => {
   const index = selectedAccounts.value.findIndex(
@@ -117,7 +119,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         : [],
     }));
 
-
     // Construct the contract according to type definition
     const newValues = {
       name: values.name,
@@ -165,18 +166,12 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       return;
     }
 
-  
-    if (isPhoneConfirmed.value) {
-    console.log("newValues: ", newValues);
-      // data.value = await createNewContract(newValues);
-      // navigateTo(`/contracts`);
-      toast({
-        title: "Contract Created",
-        description: "Contract created successfully",
-      });
-    } else {
-      return;
-    }
+    // Store the form values in the ref
+    formValuesToSubmit.value = newValues;
+    
+    // Open the confirmation modal
+    setOpenEditModal(true);
+
   } catch (err: any) {
     console.error("Error creating new contract:", err.message);
     isError.value = true;
@@ -372,9 +367,73 @@ watch(
   }
 );
 
-const handlePhoneConfirmation = (value: boolean) => {
+const handlePhoneConfirmation = async (value: boolean) => {
   isPhoneConfirmed.value = value;
+  if (value && formValuesToSubmit.value) {
+    try {
+      isSubmitting.value = true
+      const newValues={
+        ...formValuesToSubmit.value,
+        withPrimaryContractUser: true
+      }
+      console.log("newValues values:", newValues);
+
+        const response = await createNewContract(newValues);
+      data.value = response
+    
+      navigateTo(`/contracts`);
+      toast({
+        title: "Contract Created",
+        description: "Contract created successfully",
+      });
+    } catch (err: any) {
+      console.log("Error creating new contractttt:", err.message);
+      if(err.message == "Phone is already in use!"){
+        isPhoneExist.value = true
+      }
+      isError.value = true;
+    }
+    finally{
+      isSubmitting.value = false
+    }
+  }
+  setOpenEditModal(false);
 };
+
+const createNewContractWithoutCustomerHandler = async(value: boolean) => {
+    if (formValuesToSubmit.value && isPhoneExist.value && value) {
+    try {
+      isSubmitting.value = true
+       const newValues={
+        ...formValuesToSubmit.value,
+        withPrimaryContractUser: false
+      }
+      console.log("Submitting values:", newValues);
+        const response = await createNewContract(newValues);
+      data.value = response
+    
+      navigateTo(`/contracts`);
+      toast({
+        title: "Contract Created",
+        description: "Contract without customer created successfully",
+      });
+    } catch (err: any) {
+      console.log("Error creating new contractttt:", err.message);
+      if(err.message == "Phone is already in use!"){
+        isPhoneExist.value = true
+      }
+      isError.value = true;
+    }
+    finally{
+      isSubmitting.value = false
+    }
+  setOpenEditModal(false);
+
+  }
+  else{
+    return
+  }
+}
 </script>
 
 <template>
@@ -1095,15 +1154,15 @@ const handlePhoneConfirmation = (value: boolean) => {
                     No accounts found for this customer
                   </p>
                 </UiCard>
-                <div class="w-full" v-else-if="isError">
+                <div class="w-full" v-else-if="isError && !isPhoneExist">
                   <ErrorMessage
-                    :title="errorMessage || 'Something went wrong.'"
+                    :title="errorMessage || 'Something went wrong.'"1000179835596
                     :retry="fetchData"
                   />
                 </div>
               </UiCard>
               <UiCard
-                v-else
+                v-if="haveExistingContract"
                 class="w-full px-6 py-12 text-center flex flex-col items-center justify-center gap-4"
               >
                 <p class="text-muted-foreground">
@@ -1123,6 +1182,26 @@ const handlePhoneConfirmation = (value: boolean) => {
                     class="mr-2"
                   ></Icon
                   >View Contract</UiButton
+                >
+              </UiCard>
+              <UiCard
+                v-if="isPhoneExist"
+                class="w-full px-6 py-12 text-center flex flex-col items-center justify-center gap-4"
+              >
+                <p class="text-muted-foreground">
+                  This Phone already exist. Please create a contract without a customer
+                </p>
+                <UiButton
+                  @click="
+                    setOpenEditModal(true)
+                  "
+                  class="w-fit px-5"
+                  ><Icon
+                    name="material-symbols:add"
+                    size="24"
+                    class="mr-2"
+                  ></Icon
+                  >Create contract without customer</UiButton
                 >
               </UiCard>
             </div>
@@ -1182,11 +1261,18 @@ const handlePhoneConfirmation = (value: boolean) => {
         >
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="handlePhoneConfirmation(true)">
+        <UiAlertDialogAction @click="() => {
+          if(isPhoneExist){
+            createNewContractWithoutCustomerHandler(true)
+          }
+          else{
+            handlePhoneConfirmation(true)
+          }
+          }">
           <Icon
             name="svg-spinners:8-dots-rotate"
-            v-if="isLoading"
-            :disabled="isLoading"
+            v-if="isSubmitting"
+            :disabled="isSubmitting"
             class="mr-2 h-4 w-4 animate-spin"
           ></Icon>
           Continue

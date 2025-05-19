@@ -163,42 +163,42 @@ onMounted(() => {
           class="border rounded-lg mb-4 data-[state=open]:bg-muted/50"
         >
           <div
-            class="flex items-center p-4 hover:bg-muted/50 cursor-pointer transition-colors"
+            class="flex items-center px-6 hover:bg-muted/50 cursor-pointer transition-colors"
             :class="{ 'bg-muted/50': isDeviceSelected(device) }"
             @click.stop="handleDeviceSelect(device)"
           >
-            <div class="flex items-center gap-4 w-full">
               <!-- <UiCheckbox
                 :checked="isDeviceSelected(device)"
                 @click.stop="handleDeviceSelect(device)"
                 class="h-5 w-5"
               /> -->
+              <UiAccordionTrigger class="hover:no-underline" >
               <div class="flex-1 grid grid-cols-7 gap-4">
-                <div class="space-y-2">
+                <div class=" flex flex-col items-start">
                   <p class="text-sm text-muted-foreground">Device ID</p>
-                  <p class="font-medium text-nowrap text-ellipsis overflow-hidden text-base">{{ device.deviceId }}</p>
+                  <p class="font-medium text-wrap text-ellipsis overflow-hidden text-base text-left">{{ device.deviceId }}</p>
                 </div>
-                <div>
+                <div class=" flex flex-col items-center">
                   <p class="text-sm text-muted-foreground">Device Name</p>
-                  <p class="font-medium text-nowrap text-ellipsis overflow-hidden text-base">{{ device.deviceName }}</p>
+                  <p class="font-medium text-wrap text-ellipsis overflow-hidden text-base">{{ device.deviceName }}</p>
                 </div>
-                <div>
+                <div class=" flex flex-col items-center">
                   <p class="text-sm text-muted-foreground">Device Type</p>
                   <p class="font-medium text-nowrap text-ellipsis overflow-hidden text-sm">{{ device.deviceType }}</p>
                 </div>
-                <div>
+                <div class=" flex flex-col items-center">
                   <p class="text-sm text-muted-foreground">OS Version</p>
                   <p class="font-medium">
                     {{ device.osVersion }}
                   </p>
                 </div>
-                <div>
+                <div class=" flex flex-col items-center">
                   <p class="text-sm text-muted-foreground">Active</p>
                   <UiBadge class="font-medium" :class="{ 'bg-green-500': device.active, 'bg-red-500': !device.active }">
                     {{ device.active ? 'Active' : 'Inactive' }}
                   </UiBadge>
                 </div>
-                <div>
+                <div class=" flex flex-col items-center">
                   <p class="text-sm text-muted-foreground">Suspended</p>
                   <UiBadge class="font-medium" :class="{ 'bg-red-500': device.suspended, 'bg-green-500': !device.suspended }">
                     {{ device.suspended ? 'Suspended' : 'Not Suspended' }}
@@ -206,15 +206,14 @@ onMounted(() => {
                 </div>
                 <UiPermissionGuard :permission=" device.suspended ? 'RESTORE_CUSTOMER_DEVICE' : 'SUSPEND_CUSTOMER_DEVICE'" >
                 <div class="flex items-start">
-                  <UiButton  @click=" () => {deviceId = device.id ?? ''; selectedDeviceSuspended = device.suspended ?? false; setOpenEditModal(true)}" size="sm" class="w-fit self-center px-8" :class="{ 'bg-green-500': device.suspended, 'bg-red-500': !device.suspended }" >{{ device.suspended ? 'Restore' : 'Suspend' }}</UiButton>
+                  <UiButton @click.stop=" () => {deviceId = device.id ?? ''; selectedDeviceSuspended = device.suspended ?? false; setOpenEditModal(true)}" size="sm" class="w-fit self-center px-8" :class="{ 'bg-green-500': device.suspended, 'bg-red-500': !device.suspended }" >{{ device.suspended ? 'Restore' : 'Suspend' }}</UiButton>
                 </div>
                 </UiPermissionGuard>
               </div>
-              <UiAccordionTrigger class="ml-auto" />
-            </div>
+            </UiAccordionTrigger>
           </div>
 
-          <UiAccordionContent class="px-4 pb-4">
+          <UiAccordionContent class="px-0 pb-4">
             <div
               class="grid grid-cols-2 md:grid-cols-4 gap-4 px-8 py-4 border-t"
             >
@@ -347,6 +346,67 @@ onMounted(() => {
                   {{ device.lastModifiedDate ? new Date(device.lastModifiedDate).toLocaleDateString() : '-' }}
                 </p>
               </div>
+
+              <div>
+                <p class="text-sm text-muted-foreground">Application Name</p>
+                <p class="font-medium">
+                  {{ device.applicationName || '-' }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Application Id</p>
+                <p class="font-medium">
+                  {{ device.applicationId || '-' }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">application Version Id</p>
+                <p class="font-medium">
+                  {{ device.applicationVersionId || '-' }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Package Name</p>
+                <p class="font-medium">
+                  {{ device.packageName || '-' }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Version Number</p>
+                <p class="font-medium">
+                  {{ device.versionNumber || '-' }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Build Number</p>
+                <p class="font-medium">
+                  {{ device.buildNumber || '-' }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Build Signature</p>
+                <p class="font-medium">
+                  {{ device.buildSignature || '-' }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Installer Store</p>
+                <p class="font-medium">
+                  {{ device.installerStore || '-' }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Install Time</p>
+                <p class="font-medium">
+                  {{ device.installTime || '-' }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">Last Update Time</p>
+                <p class="font-medium">
+                  {{ device.lastUpdateTime || '-' }}
+                </p>
+              </div>  
             </div>
           </UiAccordionContent>
         </UiAccordionItem>

@@ -118,6 +118,16 @@ interface Device {
   lastModifiedDate?: string | Date | null;
   active?: boolean;
   suspended?: boolean;
+  applicationName?:	string
+  applicationId?:	string
+  applicationVersionId?:	string
+  packageName?:	string
+  versionNumber?:	string
+  buildNumber?:	string
+  buildSignature?:	string
+  installerStore?:	string
+  installTime?:	string
+  lastUpdateTime?:	string
 }
 
 interface UserInput {
@@ -773,6 +783,7 @@ interface Contract {
       ]
     | null;
   permissions?: Permissions[];
+  withPrimaryContractUser: boolean
 }
 
 interface ServiceDefinition {
