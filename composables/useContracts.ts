@@ -167,7 +167,7 @@ export const useContracts = () => {
   ) => Promise<Contract> = async (contractData) => {
     try {
       const { data, pending, error, status } = await useFetch<Contract>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contracts/full`,
+        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contracts`,
         {
           method: "POST",
           headers: {
