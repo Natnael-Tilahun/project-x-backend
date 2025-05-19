@@ -941,6 +941,13 @@ interface Staff {
   emailAddress: string | null;
   active?: boolean | null;
   joiningDate?: string | null;
+  assign?:	boolean
+newOfficeId?:	string | null
+supervisorStaffId?:	string | null
+newRoleId?:	string | null
+remarks?:	string  | null
+assignmentDate?:	string | null
+
 }
 
 interface Office {

@@ -129,7 +129,7 @@ const deselectAll = () => {
         <div v-if="loading" class="py-10 flex justify-center w-full">
           <UiLoading />
         </div>
-        <UiCard v-else-if="permissionsData && !isError" class="w-full p-6">
+        <UiCard v-else-if="permissionsData.length > 0 && !isError" class="w-full p-6">
           <form @submit="onSubmit">
             <UiPermissionGuard permission="UPDATE_CONTRACT_PERMISSIONS">
                 <div class="col-span-full w-full pb-4 flex justify-between">
@@ -248,8 +248,8 @@ const deselectAll = () => {
             </div>
           </form>
         </UiCard>
-        <div v-else-if="data == null || data == undefined">
-          <UiNoResultFound title="Sorry, No merchant found." />
+        <div v-else-if="data == null || data == undefined || permissionsData.length == 0">
+          <UiNoResultFound title="Sorry, No contract permissions found." />
         </div>
         <div v-else-if="isError">
           <ErrorMessage title="Something went wrong." />
