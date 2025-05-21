@@ -32,6 +32,10 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
             body: {
               refreshToken: authStore.refreshToken,
             },
+            headers: {
+              'X-App-ID': '0a010fa1-96e8-18fd-8196-ed9cb22d0009',
+              'X-App-Version': '0a010fa1-96e8-18fd-8196-ed9d14d0000a'
+            }
           }
         );
 
