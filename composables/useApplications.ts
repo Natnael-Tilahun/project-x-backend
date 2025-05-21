@@ -1,28 +1,20 @@
 import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { Application } from "~/types";
+import { useApi } from "./useApi";
+import type { Application, AppVersion } from "~/types";
 
 export const useApplications = () => {
-  const runtimeConfig = useRuntimeConfig();
   const authUser = useAuthUser();
   const userAdmin = useState<boolean>("userAdmin", () => false);
   const isLoading = ref<boolean>(false);
   const isUpdating = ref<boolean>(false);
-  const { getRefreshToken } = useAuth();
-
-  const store = useAuthStore();
+  const { fetch } = useApi();
   const { toast } = useToast();
 
   const getApplications: () => Promise<Application[]> = async () => {
     try {
-      const { data, pending, error, status } = await useFetch<Application[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/applications`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<Application[]>(
+        '/api/v1/internal/applications'
       );
 
       isLoading.value = pending.value;
@@ -33,27 +25,16 @@ export const useApplications = () => {
       if (!data.value) {
         throw new Error("No applications data received");
       }
-      return data.value;
+      return data.value as unknown as Application[];
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
-  const getApplicationVersions: (
-    applicationId: string
-  ) => Promise<ApplicationVersion[]> = async (applicationId) => {
+  const getApplicationVersions: (applicationId: string) => Promise<AppVersion[]> = async (applicationId) => {
     try {
-      const { data, pending, error, status } = await useFetch<
-        ApplicationVersion[]
-      >(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/applications/${applicationId}/app-versions`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<AppVersion[]>(
+        `/api/v1/internal/applications/${applicationId}/app-versions`
       );
 
       isLoading.value = pending.value;
@@ -64,26 +45,16 @@ export const useApplications = () => {
       if (!data.value) {
         throw new Error("No applications versions data received");
       }
-      console.log("data.valueee: ", data.value);
-      return data.value;
+      return data.value as unknown as AppVersion[];
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
-  const getApplicationById: (id: string) => Promise<Application> = async (
-    id
-  ) => {
+  const getApplicationById: (id: string) => Promise<Application> = async (id) => {
     try {
-      const { data, pending, error, status } = await useFetch<Application>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/applications/${id}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<Application>(
+        `/api/v1/internal/applications/${id}`
       );
 
       isLoading.value = pending.value;
@@ -94,31 +65,17 @@ export const useApplications = () => {
       if (!data.value) {
         throw new Error("No application data received");
       }
-      return data.value;
+      return data.value as unknown as Application;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
-  const getApplicationVersionById: (
-    applicationId: string,
-    applicationVersionId: string
-  ) => Promise<ApplicationVersion> = async (
-    applicationId,
-    applicationVersionId
-  ) => {
+  const getApplicationVersionById: (applicationId: string, applicationVersionId: string) => Promise<AppVersion> = async (applicationId, applicationVersionId) => {
     try {
-      const { data, pending, error, status } =
-        await useFetch<ApplicationVersion>(
-          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/applications/${applicationId}/app-versions/${applicationVersionId}`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${store.accessToken}`,
-            },
-          }
-        );
+      const { data, pending, error, status } = await fetch<AppVersion>(
+        `/api/v1/internal/applications/${applicationId}/app-versions/${applicationVersionId}`
+      );
 
       isLoading.value = pending.value;
 
@@ -128,212 +85,144 @@ export const useApplications = () => {
       if (!data.value) {
         throw new Error("No application data received");
       }
-      return data.value;
+      return data.value as unknown as AppVersion;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
   const deleteApplicationById: (id: string) => Promise<any> = async (id) => {
     try {
-      const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/applications/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<any>(
+        `/api/v1/internal/applications/${id}`,
+        { method: "DELETE" }
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        console.log("Deleting application error: ", error.value?.data?.message);
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.message,
           variant: "destructive",
         });
         throw new Error("Deleting application error: " + error.value);
       }
 
-      return data;
+      return data.value;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
-  const deleteApplicationVersionById: (
-    applicationId: string,
-    applicationVersionId: string
-  ) => Promise<any> = async (applicationId, applicationVersionId) => {
+  const deleteApplicationVersionById: (applicationId: string, applicationVersionId: string) => Promise<any> = async (applicationId, applicationVersionId) => {
     try {
-      const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/applications/${applicationId}/app-versions/${applicationVersionId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<any>(
+        `/api/v1/internal/applications/${applicationId}/app-versions/${applicationVersionId}`,
+        { method: "DELETE" }
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        console.log(
-          "Deleting application version error: ",
-          error.value?.data?.message
-        );
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.message,
           variant: "destructive",
         });
         throw new Error("Deleting application version error: " + error.value);
       }
 
-      return data;
+      return data.value;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
-  const createNewApplication: (
-    applicationDetail: Application
-  ) => Promise<Application> = async (applicationDetail) => {
+  const createNewApplication: (applicationDetail: Application) => Promise<Application> = async (applicationDetail) => {
     try {
-      const { data, pending, error, status } = await useFetch<Application>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/applications`,
+      const { data, pending, error, status } = await fetch<Application>(
+        '/api/v1/internal/applications',
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-          body: JSON.stringify(applicationDetail),
+          body: applicationDetail
         }
       );
+
       isLoading.value = pending.value;
+
       if (status.value === "error") {
         toast({
           title: error.value?.data?.title || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.detail,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.detail,
           variant: "destructive",
         });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Creating new application error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Creating new application error: ",
-            error.value?.data?.detail
-          );
-        }
         throw new Error(error.value?.data?.detail);
       }
       if (!data.value) {
         throw new Error("No application data received");
       }
-      return data.value;
+      return data.value as unknown as Application;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
-  const createNewApplicationVersion: (
-    applicationId: string,
-    applicationVersionDetail: ApplicationVersion
-  ) => Promise<ApplicationVersion> = async (
-    applicationId,
-    applicationVersionDetail
-  ) => {
+  const createNewApplicationVersion: (applicationId: string, applicationVersionDetail: AppVersion) => Promise<AppVersion> = async (applicationId, applicationVersionDetail) => {
     try {
-      const { data, pending, error, status } =
-        await useFetch<ApplicationVersion>(
-          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/applications/${applicationId}/app-versions`,
-          {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${store.accessToken}`,
-            },
-            body: JSON.stringify(applicationVersionDetail),
-          }
-        );
+      const { data, pending, error, status } = await fetch<AppVersion>(
+        `/api/v1/internal/applications/${applicationId}/app-versions`,
+        {
+          method: "POST",
+          body: applicationVersionDetail
+        }
+      );
+
       isLoading.value = pending.value;
+
       if (status.value === "error") {
         toast({
           title: error.value?.data?.title || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.detail,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.detail,
           variant: "destructive",
         });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Creating new application version error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Creating new application version error: ",
-            error.value?.data?.detail
-          );
-        }
         throw new Error(error.value?.data?.detail);
       }
       if (!data.value) {
         throw new Error("No application versions data received");
       }
-      return data.value;
+      return data.value as unknown as AppVersion;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
-  const updateApplication: (
-    applicationId: string,
-    applicationDetail: any
-  ) => Promise<Application> = async (applicationId, applicationDetail) => {
+  const updateApplication: (applicationId: string, applicationDetail: any) => Promise<Application> = async (applicationId, applicationDetail) => {
     try {
-      const { data, pending, error, status } = await useFetch<Application>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/applications/${applicationId}`,
+      const { data, pending, error, status } = await fetch<Application>(
+        `/api/v1/internal/applications/${applicationId}`,
         {
           method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-          body: JSON.stringify(applicationDetail),
+          body: applicationDetail
         }
       );
+
       isUpdating.value = pending.value;
+
       if (status.value === "error") {
-        console.log("Updating application error: ", error.value?.data?.detail);
         toast({
           title: error.value?.data?.title || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.detail,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.detail,
           variant: "destructive",
         });
         throw new Error(error.value?.data?.detail);
@@ -341,46 +230,30 @@ export const useApplications = () => {
       if (!data.value) {
         throw new Error("No application data received");
       }
-      return data.value;
+      return data.value as unknown as Application;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
-  const updateApplicationVersion: (
-    applicationId: string,
-    applicationVersionId: string,
-    applicationVersionDetail: any
-  ) => Promise<ApplicationVersion> = async (
-    applicationId,
-    applicationVersionId,
-    applicationVersionDetail
-  ) => {
+  const updateApplicationVersion: (applicationId: string, applicationVersionId: string, applicationVersionDetail: any) => Promise<AppVersion> = async (applicationId, applicationVersionId, applicationVersionDetail) => {
     try {
-      const { data, pending, error, status } =
-        await useFetch<ApplicationVersion>(
-          `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/applications/${applicationId}/app-versions/${applicationVersionId}`,
-          {
-            method: "PATCH",
-            headers: {
-              Authorization: `Bearer ${store.accessToken}`,
-            },
-            body: JSON.stringify(applicationVersionDetail),
-          }
-        );
+      const { data, pending, error, status } = await fetch<AppVersion>(
+        `/api/v1/internal/applications/${applicationId}/app-versions/${applicationVersionId}`,
+        {
+          method: "PATCH",
+          body: applicationVersionDetail
+        }
+      );
+
       isUpdating.value = pending.value;
+
       if (status.value === "error") {
-        console.log(
-          "Updating application version error: ",
-          error.value?.data?.message
-        );
         toast({
           title: error.value?.data?.title || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.detail,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.detail,
           variant: "destructive",
         });
         throw new Error(error.value?.data?.detail);
@@ -388,9 +261,8 @@ export const useApplications = () => {
       if (!data.value) {
         throw new Error("No application versions data received");
       }
-      return data.value;
+      return data.value as unknown as AppVersion;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
