@@ -1,26 +1,20 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
+import { useApi } from "./useApi";
 import type { Office } from "~/types";
 
 export const useOffice = () => {
-  const runtimeConfig = useRuntimeConfig();
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
+  const { fetch } = useApi();
+  const { toast } = useToast();
 
-  const store = useAuthStore();
-
-  const getOffices: (
-    page?: number,
-    size?: number
-  ) => Promise<Office[]> = async (page, size) => {
+  const getOffices: (page?: number, size?: number) => Promise<Office[]> = async (page, size) => {
     try {
-      const { data, pending, error, status } = await useFetch<Office[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/offices?page=${page}&size=${size}`,
+      const { data, pending, error, status } = await fetch<Office[]>(
+        '/api/v1/internal/offices',
         {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
+          params: { page, size }
         }
       );
 
@@ -29,10 +23,9 @@ export const useOffice = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.message,
           variant: "destructive",
         });
         throw new Error(error.value?.data?.detail);
@@ -42,23 +35,16 @@ export const useOffice = () => {
         throw new Error("No office data received");
       }
 
-      return data.value;
+      return data.value as unknown as Office[];
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
   const getOfficeById: (id: string) => Promise<Office> = async (id) => {
     try {
-      const { data, pending, error, status } = await useFetch<Office>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/offices/${id}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<Office>(
+        `/api/v1/internal/offices/${id}`
       );
 
       isLoading.value = pending.value;
@@ -66,10 +52,9 @@ export const useOffice = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.message,
           variant: "destructive",
         });
         throw new Error(error.value?.data?.detail);
@@ -79,25 +64,19 @@ export const useOffice = () => {
         throw new Error("No Office with this id received");
       }
 
-      return data.value;
+      return data.value as unknown as Office;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
-  const createNewOffice: (
-    staffData: any
-  ) => Promise<Office> = async (staffData) => {
+  const createNewOffice: (staffData: any) => Promise<Office> = async (staffData) => {
     try {
-      const { data, pending, error, status } = await useFetch<Office>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/offices`,
+      const { data, pending, error, status } = await fetch<Office>(
+        '/api/v1/internal/offices',
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-          body: JSON.stringify(staffData),
+          body: staffData
         }
       );
 
@@ -106,53 +85,31 @@ export const useOffice = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message || error.value?.data?.detail,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.message || error.value?.data?.detail,
           variant: "destructive",
         });
-
-        console.log("Creating new Office error: ", error.value?.data.detail);
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Creating new staff error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Creating new Office errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data.detail);
+        throw new Error(error.value?.data?.detail);
       }
 
       if (!data.value) {
         throw new Error("No Office with this Office id received");
       }
 
-      return data.value;
+      return data.value as unknown as Office;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
-  const updateOffice: (
-    staffId: string,
-    staffData: any
-  ) => Promise<Office> = async (staffId, staffData) => {
+  const updateOffice: (staffId: string, staffData: any) => Promise<Office> = async (staffId, staffData) => {
     try {
-      const { data, pending, error, status } = await useFetch<Office>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/offices/${staffId}`,
+      const { data, pending, error, status } = await fetch<Office>(
+        `/api/v1/internal/offices/${staffId}`,
         {
           method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-          body: JSON.stringify(staffData),
+          body: staffData
         }
       );
 
@@ -161,60 +118,39 @@ export const useOffice = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.message,
           variant: "destructive",
         });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Updating Office error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Updating Office errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data);
+        throw new Error(error.value?.data?.detail);
       }
 
       if (!data.value) {
         throw new Error("No Office with this Office id received");
       }
 
-      return data.value;
+      return data.value as unknown as Office;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
   const deleteOffice: (id: string) => Promise<any> = async (id) => {
     try {
-      const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/offices/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<any>(
+        `/api/v1/internal/offices/${id}`,
+        { method: "DELETE" }
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        console.log("Deleting Office error: ", error.value?.data?.message);
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.message,
           variant: "destructive",
         });
         throw new Error(error.value?.data?.detail);
@@ -222,7 +158,6 @@ export const useOffice = () => {
 
       return data.value;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };

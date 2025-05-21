@@ -1,23 +1,18 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
+import { useApi } from "./useApi";
+import type { RequestInput } from "~/types";
 
 export const useOperationRequestInputs = () => {
-  const runtimeConfig = useRuntimeConfig();
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
-
-  const store = useAuthStore();
+  const { fetch } = useApi();
+  const { toast } = useToast();
 
   const getRequestInputs: () => Promise<RequestInput[]> = async () => {
     try {
-      const { data, pending, error, status } = await useFetch<RequestInput[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/request-inputs`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<RequestInput[]>(
+        '/api/v1/internal/request-inputs'
       );
 
       isLoading.value = pending.value;
@@ -25,9 +20,11 @@ export const useOperationRequestInputs = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation" 
+            ? error.value?.data?.fieldErrors[0]?.message 
+            : error.value?.data?.message,
           variant: "destructive"
-        })
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -35,23 +32,16 @@ export const useOperationRequestInputs = () => {
         throw new Error("No request inputs data received");
       }
 
-      return data.value;
+      return data.value as unknown as RequestInput[];
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
   const getRequestInputById: (id: string) => Promise<RequestInput> = async (id) => {
     try {
-      const { data, pending, error, status } = await useFetch<RequestInput>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/request-inputs/${id}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<RequestInput>(
+        `/api/v1/internal/request-inputs/${id}`
       );
 
       isLoading.value = pending.value;
@@ -59,9 +49,11 @@ export const useOperationRequestInputs = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation" 
+            ? error.value?.data?.fieldErrors[0]?.message 
+            : error.value?.data?.message,
           variant: "destructive"
-        })
+        });
         throw new Error(error.value?.data?.detail);
       }
 
@@ -69,133 +61,103 @@ export const useOperationRequestInputs = () => {
         throw new Error("No request input with this id received");
       }
 
-      return data.value;
+      return data.value as unknown as RequestInput;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
   const createNewRequestInput: (requestInputData: any) => Promise<RequestInput> = async (requestInputData) => {
-    console.log("createNewRequestInput requestInputData: ", requestInputData);
     try {
-      const { data, pending, error, status } = await useFetch<RequestInput>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/request-inputs`,
+      const { data, pending, error, status } = await fetch<RequestInput>(
+        '/api/v1/internal/request-inputs',
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-          body: JSON.stringify(requestInputData),
-        },
+          body: requestInputData
+        }
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message || error.value?.data?.detail,
+          description: error.value?.data?.type == "/constraint-violation" 
+            ? error.value?.data?.fieldErrors[0]?.message 
+            : error.value?.data?.message || error.value?.data?.detail,
           variant: "destructive"
-        })
-
-        console.log("Creating new request input error: ", error.value?.data.detail)
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Creating new request input error: ", error.value?.data?.fieldErrors[0].message)
-        }
-        else {
-          console.log("Creating new request input errorrr: ", error.value?.data?.message)
-        }
-        throw new Error(error.value?.data.detail);
+        });
+        throw new Error(error.value?.data?.detail);
       }
 
       if (!data.value) {
         throw new Error("No request input received");
       }
 
-      return data.value;
+      return data.value as unknown as RequestInput;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
   const updateRequestInput: (requestInputId: string, requestInputData: any) => Promise<RequestInput> = async (requestInputId, requestInputData) => {
     try {
-      const { data, pending, error, status } = await useFetch<RequestInput>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/request-inputs/${requestInputId}`,
+      const { data, pending, error, status } = await fetch<RequestInput>(
+        `/api/v1/internal/request-inputs/${requestInputId}`,
         {
           method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-          body: JSON.stringify(requestInputData),
-        },
+          body: requestInputData
+        }
       );
 
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation" 
+            ? error.value?.data?.fieldErrors[0]?.message 
+            : error.value?.data?.message,
           variant: "destructive"
-        })
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Updating request input error: ", error.value?.data?.fieldErrors[0].message)
-        }
-        else {
-          console.log("Updating request input errorrr: ", error.value?.data?.message)
-        }
-        throw new Error(error.value?.data);
+        });
+        throw new Error(error.value?.data?.detail);
       }
 
       if (!data.value) {
         throw new Error("No request input with this request input id received");
       }
 
-      return data.value;
+      return data.value as unknown as RequestInput;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
   const deleteRequestInput: (id: string) => Promise<any> = async (id) => {
     try {
-      const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/request-inputs/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<any>(
+        `/api/v1/internal/request-inputs/${id}`,
+        { method: "DELETE" }
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-          console.log("Deleting request input error: ", error.value?.data?.message)
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation" 
+            ? error.value?.data?.fieldErrors[0]?.message 
+            : error.value?.data?.message,
           variant: "destructive"
-        })
+        });
         throw new Error(error.value?.data?.detail);
       }
 
       return data.value;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
-
 
   return {
     isLoading,

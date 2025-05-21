@@ -1,26 +1,23 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
+import { useApi } from "./useApi";
 import type { Contract, ContractAccount, ContractCoreCustomer } from "~/types";
 
 export const useContractsCoreCustomersAccount = () => {
-  const runtimeConfig = useRuntimeConfig();
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
-
-  const store = useAuthStore();
+  const { fetch } = useApi();
+  const { toast } = useToast();
 
   const getContractCoreCustomerAccounts: (
     page?: number,
     size?: number
-  ) => Promise<ContractAccount[]> = async ( page, size) => {
+  ) => Promise<ContractAccount[]> = async (page, size) => {
     try {
-      const { data, pending, error, status } = await useFetch<ContractAccount[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-accounts?page=${page}&size=${size}`,
+      const { data, pending, error, status } = await fetch<ContractAccount[]>(
+        '/api/v1/internal/contract-accounts',
         {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
+          params: { page, size }
         }
       );
 
@@ -29,10 +26,9 @@ export const useContractsCoreCustomersAccount = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.message,
           variant: "destructive",
         });
         throw new Error(error.value?.data?.detail);
@@ -42,23 +38,16 @@ export const useContractsCoreCustomersAccount = () => {
         throw new Error("No contract accounts data received");
       }
 
-      return data.value;
+      return data.value as unknown as ContractAccount[];
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
   const getContractCoreCustomerAccountById: (id: string) => Promise<ContractAccount> = async (id) => {
     try {
-      const { data, pending, error, status } = await useFetch<ContractAccount>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-accounts/${id}`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<ContractAccount>(
+        `/api/v1/internal/contract-accounts/${id}`
       );
 
       isLoading.value = pending.value;
@@ -66,10 +55,9 @@ export const useContractsCoreCustomersAccount = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.message,
           variant: "destructive",
         });
         throw new Error(error.value?.data?.detail);
@@ -79,9 +67,8 @@ export const useContractsCoreCustomersAccount = () => {
         throw new Error("No contract account with this id received");
       }
 
-      return data.value;
+      return data.value as unknown as ContractAccount;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
@@ -90,14 +77,11 @@ export const useContractsCoreCustomersAccount = () => {
     contractCoreCustomerData: any
   ) => Promise<ContractAccount> = async (contractCoreCustomerData) => {
     try {
-      const { data, pending, error, status } = await useFetch<ContractAccount>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-accounts`,
+      const { data, pending, error, status } = await fetch<ContractAccount>(
+        '/api/v1/internal/contract-accounts',
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-          body: JSON.stringify(contractCoreCustomerData),
+          body: contractCoreCustomerData
         }
       );
 
@@ -106,36 +90,20 @@ export const useContractsCoreCustomersAccount = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message || error.value?.data?.detail,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.message || error.value?.data?.detail,
           variant: "destructive",
         });
-
-        console.log("Creating new contract account error: ", error.value?.data.detail);
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Creating new contract account error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Creating new contract account errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data.detail);
+        throw new Error(error.value?.data?.detail);
       }
 
       if (!data.value) {
         throw new Error("No contract account with this customer id received");
       }
 
-      return data.value;
+      return data.value as unknown as ContractAccount;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
@@ -145,14 +113,11 @@ export const useContractsCoreCustomersAccount = () => {
     contractAccountData: any
   ) => Promise<ContractAccount> = async (contractAccountId, contractAccountData) => {
     try {
-      const { data, pending, error, status } = await useFetch<ContractAccount>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-accounts/${contractAccountId}`,
+      const { data, pending, error, status } = await fetch<ContractAccount>(
+        `/api/v1/internal/contract-accounts/${contractAccountId}`,
         {
           method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-          body: JSON.stringify(contractAccountData),
+          body: contractAccountData
         }
       );
 
@@ -161,34 +126,20 @@ export const useContractsCoreCustomersAccount = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.message,
           variant: "destructive",
         });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Updating contract account error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Updating contract account errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data);
+        throw new Error(error.value?.data?.detail);
       }
 
       if (!data.value) {
         throw new Error("No contract account with this contract account id received");
       }
 
-      return data.value;
+      return data.value as unknown as ContractAccount;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
@@ -198,13 +149,10 @@ export const useContractsCoreCustomersAccount = () => {
     statusData: any
   ) => Promise<ContractAccount> = async (contractAccountId, statusData) => {
     try {
-      const { data, pending, error, status } = await useFetch<ContractAccount>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-accounts/${contractAccountId}/${statusData}`,
+      const { data, pending, error, status } = await fetch<ContractAccount>(
+        `/api/v1/internal/contract-accounts/${contractAccountId}/${statusData}`,
         {
-          method: "PATCH",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
+          method: "PATCH"
         }
       );
 
@@ -213,34 +161,20 @@ export const useContractsCoreCustomersAccount = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.message,
           variant: "destructive",
         });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Updating contract account error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Updating contract account errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data);
+        throw new Error(error.value?.data?.detail);
       }
 
       if (!data.value) {
         throw new Error("No contract account with this contract account id received");
       }
 
-      return data.value;
+      return data.value as unknown as ContractAccount;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
@@ -250,14 +184,11 @@ export const useContractsCoreCustomersAccount = () => {
     permissionsData: any
   ) => Promise<ContractAccount> = async (contractAccountId, permissionsData) => {
     try {
-      const { data, pending, error, status } = await useFetch<ContractAccount>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-core-customers/contract-accounts/${contractAccountId}/permissions`,
+      const { data, pending, error, status } = await fetch<ContractAccount>(
+        `/api/v1/internal/contract-core-customers/contract-accounts/${contractAccountId}/permissions`,
         {
           method: "PUT",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-          body: JSON.stringify(permissionsData),
+          body: permissionsData
         }
       );
 
@@ -266,61 +197,39 @@ export const useContractsCoreCustomersAccount = () => {
       if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.message,
           variant: "destructive",
         });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Updating contract account permissions error: ",
-            error.value?.data?.fieldErrors[0].message
-          ); 
-          
-        } else {
-          console.log(
-            "Updating contract core customer errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data);
+        throw new Error(error.value?.data?.detail);
       }
 
       if (!data.value) {
         throw new Error("No contract account with this contract account id received");
       }
 
-      return data.value;
+      return data.value as unknown as ContractAccount;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
   const deleteContractCoreCustomerAccount: (id: string) => Promise<any> = async (id) => {
     try {
-      const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/contract-accounts/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<any>(
+        `/api/v1/internal/contract-accounts/${id}`,
+        { method: "DELETE" }
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        console.log("Deleting contract account error: ", error.value?.data?.message);
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation"
+            ? error.value?.data?.fieldErrors[0]?.message
+            : error.value?.data?.message,
           variant: "destructive",
         });
         throw new Error(error.value?.data?.detail);
@@ -328,12 +237,10 @@ export const useContractsCoreCustomersAccount = () => {
 
       return data.value;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
- 
   return {
     isLoading,
     getContractCoreCustomerAccounts,

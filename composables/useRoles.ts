@@ -1,86 +1,76 @@
 import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { Role } from "~/types";
+import { useApi } from "./useApi";
+
 export const useRoles = () => {
-  const runtimeConfig = useRuntimeConfig();
   const authUser = useAuthUser();
   const userAdmin = useState<boolean>("userAdmin", () => false);
   const isLoading = ref<boolean>(false);
   const isUpdating = ref<boolean>(false);
   const { getRefreshToken, getAuthorities } = useAuth();
-
-  const store = useAuthStore();
   const { toast } = useToast();
+  const { fetch } = useApi();
 
   const getRoles: () => Promise<Role[]> = async () => {
     try {
-      const { data, pending, error, status } = await useFetch<Role[]>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/list`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<Role[]>(
+        '/api/v1/internal/roles/list'
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Getting user error: " + error.value);
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description: error.value?.data?.type == "/constraint-violation" 
+            ? error.value?.data?.fieldErrors[0]?.message 
+            : error.value?.data?.message,
+          variant: "destructive"
+        });
+        throw new Error(error.value?.data?.detail);
       }
+
       if (!data.value) {
         throw new Error("No roles data received");
       }
-      return data.value;
+
+      return data.value as unknown as Role[];
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
   const deleteRoleById: (id: string) => Promise<any> = async (id) => {
     try {
-      const { data, pending, error, status } = await useFetch<any>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/delete/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<any>(
+        `/api/v1/internal/roles/delete/${id}`,
+        { method: "DELETE" }
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        console.log("Deleting role error: ", error.value?.data?.message)
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation" 
+            ? error.value?.data?.fieldErrors[0]?.message 
+            : error.value?.data?.message,
           variant: "destructive"
-        })
-        throw new Error("Deleting role error: " + error.value);
+        });
+        throw new Error(error.value?.data?.detail);
       }
 
-      return data;
+      return data.value;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
   const getRolePermissions: (name: string) => Promise<Role> = async (name) => {
-    console.log("name: ", name)
     try {
-      const { data, pending, error, status } = await useFetch<Role>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/${name}/permissions`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-        }
+      const { data, pending, error, status } = await fetch<Role>(
+        `/api/v1/internal/roles/${name}/permissions`
       );
 
       isLoading.value = pending.value;
@@ -88,122 +78,129 @@ export const useRoles = () => {
       if (status.value === "error") {
         if (error.value?.statusCode == 401) {
           await getRefreshToken().catch(e => {
-            console.log("refreshing token error: ", e)
-            navigateTo('/login')
-          })
+            console.log("refreshing token error: ", e);
+            navigateTo('/login');
+          });
         }
-        throw new Error("Getting user error: " + error);
+        toast({
+          title: error.value?.data?.type || "Something went wrong!",
+          description: error.value?.data?.type == "/constraint-violation" 
+            ? error.value?.data?.fieldErrors[0]?.message 
+            : error.value?.data?.message,
+          variant: "destructive"
+        });
+        throw new Error(error.value?.data?.detail);
       }
+
       if (!data.value) {
         throw new Error("No roles data received");
       }
-      return data.value;
+
+      return data.value as unknown as Role;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
   const createNewRole: (roleDetail: Role) => Promise<Role> = async (roleDetail) => {
     try {
-      const { data, pending, error, status } = await useFetch<Role>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/create`,
+      const { data, pending, error, status } = await fetch<Role>(
+        '/api/v1/internal/roles/create',
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-          body: JSON.stringify(roleDetail),
+          body: roleDetail
         }
       );
-      isLoading.value = pending.value;
-      if (status.value === "error") {
 
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation" 
+            ? error.value?.data?.fieldErrors[0]?.message 
+            : error.value?.data?.message,
           variant: "destructive"
-        })
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log("Creating new customer error: ", error.value?.data?.fieldErrors[0].message)
-        }
-        else {
-          console.log("Creating new customer errorrr: ", error.value?.data?.message)
-        }
-        throw new Error(error.value?.data);
+        });
+        throw new Error(error.value?.data?.detail);
       }
+
       if (!data.value) {
         throw new Error("No roles data received");
       }
-      return data.value;
+
+      return data.value as unknown as Role;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
   const updateRolePermissions: (roleName: string, roleDetail: any) => Promise<Role> = async (roleName, roleDetail) => {
     try {
-      const { data, pending, error, status } = await useFetch<Role>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/${roleName}/permissions/update`,
+      const { data, pending, error, status } = await fetch<Role>(
+        `/api/v1/internal/roles/${roleName}/permissions/update`,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
-          body: JSON.stringify(roleDetail),
+          body: roleDetail
         }
       );
+
       isUpdating.value = pending.value;
+
       if (status.value === "error") {
-        console.log("Updating role permissions error: ", error.value?.data?.message)
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation" 
+            ? error.value?.data?.fieldErrors[0]?.message 
+            : error.value?.data?.message,
           variant: "destructive"
-        })
-        throw new Error(error.value?.data);
+        });
+        throw new Error(error.value?.data?.detail);
       }
+
       if (!data.value) {
         throw new Error("No roles data received");
       }
-      await getAuthorities()
-      return data.value;
+
+      await getAuthorities();
+      return data.value as unknown as Role;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
 
   const updateRoleStatus: (roleName: string, roleStatus: boolean) => Promise<Role> = async (roleName, roleStatus) => {
     try {
-      const { data, pending, error, status } = await useFetch<Role>(
-        `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/roles/${roleName}?action=${roleStatus ? "disable": "enable" }`,
+      const { data, pending, error, status } = await fetch<Role>(
+        `/api/v1/internal/roles/${roleName}`,
         {
           method: "POST",
-          headers: {
-            Authorization: `Bearer ${store.accessToken}`,
-          },
+          params: {
+            action: roleStatus ? "disable" : "enable"
+          }
         }
       );
+
       isUpdating.value = pending.value;
+
       if (status.value === "error") {
-        console.log("Updating role status error: ", error.value?.data?.message)
         toast({
           title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" ? error.value?.data?.fieldErrors[0]?.message : error.value?.data?.message,
+          description: error.value?.data?.type == "/constraint-violation" 
+            ? error.value?.data?.fieldErrors[0]?.message 
+            : error.value?.data?.message,
           variant: "destructive"
-        })
-        throw new Error(error.value?.data);
+        });
+        throw new Error(error.value?.data?.detail);
       }
+
       if (!data.value) {
         throw new Error("No roles data received");
       }
-      await getAuthorities()
-      return data.value;
+
+      await getAuthorities();
+      return data.value as unknown as Role;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
       throw err;
     }
   };
