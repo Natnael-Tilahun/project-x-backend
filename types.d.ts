@@ -1059,3 +1059,20 @@ export interface ApiResponse<T> {
     value: 'success' | 'error';
   };
 }
+
+export interface OtpDTO {
+  verificationId:	string
+  phone?:	string
+  expiryTime?:	string
+  }
+
+export interface TFAAccessTokenDTO{
+  token:	string
+  validFrom:	string
+  validTo:	string
+}
+
+export interface VerificationRequest{
+  verificationId: string
+  otp?: 	string
+}

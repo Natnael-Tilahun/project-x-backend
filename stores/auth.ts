@@ -11,6 +11,10 @@ interface AuthState {
   refreshTokenExpiresIn: string;
   permissions: string[];
   roles: string[];
+  verificationId: string
+  phone: string
+  expiryTime: string
+  twoFactorToken:string
 }
 
 interface AuthPayload {
@@ -22,7 +26,12 @@ interface AuthPayload {
   refreshToken: string;
   refreshTokenExpiresIn: string;
   permissions: string[];
+  verificationId: string
+  phone: string
+  expiryTime: string
+  twoFactorToken:string
 }
+
 
 export const useAuthStore = defineStore("auth", {
   state: (): AuthState => ({
@@ -34,7 +43,11 @@ export const useAuthStore = defineStore("auth", {
     refreshToken: "",
     refreshTokenExpiresIn: "",
     permissions: [],
-    roles: []
+    roles: [],
+    verificationId: "",
+    expiryTime: "",
+    phone:"",
+    twoFactorToken:""
   }),
 
   actions: {
@@ -56,6 +69,16 @@ export const useAuthStore = defineStore("auth", {
       this.roles = auth?.roles ?? [];
     },
 
+    setOTPValues(auth: { verificationId: string, expiryTime:string, phone:string }) {
+      this.verificationId = auth?.verificationId ?? "";
+      this.expiryTime = auth?.expiryTime ?? "";
+      this.phone = auth?.phone ?? "";
+    },
+
+    setTwoFactorToken(auth: { twoFactorToken: string}) {
+      this.twoFactorToken = auth?.twoFactorToken ?? "";
+    },
+
     $reset() {
       this.isAuthenticated = false;
       this.username = "";
@@ -65,6 +88,10 @@ export const useAuthStore = defineStore("auth", {
       this.refreshToken = "";
       this.refreshTokenExpiresIn = "";
       this.permissions = [];
+      this.verificationId = "";
+      this.expiryTime = "";
+      this.phone = "";
+      this.twoFactorToken = ""
     },
   },
   getters: {
@@ -81,6 +108,6 @@ export const useAuthStore = defineStore("auth", {
   // },
   persist: {
     storage: sessionStorage,
-    paths: ['isAuthenticated', 'accessToken', 'refreshToken', 'refreshTokenExpiresIn']
+    paths: ['isAuthenticated', 'accessToken', 'refreshToken', 'refreshTokenExpiresIn', 'twoFactorToken', 'verificationId']
   },
 });
