@@ -1,6 +1,6 @@
 import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { User, UserInput } from "~/types";
+import type { OtpDTO, TFAAccessTokenDTO, User, UserInput, VerificationRequest } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
@@ -176,6 +176,68 @@ export const useAuth = () => {
     }
   };
 
+  const requestTwoFactorAuth: (deliveryMethod?: string) => ApiResult<OtpDTO> = async (deliveryMethod) => {
+    try {
+      const { data, pending, error, status } = await fetch<OtpDTO>(
+        `/api/v1/auth/two-factor/request-token?deliveryMethod=${deliveryMethod}`,
+        {
+          method: "POST",
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      const response = data.value as OtpDTO;
+      if (status.value === "success" && response?.verificationId) {
+        store.$patch({
+          verificationId: response.verificationId
+        });
+      }
+
+      return response;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
+  const validateTwoFactorAuth: (otp: string) => ApiResult<TFAAccessTokenDTO> = async (otp) => {
+    try {
+      const { data, pending, error, status } = await fetch<TFAAccessTokenDTO>(
+        `/api/v1/auth/two-factor/validate`,
+        {
+          method: "POST",
+          body: {
+            verificationId: store.verificationId,
+            otp: otp
+          }
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      const response = data.value as TFAAccessTokenDTO;
+      if (status.value === "success" && response?.token) {
+        store.$patch({
+          twoFactorToken: response.token
+        });
+      }
+
+      return response;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
   return {
     login,
     userLoggedIn,
@@ -188,5 +250,7 @@ export const useAuth = () => {
     getRefreshToken,
     setNewPassword,
     getAuthorities,
+    requestTwoFactorAuth,
+    validateTwoFactorAuth
   };
 };
