@@ -5,6 +5,8 @@ import type {
   LocalizedDefaultMessage,
   LocalizedUssdMenu,
 } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useUssdLocalizedDefaultMessage = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -16,7 +18,7 @@ export const useUssdLocalizedDefaultMessage = () => {
   const getUssdLocalizedDefaultMessages: (
     page?: number,
     size?: number
-  ) => Promise<LocalizedDefaultMessage[]> = async (page, size) => {
+  ) => ApiResult<LocalizedDefaultMessage[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await useFetch<
         LocalizedDefaultMessage[]
@@ -33,31 +35,19 @@ export const useUssdLocalizedDefaultMessage = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No localized default messages data received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const getUssdLocalizedDefaultMessageById: (
     id: string
-  ) => Promise<LocalizedDefaultMessage> = async (id) => {
+  ) => ApiResult<LocalizedDefaultMessage> = async (id) => {
     try {
       const { data, pending, error, status } =
         await useFetch<LocalizedDefaultMessage>(
@@ -73,31 +63,19 @@ export const useUssdLocalizedDefaultMessage = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No localized default message with this id received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const createNewUssdLocalizedDefaultMessage: (
     defaultMessageData: any
-  ) => Promise<LocalizedDefaultMessage> = async (defaultMessageData) => {
+  ) => ApiResult<LocalizedDefaultMessage> = async (defaultMessageData) => {
     try {
       const { data, pending, error, status } =
         await useFetch<LocalizedDefaultMessage>(
@@ -114,49 +92,20 @@ export const useUssdLocalizedDefaultMessage = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-
-        console.log(
-          "Creating new localized default message error: ",
-          error.value?.data.detail
-        );
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Creating new localized default message error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Creating new localized default message errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No localized default message received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateUssdLocalizedDefaultMessage: (
     defaultMessageId: string,
     defaultMessageData: any
-  ) => Promise<LocalizedDefaultMessage> = async (
+  ) => ApiResult<LocalizedDefaultMessage> = async (
     defaultMessageId,
     defaultMessageData
   ) => {
@@ -176,46 +125,20 @@ export const useUssdLocalizedDefaultMessage = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Updating localized default message error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Updating localized default message errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error(
-          "No localized default message with this default message id received"
-        );
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateUssdLocalizedDefaultMessageStatus: (
     id: string,
     status: string
-  ) => Promise<LocalizedDefaultMessage> = async (id, status) => {
+  ) => ApiResult<LocalizedDefaultMessage> = async (id, status) => {
     try {
       const {
         data,
@@ -235,43 +158,19 @@ export const useUssdLocalizedDefaultMessage = () => {
       isSubmitting.value = pending.value;
 
       if (statusCode.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Updating ussd localized default message status error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Updating ussd localized default message status errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd localized default message status received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const deleteUssdLocalizedDefaultMessage: (
     defaultMessageId: string
-  ) => Promise<LocalizedDefaultMessage | null> = async (defaultMessageId) => {
+  ) => ApiResult<LocalizedDefaultMessage> = async (defaultMessageId) => {
     try {
       const { data, pending, error, status } =
         await useFetch<LocalizedDefaultMessage>(
@@ -287,33 +186,13 @@ export const useUssdLocalizedDefaultMessage = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Deleting localized default message error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Deleting localized default message errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data);
+        handleApiError(error);
       }
 
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

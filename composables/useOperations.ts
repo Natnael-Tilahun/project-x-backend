@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { ApiOperation } from "~/types";
 import { useApi } from "./useApi";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useOperations = () => {
   const isLoading = ref<boolean>(false);
@@ -9,7 +11,7 @@ export const useOperations = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
-  const getOperations: (page?: number, size?: number) => Promise<ApiOperation[]> = async (page, size) => {
+  const getOperations: (page?: number, size?: number) => ApiResult<ApiOperation[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<ApiOperation[]>(
         '/api/v1/internal/api-operations',
@@ -21,27 +23,17 @@ export const useOperations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No operations data received");
-      }
-
-      return data.value as unknown as ApiOperation[];
+      return data.value ? (data.value as unknown as ApiOperation[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getOperationById: (id: string) => Promise<ApiOperation> = async (id) => {
+  const getOperationById: (id: string) => ApiResult<ApiOperation> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<ApiOperation>(
         `/api/v1/internal/api-operations/${id}`
@@ -50,27 +42,17 @@ export const useOperations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No operation with this id received");
-      }
-
-      return data.value as unknown as ApiOperation;
+      return data.value ? (data.value as unknown as ApiOperation) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewOperation: (operation: ApiOperation) => Promise<ApiOperation> = async (operation) => {
+  const createNewOperation: (operation: ApiOperation) => ApiResult<ApiOperation> = async (operation) => {
     try {
       const { data, pending, error, status } = await fetch<ApiOperation>(
         '/api/v1/internal/api-operations',
@@ -83,27 +65,17 @@ export const useOperations = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No operation data received");
-      }
-
-      return data.value as unknown as ApiOperation;
+      return data.value ? (data.value as unknown as ApiOperation) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateOperation: (id: string, operation: ApiOperation) => Promise<ApiOperation> = async (id, operation) => {
+  const updateOperation: (id: string, operation: ApiOperation) => ApiResult<ApiOperation> = async (id, operation) => {
     try {
       const { data, pending, error, status } = await fetch<ApiOperation>(
         `/api/v1/internal/api-operations/${id}`,
@@ -116,27 +88,17 @@ export const useOperations = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No operation data received");
-      }
-
-      return data.value as unknown as ApiOperation;
+      return data.value ? (data.value as unknown as ApiOperation) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteOperation: (id: string) => Promise<any> = async (id) => {
+  const deleteOperation: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/api-operations/${id}`,
@@ -148,23 +110,17 @@ export const useOperations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const testOperation: (id: string) => Promise<ApiOperation> = async (id) => {
+  const testOperation: (id: string) => ApiResult<ApiOperation> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<ApiOperation>(
         `/api/v1/internal/api-operations/${id}/test`,
@@ -176,23 +132,13 @@ export const useOperations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No operation with this id received");
-      }
-
-      return data.value as unknown as ApiOperation;
+      return data.value ? (data.value as unknown as ApiOperation) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

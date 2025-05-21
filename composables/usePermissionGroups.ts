@@ -2,6 +2,8 @@ import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { PermissionGroup } from "~/types";
 import { useApi } from "./useApi";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const usePermissionGroups = () => {
   const authUser = useAuthUser();
@@ -12,7 +14,7 @@ export const usePermissionGroups = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
-  const getPermissionGroups: () => Promise<PermissionGroup[]> = async () => {
+  const getPermissionGroups: () => ApiResult<PermissionGroup[]> = async () => {
     try {
       const { data, pending, error, status } = await fetch<PermissionGroup[]>(
         '/api/v1/internal/permission-groups'
@@ -21,27 +23,17 @@ export const usePermissionGroups = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No permission groups data received");
-      }
-
-      return data.value as unknown as PermissionGroup[];
+      return data.value ? (data.value as unknown as PermissionGroup[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deletePermissionGroupById: (groupCode: string) => Promise<any> = async (groupCode) => {
+  const deletePermissionGroupById: (groupCode: string) => ApiResult<any> = async (groupCode) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/permission-groups/${groupCode}`,
@@ -51,23 +43,17 @@ export const usePermissionGroups = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getPermissionGroupById: (groupCode: string) => Promise<PermissionGroup> = async (groupCode) => {
+  const getPermissionGroupById: (groupCode: string) => ApiResult<PermissionGroup> = async (groupCode) => {
     try {
       const { data, pending, error, status } = await fetch<PermissionGroup>(
         `/api/v1/internal/permission-groups/${groupCode}`
@@ -82,27 +68,17 @@ export const usePermissionGroups = () => {
             navigateTo('/login');
           });
         }
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No permission group data received");
-      }
-
-      return data.value as unknown as PermissionGroup;
+      return data.value ? (data.value as unknown as PermissionGroup) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewPermissionGroup: (permissionGroupDetail: PermissionGroup) => Promise<PermissionGroup> = async (permissionGroupDetail) => {
+  const createNewPermissionGroup: (permissionGroupDetail: PermissionGroup) => ApiResult<PermissionGroup> = async (permissionGroupDetail) => {
     try {
       const { data, pending, error, status } = await fetch<PermissionGroup>(
         '/api/v1/internal/permission-groups',
@@ -115,27 +91,17 @@ export const usePermissionGroups = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No permission group data received");
-      }
-
-      return data.value as unknown as PermissionGroup;
+      return data.value ? (data.value as unknown as PermissionGroup) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updatePermissionGroup: (groupCode: string, permissionGroupDetail: any) => Promise<PermissionGroup> = async (groupCode, permissionGroupDetail) => {
+  const updatePermissionGroup: (groupCode: string, permissionGroupDetail: any) => ApiResult<PermissionGroup> = async (groupCode, permissionGroupDetail) => {
     try {
       const { data, pending, error, status } = await fetch<PermissionGroup>(
         `/api/v1/internal/permission-groups/${groupCode}`,
@@ -148,23 +114,13 @@ export const usePermissionGroups = () => {
       isUpdating.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No permission group data received");
-      }
-
-      return data.value as unknown as PermissionGroup;
+      return data.value ? (data.value as unknown as PermissionGroup) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

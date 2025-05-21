@@ -1,6 +1,8 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { UssdLanguage } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useUssdLanguages = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -9,7 +11,7 @@ export const useUssdLanguages = () => {
 
   const store = useAuthStore();
 
-  const getUssdLanguages: (page?: number, size?: number) => Promise<UssdLanguage[]> = async (
+  const getUssdLanguages: (page?: number, size?: number) => ApiResult<UssdLanguage[]> = async (
     page,
     size
   ) => {
@@ -27,29 +29,17 @@ export const useUssdLanguages = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd languages data received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getUssdLanguageById: (id: string) => Promise<UssdLanguage> = async (id) => {
+  const getUssdLanguageById: (id: string) => ApiResult<UssdLanguage> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdLanguage>(
         `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/language/${id}`,
@@ -64,29 +54,17 @@ export const useUssdLanguages = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd language with this id received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewUssdLanguage: (ussdLanguageData: any) => Promise<UssdLanguage> = async (ussdLanguageData) => {
+  const createNewUssdLanguage: (ussdLanguageData: any) => ApiResult<UssdLanguage> = async (ussdLanguageData) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdLanguage>(
         `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/language`,
@@ -102,43 +80,17 @@ export const useUssdLanguages = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-
-        console.log("Creating new ussd language error: ", error.value?.data.detail);
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Creating new ussd language error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Creating new ussd language errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd language received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateUssdLanguageStatus: (ussdLanguageId: string, ussdLanguageStatus: any) => Promise<UssdLanguage> = async (
+  const updateUssdLanguageStatus: (ussdLanguageId: string, ussdLanguageStatus: any) => ApiResult<UssdLanguage> = async (
     ussdLanguageId,
     ussdLanguageStatus
   ) => {
@@ -157,38 +109,17 @@ export const useUssdLanguages = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Updating ussd language error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log("Updating ussd language errorrr: ", error.value?.data?.message);
-        }
-        throw new Error(error.value?.data);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd language with this ussd language id received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteUssdLanguage: (ussdLanguageId: string) => Promise<UssdLanguage> = async (ussdLanguageId) => {
+  const deleteUssdLanguage: (ussdLanguageId: string) => ApiResult<UssdLanguage> = async (ussdLanguageId) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdLanguage>(
         `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/language/${ussdLanguageId}`,
@@ -203,40 +134,15 @@ export const useUssdLanguages = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Deleting ussd language error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Deleting ussd language errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd language with this ussd language id received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
-
 
   return {
     isLoading,

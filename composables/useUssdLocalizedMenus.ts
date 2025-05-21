@@ -5,6 +5,8 @@ import type {
   LocalizedUssdMenu,
   UssdMenuList,
 } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useUssdLocalizedMenus = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -16,7 +18,7 @@ export const useUssdLocalizedMenus = () => {
   const getUssdLocalizedMenus: (
     page?: number,
     size?: number
-  ) => Promise<LocalizedUssdMenu[]> = async (page, size) => {
+  ) => ApiResult<LocalizedUssdMenu[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await useFetch<
         LocalizedUssdMenu[]
@@ -33,31 +35,19 @@ export const useUssdLocalizedMenus = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No localized menus data received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const getUssdLocalizedMenuById: (
     id: string
-  ) => Promise<LocalizedUssdMenu> = async (id) => {
+  ) => ApiResult<LocalizedUssdMenu> = async (id) => {
     try {
       const { data, pending, error, status } =
         await useFetch<LocalizedUssdMenu>(
@@ -73,31 +63,19 @@ export const useUssdLocalizedMenus = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No localized menu with this id received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const createNewUssdLocalizedMenu: (
     defaultMessageData: any
-  ) => Promise<LocalizedUssdMenu> = async (defaultMessageData) => {
+  ) => ApiResult<LocalizedUssdMenu> = async (defaultMessageData) => {
     try {
       const { data, pending, error, status } =
         await useFetch<LocalizedUssdMenu>(
@@ -114,52 +92,22 @@ export const useUssdLocalizedMenus = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-
-        console.log(
-          "Creating new localized menu error: ",
-          error.value?.data.detail
-        );
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Creating new localized menu error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Creating new localized menu errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No localized menu received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateUssdLocalizedMenu: (
     menuId: string,
     menuData: any
-  ) => Promise<LocalizedUssdMenu> = async (
+  ) => ApiResult<LocalizedUssdMenu> = async (
     menuId,
     menuData
-    // menuData
   ) => {
     try {
       const { data, pending, error, status } =
@@ -177,44 +125,20 @@ export const useUssdLocalizedMenus = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Updating localized menu error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Updating localized menu errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No localized menu with this menu id received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateUssdLocalizedMenuStatus: (
     id: string,
     status: string
-  ) => Promise<LocalizedUssdMenu> = async (id, status) => {
+  ) => ApiResult<LocalizedUssdMenu> = async (id, status) => {
     try {
       const {
         data,
@@ -234,43 +158,19 @@ export const useUssdLocalizedMenus = () => {
       isSubmitting.value = pending.value;
 
       if (statusCode.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Updating ussd localized menu status error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Updating ussd localized menu status errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd localized menu status received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const deleteUssdLocalizedMenu: (
     menuId: string
-  ) => Promise<LocalizedUssdMenu | null> = async (menuId) => {
+  ) => ApiResult<LocalizedUssdMenu> = async (menuId) => {
     try {
       const { data, pending, error, status } =
         await useFetch<LocalizedUssdMenu>(
@@ -286,33 +186,13 @@ export const useUssdLocalizedMenus = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Deleting localized menu error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Deleting localized menu errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data);
+        handleApiError(error);
       }
 
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

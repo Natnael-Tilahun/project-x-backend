@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { PaymentOperation } from "~/types";
 import { useApi } from "./useApi";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const usePaymentOperations = () => {
   const isLoading = ref<boolean>(false);
@@ -12,7 +14,7 @@ export const usePaymentOperations = () => {
   const getPaymentOperations: (
     page?: number,
     size?: number
-  ) => Promise<PaymentOperation[]> = async (page, size) => {
+  ) => ApiResult<PaymentOperation[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<PaymentOperation[]>(
         '/api/v1/internal/payment-operations',
@@ -24,30 +26,19 @@ export const usePaymentOperations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No payment operations data received");
-      }
-
-      return data.value as unknown as PaymentOperation[];
+      return data.value ? (data.value as unknown as PaymentOperation[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const getPaymentOperationById: (
     id: string
-  ) => Promise<PaymentOperation> = async (id) => {
+  ) => ApiResult<PaymentOperation> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<PaymentOperation>(
         `/api/v1/internal/payment-operations/${id}`
@@ -56,30 +47,19 @@ export const usePaymentOperations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No payment operation with this id received");
-      }
-
-      return data.value as unknown as PaymentOperation;
+      return data.value ? (data.value as unknown as PaymentOperation) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const createNewPaymentOperation: (
     operationData: any
-  ) => Promise<PaymentOperation> = async (operationData) => {
+  ) => ApiResult<PaymentOperation> = async (operationData) => {
     try {
       const { data, pending, error, status } = await fetch<PaymentOperation>(
         '/api/v1/internal/payment-operations',
@@ -92,31 +72,20 @@ export const usePaymentOperations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No payment operation received");
-      }
-
-      return data.value as unknown as PaymentOperation;
+      return data.value ? (data.value as unknown as PaymentOperation) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updatePaymentOperation: (
     operationId: string,
     operationData: any
-  ) => Promise<PaymentOperation> = async (operationId, operationData) => {
+  ) => ApiResult<PaymentOperation> = async (operationId, operationData) => {
     try {
       const { data, pending, error, status } = await fetch<PaymentOperation>(
         `/api/v1/internal/payment-operations/${operationId}`,
@@ -129,28 +98,17 @@ export const usePaymentOperations = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No payment operation with this operation id received");
-      }
-
-      return data.value as unknown as PaymentOperation;
+      return data.value ? (data.value as unknown as PaymentOperation) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deletePaymentOperation: (id: string) => Promise<any> = async (id) => {
+  const deletePaymentOperation: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/payment-operations/${id}`,
@@ -160,20 +118,13 @@ export const usePaymentOperations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

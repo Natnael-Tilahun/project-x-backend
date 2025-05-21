@@ -1,15 +1,14 @@
-import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { AuthConfiguration } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useAuthConfigs = () => {
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
-  const { toast } = useToast();
 
-  const getAuthConfigs: () => Promise<AuthConfiguration[]> = async () => {
+  const getAuthConfigs: () => ApiResult<AuthConfiguration[]> = async () => {
     try {
       const { data, pending, error, status } = await fetch<AuthConfiguration[]>(
         '/api/v1/internal/auth-configs'
@@ -18,27 +17,17 @@ export const useAuthConfigs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No auth configs data received");
-      }
-
-      return data.value as unknown as AuthConfiguration[];
+      return data.value ? (data.value as unknown as AuthConfiguration[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getAuthConfigById: (id: string) => Promise<AuthConfiguration> = async (id) => {
+  const getAuthConfigById: (id: string) => ApiResult<AuthConfiguration> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<AuthConfiguration>(
         `/api/v1/internal/auth-configs/${id}`
@@ -47,27 +36,17 @@ export const useAuthConfigs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No auth config with this id received");
-      }
-
-      return data.value as unknown as AuthConfiguration;
+      return data.value ? (data.value as unknown as AuthConfiguration) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewAuthConfig: (authConfigData: any) => Promise<AuthConfiguration> = async (authConfigData) => {
+  const createNewAuthConfig: (authConfigData: any) => ApiResult<AuthConfiguration> = async (authConfigData) => {
     try {
       const { data, pending, error, status } = await fetch<AuthConfiguration>(
         '/api/v1/internal/auth-configs',
@@ -80,27 +59,17 @@ export const useAuthConfigs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No auth config received");
-      }
-
-      return data.value as unknown as AuthConfiguration;
+      return data.value ? (data.value as unknown as AuthConfiguration) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateAuthConfig: (authConfigId: string, authConfigData: any) => Promise<AuthConfiguration> = async (authConfigId, authConfigData) => {
+  const updateAuthConfig: (authConfigId: string, authConfigData: any) => ApiResult<AuthConfiguration> = async (authConfigId, authConfigData) => {
     try {
       const { data, pending, error, status } = await fetch<AuthConfiguration>(
         `/api/v1/internal/auth-configs/${authConfigId}`,
@@ -113,27 +82,17 @@ export const useAuthConfigs = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No auth config with this auth config id received");
-      }
-
-      return data.value as unknown as AuthConfiguration;
+      return data.value ? (data.value as unknown as AuthConfiguration) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteAuthConfig: (id: string) => Promise<any> = async (id) => {
+  const deleteAuthConfig: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/auth-configs/${id}`,
@@ -143,19 +102,13 @@ export const useAuthConfigs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

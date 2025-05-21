@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { PaymentIntegration, PaymentOperation } from "~/types";
 import { useApi } from "./useApi";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const usePaymentIntegrations = () => {
   const isLoading = ref<boolean>(false);
@@ -12,7 +14,7 @@ export const usePaymentIntegrations = () => {
   const getPaymentIntegrations: (
     page?: number,
     size?: number
-  ) => Promise<PaymentIntegration[]> = async (page, size) => {
+  ) => ApiResult<PaymentIntegration[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<PaymentIntegration[]>(
         '/api/v1/internal/payment-integrations',
@@ -24,30 +26,19 @@ export const usePaymentIntegrations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No payment integrations data received");
-      }
-
-      return data.value as unknown as PaymentIntegration[];
+      return data.value ? (data.value as unknown as PaymentIntegration[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const getPaymentIntegrationById: (
     id: string
-  ) => Promise<PaymentIntegration> = async (id) => {
+  ) => ApiResult<PaymentIntegration> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<PaymentIntegration>(
         `/api/v1/internal/payment-integrations/${id}`
@@ -56,30 +47,19 @@ export const usePaymentIntegrations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No payment integration with this id received");
-      }
-
-      return data.value as unknown as PaymentIntegration;
+      return data.value ? (data.value as unknown as PaymentIntegration) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const getPaymentIntegrationPaymentOperations: (
     id: string
-  ) => Promise<PaymentOperation[]> = async (id) => {
+  ) => ApiResult<PaymentOperation[]> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<PaymentOperation[]>(
         `/api/v1/internal/payment-integrations/${id}/payment-operations`
@@ -88,32 +68,19 @@ export const usePaymentIntegrations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error(
-          "No payment operations with this payment integration id received"
-        );
-      }
-
-      return data.value as unknown as PaymentOperation[];
+      return data.value ? (data.value as unknown as PaymentOperation[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const createNewPaymentIntegration: (
     paymentIntegrationData: any
-  ) => Promise<PaymentIntegration> = async (paymentIntegrationData) => {
+  ) => ApiResult<PaymentIntegration> = async (paymentIntegrationData) => {
     try {
       const { data, pending, error, status } = await fetch<PaymentIntegration>(
         '/api/v1/internal/payment-integrations',
@@ -126,31 +93,20 @@ export const usePaymentIntegrations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No payment integration received");
-      }
-
-      return data.value as unknown as PaymentIntegration;
+      return data.value ? (data.value as unknown as PaymentIntegration) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updatePaymentIntegration: (
     paymentIntegrationId: string,
     paymentIntegrationData: any
-  ) => Promise<PaymentIntegration> = async (
+  ) => ApiResult<PaymentIntegration> = async (
     paymentIntegrationId,
     paymentIntegrationData
   ) => {
@@ -166,30 +122,17 @@ export const usePaymentIntegrations = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error(
-          "No payment integration with this payment integration id received"
-        );
-      }
-
-      return data.value as unknown as PaymentIntegration;
+      return data.value ? (data.value as unknown as PaymentIntegration) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deletePaymentIntegration: (id: string) => Promise<any> = async (id) => {
+  const deletePaymentIntegration: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/payment-integrations/${id}`,
@@ -199,20 +142,13 @@ export const usePaymentIntegrations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

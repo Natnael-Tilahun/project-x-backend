@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { Contract, ContractAccount, ContractCoreCustomer } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useContractsCoreCustomers = () => {
   const isLoading = ref<boolean>(false);
@@ -13,7 +15,7 @@ export const useContractsCoreCustomers = () => {
     contractId?: string,
     page?: number,
     size?: number,
-  ) => Promise<ContractCoreCustomer[]> = async (contractId, page, size) => {
+  ) => ApiResult<ContractCoreCustomer[]> = async (contractId, page, size) => {
     try {
       const { data, pending, error, status } = await fetch<ContractCoreCustomer[]>(
         `/api/v1/internal/contracts/${contractId}/core-customers`,
@@ -25,27 +27,17 @@ export const useContractsCoreCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No contract core customers data received");
-      }
-
-      return data.value as unknown as ContractCoreCustomer[];
+      return data.value ? (data.value as unknown as ContractCoreCustomer[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getContractCoreCustomerById: (contractId: string, id: string) => Promise<ContractCoreCustomer> = async (contractId, id) => {
+  const getContractCoreCustomerById: (contractId: string, id: string) => ApiResult<ContractCoreCustomer> = async (contractId, id) => {
     try {
       const { data, pending, error, status } = await fetch<ContractCoreCustomer>(
         `/api/v1/internal/contract-core-customers/${id}`
@@ -54,30 +46,20 @@ export const useContractsCoreCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No contract core customer with this id received");
-      }
-
-      return data.value as unknown as ContractCoreCustomer;
+      return data.value ? (data.value as unknown as ContractCoreCustomer) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const createNewContractCoreCustomer: (
     contractId: string,
     contractCoreCustomerData: any
-  ) => Promise<ContractCoreCustomer> = async (contractId, contractCoreCustomerData) => {
+  ) => ApiResult<ContractCoreCustomer> = async (contractId, contractCoreCustomerData) => {
     try {
       const { data, pending, error, status } = await fetch<ContractCoreCustomer>(
         `/api/v1/internal/contracts/${contractId}/core-customers/batch`,
@@ -90,30 +72,20 @@ export const useContractsCoreCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No contract core customer with this customer id received");
-      }
-
-      return data.value as unknown as ContractCoreCustomer;
+      return data.value ? (data.value as unknown as ContractCoreCustomer) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateContractCoreCustomerStatus: (
     contractCoreCustomerId: string,
     statusData: any
-  ) => Promise<ContractCoreCustomer> = async (contractCoreCustomerId, statusData) => {
+  ) => ApiResult<ContractCoreCustomer> = async (contractCoreCustomerId, statusData) => {
     try {
       const { data, pending, error, status } = await fetch<ContractCoreCustomer>(
         `/api/v1/internal/contract-core-customers/${contractCoreCustomerId}/${statusData}`,
@@ -125,30 +97,20 @@ export const useContractsCoreCustomers = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No contract core customer with this contract core customer id received");
-      }
-
-      return data.value as unknown as ContractCoreCustomer;
+      return data.value ? (data.value as unknown as ContractCoreCustomer) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateContractCoreCustomerPermissions: (
     contractCoreCustomerId: string,
     permissionsData: any
-  ) => Promise<ContractCoreCustomer> = async (contractCoreCustomerId, permissionsData) => {
+  ) => ApiResult<ContractCoreCustomer> = async (contractCoreCustomerId, permissionsData) => {
     try {
       const { data, pending, error, status } = await fetch<ContractCoreCustomer>(
         `/api/v1/internal/contract-core-customers/${contractCoreCustomerId}/permissions`,
@@ -161,30 +123,20 @@ export const useContractsCoreCustomers = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No contract core customer with this contract core customer id received");
-      }
-
-      return data.value as unknown as ContractCoreCustomer;
+      return data.value ? (data.value as unknown as ContractCoreCustomer) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateContractAccountsPermissions: (
     contractAccountId: string,
     permissionsData: any,
-  ) => Promise<ContractAccount> = async (contractAccountId, permissionsData) => {
+  ) => ApiResult<ContractAccount> = async (contractAccountId, permissionsData) => {
     try {
       const { data, pending, error, status } = await fetch<ContractAccount>(
         `/api/v1/internal/contract-core-customers/contract-accounts/${contractAccountId}/permissions`,
@@ -197,27 +149,17 @@ export const useContractsCoreCustomers = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No contract account with this contract account id received");
-      }
-
-      return data.value as unknown as ContractAccount;
+      return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteContractCoreCustomer: (id: string) => Promise<any> = async (id) => {
+  const deleteContractCoreCustomer: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/contract-core-customers/${id}`,
@@ -227,26 +169,20 @@ export const useContractsCoreCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const createNewContractAccount: (
     contractCoreCustomerId: string,
     contractAccountData: any
-  ) => Promise<ContractAccount> = async (contractCoreCustomerId, contractAccountData) => {
+  ) => ApiResult<ContractAccount> = async (contractCoreCustomerId, contractAccountData) => {
     try {
       const { data, pending, error, status } = await fetch<ContractAccount>(
         `/api/v1/internal/contract-core-customers/${contractCoreCustomerId}/contract-accounts`,
@@ -259,23 +195,13 @@ export const useContractsCoreCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No contract account with this contract account id received");
-      }
-
-      return data.value as unknown as ContractAccount;
+      return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

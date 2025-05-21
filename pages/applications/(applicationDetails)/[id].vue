@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { Platform } from "@/global-types";
+import type { Application } from "~/types";
 
 const route = useRoute();
 const { getApplicationById, updateApplication } = useApplications();

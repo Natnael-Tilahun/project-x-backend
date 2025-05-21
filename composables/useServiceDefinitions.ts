@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { ServiceDefinition } from "~/types";
 import { useApi } from "./useApi";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useServiceDefinitions = () => {
   const isLoading = ref<boolean>(false);
@@ -11,7 +13,7 @@ export const useServiceDefinitions = () => {
   const getServiceDefinitions: (
     page?: number,
     size?: number
-  ) => Promise<ServiceDefinition[]> = async (page, size) => {
+  ) => ApiResult<ServiceDefinition[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<ServiceDefinition[]>(
         '/api/v1/internal/service-definitions',
@@ -26,27 +28,17 @@ export const useServiceDefinitions = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No service definitions data received");
-      }
-
-      return data.value as unknown as ServiceDefinition[];
+      return data.value ? (data.value as unknown as ServiceDefinition[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getServiceDefinitionById: (id: string) => Promise<ServiceDefinition> = async (id) => {
+  const getServiceDefinitionById: (id: string) => ApiResult<ServiceDefinition> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<ServiceDefinition>(
         `/api/v1/internal/service-definitions/${id}`
@@ -55,29 +47,19 @@ export const useServiceDefinitions = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No service definition with this id received");
-      }
-
-      return data.value as unknown as ServiceDefinition;
+      return data.value ? (data.value as unknown as ServiceDefinition) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const createNewServiceDefinition: (
     serviceDefinitionData: any
-  ) => Promise<ServiceDefinition> = async (serviceDefinitionData) => {
+  ) => ApiResult<ServiceDefinition> = async (serviceDefinitionData) => {
     try {
       const { data, pending, error, status } = await fetch<ServiceDefinition>(
         '/api/v1/internal/service-definitions',
@@ -90,30 +72,20 @@ export const useServiceDefinitions = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No service definition with this id received");
-      }
-
-      return data.value as unknown as ServiceDefinition;
+      return data.value ? (data.value as unknown as ServiceDefinition) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateServiceDefinition: (
     serviceDefinitionId: string,
     serviceDefinitionData: any
-  ) => Promise<ServiceDefinition> = async (serviceDefinitionId, serviceDefinitionData) => {
+  ) => ApiResult<ServiceDefinition> = async (serviceDefinitionId, serviceDefinitionData) => {
     try {
       const { data, pending, error, status } = await fetch<ServiceDefinition>(
         `/api/v1/internal/service-definitions/${serviceDefinitionId}`,
@@ -126,27 +98,17 @@ export const useServiceDefinitions = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No service definition with this service definition id received");
-      }
-
-      return data.value as unknown as ServiceDefinition;
+      return data.value ? (data.value as unknown as ServiceDefinition) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteServiceDefinition: (id: string) => Promise<any> = async (id) => {
+  const deleteServiceDefinition: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/service-definitions/${id}`,
@@ -156,19 +118,13 @@ export const useServiceDefinitions = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

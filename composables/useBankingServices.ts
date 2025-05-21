@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { BankingService, Contract } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useBankingServices = () => {
   const isLoading = ref<boolean>(false);
@@ -9,7 +11,7 @@ export const useBankingServices = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
-  const getBankingServices: (page?: number, size?: number) => Promise<BankingService[]> = async (page, size) => {
+  const getBankingServices: (page?: number, size?: number) => ApiResult<BankingService[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<BankingService[]>(
         '/api/v1/internal/banking-services',
@@ -21,27 +23,17 @@ export const useBankingServices = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No banking services data received");
-      }
-
-      return data.value as unknown as BankingService[];
+      return data.value ? (data.value as unknown as BankingService[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getBankingServiceById: (id: string) => Promise<BankingService> = async (id) => {
+  const getBankingServiceById: (id: string) => ApiResult<BankingService> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<BankingService>(
         `/api/v1/internal/banking-services/${id}`
@@ -50,27 +42,17 @@ export const useBankingServices = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No banking service with this id received");
-      }
-
-      return data.value as unknown as BankingService;
+      return data.value ? (data.value as unknown as BankingService) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewBankingService: (bankingServiceData: any) => Promise<BankingService> = async (bankingServiceData) => {
+  const createNewBankingService: (bankingServiceData: any) => ApiResult<BankingService> = async (bankingServiceData) => {
     try {
       const { data, pending, error, status } = await fetch<BankingService>(
         '/api/v1/internal/banking-services',
@@ -83,27 +65,17 @@ export const useBankingServices = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No banking service with this id received");
-      }
-
-      return data.value as unknown as BankingService;
+      return data.value ? (data.value as unknown as BankingService) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateBankingService: (bankingServiceId: string, bankingServiceData: any) => Promise<BankingService> = async (bankingServiceId, bankingServiceData) => {
+  const updateBankingService: (bankingServiceId: string, bankingServiceData: any) => ApiResult<BankingService> = async (bankingServiceId, bankingServiceData) => {
     try {
       const { data, pending, error, status } = await fetch<BankingService>(
         `/api/v1/internal/banking-services/${bankingServiceId}`,
@@ -116,27 +88,17 @@ export const useBankingServices = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No banking service with this banking service id received");
-      }
-
-      return data.value as unknown as BankingService;
+      return data.value ? (data.value as unknown as BankingService) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteBankingService: (id: string) => Promise<any> = async (id) => {
+  const deleteBankingService: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/banking-services/${id}`,
@@ -146,19 +108,13 @@ export const useBankingServices = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
