@@ -1,7 +1,8 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
-import type { Document } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useDocuments = () => {
   const isLoading = ref<boolean>(false);
@@ -9,7 +10,7 @@ export const useDocuments = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
-  const getDocuments: (page?: number, size?: number) => Promise<Document[]> = async (page, size) => {
+  const getDocuments: (page?: number, size?: number) => ApiResult<Document[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<Document[]>(
         '/api/v1/internal/documents',
@@ -21,27 +22,17 @@ export const useDocuments = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No documents data received");
-      }
-
-      return data.value as unknown as Document[];
+      return data.value ? (data.value as unknown as Document[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getFile: (iconPath: string, entityType: string) => Promise<File> = async (iconPath, entityType) => {
+  const getFile: (iconPath: string, entityType: string) => ApiResult<File> = async (iconPath, entityType) => {
     try {
       const { data, pending, error, status } = await fetch<File>(
         `/api/v1/internal/images/${entityType}/${iconPath}`,
@@ -50,9 +41,6 @@ export const useDocuments = () => {
             maxWidth: 200,
             maxHeight: 200,
             output: 'octet'
-          },
-          headers: {
-            'Content-Type': 'application/json'
           }
         }
       );
@@ -60,20 +48,17 @@ export const useDocuments = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No file received");
-      }
-
-      return data.value as unknown as File;
+      return data.value ? (data.value as unknown as File) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getDocumentById: (id: string) => Promise<Document> = async (id) => {
+  const getDocumentById: (id: string) => ApiResult<Document> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<Document>(
         `/api/v1/internal/documents/${id}`
@@ -82,27 +67,17 @@ export const useDocuments = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No document with this id received");
-      }
-
-      return data.value as unknown as Document;
+      return data.value ? (data.value as unknown as Document) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewDocument: (documentData: any) => Promise<Document> = async (documentData) => {
+  const createNewDocument: (documentData: any) => ApiResult<Document> = async (documentData) => {
     try {
       const { data, pending, error, status } = await fetch<Document>(
         '/api/v1/internal/documents',
@@ -115,23 +90,13 @@ export const useDocuments = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No document received");
-      }
-
-      return data.value as unknown as Document;
+      return data.value ? (data.value as unknown as Document) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
@@ -144,38 +109,24 @@ export const useDocuments = () => {
         `/api/v1/internal/images/${entityType}/${entityId}`,
         {
           method: "POST",
-          headers: {
-            accept: "application/json"
-          },
-          body: formData,
-          redirect: "follow"
+          body: formData
         }
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
-      }
-
-      if (!data.value) {
-        throw new Error("No file received");
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateDocument: (documentId: string, documentData: any) => Promise<Document> = async (documentId, documentData) => {
+  const updateDocument: (documentId: string, documentData: any) => ApiResult<Document> = async (documentId, documentData) => {
     try {
       const { data, pending, error, status } = await fetch<Document>(
         `/api/v1/internal/documents/${documentId}`,
@@ -188,27 +139,17 @@ export const useDocuments = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No document with this document id received");
-      }
-
-      return data.value as unknown as Document;
+      return data.value ? (data.value as unknown as Document) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteDocument: (id: string) => Promise<any> = async (id) => {
+  const deleteDocument: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/documents/${id}`,
@@ -218,19 +159,13 @@ export const useDocuments = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

@@ -2,6 +2,8 @@ import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { Role } from "~/types";
 import { useApi } from "./useApi";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useRoles = () => {
   const authUser = useAuthUser();
@@ -12,7 +14,7 @@ export const useRoles = () => {
   const { toast } = useToast();
   const { fetch } = useApi();
 
-  const getRoles: () => Promise<Role[]> = async () => {
+  const getRoles: () => ApiResult<Role[]> = async () => {
     try {
       const { data, pending, error, status } = await fetch<Role[]>(
         '/api/v1/internal/roles/list'
@@ -21,27 +23,17 @@ export const useRoles = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No roles data received");
-      }
-
-      return data.value as unknown as Role[];
+      return data.value ? (data.value as unknown as Role[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteRoleById: (id: string) => Promise<any> = async (id) => {
+  const deleteRoleById: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/roles/delete/${id}`,
@@ -51,23 +43,17 @@ export const useRoles = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getRolePermissions: (name: string) => Promise<Role> = async (name) => {
+  const getRolePermissions: (name: string) => ApiResult<Role> = async (name) => {
     try {
       const { data, pending, error, status } = await fetch<Role>(
         `/api/v1/internal/roles/${name}/permissions`
@@ -82,27 +68,17 @@ export const useRoles = () => {
             navigateTo('/login');
           });
         }
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No roles data received");
-      }
-
-      return data.value as unknown as Role;
+      return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewRole: (roleDetail: Role) => Promise<Role> = async (roleDetail) => {
+  const createNewRole: (roleDetail: Role) => ApiResult<Role> = async (roleDetail) => {
     try {
       const { data, pending, error, status } = await fetch<Role>(
         '/api/v1/internal/roles/create',
@@ -115,27 +91,17 @@ export const useRoles = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No roles data received");
-      }
-
-      return data.value as unknown as Role;
+      return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateRolePermissions: (roleName: string, roleDetail: any) => Promise<Role> = async (roleName, roleDetail) => {
+  const updateRolePermissions: (roleName: string, roleDetail: any) => ApiResult<Role> = async (roleName, roleDetail) => {
     try {
       const { data, pending, error, status } = await fetch<Role>(
         `/api/v1/internal/roles/${roleName}/permissions/update`,
@@ -148,28 +114,18 @@ export const useRoles = () => {
       isUpdating.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
-      }
-
-      if (!data.value) {
-        throw new Error("No roles data received");
+        handleApiError(error);
       }
 
       await getAuthorities();
-      return data.value as unknown as Role;
+      return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateRoleStatus: (roleName: string, roleStatus: boolean) => Promise<Role> = async (roleName, roleStatus) => {
+  const updateRoleStatus: (roleName: string, roleStatus: boolean) => ApiResult<Role> = async (roleName, roleStatus) => {
     try {
       const { data, pending, error, status } = await fetch<Role>(
         `/api/v1/internal/roles/${roleName}`,
@@ -184,24 +140,14 @@ export const useRoles = () => {
       isUpdating.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
-      }
-
-      if (!data.value) {
-        throw new Error("No roles data received");
+        handleApiError(error);
       }
 
       await getAuthorities();
-      return data.value as unknown as Role;
+      return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { ResponseOutput } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useOperationResponseOutputs = () => {
   const isLoading = ref<boolean>(false);
@@ -9,7 +11,7 @@ export const useOperationResponseOutputs = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
-  const getResponseOutputs: () => Promise<ResponseOutput[]> = async () => {
+  const getResponseOutputs: () => ApiResult<ResponseOutput[]> = async () => {
     try {
       const { data, pending, error, status } = await fetch<ResponseOutput[]>(
         '/api/v1/internal/response-outputs'
@@ -18,27 +20,17 @@ export const useOperationResponseOutputs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No response outputs data received");
-      }
-
-      return data.value as unknown as ResponseOutput[];
+      return data.value ? (data.value as unknown as ResponseOutput[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getResponseOutputById: (id: string) => Promise<ResponseOutput> = async (id) => {
+  const getResponseOutputById: (id: string) => ApiResult<ResponseOutput> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<ResponseOutput>(
         `/api/v1/internal/response-outputs/${id}`
@@ -47,27 +39,17 @@ export const useOperationResponseOutputs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No response output with this id received");
-      }
-
-      return data.value as unknown as ResponseOutput;
+      return data.value ? (data.value as unknown as ResponseOutput) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewResponseOutput: (responseOutputData: any) => Promise<ResponseOutput> = async (responseOutputData) => {
+  const createNewResponseOutput: (responseOutputData: any) => ApiResult<ResponseOutput> = async (responseOutputData) => {
     try {
       const { data, pending, error, status } = await fetch<ResponseOutput>(
         '/api/v1/internal/response-outputs',
@@ -80,27 +62,17 @@ export const useOperationResponseOutputs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No response output received");
-      }
-
-      return data.value as unknown as ResponseOutput;
+      return data.value ? (data.value as unknown as ResponseOutput) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateResponseOutput: (responseOutputId: string, responseOutputData: any) => Promise<ResponseOutput> = async (responseOutputId, responseOutputData) => {
+  const updateResponseOutput: (responseOutputId: string, responseOutputData: any) => ApiResult<ResponseOutput> = async (responseOutputId, responseOutputData) => {
     try {
       const { data, pending, error, status } = await fetch<ResponseOutput>(
         `/api/v1/internal/response-outputs/${responseOutputId}`,
@@ -113,27 +85,17 @@ export const useOperationResponseOutputs = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No response output with this response output id received");
-      }
-
-      return data.value as unknown as ResponseOutput;
+      return data.value ? (data.value as unknown as ResponseOutput) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteResponseOutput: (id: string) => Promise<any> = async (id) => {
+  const deleteResponseOutput: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/response-outputs/${id}`,
@@ -143,19 +105,13 @@ export const useOperationResponseOutputs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

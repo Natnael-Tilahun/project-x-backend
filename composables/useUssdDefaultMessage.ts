@@ -1,6 +1,8 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { DefaultMessage, Menu } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useUssdDefaultMessage = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -9,7 +11,7 @@ export const useUssdDefaultMessage = () => {
 
   const store = useAuthStore();
 
-  const getUssdDefaultMessages: (page?: number, size?: number) => Promise<DefaultMessage[]> = async (
+  const getUssdDefaultMessages: (page?: number, size?: number) => ApiResult<DefaultMessage[]> = async (
     page,
     size
   ) => {
@@ -27,29 +29,17 @@ export const useUssdDefaultMessage = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No default messages data received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getUssdDefaultMessageById: (id: string) => Promise<DefaultMessage> = async (id) => {
+  const getUssdDefaultMessageById: (id: string) => ApiResult<DefaultMessage> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<DefaultMessage>(
         `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/default-messages/${id}`,
@@ -64,29 +54,17 @@ export const useUssdDefaultMessage = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No default message with this id received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewUssdDefaultMessage: (defaultMessageData: any) => Promise<DefaultMessage> = async (defaultMessageData) => {
+  const createNewUssdDefaultMessage: (defaultMessageData: any) => ApiResult<DefaultMessage> = async (defaultMessageData) => {
     try {
       const { data, pending, error, status } = await useFetch<DefaultMessage>(
         `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/default-messages`,
@@ -102,43 +80,17 @@ export const useUssdDefaultMessage = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-
-        console.log("Creating new default message error: ", error.value?.data.detail);
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Creating new default message error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Creating new default message errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No default message received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateUssdDefaultMessage: (defaultMessageId: string, defaultMessageData: any) => Promise<DefaultMessage> = async (
+  const updateUssdDefaultMessage: (defaultMessageId: string, defaultMessageData: any) => ApiResult<DefaultMessage> = async (
     defaultMessageId,
     defaultMessageData
   ) => {
@@ -157,40 +109,17 @@ export const useUssdDefaultMessage = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Updating default message error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log("Updating default message errorrr: ", error.value?.data?.message);
-        }
-        throw new Error(error.value?.data);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No default message with this default message id received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteUssdDefaultMessage: (
-    defaultMessageId: string,
-  ) => Promise<DefaultMessage | null> = async (defaultMessageId) => {
+  const deleteUssdDefaultMessage: (defaultMessageId: string) => ApiResult<DefaultMessage> = async (defaultMessageId) => {
     try {
       const { data, pending, error, status } = await useFetch<DefaultMessage>(
         `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/default-messages/${defaultMessageId}`,
@@ -205,36 +134,15 @@ export const useUssdDefaultMessage = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Deleting default message error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Deleting default message errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data);
+        handleApiError(error);
       }
 
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
-
 
   return {
     isLoading,

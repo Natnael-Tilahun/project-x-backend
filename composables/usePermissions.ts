@@ -2,6 +2,8 @@ import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { Permission } from "~/types";
 import { useApi } from "./useApi";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const usePermissions = () => {
   const authUser = useAuthUser();
@@ -14,7 +16,7 @@ export const usePermissions = () => {
   const isUpdating = ref<boolean>(false);
   const { fetch } = useApi();
 
-  const getPermissions: (page?: number, size?: number) => Promise<any> = async (page, size) => {
+  const getPermissions: (page?: number, size?: number) => ApiResult<any> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         '/api/v1/internal/permissions',
@@ -29,27 +31,17 @@ export const usePermissions = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
-      }
-
-      if (!data.value) {
-        throw new Error("No roles data received");
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getPermissionById: (code: string) => Promise<Permission> = async (code) => {
+  const getPermissionById: (code: string) => ApiResult<Permission> = async (code) => {
     try {
       const { data, pending, error, status } = await fetch<Permission>(
         `/api/v1/internal/permissions/${code}`
@@ -58,27 +50,17 @@ export const usePermissions = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No permission with this id received");
-      }
-
-      return data.value as unknown as Permission;
+      return data.value ? (data.value as unknown as Permission) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const enablePermission: (code: string) => Promise<Permission> = async (code) => {
+  const enablePermission: (code: string) => ApiResult<Permission> = async (code) => {
     try {
       const { data, pending, error, status } = await fetch<Permission>(
         `/api/v1/internal/permissions/${code}/enable`,
@@ -88,27 +70,17 @@ export const usePermissions = () => {
       isUpdating.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No permission data received");
-      }
-
-      return data.value as unknown as Permission;
+      return data.value ? (data.value as unknown as Permission) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const disablePermission: (code: string) => Promise<Permission> = async (code) => {
+  const disablePermission: (code: string) => ApiResult<Permission> = async (code) => {
     try {
       const { data, pending, error, status } = await fetch<Permission>(
         `/api/v1/internal/permissions/${code}/disable`,
@@ -118,23 +90,13 @@ export const usePermissions = () => {
       isUpdating.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No permission data received");
-      }
-
-      return data.value as unknown as Permission;
+      return data.value ? (data.value as unknown as Permission) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

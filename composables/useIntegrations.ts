@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { ApiIntegration, ApiOperation } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useIntegrations = () => {
   const isLoading = ref<boolean>(false);
@@ -9,7 +11,7 @@ export const useIntegrations = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
-  const getIntegrations: (page?: number, size?: number) => Promise<ApiIntegration[]> = async (page, size) => {
+  const getIntegrations: (page?: number, size?: number) => ApiResult<ApiIntegration[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<ApiIntegration[]>(
         '/api/v1/internal/api-integrations',
@@ -21,27 +23,17 @@ export const useIntegrations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No integrations data received");
-      }
-
-      return data.value as unknown as ApiIntegration[];
+      return data.value ? (data.value as unknown as ApiIntegration[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getIntegrationById: (id: string) => Promise<ApiIntegration> = async (id) => {
+  const getIntegrationById: (id: string) => ApiResult<ApiIntegration> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<ApiIntegration>(
         `/api/v1/internal/api-integrations/${id}`
@@ -50,27 +42,17 @@ export const useIntegrations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No integration with this id received");
-      }
-
-      return data.value as unknown as ApiIntegration;
+      return data.value ? (data.value as unknown as ApiIntegration) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewIntegration: (integrationData: any) => Promise<ApiIntegration> = async (integrationData) => {
+  const createNewIntegration: (integrationData: any) => ApiResult<ApiIntegration> = async (integrationData) => {
     try {
       const { data, pending, error, status } = await fetch<ApiIntegration>(
         '/api/v1/internal/api-integrations',
@@ -83,27 +65,17 @@ export const useIntegrations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No integration received");
-      }
-
-      return data.value as unknown as ApiIntegration;
+      return data.value ? (data.value as unknown as ApiIntegration) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateIntegration: (integrationId: string, integrationData: any) => Promise<ApiIntegration> = async (integrationId, integrationData) => {
+  const updateIntegration: (integrationId: string, integrationData: any) => ApiResult<ApiIntegration> = async (integrationId, integrationData) => {
     try {
       const { data, pending, error, status } = await fetch<ApiIntegration>(
         `/api/v1/internal/api-integrations/${integrationId}`,
@@ -116,27 +88,17 @@ export const useIntegrations = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No integration with this integration id received");
-      }
-
-      return data.value as unknown as ApiIntegration;
+      return data.value ? (data.value as unknown as ApiIntegration) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteIntegration: (id: string) => Promise<any> = async (id) => {
+  const deleteIntegration: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/api-integrations/${id}`,
@@ -146,23 +108,17 @@ export const useIntegrations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getIntegrationOperations: (integrationId: string) => Promise<ApiOperation[]> = async (integrationId) => {
+  const getIntegrationOperations: (integrationId: string) => ApiResult<ApiOperation[]> = async (integrationId) => {
     try {
       const { data, pending, error, status } = await fetch<ApiOperation[]>(
         `/api/v1/internal/api-integrations/${integrationId}/api-operations`
@@ -171,23 +127,13 @@ export const useIntegrations = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No integration operations with this id received");
-      }
-
-      return data.value as unknown as ApiOperation[];
+      return data.value ? (data.value as unknown as ApiOperation[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

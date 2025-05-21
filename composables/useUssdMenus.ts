@@ -1,6 +1,8 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { UssdMenuList } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useUssdMenus = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -9,7 +11,7 @@ export const useUssdMenus = () => {
 
   const store = useAuthStore();
 
-  const getUssdMenus: (page?: number, size?: number) => Promise<UssdMenuList[]> = async (
+  const getUssdMenus: (page?: number, size?: number) => ApiResult<UssdMenuList[]> = async (
     page,
     size
   ) => {
@@ -27,29 +29,17 @@ export const useUssdMenus = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd menus data received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getUssdMenusWithChilds: (page?: number, size?: number) => Promise<UssdMenuList[]> = async (
+  const getUssdMenusWithChilds: (page?: number, size?: number) => ApiResult<UssdMenuList[]> = async (
     page,
     size
   ) => {
@@ -67,30 +57,17 @@ export const useUssdMenus = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd menus data received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-
-  const getUssdMenuById: (id: string) => Promise<UssdMenuList> = async (id) => {
+  const getUssdMenuById: (id: string) => ApiResult<UssdMenuList> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdMenuList>(
         `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-lists/menu-names-by-id/${id}`,
@@ -105,29 +82,17 @@ export const useUssdMenus = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd menu with this id received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewUssdMenu: (ussdMenuData: any) => Promise<UssdMenuList> = async (ussdMenuData) => {
+  const createNewUssdMenu: (ussdMenuData: any) => ApiResult<UssdMenuList> = async (ussdMenuData) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdMenuList>(
         `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-lists/menu-names`,
@@ -143,43 +108,17 @@ export const useUssdMenus = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-
-        console.log("Creating new ussd menu error: ", error.value?.data.detail);
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Creating new ussd menu error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Creating new ussd menu errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd menu received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateUssdMenuName: (ussdMenuData: any) => Promise<UssdMenuList> = async (
+  const updateUssdMenuName: (ussdMenuData: any) => ApiResult<UssdMenuList> = async (
     ussdMenuData
   ) => {
     try {
@@ -197,38 +136,17 @@ export const useUssdMenus = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Updating ussd menu error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log("Updating ussd menu errorrr: ", error.value?.data?.message);
-        }
-        throw new Error(error.value?.data);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd menu with this ussd menu id received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateUssdMenuStatus: (id: string, status: string) => Promise<UssdMenuList> = async (
+  const updateUssdMenuStatus: (id: string, status: string) => ApiResult<UssdMenuList> = async (
     id,
     status
   ) => {
@@ -246,40 +164,17 @@ export const useUssdMenus = () => {
       isSubmitting.value = pending.value;
 
       if (statusCode.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Updating ussd menu status error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log("Updating ussd menu status errorrr: ", error.value?.data?.message);
-        }
-        throw new Error(error.value?.data);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd menu status received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteUssdMenu: (
-    ussdMenuId: string,
-  ) => Promise<UssdMenuList | null> = async (ussdMenuId) => {
+  const deleteUssdMenu: (ussdMenuId: string) => ApiResult<UssdMenuList> = async (ussdMenuId) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdMenuList>(
         `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-lists/menu-names/${ussdMenuId}`,
@@ -294,37 +189,17 @@ export const useUssdMenus = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-
-        if (error.value?.data?.type == "/constraint-violation") {
-          console.log(
-            "Deleting ussd menu error: ",
-            error.value?.data?.fieldErrors[0].message
-          );
-        } else {
-          console.log(
-            "Deleting ussd menu errorrr: ",
-            error.value?.data?.message
-          );
-        }
-        throw new Error(error.value?.data);
+        handleApiError(error);
       }
 
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const storeUssdMenusToCache: () => Promise<any> = async () => {
+  const storeUssdMenusToCache: () => ApiResult<UssdMenuList[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<UssdMenuList[]>(
         `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-catch/store-all-to-catch`,
@@ -339,29 +214,17 @@ export const useUssdMenus = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd menus data received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const changeUssdMenusToCacheStatus: (status: any) => Promise<any> = async (status) => {
+  const changeUssdMenusToCacheStatus: (status: any) => ApiResult<UssdMenuList[]> = async (status) => {
     try {
       const { data, pending, error, status: statusCode } = await useFetch<UssdMenuList[]>(
         `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/command`,
@@ -370,32 +233,20 @@ export const useUssdMenus = () => {
           // headers: {
           //   Authorization: `Bearer ${store.accessToken}`,
           // },
-          body: JSON.stringify(status ),
+          body: JSON.stringify(status),
         }
       );
 
       isLoading.value = pending.value;
 
       if (statusCode.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description:
-            error.value?.data?.type == "/constraint-violation"
-              ? error.value?.data?.fieldErrors[0]?.message
-              : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No ussd menus data received");
-      }
-
-      return data.value;
+      return data.value ? data.value : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

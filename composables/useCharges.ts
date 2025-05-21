@@ -2,6 +2,8 @@ import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { Charge, ChargeRule } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useCharges = () => {
   const isLoading = ref<boolean>(false);
@@ -9,7 +11,7 @@ export const useCharges = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
-  const getCharges: (page?: number, size?: number) => Promise<Charge[]> = async (page, size) => {
+  const getCharges: (page?: number, size?: number) => ApiResult<Charge[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<Charge[]>(
         '/api/v1/internal/charges',
@@ -21,18 +23,17 @@ export const useCharges = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Getting charges error: " + error.value);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No charges data received");
-      }
-      return data.value as unknown as Charge[];
+
+      return data.value ? (data.value as unknown as Charge[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getChargesCount: () => Promise<number> = async () => {
+  const getChargesCount: () => ApiResult<number> = async () => {
     try {
       const { data, pending, error, status } = await fetch<number>(
         '/api/v1/internal/charges/count'
@@ -41,18 +42,17 @@ export const useCharges = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Getting charges count error: " + error.value);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No charges count data received");
-      }
-      return data.value as unknown as number;
+
+      return data.value ? (data.value as unknown as number) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getChargeById: (id: string) => Promise<Charge> = async (id) => {
+  const getChargeById: (id: string) => ApiResult<Charge> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<Charge>(
         `/api/v1/internal/charges/${id}`
@@ -61,18 +61,17 @@ export const useCharges = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Getting charge data error: " + error.value);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No charge data received");
-      }
-      return data.value as unknown as Charge;
+
+      return data.value ? (data.value as unknown as Charge) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getChargeRulesByChargeId: (id: string) => Promise<ChargeRule[]> = async (id) => {
+  const getChargeRulesByChargeId: (id: string) => ApiResult<ChargeRule[]> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<ChargeRule[]>(
         `/api/v1/internal/charges/${id}/rules`
@@ -81,18 +80,17 @@ export const useCharges = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Getting charge rule data error: " + error.value);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No charge rule data received");
-      }
-      return data.value as unknown as ChargeRule[];
+
+      return data.value ? (data.value as unknown as ChargeRule[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteChargeById: (id: string) => Promise<any> = async (id) => {
+  const deleteChargeById: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/charges/${id}`,
@@ -102,23 +100,17 @@ export const useCharges = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error("Deleting charge error: " + error.value);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewCharge: (chargeDetail: Charge) => Promise<Charge> = async (chargeDetail) => {
+  const createNewCharge: (chargeDetail: Charge) => ApiResult<Charge> = async (chargeDetail) => {
     try {
       const { data, pending, error, status } = await fetch<Charge>(
         '/api/v1/internal/charges',
@@ -131,25 +123,17 @@ export const useCharges = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.title || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No charge data received");
-      }
-      return data.value as unknown as Charge;
+
+      return data.value ? (data.value as unknown as Charge) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateCharge: (chargeId: string, chargeDetail: any) => Promise<Charge> = async (chargeId, chargeDetail) => {
+  const updateCharge: (chargeId: string, chargeDetail: any) => ApiResult<Charge> = async (chargeId, chargeDetail) => {
     try {
       const { data, pending, error, status } = await fetch<Charge>(
         `/api/v1/internal/charges/${chargeId}`,
@@ -162,25 +146,17 @@ export const useCharges = () => {
       isUpdating.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.title || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No charge data received");
-      }
-      return data.value as unknown as Charge;
+
+      return data.value ? (data.value as unknown as Charge) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewChargeRule: (chargeId: string, chargeRuleDetail: ChargeRule) => Promise<ChargeRule> = async (chargeId, chargeRuleDetail) => {
+  const createNewChargeRule: (chargeId: string, chargeRuleDetail: ChargeRule) => ApiResult<ChargeRule> = async (chargeId, chargeRuleDetail) => {
     try {
       const { data, pending, error, status } = await fetch<ChargeRule>(
         `/api/v1/internal/charges/${chargeId}/rules`,
@@ -193,25 +169,17 @@ export const useCharges = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.title || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No charge rule data received");
-      }
-      return data.value as unknown as ChargeRule;
+
+      return data.value ? (data.value as unknown as ChargeRule) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getChargeRuleById: (id: number) => Promise<ChargeRule> = async (id) => {
+  const getChargeRuleById: (id: number) => ApiResult<ChargeRule> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<ChargeRule>(
         `/api/v1/internal/charges/rules/${id}`
@@ -220,18 +188,17 @@ export const useCharges = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Getting charge rule data error: " + error.value);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No charge rule data received");
-      }
-      return data.value as unknown as ChargeRule;
+
+      return data.value ? (data.value as unknown as ChargeRule) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateChargeRule: (ruleId: number, ruleDetail: any) => Promise<ChargeRule> = async (ruleId, ruleDetail) => {
+  const updateChargeRule: (ruleId: number, ruleDetail: any) => ApiResult<ChargeRule> = async (ruleId, ruleDetail) => {
     try {
       const { data, pending, error, status } = await fetch<ChargeRule>(
         `/api/v1/internal/charges/rules/${ruleId}`,
@@ -244,25 +211,17 @@ export const useCharges = () => {
       isUpdating.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.title || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No rule data received");
-      }
-      return data.value as unknown as ChargeRule;
+
+      return data.value ? (data.value as unknown as ChargeRule) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteChargeRuleById: (id: string) => Promise<any> = async (id) => {
+  const deleteChargeRuleById: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/charges/rules/${id}`,
@@ -272,23 +231,17 @@ export const useCharges = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error("Deleting charge rule error: " + error.value);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteAllChargeRules: (chargeId: string) => Promise<any> = async (chargeId) => {
+  const deleteAllChargeRules: (chargeId: string) => ApiResult<any> = async (chargeId) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/charges/${chargeId}/all-rules`,
@@ -298,23 +251,17 @@ export const useCharges = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error("Deleting all charge rules error: " + error.value);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const refreshCoreCharges: () => Promise<any> = async () => {
+  const refreshCoreCharges: () => ApiResult<Charge[]> = async () => {
     try {
       const { data, pending, error, status } = await fetch<Charge[]>(
         '/api/v1/internal/charges/refresh-core',
@@ -324,14 +271,13 @@ export const useCharges = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Refreshing charges from core error: " + error.value);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No charges data received");
-      }
-      return data.value as unknown as Charge[];
+
+      return data.value ? (data.value as unknown as Charge[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

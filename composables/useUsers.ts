@@ -2,12 +2,14 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { Customer, Device, User, UserInput } from "~/types";
 import { useApi } from "./useApi";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useUsers = () => {
   const isLoading = ref<boolean>(false);
   const { fetch } = useApi();
 
-  const getUsers: (pageNumber: number, pageSize: number) => Promise<User[]> = async (pageNumber, pageSize) => {
+  const getUsers: (pageNumber: number, pageSize: number) => ApiResult<User[]> = async (pageNumber, pageSize) => {
     try {
       const { data, pending, error, status } = await fetch<User[]>(
         '/api/v1/internal/users',
@@ -22,27 +24,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No users data received");
-      }
-
-      return data.value as unknown as User[];
+      return data.value ? (data.value as unknown as User[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getUserById: (id: string) => Promise<User> = async (id) => {
+  const getUserById: (id: string) => ApiResult<User> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         `/api/v1/internal/users/${id}`
@@ -51,27 +43,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user with this id received");
-      }
-
-      return data.value as unknown as User;
+      return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getUserByUsername: (username: string) => Promise<User> = async (username) => {
+  const getUserByUsername: (username: string) => ApiResult<User> = async (username) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         `/api/v1/internal/users/${username}`
@@ -80,27 +62,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user with this username received");
-      }
-
-      return data.value as unknown as User;
+      return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getUserInfo: (phoneNumber: string) => Promise<User> = async (phoneNumber) => {
+  const getUserInfo: (phoneNumber: string) => ApiResult<User> = async (phoneNumber) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         '/api/v1/internal/users/user-info',
@@ -112,27 +84,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user with this phone number received");
-      }
-
-      return data.value as unknown as User;
+      return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getUserAvailability: (phoneNumber: string, email: string) => Promise<User> = async (phoneNumber, email) => {
+  const getUserAvailability: (phoneNumber: string, email: string) => ApiResult<User> = async (phoneNumber, email) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         '/api/v1/internal/users/users-availability',
@@ -144,27 +106,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user with this phone number and email received");
-      }
-
-      return data.value as unknown as User;
+      return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getUserAvailabilityByPhoneNumber: (phoneNumber: string) => Promise<User> = async (phoneNumber) => {
+  const getUserAvailabilityByPhoneNumber: (phoneNumber: string) => ApiResult<User> = async (phoneNumber) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         `/api/v1/internal/users/users-availability/${phoneNumber}`
@@ -173,27 +125,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user with this phone number received");
-      }
-
-      return data.value as unknown as User;
+      return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getUserAvailabilityByEmail: (email: string) => Promise<User> = async (email) => {
+  const getUserAvailabilityByEmail: (email: string) => ApiResult<User> = async (email) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         `/api/v1/internal/users/users-availability/${email}`
@@ -202,27 +144,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user with this email received");
-      }
-
-      return data.value as unknown as User;
+      return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getCoreAccountsByCustomerId: (customerId: string) => Promise<Customer> = async (customerId) => {
+  const getCoreAccountsByCustomerId: (customerId: string) => ApiResult<Customer> = async (customerId) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/core/accounts/customer/${customerId}`
@@ -231,27 +163,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No account with this customer id received");
-      }
-
-      return data.value as unknown as Customer;
+      return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const searchUsers: (keyword: string) => Promise<User[]> = async (keyword) => {
+  const searchUsers: (keyword: string) => ApiResult<User[]> = async (keyword) => {
     try {
       const { data, pending, error, status } = await fetch<User[]>(
         '/api/v1/internal/users/search',
@@ -263,23 +185,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      return data.value as unknown as User[];
+      return data.value ? (data.value as unknown as User[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const resetUserPin: (id: string) => Promise<User> = async (id) => {
+  const resetUserPin: (id: string) => ApiResult<User> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         `/api/v1/internal/users/${id}/reset-pin`,
@@ -289,27 +205,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user with this id received");
-      }
-
-      return data.value as unknown as User;
+      return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewUser: (userData: UserInput) => Promise<User> = async (userData) => {
+  const createNewUser: (userData: UserInput) => ApiResult<User> = async (userData) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         '/api/v1/internal/users',
@@ -322,27 +228,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user with this id received");
-      }
-
-      return data.value as unknown as User;
+      return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteUserById: (id: string) => Promise<any> = async (id) => {
+  const deleteUserById: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/users/delete/${id}`,
@@ -352,23 +248,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getUserDevices: (userId: string) => Promise<Device[]> = async (userId) => {
+  const getUserDevices: (userId: string) => ApiResult<Device[]> = async (userId) => {
     try {
       const { data, pending, error, status } = await fetch<Device[]>(
         `/api/v1/internal/users/${userId}/devices`
@@ -377,27 +267,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No devices with this user id received");
-      }
-
-      return data.value as unknown as Device[];
+      return data.value ? (data.value as unknown as Device[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getUserDevicesByDeviceId: (userId: string, deviceId: string) => Promise<User> = async (userId, deviceId) => {
+  const getUserDevicesByDeviceId: (userId: string, deviceId: string) => ApiResult<User> = async (userId, deviceId) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         `/api/v1/internal/users/${userId}/devices/${deviceId}`
@@ -406,27 +286,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No device with this user id and device id received");
-      }
-
-      return data.value as unknown as User;
+      return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const suspendDevicesByDeviceId: (userId: string, deviceId: string) => Promise<User> = async (userId, deviceId) => {
+  const suspendDevicesByDeviceId: (userId: string, deviceId: string) => ApiResult<User> = async (userId, deviceId) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         `/api/v1/internal/users/${userId}/devices/${deviceId}/suspend`
@@ -435,27 +305,17 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No device with this user id and device id received");
-      }
-
-      return data.value as unknown as User;
+      return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const restoreDevicesByDeviceId: (userId: string, deviceId: string) => Promise<User> = async (userId, deviceId) => {
+  const restoreDevicesByDeviceId: (userId: string, deviceId: string) => ApiResult<User> = async (userId, deviceId) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         `/api/v1/internal/users/${userId}/devices/${deviceId}/restore`
@@ -464,23 +324,13 @@ export const useUsers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No device with this user id and device id received");
-      }
-
-      return data.value as unknown as User;
+      return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

@@ -1036,3 +1036,26 @@ interface ChargeRule {
   priority: number;
   charge?: Charge | null;
 }
+
+export interface ApiError {
+  type?: string;
+  message?: string;
+  detail?: string;
+  fieldErrors?: Array<{
+    field: string;
+    message: string;
+  }>;
+}
+
+export interface ApiResponse<T> {
+  data: T;
+  pending: boolean;
+  error: {
+    value?: {
+      data?: ApiError;
+    };
+  };
+  status: {
+    value: 'success' | 'error';
+  };
+}
