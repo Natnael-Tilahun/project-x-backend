@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { Menu } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useMenus = () => {
   const isLoading = ref<boolean>(false);
@@ -9,7 +11,7 @@ export const useMenus = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
-  const getMenus: (page?: number, size?: number) => Promise<Menu[]> = async (page, size) => {
+  const getMenus: (page?: number, size?: number) => ApiResult<Menu[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<Menu[]>(
         '/api/v1/internal/menus',
@@ -21,27 +23,17 @@ export const useMenus = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No menus data received");
-      }
-
-      return data.value as unknown as Menu[];
+      return data.value ? (data.value as unknown as Menu[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getMenuById: (id: string) => Promise<Menu> = async (id) => {
+  const getMenuById: (id: string) => ApiResult<Menu> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<Menu>(
         `/api/v1/internal/menus/${id}`
@@ -50,27 +42,17 @@ export const useMenus = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No menu with this id received");
-      }
-
-      return data.value as unknown as Menu;
+      return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewMenu: (menuData: any) => Promise<Menu> = async (menuData) => {
+  const createNewMenu: (menuData: any) => ApiResult<Menu> = async (menuData) => {
     try {
       const { data, pending, error, status } = await fetch<Menu>(
         '/api/v1/internal/menus',
@@ -83,27 +65,17 @@ export const useMenus = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No menu received");
-      }
-
-      return data.value as unknown as Menu;
+      return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateMenu: (menuId: string, menuData: any) => Promise<Menu> = async (menuId, menuData) => {
+  const updateMenu: (menuId: string, menuData: any) => ApiResult<Menu> = async (menuId, menuData) => {
     try {
       const { data, pending, error, status } = await fetch<Menu>(
         `/api/v1/internal/menus/${menuId}`,
@@ -116,27 +88,17 @@ export const useMenus = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No menu with this menu id received");
-      }
-
-      return data.value as unknown as Menu;
+      return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateProductMenus: (menuId: string, menuData: any) => Promise<Menu> = async (menuId, menuData) => {
+  const updateProductMenus: (menuId: string, menuData: any) => ApiResult<Menu> = async (menuId, menuData) => {
     try {
       const { data, pending, error, status } = await fetch<Menu>(
         `/api/v1/internal/menus/${menuId}/products`,
@@ -149,27 +111,17 @@ export const useMenus = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No menu products with this menu id received");
-      }
-
-      return data.value as unknown as Menu;
+      return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateChildrenMenus: (menuId: string, menuData: any) => Promise<Menu> = async (menuId, menuData) => {
+  const updateChildrenMenus: (menuId: string, menuData: any) => ApiResult<Menu> = async (menuId, menuData) => {
     try {
       const { data, pending, error, status } = await fetch<Menu>(
         `/api/v1/internal/menus/${menuId}/children`,
@@ -182,27 +134,17 @@ export const useMenus = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No menu children with this menu id received");
-      }
-
-      return data.value as unknown as Menu;
+      return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteMenu: (id: string) => Promise<any> = async (id) => {
+  const deleteMenu: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/menus/${id}`,
@@ -212,19 +154,13 @@ export const useMenus = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

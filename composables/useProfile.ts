@@ -2,13 +2,15 @@ import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { Profile } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useProfile = () => {
   const isLoading = ref<boolean>(false);
   const { toast } = useToast();
   const { fetch } = useApi();
 
-  const getProfile: () => Promise<Profile> = async () => {
+  const getProfile: () => ApiResult<Profile> = async () => {
     try {
       const { data, pending, error, status } = await fetch<Profile>(
         '/api/v1/users/me'
@@ -17,15 +19,13 @@ export const useProfile = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Getting profile error: " + error.value);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No profile data received");
-      }
-      return data.value as unknown as Profile;
+
+      return data.value ? (data.value as unknown as Profile) : null;
     } catch (err) {
-      // Throw the error to be caught and handled by the caller
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

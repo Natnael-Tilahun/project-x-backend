@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { Field } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useFields = () => {
   const isLoading = ref<boolean>(false);
@@ -9,7 +11,7 @@ export const useFields = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
-  const getFields: () => Promise<Field[]> = async () => {
+  const getFields: () => ApiResult<Field[]> = async () => {
     try {
       const { data, pending, error, status } = await fetch<Field[]>(
         '/api/v1/internal/fields'
@@ -18,27 +20,17 @@ export const useFields = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No fields data received");
-      }
-
-      return data.value as unknown as Field[];
+      return data.value ? (data.value as unknown as Field[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getFieldById: (id: string) => Promise<Field> = async (id) => {
+  const getFieldById: (id: string) => ApiResult<Field> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<Field>(
         `/api/v1/internal/fields/${id}`
@@ -47,27 +39,17 @@ export const useFields = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No field with this id received");
-      }
-
-      return data.value as unknown as Field;
+      return data.value ? (data.value as unknown as Field) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewField: (fieldData: any) => Promise<Field> = async (fieldData) => {
+  const createNewField: (fieldData: any) => ApiResult<Field> = async (fieldData) => {
     try {
       const { data, pending, error, status } = await fetch<Field>(
         '/api/v1/internal/fields',
@@ -80,27 +62,17 @@ export const useFields = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No field received");
-      }
-
-      return data.value as unknown as Field;
+      return data.value ? (data.value as unknown as Field) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateField: (fieldId: string, fieldData: any) => Promise<Field> = async (fieldId, fieldData) => {
+  const updateField: (fieldId: string, fieldData: any) => ApiResult<Field> = async (fieldId, fieldData) => {
     try {
       const { data, pending, error, status } = await fetch<Field>(
         `/api/v1/internal/fields/${fieldId}`,
@@ -113,27 +85,17 @@ export const useFields = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No field with this field id received");
-      }
-
-      return data.value as unknown as Field;
+      return data.value ? (data.value as unknown as Field) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteField: (id: string) => Promise<any> = async (id) => {
+  const deleteField: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/fields/${id}`,
@@ -143,19 +105,13 @@ export const useFields = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

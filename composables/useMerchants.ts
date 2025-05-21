@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { Merchant } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useMerchants = () => {
   const isLoading = ref<boolean>(false);
@@ -9,7 +11,7 @@ export const useMerchants = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
-  const getMerchants: (page?: number, size?: number) => Promise<Merchant[]> = async (page, size) => {
+  const getMerchants: (page?: number, size?: number) => ApiResult<Merchant[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<Merchant[]>(
         '/api/v1/internal/merchants',
@@ -21,27 +23,17 @@ export const useMerchants = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No merchants data received");
-      }
-
-      return data.value as unknown as Merchant[];
+      return data.value ? (data.value as unknown as Merchant[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getMerchantById: (id: string) => Promise<Merchant> = async (id) => {
+  const getMerchantById: (id: string) => ApiResult<Merchant> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<Merchant>(
         `/api/v1/internal/merchants/${id}`
@@ -50,27 +42,17 @@ export const useMerchants = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No customer with this id received");
-      }
-
-      return data.value as unknown as Merchant;
+      return data.value ? (data.value as unknown as Merchant) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNeweMerchant: (customerId: string, merchantData: any) => Promise<Merchant> = async (customerId, merchantData) => {
+  const createNeweMerchant: (customerId: string, merchantData: any) => ApiResult<Merchant> = async (customerId, merchantData) => {
     try {
       const { data, pending, error, status } = await fetch<Merchant>(
         `/api/v1/internal/merchants/${customerId}`,
@@ -83,27 +65,17 @@ export const useMerchants = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No merchant with this customer id received");
-      }
-
-      return data.value as unknown as Merchant;
+      return data.value ? (data.value as unknown as Merchant) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateMerchant: (customerId: string, merchantData: any) => Promise<Merchant> = async (customerId, merchantData) => {
+  const updateMerchant: (customerId: string, merchantData: any) => ApiResult<Merchant> = async (customerId, merchantData) => {
     try {
       const { data, pending, error, status } = await fetch<Merchant>(
         `/api/v1/internal/merchants/${customerId}`,
@@ -116,27 +88,17 @@ export const useMerchants = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No merchant with this merchant id received");
-      }
-
-      return data.value as unknown as Merchant;
+      return data.value ? (data.value as unknown as Merchant) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteMerchant: (id: string) => Promise<any> = async (id) => {
+  const deleteMerchant: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/merchants/${id}`,
@@ -146,19 +108,13 @@ export const useMerchants = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

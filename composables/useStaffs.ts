@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { Contract, Staff } from "~/types";
 import { useApi } from "./useApi";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useStaffs = () => {
   const isLoading = ref<boolean>(false);
@@ -11,7 +13,7 @@ export const useStaffs = () => {
   const getStaffs: (
     page?: number,
     size?: number
-  ) => Promise<Staff[]> = async (page, size) => {
+  ) => ApiResult<Staff[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<Staff[]>(
         '/api/v1/internal/staff',
@@ -26,27 +28,17 @@ export const useStaffs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No staff data received");
-      }
-
-      return data.value as unknown as Staff[];
+      return data.value ? (data.value as unknown as Staff[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getStaffById: (id: string) => Promise<Staff> = async (id) => {
+  const getStaffById: (id: string) => ApiResult<Staff> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<Staff>(
         `/api/v1/internal/staff/${id}`
@@ -55,29 +47,19 @@ export const useStaffs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No Staff with this id received");
-      }
-
-      return data.value as unknown as Staff;
+      return data.value ? (data.value as unknown as Staff) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const createNewStaff: (
     staffData: any
-  ) => Promise<Staff> = async (staffData) => {
+  ) => ApiResult<Staff> = async (staffData) => {
     try {
       const { data, pending, error, status } = await fetch<Staff>(
         '/api/v1/internal/staff',
@@ -90,30 +72,20 @@ export const useStaffs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.detail || error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No staff with this customer id received");
-      }
-
-      return data.value as unknown as Staff;
+      return data.value ? (data.value as unknown as Staff) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateStaff: (
     staffId: string,
     staffData: any
-  ) => Promise<Staff> = async (staffId, staffData) => {
+  ) => ApiResult<Staff> = async (staffId, staffData) => {
     try {
       const { data, pending, error, status } = await fetch<Staff>(
         `/api/v1/internal/staff/${staffId}`,
@@ -126,30 +98,20 @@ export const useStaffs = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No staff with this staff id received");
-      }
-
-      return data.value as unknown as Staff;
+      return data.value ? (data.value as unknown as Staff) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateContractPermissions: (
     contractId: string,
     permissionsData: any
-  ) => Promise<Contract> = async (contractId, permissionsData) => {
+  ) => ApiResult<Contract> = async (contractId, permissionsData) => {
     try {
       const { data, pending, error, status } = await fetch<Contract>(
         `/api/v1/internal/contracts/${contractId}/permissions`,
@@ -162,27 +124,17 @@ export const useStaffs = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No contract with this contract id received");
-      }
-
-      return data.value as unknown as Contract;
+      return data.value ? (data.value as unknown as Contract) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteStaff: (id: string) => Promise<any> = async (id) => {
+  const deleteStaff: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/staff/${id}`,
@@ -192,19 +144,13 @@ export const useStaffs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

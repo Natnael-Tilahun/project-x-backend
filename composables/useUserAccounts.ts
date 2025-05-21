@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { Contract, ContractAccount, ContractCoreCustomer } from "~/types";
 import { useApi } from "./useApi";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useUserAccounts = () => {
   const isLoading = ref<boolean>(false);
@@ -11,7 +13,7 @@ export const useUserAccounts = () => {
   const getUserAccounts: (
     page?: number,
     size?: number
-  ) => Promise<ContractAccount[]> = async (page, size) => {
+  ) => ApiResult<ContractAccount[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<ContractAccount[]>(
         '/api/v1/internal/user-accounts',
@@ -26,27 +28,17 @@ export const useUserAccounts = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user accounts data received");
-      }
-
-      return data.value as unknown as ContractAccount[];
+      return data.value ? (data.value as unknown as ContractAccount[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getUserAccountById: (id: string) => Promise<ContractAccount> = async (id) => {
+  const getUserAccountById: (id: string) => ApiResult<ContractAccount> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<ContractAccount>(
         `/api/v1/internal/user-accounts/${id}`
@@ -55,27 +47,17 @@ export const useUserAccounts = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user account with this id received");
-      }
-
-      return data.value as unknown as ContractAccount;
+      return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getUserAccountByContractUserId: (contractUserId: string) => Promise<ContractAccount[]> = async (contractUserId) => {
+  const getUserAccountByContractUserId: (contractUserId: string) => ApiResult<ContractAccount[]> = async (contractUserId) => {
     try {
       const { data, pending, error, status } = await fetch<ContractAccount[]>(
         `/api/v1/internal/user-accounts/${contractUserId}/list`
@@ -84,29 +66,19 @@ export const useUserAccounts = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user account with this contract user id received");
-      }
-
-      return data.value as unknown as ContractAccount[];
+      return data.value ? (data.value as unknown as ContractAccount[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const createNewUserAccount: (
     userAccountData: any
-  ) => Promise<ContractAccount> = async (userAccountData) => {
+  ) => ApiResult<ContractAccount> = async (userAccountData) => {
     try {
       const { data, pending, error, status } = await fetch<ContractAccount>(
         '/api/v1/internal/user-accounts',
@@ -119,30 +91,20 @@ export const useUserAccounts = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user account with this customer id received");
-      }
-
-      return data.value as unknown as ContractAccount;
+      return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateUserAccount: (
     userAccountId: string,
     userAccountData: any
-  ) => Promise<ContractAccount> = async (userAccountId, userAccountData) => {
+  ) => ApiResult<ContractAccount> = async (userAccountId, userAccountData) => {
     try {
       const { data, pending, error, status } = await fetch<ContractAccount>(
         `/api/v1/internal/user-accounts/${userAccountId}`,
@@ -155,30 +117,20 @@ export const useUserAccounts = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user account with this user account id received");
-      }
-
-      return data.value as unknown as ContractAccount;
+      return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateUserAccountStatus: (
     userAccountId: string,
     statusData: any
-  ) => Promise<ContractAccount> = async (userAccountId, statusData) => {
+  ) => ApiResult<ContractAccount> = async (userAccountId, statusData) => {
     try {
       const { data, pending, error, status } = await fetch<ContractAccount>(
         `/api/v1/internal/user-accounts/${userAccountId}/${statusData}`,
@@ -190,30 +142,20 @@ export const useUserAccounts = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user account with this user account id received");
-      }
-
-      return data.value as unknown as ContractAccount;
+      return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateUserAccountPermissions: (
     userAccountId: string,
     permissionsData: any
-  ) => Promise<ContractAccount> = async (userAccountId, permissionsData) => {
+  ) => ApiResult<ContractAccount> = async (userAccountId, permissionsData) => {
     try {
       const { data, pending, error, status } = await fetch<ContractAccount>(
         `/api/v1/internal/user-accounts/${userAccountId}/permissions`,
@@ -226,27 +168,17 @@ export const useUserAccounts = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No user account with this user account id received");
-      }
-
-      return data.value as unknown as ContractAccount;
+      return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteUserAccount: (id: string) => Promise<any> = async (id) => {
+  const deleteUserAccount: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/user-accounts/${id}`,
@@ -256,19 +188,13 @@ export const useUserAccounts = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

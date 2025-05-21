@@ -36,10 +36,10 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     console.log("values: ", values);
     const newValues = {
       ...values,
-      assignmentDate: new Date(values.assignmentDate).toISOString(),
+      assignmentDate: values.assignmentDate ? new Date(values.assignmentDate).toISOString() : null,
     }
     const response = await createNewStaff(newValues); // Call your API function to fetch profile
-    data.value = response
+    data.value = response ? response : undefined;
     console.log("New staff data; ", data.value);
     toast({
       title: "Staff Created",
@@ -65,9 +65,9 @@ const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    staffs.value = await getStaffs();
-    offices.value = await getOffices();
-    roles.value = await getRoles();
+    staffs.value = await getStaffs() ?? [];
+    offices.value = await getOffices() ?? [];
+    roles.value = await getRoles() ?? [];
   } catch (err) {
     console.error("Error fetching datas:", err);
     isError.value = true;

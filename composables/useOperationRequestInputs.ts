@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { RequestInput } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useOperationRequestInputs = () => {
   const isLoading = ref<boolean>(false);
@@ -9,7 +11,7 @@ export const useOperationRequestInputs = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
-  const getRequestInputs: () => Promise<RequestInput[]> = async () => {
+  const getRequestInputs: () => ApiResult<RequestInput[]> = async () => {
     try {
       const { data, pending, error, status } = await fetch<RequestInput[]>(
         '/api/v1/internal/request-inputs'
@@ -18,27 +20,17 @@ export const useOperationRequestInputs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No request inputs data received");
-      }
-
-      return data.value as unknown as RequestInput[];
+      return data.value ? (data.value as unknown as RequestInput[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getRequestInputById: (id: string) => Promise<RequestInput> = async (id) => {
+  const getRequestInputById: (id: string) => ApiResult<RequestInput> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<RequestInput>(
         `/api/v1/internal/request-inputs/${id}`
@@ -47,27 +39,17 @@ export const useOperationRequestInputs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No request input with this id received");
-      }
-
-      return data.value as unknown as RequestInput;
+      return data.value ? (data.value as unknown as RequestInput) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewRequestInput: (requestInputData: any) => Promise<RequestInput> = async (requestInputData) => {
+  const createNewRequestInput: (requestInputData: any) => ApiResult<RequestInput> = async (requestInputData) => {
     try {
       const { data, pending, error, status } = await fetch<RequestInput>(
         '/api/v1/internal/request-inputs',
@@ -80,27 +62,17 @@ export const useOperationRequestInputs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No request input received");
-      }
-
-      return data.value as unknown as RequestInput;
+      return data.value ? (data.value as unknown as RequestInput) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateRequestInput: (requestInputId: string, requestInputData: any) => Promise<RequestInput> = async (requestInputId, requestInputData) => {
+  const updateRequestInput: (requestInputId: string, requestInputData: any) => ApiResult<RequestInput> = async (requestInputId, requestInputData) => {
     try {
       const { data, pending, error, status } = await fetch<RequestInput>(
         `/api/v1/internal/request-inputs/${requestInputId}`,
@@ -113,27 +85,17 @@ export const useOperationRequestInputs = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No request input with this request input id received");
-      }
-
-      return data.value as unknown as RequestInput;
+      return data.value ? (data.value as unknown as RequestInput) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteRequestInput: (id: string) => Promise<any> = async (id) => {
+  const deleteRequestInput: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/request-inputs/${id}`,
@@ -143,19 +105,13 @@ export const useOperationRequestInputs = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

@@ -2,6 +2,8 @@ import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { CoreCustomerSummery, Customer, Device, User } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useCustomers = () => {
   const isLoading = ref<boolean>(false);
@@ -11,7 +13,7 @@ export const useCustomers = () => {
   const pageNumbers = ref<number>(pageNumber);
   const pageSizes = ref<number>(pageSize);
 
-  const getCustomers: (page?: number, size?: number) => Promise<any> = async (page, size) => {
+  const getCustomers: (page?: number, size?: number) => ApiResult<Customer[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<Customer[]>(
         '/api/v1/internal/customers/list',
@@ -23,27 +25,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No customers data received");
-      }
-
-      return data.value as unknown as Customer[];
+      return data.value ? (data.value as unknown as Customer[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getCustomerById: (id: string) => Promise<Customer> = async (id) => {
+  const getCustomerById: (id: string) => ApiResult<Customer> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/customers/${id}`
@@ -52,27 +44,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No customer with this id received");
-      }
-
-      return data.value as unknown as Customer;
+      return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getCoreCustomerByAccountNumber: (accountNumber: string) => Promise<Customer> = async (accountNumber) => {
+  const getCoreCustomerByAccountNumber: (accountNumber: string) => ApiResult<Customer> = async (accountNumber) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/customers/core/${accountNumber}`
@@ -81,27 +63,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No customer with this id received");
-      }
-
-      return data.value as unknown as Customer;
+      return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getCoreAccountsByCustomerId: (customerId: string) => Promise<Customer> = async (customerId) => {
+  const getCoreAccountsByCustomerId: (customerId: string) => ApiResult<Customer> = async (customerId) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/core/accounts/customer/${customerId}`
@@ -110,27 +82,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No account with this customer id received");
-      }
-
-      return data.value as unknown as Customer;
+      return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getCoreAccountsByAccount: (accountNumber: number) => Promise<CoreCustomerSummery> = async (accountNumber) => {
+  const getCoreAccountsByAccount: (accountNumber: number) => ApiResult<CoreCustomerSummery> = async (accountNumber) => {
     try {
       const { data, pending, error, status } = await fetch<CoreCustomerSummery>(
         `/api/v1/internal/contract-core-customers/by-core-account-number/${accountNumber}`
@@ -139,27 +101,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No account with this account number received");
-      }
-
-      return data.value as unknown as CoreCustomerSummery;
+      return data.value ? (data.value as unknown as CoreCustomerSummery) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const searchCustomers: (keyword: string) => Promise<any> = async (keyword) => {
+  const searchCustomers: (keyword: string) => ApiResult<any> = async (keyword) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         '/api/v1/internal/customers/search',
@@ -171,23 +123,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const activateCustomerById: (id: string) => Promise<Customer> = async (id) => {
+  const activateCustomerById: (id: string) => ApiResult<Customer> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/customers/${id}/activate-customer`,
@@ -197,27 +143,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No customer with this id received");
-      }
-
-      return data.value as unknown as Customer;
+      return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deActivateCustomerById: (id: string) => Promise<Customer> = async (id) => {
+  const deActivateCustomerById: (id: string) => ApiResult<Customer> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/customers/${id}/deactivate-customer`,
@@ -227,27 +163,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No customer with this id received");
-      }
-
-      return data.value as unknown as Customer;
+      return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const linkCoreBankCustomer: (id: string, coreCustomerId: string) => Promise<Customer> = async (id, coreCustomerId) => {
+  const linkCoreBankCustomer: (id: string, coreCustomerId: string) => ApiResult<Customer> = async (id, coreCustomerId) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/customers/${id}/link-core-bank-customer`,
@@ -260,27 +186,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No customer with this id received");
-      }
-
-      return data.value as unknown as Customer;
+      return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const unLinkCoreBankCustomer: (id: string) => Promise<Customer> = async (id) => {
+  const unLinkCoreBankCustomer: (id: string) => ApiResult<Customer> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/customers/${id}/unlink-core-bank-customer`,
@@ -290,27 +206,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No customer with this id received");
-      }
-
-      return data.value as unknown as Customer;
+      return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const resetPin: (id: string) => Promise<Customer> = async (id) => {
+  const resetPin: (id: string) => ApiResult<Customer> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/customers/${id}/reset-pin`,
@@ -320,27 +226,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No customer with this id received");
-      }
-
-      return data.value as unknown as Customer;
+      return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNeweCustomer: (customerData: any) => Promise<Customer> = async (customerData) => {
+  const createNeweCustomer: (customerData: any) => ApiResult<Customer> = async (customerData) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         '/api/v1/internal/customers/create',
@@ -353,27 +249,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No customer with this id received");
-      }
-
-      return data.value as unknown as Customer;
+      return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteCustomerById: (id: string) => Promise<any> = async (id) => {
+  const deleteCustomerById: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/customers/delete/${id}`,
@@ -383,23 +269,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getCustomerDevices: (customerId: string) => Promise<Device[]> = async (customerId) => {
+  const getCustomerDevices: (customerId: string) => ApiResult<Device[]> = async (customerId) => {
     try {
       const { data, pending, error, status } = await fetch<Device[]>(
         `/api/v1/internal/customers/${customerId}/devices`
@@ -408,27 +288,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No devices with this customer id received");
-      }
-
-      return data.value as unknown as Device[];
+      return data.value ? (data.value as unknown as Device[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getCustomerDevicesByDeviceId: (customerId: string, deviceId: string) => Promise<User> = async (customerId, deviceId) => {
+  const getCustomerDevicesByDeviceId: (customerId: string, deviceId: string) => ApiResult<User> = async (customerId, deviceId) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         `/api/v1/internal/customers/${customerId}/devices/${deviceId}`
@@ -437,27 +307,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No device with this customer id and device id received");
-      }
-
-      return data.value as unknown as User;
+      return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const suspendCustomerDevicesByDeviceId: (customerId: string, deviceId: string) => Promise<User> = async (customerId, deviceId) => {
+  const suspendCustomerDevicesByDeviceId: (customerId: string, deviceId: string) => ApiResult<User> = async (customerId, deviceId) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         `/api/v1/internal/customers/${customerId}/devices/${deviceId}/suspend`,
@@ -467,27 +327,17 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No device with this customer id and device id received");
-      }
-
-      return data.value as unknown as User;
+      return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const restoreCustomerDevicesByDeviceId: (customerId: string, deviceId: string) => Promise<User> = async (customerId, deviceId) => {
+  const restoreCustomerDevicesByDeviceId: (customerId: string, deviceId: string) => ApiResult<User> = async (customerId, deviceId) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         `/api/v1/internal/customers/${customerId}/devices/${deviceId}/restore`,
@@ -497,23 +347,13 @@ export const useCustomers = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No device with this customer id and device id received");
-      }
-
-      return data.value as unknown as User;
+      return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

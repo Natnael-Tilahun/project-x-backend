@@ -1,6 +1,15 @@
 import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { User, UserInput } from "~/types";
+import { useApi } from "./useApi";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
+
+interface AuthResponse {
+  accessToken?: string;
+  refreshToken?: string;
+  permissions?: string[];
+}
 
 export const useAuth = () => {
   const authUser = useAuthUser();
@@ -14,43 +23,43 @@ export const useAuth = () => {
     authUser.value = user;
   };
 
-  const login = async (user: UserInput) => {
+  const login: (user: UserInput) => ApiResult<AuthResponse> = async (user) => {
     try {
-      const { data, pending, error, status } = await fetch<any>(
+      const { data, pending, error, status } = await fetch<AuthResponse>(
         '/api/v1/auth/sign-in/password',
         {
           method: "POST",
-          body: JSON.stringify(user),
+          body: user,
           includeAuth: false
         }
       );
 
+      isLoading.value = pending.value;
+
       if (status.value === "error") {
-        toast({
-          title: error?.value?.data?.title,
-          description: error?.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error("Login error: " + error.value);
+        handleApiError(error);
       }
 
-      console.log("faffd: ", data.value)
-      store.setAuth({
-        ...user,
-        ...data?.value,
-        isAuthenticated: data?.value.accessToken ? true : false,
-      });
-      await getAuthorities()
-      isLoading.value = pending.value;
-      return data.value;
+      const response = data.value as AuthResponse;
+      if (response?.accessToken) {
+        store.$patch({
+          ...user,
+          ...response,
+          isAuthenticated: true
+        });
+        await getAuthorities();
+      }
+
+      return response;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getRefreshToken = async () => {
+  const getRefreshToken: () => ApiResult<AuthResponse> = async () => {
     try {
-      const { data, pending, error, status } = await fetch(
+      const { data, pending, error, status } = await fetch<AuthResponse>(
         '/api/v1/auth/refresh-token',
         {
           method: "POST",
@@ -60,65 +69,63 @@ export const useAuth = () => {
         }
       );
 
+      isLoading.value = pending.value;
+
       if (status.value === "error") {
-        toast({
-          title: error?.value?.data?.title,
-          description: error?.value?.data?.detail,
-          variant: "destructive",
-        });
-        console.log("Refresh-token error: ", error);
-        throw new Error("Refresh-token error: " + error.value);
+        handleApiError(error);
       }
-      console.log("v1/api/auth/refresh-token: ", data);
-      return data.value;
+
+      return data.value as AuthResponse;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getAuthorities = async () => {
-    console.log("getAuthorities")
+  const getAuthorities: () => ApiResult<AuthResponse> = async () => {
     try {
-      const { data, pending, error, status } = await fetch<any>(
+      const { data, pending, error, status } = await fetch<AuthResponse>(
         '/api/v1/auth/roles'
       );
 
+      isLoading.value = pending.value;
+
       if (status.value === "error") {
-        toast({
-          title: error?.value?.data?.title || error?.value,
-          description: error?.value?.data?.detail,
-          variant: "destructive",
-        });
-        console.log("Getting roles error: ", error);
-        throw new Error("Getting role error: " + error.value);
+        handleApiError(error);
       }
-      if (status.value === "success") {
-        store.setPermissions({
-          permissions: data?.value && data?.value?.permissions
+
+      const response = data.value as AuthResponse;
+      if (status.value === "success" && response?.permissions) {
+        store.$patch({
+          permissions: response.permissions
         });
       }
 
-      return data.value;
+      return response;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const userLoggedIn = async () => {
+  const userLoggedIn: () => ApiResult<AuthResponse> = async () => {
     if (!authUser.value) {
-      const { data, error, status, pending } = await fetch(
-        '/api/v1/auth/status',
-        {
-          headers: useRequestHeaders(["cookie"])
-        }
-      );
+      try {
+        const { data, error, status } = await fetch<AuthResponse>(
+          '/api/v1/auth/status'
+        );
 
-      if (status.value === "error") {
-        return error.value;
-      } else {
-        return data.value;
+        if (status.value === "error") {
+          handleApiError(error);
+        }
+
+        return data.value as AuthResponse;
+      } catch (err) {
+        handleApiError(err);
+        return null;
       }
     }
+    return null;
   };
 
   const logout = async () => {
@@ -126,26 +133,28 @@ export const useAuth = () => {
     return navigateTo("/login", { replace: true });
   };
 
-  const getProfile = async () => {
+  const getProfile: () => ApiResult<AuthResponse> = async () => {
     try {
-      const { data, pending, error, status } = await fetch(
+      const { data, pending, error, status } = await fetch<AuthResponse>(
         '/api/v1/users/me'
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Profile error: " + error.value);
+        handleApiError(error);
       }
-      return data.value;
+
+      return data.value as AuthResponse;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const setNewPassword = async (newData: any) => {
+  const setNewPassword: (newData: any) => ApiResult<AuthResponse> = async (newData) => {
     try {
-      const { data, pending, error, status } = await fetch(
+      const { data, pending, error, status } = await fetch<AuthResponse>(
         '/api/v1/users/reset-password/finish',
         {
           method: "POST",
@@ -154,12 +163,16 @@ export const useAuth = () => {
         }
       );
       
+      isLoading.value = pending.value;
+
       if (status.value === "error") {
-        throw new Error("New password error: " + error.value);
+        handleApiError(error);
       }
-      return data.value;
+
+      return data.value as AuthResponse;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

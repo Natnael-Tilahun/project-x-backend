@@ -2,6 +2,8 @@ import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { Application, AppVersion } from "~/types";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useApplications = () => {
   const authUser = useAuthUser();
@@ -11,7 +13,7 @@ export const useApplications = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
-  const getApplications: () => Promise<Application[]> = async () => {
+  const getApplications: () => ApiResult<Application[]> = async () => {
     try {
       const { data, pending, error, status } = await fetch<Application[]>(
         '/api/v1/internal/applications'
@@ -20,18 +22,17 @@ export const useApplications = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Getting applications error: " + error.value);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No applications data received");
-      }
-      return data.value as unknown as Application[];
+
+      return data.value ? (data.value as unknown as Application[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getApplicationVersions: (applicationId: string) => Promise<AppVersion[]> = async (applicationId) => {
+  const getApplicationVersions: (applicationId: string) => ApiResult<AppVersion[]> = async (applicationId) => {
     try {
       const { data, pending, error, status } = await fetch<AppVersion[]>(
         `/api/v1/internal/applications/${applicationId}/app-versions`
@@ -40,18 +41,17 @@ export const useApplications = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Getting applications versions error: " + error.value);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No applications versions data received");
-      }
-      return data.value as unknown as AppVersion[];
+
+      return data.value ? (data.value as unknown as AppVersion[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getApplicationById: (id: string) => Promise<Application> = async (id) => {
+  const getApplicationById: (id: string) => ApiResult<Application> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<Application>(
         `/api/v1/internal/applications/${id}`
@@ -60,18 +60,17 @@ export const useApplications = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Getting application error: " + error.value);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No application data received");
-      }
-      return data.value as unknown as Application;
+
+      return data.value ? (data.value as unknown as Application) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getApplicationVersionById: (applicationId: string, applicationVersionId: string) => Promise<AppVersion> = async (applicationId, applicationVersionId) => {
+  const getApplicationVersionById: (applicationId: string, applicationVersionId: string) => ApiResult<AppVersion> = async (applicationId, applicationVersionId) => {
     try {
       const { data, pending, error, status } = await fetch<AppVersion>(
         `/api/v1/internal/applications/${applicationId}/app-versions/${applicationVersionId}`
@@ -80,18 +79,17 @@ export const useApplications = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        throw new Error("Getting application version error: " + error.value);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No application data received");
-      }
-      return data.value as unknown as AppVersion;
+
+      return data.value ? (data.value as unknown as AppVersion) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteApplicationById: (id: string) => Promise<any> = async (id) => {
+  const deleteApplicationById: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/applications/${id}`,
@@ -101,23 +99,17 @@ export const useApplications = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error("Deleting application error: " + error.value);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteApplicationVersionById: (applicationId: string, applicationVersionId: string) => Promise<any> = async (applicationId, applicationVersionId) => {
+  const deleteApplicationVersionById: (applicationId: string, applicationVersionId: string) => ApiResult<any> = async (applicationId, applicationVersionId) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/applications/${applicationId}/app-versions/${applicationVersionId}`,
@@ -127,23 +119,17 @@ export const useApplications = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.message,
-          variant: "destructive",
-        });
-        throw new Error("Deleting application version error: " + error.value);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewApplication: (applicationDetail: Application) => Promise<Application> = async (applicationDetail) => {
+  const createNewApplication: (applicationDetail: Application) => ApiResult<Application> = async (applicationDetail) => {
     try {
       const { data, pending, error, status } = await fetch<Application>(
         '/api/v1/internal/applications',
@@ -156,25 +142,17 @@ export const useApplications = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.title || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No application data received");
-      }
-      return data.value as unknown as Application;
+
+      return data.value ? (data.value as unknown as Application) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const createNewApplicationVersion: (applicationId: string, applicationVersionDetail: AppVersion) => Promise<AppVersion> = async (applicationId, applicationVersionDetail) => {
+  const createNewApplicationVersion: (applicationId: string, applicationVersionDetail: AppVersion) => ApiResult<AppVersion> = async (applicationId, applicationVersionDetail) => {
     try {
       const { data, pending, error, status } = await fetch<AppVersion>(
         `/api/v1/internal/applications/${applicationId}/app-versions`,
@@ -187,25 +165,17 @@ export const useApplications = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.title || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No application versions data received");
-      }
-      return data.value as unknown as AppVersion;
+
+      return data.value ? (data.value as unknown as AppVersion) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateApplication: (applicationId: string, applicationDetail: any) => Promise<Application> = async (applicationId, applicationDetail) => {
+  const updateApplication: (applicationId: string, applicationDetail: any) => ApiResult<Application> = async (applicationId, applicationDetail) => {
     try {
       const { data, pending, error, status } = await fetch<Application>(
         `/api/v1/internal/applications/${applicationId}`,
@@ -218,25 +188,17 @@ export const useApplications = () => {
       isUpdating.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.title || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No application data received");
-      }
-      return data.value as unknown as Application;
+
+      return data.value ? (data.value as unknown as Application) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const updateApplicationVersion: (applicationId: string, applicationVersionId: string, applicationVersionDetail: any) => Promise<AppVersion> = async (applicationId, applicationVersionId, applicationVersionDetail) => {
+  const updateApplicationVersion: (applicationId: string, applicationVersionId: string, applicationVersionDetail: any) => ApiResult<AppVersion> = async (applicationId, applicationVersionId, applicationVersionDetail) => {
     try {
       const { data, pending, error, status } = await fetch<AppVersion>(
         `/api/v1/internal/applications/${applicationId}/app-versions/${applicationVersionId}`,
@@ -249,21 +211,13 @@ export const useApplications = () => {
       isUpdating.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.title || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation"
-            ? error.value?.data?.fieldErrors[0]?.message
-            : error.value?.data?.detail,
-          variant: "destructive",
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
-      if (!data.value) {
-        throw new Error("No application versions data received");
-      }
-      return data.value as unknown as AppVersion;
+
+      return data.value ? (data.value as unknown as AppVersion) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

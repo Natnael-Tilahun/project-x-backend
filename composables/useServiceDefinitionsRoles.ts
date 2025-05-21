@@ -3,6 +3,8 @@ import { useAuthUser } from "./useAuthUser";
 import type { ServiceDefinitionRole } from "~/types";
 import { ServiceDefinitionStatus } from "~/global-types";
 import { useApi } from "./useApi";
+import type { ApiResult } from "~/types/api";
+import { handleApiError } from "~/types/api";
 
 export const useServiceDefinitionsRoles = () => {
   const isLoading = ref<boolean>(false);
@@ -12,7 +14,7 @@ export const useServiceDefinitionsRoles = () => {
   const getServiceDefinitionsRoles: (
     page?: number,
     size?: number
-  ) => Promise<ServiceDefinitionRole[]> = async (page, size) => {
+  ) => ApiResult<ServiceDefinitionRole[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<ServiceDefinitionRole[]>(
         '/api/v1/internal/service-definition-roles',
@@ -27,27 +29,17 @@ export const useServiceDefinitionsRoles = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No service definitions roles data received");
-      }
-
-      return data.value as unknown as ServiceDefinitionRole[];
+      return data.value ? (data.value as unknown as ServiceDefinitionRole[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const getServiceDefinitionRoleById: (id: string) => Promise<ServiceDefinitionRole> = async (id) => {
+  const getServiceDefinitionRoleById: (id: string) => ApiResult<ServiceDefinitionRole> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<ServiceDefinitionRole>(
         `/api/v1/internal/service-definition-roles/${id}`
@@ -56,23 +48,13 @@ export const useServiceDefinitionsRoles = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No service definition role with this id received");
-      }
-
-      return data.value as unknown as ServiceDefinitionRole;
+      return data.value ? (data.value as unknown as ServiceDefinitionRole) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
@@ -80,7 +62,7 @@ export const useServiceDefinitionsRoles = () => {
     ServiceDefinitionId: string,
     page?: number,
     size?: number
-  ) => Promise<ServiceDefinitionRole[]> = async (ServiceDefinitionId, page, size) => {
+  ) => ApiResult<ServiceDefinitionRole[]> = async (ServiceDefinitionId, page, size) => {
     try {
       const { data, pending, error, status } = await fetch<ServiceDefinitionRole[]>(
         `/api/v1/internal/service-definition-roles/service-definition/${ServiceDefinitionId}`,
@@ -95,29 +77,19 @@ export const useServiceDefinitionsRoles = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No service definition role with this service definition id received");
-      }
-
-      return data.value as unknown as ServiceDefinitionRole[];
+      return data.value ? (data.value as unknown as ServiceDefinitionRole[]) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const createNewServiceDefinitionRole: (
     serviceDefinitionRoleData: any
-  ) => Promise<ServiceDefinitionRole> = async (serviceDefinitionRoleData) => {
+  ) => ApiResult<ServiceDefinitionRole> = async (serviceDefinitionRoleData) => {
     try {
       const { data, pending, error, status } = await fetch<ServiceDefinitionRole>(
         '/api/v1/internal/service-definition-roles',
@@ -130,30 +102,20 @@ export const useServiceDefinitionsRoles = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message || error.value?.data?.detail,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No service definition role with this id received");
-      }
-
-      return data.value as unknown as ServiceDefinitionRole;
+      return data.value ? (data.value as unknown as ServiceDefinitionRole) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateServiceDefinitionRole: (
     serviceDefinitionRoleId: string,
     serviceDefinitionRoleData: any
-  ) => Promise<ServiceDefinitionRole> = async (serviceDefinitionRoleId, serviceDefinitionRoleData) => {
+  ) => ApiResult<ServiceDefinitionRole> = async (serviceDefinitionRoleId, serviceDefinitionRoleData) => {
     try {
       const { data, pending, error, status } = await fetch<ServiceDefinitionRole>(
         `/api/v1/internal/service-definition-roles/${serviceDefinitionRoleId}`,
@@ -166,30 +128,20 @@ export const useServiceDefinitionsRoles = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No service definition role with this service definition role id received");
-      }
-
-      return data.value as unknown as ServiceDefinitionRole;
+      return data.value ? (data.value as unknown as ServiceDefinitionRole) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
   const updateServiceDefinitionRolePermissions: (
     serviceDefinitionRoleId: string,
     permissionsData: any
-  ) => Promise<ServiceDefinitionRole> = async (serviceDefinitionRoleId, permissionsData) => {
+  ) => ApiResult<ServiceDefinitionRole> = async (serviceDefinitionRoleId, permissionsData) => {
     try {
       const { data, pending, error, status } = await fetch<ServiceDefinitionRole>(
         `/api/v1/internal/service-definition-roles/${serviceDefinitionRoleId}/permissions`,
@@ -202,27 +154,17 @@ export const useServiceDefinitionsRoles = () => {
       isSubmitting.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
-      if (!data.value) {
-        throw new Error("No service definition role with this service definition role id received");
-      }
-
-      return data.value as unknown as ServiceDefinitionRole;
+      return data.value ? (data.value as unknown as ServiceDefinitionRole) : null;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 
-  const deleteServiceDefinitionRole: (id: string) => Promise<any> = async (id) => {
+  const deleteServiceDefinitionRole: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/service-definition-roles/${id}`,
@@ -232,19 +174,13 @@ export const useServiceDefinitionsRoles = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        toast({
-          title: error.value?.data?.type || "Something went wrong!",
-          description: error.value?.data?.type == "/constraint-violation" 
-            ? error.value?.data?.fieldErrors[0]?.message 
-            : error.value?.data?.message,
-          variant: "destructive"
-        });
-        throw new Error(error.value?.data?.detail);
+        handleApiError(error);
       }
 
       return data.value;
     } catch (err) {
-      throw err;
+      handleApiError(err);
+      return null;
     }
   };
 

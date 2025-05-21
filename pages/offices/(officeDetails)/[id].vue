@@ -75,8 +75,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     navigateTo(`/offices/${data.value.id}`);
     console.log("New office data; ", data.value);
     toast({
-      title: "Office Created",
-      description: "Office created successfully",
+      title: "Office Updated",
+      description: "Office updated successfully",
     });
   } catch (err: any) {
     console.error("Error creating new office:", err);
