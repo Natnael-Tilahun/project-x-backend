@@ -8,7 +8,7 @@ export const useApi = () => {
     const headers: Record<string, string> = {
       'X-App-ID': '0a010fa1-96e8-18fd-8196-ed9cb22d0009',
       'X-App-Version': '0a010fa1-96e8-18fd-8196-ed9d14d0000a',
-      'X-2FA-Token': ""
+      'X-2FA-Token': store.twoFactorToken ? store.twoFactorToken : ""
     };
 
     if (includeAuth && store.accessToken) {
