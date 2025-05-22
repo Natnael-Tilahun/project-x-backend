@@ -11,7 +11,7 @@ export const handleApiError = (error: any): never => {
       title: errorData?.type || "Something went wrong!",
       description: errorData?.type === "/constraint-violation"
         ? errorData?.fieldErrors?.[0]?.message
-        : errorData?.message || errorData?.detail,
+        : errorData?.detail || errorData?.message,
       variant: "destructive",
     });
   const errorMessage = errorData.detail || 
