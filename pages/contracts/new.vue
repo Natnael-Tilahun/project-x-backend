@@ -269,13 +269,19 @@ const searchCoreAccountsByAccountNumberHandler = async () => {
     selectedAccounts.value = [];
     if (accountNumber.value) {
       const response = await getCoreAccountsByAccount(accountNumber.value);
-      haveExistingContract.value = response?.contractId ? true : false;
+      haveExistingContract.value = response && response?.contractId ? true : false;
+      if(haveExistingContract.value){
+      toast({
+      title: "Contract already exist for this account.",
+      description: `This account has an contract. Please view the detail for more info.  `,
+    });
+  }
       coreCustomerSummary.value = response
       contractId.value = response.contractId;
       coreCustomerId.value = response.customerId;
       accountsData.value = response?.coreAccounts;
       accountsData.value =
-        accountsData.value.length > 0
+      accountsData.value && accountsData.value.length > 0
           ? accountsData.value.filter(
               (acc: Account) =>
                 !selectedAccounts.value.some(
@@ -290,15 +296,15 @@ const searchCoreAccountsByAccountNumberHandler = async () => {
   } catch (err: any) {
     isError.value = true;
     console.error("Error fetching accounts:", err);
-    errorMessage.value =
-      err.message == "404 NOT_FOUND" ? "Account not found." : err.message;
-    toast({
-      title: "Uh oh! Something went wrong.",
-      description: `${
-        err.message == "404 NOT_FOUND" ? "Account not found." : err.message
-      }`,
-      variant: "destructive",
-    });
+    // errorMessage.value =
+    //   err.message == "404 NOT_FOUND" ? "Account not found." : err.message;
+    // toast({
+    //   title: "Uh oh! Something went wrong.",
+    //   description: `${
+    //     err.message == "404 NOT_FOUND" ? "Account not found." : err.message
+    //   }`,
+    //   variant: "destructive",
+    // });
   } finally {
     loading.value = false;
   }
@@ -1176,11 +1182,6 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
                     })
                   "
                   class="w-fit px-5"
-                  ><Icon
-                    name="material-symbols:add"
-                    size="24"
-                    class="mr-2"
-                  ></Icon
                   >View Contract</UiButton
                 >
               </UiCard>
