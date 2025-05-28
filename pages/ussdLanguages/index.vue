@@ -61,19 +61,15 @@ const refetch = async () => {
       <template v-slot:toolbar="{ table }">
         <div class="flex items-center gap-4">
           <UiInput
-            type="search"
-            placeholder="Search..."
-            class="md:w-[100px] lg:w-[300px]"
-            v-model="keyword"
-          />
-          <UiButton @click="">
-            <Icon
-              name="svg-spinners:8-dots-rotate"
-              v-if="isLoading"
-              class="mr-2 h-4 w-4 animate-spin"
-            ></Icon>
-            Search</UiButton
-          >
+              placeholder="Filter by Language Name"
+              :model-value="(table?.getColumn('languageName')?.getFilterValue() as string) ?? ''"
+              class="h-8 w-[150px] lg:w-[250px]"
+              @input="
+                table
+                  ?.getColumn('languageName')
+                  ?.setFilterValue($event.target.value)
+              "
+            />
         </div>
       </template>
     </UiDataTable>
