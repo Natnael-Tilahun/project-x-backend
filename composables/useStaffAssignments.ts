@@ -152,6 +152,62 @@ export const useStaffAssignments = () => {
     }
   };
 
+  const terminateStaffAssignment: (
+    staffId:string,
+    assignmentData?: any
+  ) => ApiResult<StaffAssignment> = async (staffId,assignmentData) => {
+    try {
+      const { data, pending, error, status } = await fetch<any>(
+        `/api/v1/internal/staff-assignments/staff/${staffId}/terminate-staff-assignment`,
+        {
+          method: "POST",
+          body: {
+            terminationDate: new Date().toISOString()
+          }
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as any) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
+  const terminateAssignmentsFromStaffs: (
+    id:string,
+    assignmentData?: any
+  ) => ApiResult<StaffAssignment> = async (id,assignmentData) => {
+    try {
+      const { data, pending, error, status } = await fetch<any>(
+        `/api/v1/internal/staff-assignments/${id}/terminate-staff-assignment`,
+        {
+          method: "POST",
+          body: {
+            terminationDate: new Date().toISOString()
+          }
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as any) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
   const deleteStaffAssignment: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
@@ -180,6 +236,8 @@ export const useStaffAssignments = () => {
     deleteStaffAssignment,
     updateStaffAssignment,
     staffAssign,
+    terminateStaffAssignment,
+    terminateAssignmentsFromStaffs,
     getStaffAssignmentByStaffId,
     isSubmitting,
   };
