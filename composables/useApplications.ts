@@ -27,7 +27,7 @@ export const useApplications = () => {
 
       return data.value ? (data.value as unknown as Application[]) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -46,7 +46,7 @@ export const useApplications = () => {
 
       return data.value ? (data.value as unknown as AppVersion[]) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -65,7 +65,7 @@ export const useApplications = () => {
 
       return data.value ? (data.value as unknown as Application) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -84,7 +84,7 @@ export const useApplications = () => {
 
       return data.value ? (data.value as unknown as AppVersion) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -104,7 +104,7 @@ export const useApplications = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -124,7 +124,7 @@ export const useApplications = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -147,7 +147,7 @@ export const useApplications = () => {
 
       return data.value ? (data.value as unknown as Application) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -170,7 +170,7 @@ export const useApplications = () => {
 
       return data.value ? (data.value as unknown as AppVersion) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -193,7 +193,7 @@ export const useApplications = () => {
 
       return data.value ? (data.value as unknown as Application) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -216,7 +216,7 @@ export const useApplications = () => {
 
       return data.value ? (data.value as unknown as AppVersion) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };

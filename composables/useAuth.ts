@@ -91,7 +91,8 @@ export const useAuth = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        handleApiError(error);
+        navigateTo("/login")
+        await handleApiError(error);
       }
 
       const response = data.value as AuthResponse;
@@ -104,6 +105,7 @@ export const useAuth = () => {
       return response;
     } catch (err) {
       handleApiError(err);
+      navigateTo("/login")
       return null;
     }
   };

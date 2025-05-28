@@ -39,7 +39,7 @@
 
         <!-- OTP Input Form -->
         <form @submit.prevent="validateOTP" class="space-y-4 w-full">
-            <div class="grid grid-cols-4 justify-center  w-full">
+            <div class="flex gap-8 justify-center  w-full">
               <input
                 v-for="(digit, index) in 4"
                 :key="index"
@@ -119,13 +119,14 @@
 import { ref, computed } from "vue";
 import { useToast } from "~/components/ui/toast";
 import type { OtpDTO } from "~/types";
+import { handleApiError } from "~/types/api";
 
 // Page Meta Configuration
 definePageMeta({
   layout: false,
 });
 
-const { validateTwoFactorAuth, requestTwoFactorAuth } = useAuth();
+const { validateTwoFactorAuth, requestTwoFactorAuth, getAuthorities } = useAuth();
 const { toast } = useToast();
 
 const loading = ref(false);
@@ -177,23 +178,34 @@ const validateOTP = async () => {
 
     const otpCode = otpDigits.value.join("");
     const response = await validateTwoFactorAuth(otpCode);
-    console.log("response: ", response)
 
     if (response) {
+      // First show success message for OTP validation
       toast({
         title: "Success",
-        description: "Verification successful",
+        description: "OTP verification successful",
       });
-      navigateTo("/");
+
+      try {
+        // Try to get user authorities
+        const authoritiesResponse =  await getAuthorities();        
+        if (authoritiesResponse?.permissions) {
+          toast({
+            title: "Success",
+            description: "User roles fetched successfully",
+          });
+          navigateTo("/");
+        }
+      } catch (authoritiesError: any) {
+        console.error("Error getting user roles:", authoritiesError);
+        handleApiError(authoritiesError);
+        navigateTo("/login");
+      }
     }
   } catch (err: any) {
     console.error("Error validating OTP:", err);
     isError.value = true;
-    toast({
-      title: "Error",
-      description: "Invalid verification code. Please try again.",
-      variant: "destructive",
-    });
+    handleApiError(err);
   } finally {
     loading.value = false;
   }

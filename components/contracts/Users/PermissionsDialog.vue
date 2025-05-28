@@ -174,9 +174,9 @@ const saveAndClose = async () => {
   <UiAlertDialog :open="open" @update:open="$emit('update:open', $event)">
     <UiAlertDialogContent class="sm:max-w-[550px]">
       <UiAlertDialogHeader>
-        <UiAlertDialogTitle>Manage Permissions</UiAlertDialogTitle>
+        <UiAlertDialogTitle>Manage User Account Permissions</UiAlertDialogTitle>
         <UiAlertDialogDescription>
-          Set permissions for account {{ contractAccount?.account?.accountNumber }}
+          Set permissions for user account {{ contractAccount?.account?.accountNumber }}
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       

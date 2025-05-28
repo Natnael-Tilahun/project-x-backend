@@ -36,7 +36,7 @@ export const usePermissions = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -55,7 +55,7 @@ export const usePermissions = () => {
 
       return data.value ? (data.value as unknown as Permission) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -75,7 +75,7 @@ export const usePermissions = () => {
 
       return data.value ? (data.value as unknown as Permission) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -95,7 +95,7 @@ export const usePermissions = () => {
 
       return data.value ? (data.value as unknown as Permission) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
