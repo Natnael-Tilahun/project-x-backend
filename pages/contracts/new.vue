@@ -66,6 +66,8 @@ const setOpenEditModal = (value: boolean) => {
 const isPhoneConfirmed = ref<boolean>(false);
 const formValuesToSubmit = ref<any>(null);
 const isPhoneExist = ref<boolean>(false)
+const isWantToCreateWithoutCustomer = ref<boolean>(false)
+
 
 const handleAccountSelect = (account: Account | undefined) => {
   const index = selectedAccounts.value.findIndex(
@@ -385,29 +387,34 @@ const handlePhoneConfirmation = async (value: boolean) => {
       console.log("newValues values:", newValues);
 
         const response = await createNewContract(newValues);
-      data.value = response
-    
-      navigateTo(`/contracts`);
-      toast({
-        title: "Contract Created",
-        description: "Contract created successfully",
-      });
+        if(response){
+          data.value = response
+          navigateTo(`/contracts`);
+          toast({
+            title: "Contract Created",
+            description: "Contract created successfully",
+          });
+        }
+   
     } catch (err: any) {
       console.log("Error creating new contractttt:", err.message);
-      if(err.message == "Phone is already in use!"){
+      if(err && err.message == "Phone is already in use!"){
         isPhoneExist.value = true
       }
       isError.value = true;
+      setOpenEditModal(false)
+      isSubmitting.value= false
     }
     finally{
       isSubmitting.value = false
+      setOpenEditModal(false)
     }
   }
   setOpenEditModal(false);
 };
 
 const createNewContractWithoutCustomerHandler = async(value: boolean) => {
-    if (formValuesToSubmit.value && isPhoneExist.value && value) {
+    if ((formValuesToSubmit.value && isPhoneExist.value && value )|| (isWantToCreateWithoutCustomer.value && formValuesToSubmit.value && value )) {
     try {
       isSubmitting.value = true
        const newValues={
@@ -416,13 +423,14 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
       }
       console.log("Submitting values:", newValues);
         const response = await createNewContract(newValues);
-      data.value = response
-    
-      navigateTo(`/contracts`);
-      toast({
-        title: "Contract Created",
-        description: "Contract without customer created successfully",
-      });
+        if(response){
+          data.value = response
+          navigateTo(`/contracts`);
+          toast({
+            title: "Contract Created",
+            description: "Contract without customer created successfully",
+          });
+        }
     } catch (err: any) {
       console.log("Error creating new contractttt:", err.message);
       if(err.message == "Phone is already in use!"){
@@ -440,6 +448,10 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
     return
   }
 }
+
+const isPhoneExistHandler = (value) => {
+  isWantToCreateWithoutCustomer.value = !isWantToCreateWithoutCustomer.value
+}
 </script>
 
 <template>
@@ -454,7 +466,28 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
 
     <UiCard class="w-full flex border-[1px] rounded-lg h-full">
       <div value="roleDetails" class="text-sm md:text-base p-6 basis-full">
-        <form @submit="onSubmit">
+        <form @submit="onSubmit" class="space-y-6">
+          <div class="flex w-full justify-end">
+
+          <FormField
+              v-slot="{ value, handleChange }"
+              name="isPhoneExist"
+            >
+              <FormItem
+                class="flex flex-row items-center gap-6 px-4 py-2 border rounded-md w-fit"
+              >
+                <FormLabel class="text-base">
+                  Create without customer
+                </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value" @update:checked="() => {
+                    isPhoneExistHandler(value)
+                    handleChange}" />
+                </FormControl>
+              </FormItem>
+            </FormField>
+          </div>
+
           <div class="grid md:grid-cols-2 gap-6">
             <FormField v-slot="{ componentField }" name="name">
               <FormItem>
@@ -1162,7 +1195,7 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
                 </UiCard>
                 <div class="w-full" v-else-if="isError && !isPhoneExist">
                   <ErrorMessage
-                    :title="errorMessage || 'Something went wrong.'"1000179835596
+                    :title="errorMessage || 'Something went wrong.'"
                     :retry="fetchData"
                   />
                 </div>
@@ -1263,7 +1296,7 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
           Cancel
         </UiAlertDialogCancel>
         <UiAlertDialogAction @click="() => {
-          if(isPhoneExist){
+          if(isPhoneExist || isWantToCreateWithoutCustomer){
             createNewContractWithoutCustomerHandler(true)
           }
           else{

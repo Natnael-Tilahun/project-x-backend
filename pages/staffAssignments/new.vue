@@ -45,7 +45,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       title: "Staff assignment Created",
       description: "Staff assignment created successfully",
     });
-    navigateTo(`/staffAssignments`);
+    navigateTo(`/staffs/d7670f39-9554-4de6-83cf-7a28f774bafa?activeTab=staffAssignments`);
   } catch (err: any) {
     console.error("Error creating new staff assignment:", err.message);
     isError.value = true;

@@ -28,7 +28,7 @@ export const useContracts = () => {
 
       return data.value ? (data.value as unknown as Contract[]) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -47,7 +47,7 @@ export const useContracts = () => {
 
       return data.value ? (data.value as unknown as Contract) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -66,7 +66,7 @@ export const useContracts = () => {
 
       return data.value ? (data.value as unknown as Contract[]) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -85,7 +85,7 @@ export const useContracts = () => {
 
       return data.value ? (data.value as unknown as Contract[]) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -108,8 +108,8 @@ export const useContracts = () => {
 
       return data.value ? (data.value as unknown as Contract) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      // handleApiError(err);
+      throw err;
     }
   };
 
@@ -131,7 +131,7 @@ export const useContracts = () => {
 
       return data.value ? (data.value as unknown as Contract) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -154,7 +154,7 @@ export const useContracts = () => {
 
       return data.value ? (data.value as unknown as Contract) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -174,7 +174,7 @@ export const useContracts = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
