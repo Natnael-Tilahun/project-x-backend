@@ -10,9 +10,9 @@ interface DataTableRowActionsProps<TData> {
 }
 const props = defineProps<DataTableRowActionsProps<any>>();
 
-function viewRollDetails(id: string) {
+function viewPermissionsDetails(id: string) {
   // alert(id);
-  navigateTo(`/userRoles/${id}`);
+  navigateTo(`/userPermissions/${id}`);
   navigator.clipboard.writeText(id);
 }
 
@@ -31,15 +31,10 @@ function viewRollDetails(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiDropdownMenuItem>View</UiDropdownMenuItem>
-      <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
-      <UiDropdownMenuItem>Deactivate</UiDropdownMenuItem>
+      <UiPermissionGuard permission="VIEW_PERMISSIONS" >
+      <UiDropdownMenuItem @click="viewPermissionsDetails(row.original.code)">View & Edit</UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
-      <UiDropdownMenuSeparator />
-      <UiDropdownMenuItem class="text-red-600">
-        Delete
-        <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
-      </UiDropdownMenuItem>
+      </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 </template>

@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { ServiceDefinition, Permission, BankingService } from "~/types";
-import { ServiceType, ServiceDefinitionStatus } from "@/global-types";
+import { ServiceType, ServiceDefinitionStatus, PermissionCategory } from "@/global-types";
 
 const route = useRoute();
 const { getServiceDefinitionById, updateServiceDefinition, isLoading, isSubmitting } =
@@ -52,7 +52,8 @@ try {
   loading.value = true;
     data.value = await getServiceDefinitionById(serviceDefinitionId.value);
   const permissions = await getPermissions(0,100000);
-  permissionsData.value = permissions.sort((a: Permission, b: Permission) =>
+  permissionsData.value = permissions.filter((permission: Permission) => permission.category == PermissionCategory.CUSTOMER)
+  permissionsData.value = permissionsData.value.sort((a: Permission, b: Permission) =>
       a?.code?.toLowerCase().localeCompare(b?.code?.toLowerCase())
     );
   selectedPermissions.value = data.value?.permissions || []

@@ -24,7 +24,7 @@ export const useProfile = () => {
 
       return data.value ? (data.value as unknown as Profile) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { cn } from "@/lib/utils";
 import { useForm } from "vee-validate";
 import {
@@ -23,6 +23,15 @@ const { toast } = useToast();
 const form = useForm({
   validationSchema: userLoginFormSchema,
 });
+
+const maskedUsername = computed(() => {
+  const username = form.values.username;
+  if (!username) return '';
+  if (username.length <= 3) return username;
+  return username.slice(0, 3) + '*'.repeat(username.length - 3);
+});
+
+form.setFieldValue("username", store.username.slice(0, 3) + '*'.repeat(store.username.length - 3))
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
@@ -63,6 +72,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 v-bind="componentField"
                 :disabled="isLoading"
                 aria-autocomplete="username"
+                :value="maskedUsername"
+                @input="(e:any) => form.setFieldValue('username', e.target.value)"
               />
             </FormControl>
             <FormMessage />
@@ -77,13 +88,13 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 className="relative flex items-center bg-input rounded-lg pl- focus-within:ring-1 focus-within:ring-primary"
               >
                 <UiInput
-                  :type="[showPassword ? 'text' : 'password']"
+                  :type="['password']"
                   placeholder="******"
                   v-bind="componentField"
                   :disabled="isLoading"
                   aria-autocomplete="password"
                 />
-
+                <!-- 
                 <Icon
                   v-if="showPassword"
                   name="material-symbols:visibility-off-rounded"
@@ -95,15 +106,15 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                   name="material-symbols:visibility-rounded"
                   class="absolute flex right-0 pr-3 items-center w-8 h-8"
                   @Click="togglePasswordVisibility"
-                ></Icon>
+                ></Icon> -->
               </div>
             </FormControl>
             <FormMessage />
           </FormItem>
         </FormField>
 
-        <div class="flex justify-between items-center pb-3">
-          <FormField
+        <div class="flex justify-end items-center pb-3">
+          <!-- <FormField
             v-slot="{ value, handleChange }"
             type="checkbox"
             name="rememberMe"
@@ -119,7 +130,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </div>
             </FormItem>
-          </FormField>
+          </FormField> -->
           <NuxtLink
             to="/forgotPassword"
             class="text-primary text-right text-sm"

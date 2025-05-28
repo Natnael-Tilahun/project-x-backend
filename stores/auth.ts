@@ -81,7 +81,7 @@ export const useAuthStore = defineStore("auth", {
 
     $reset() {
       this.isAuthenticated = false;
-      this.username = "";
+      // this.username = "";
       this.email = "";
       this.userRole = "";
       this.accessToken = "";
@@ -91,7 +91,6 @@ export const useAuthStore = defineStore("auth", {
       this.verificationId = "";
       this.expiryTime = "";
       this.phone = "";
-      this.twoFactorToken = ""
     },
   },
   getters: {

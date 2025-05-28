@@ -137,7 +137,7 @@ onMounted(async () => {
       <UiCard class="w-full p-6 rounded-xl space-y-4">
         <div class="flex justify-end items-center">
           <div class="flex items-center gap-4">
-            <UiPermissionGuard permission="UPDATE_ROLE">
+            <UiPermissionGuard permission="UPDATE_PERMISSION">
               <UiBadge class="font-bold px-2 py-1">Enabled</UiBadge>
               <FormField v-slot="{ value, handleChange }" name="enabled">
                 <FormItem>
@@ -409,11 +409,11 @@ onMounted(async () => {
         </div>
       </UiCard>
     </div>
-    <div v-else>No data found.</div>
+    <div v-else>
+      <UiNoResultFound title="Permissoin not found"  />
+    </div>
     <div v-if="isError">
       <ErrorMessage :retry="refetch" title="Something went wrong." />
     </div>
   </form>
-</template>
-
-<style lang="css" scoped></style>
+</template>logout
