@@ -24,14 +24,7 @@ const form = useForm({
   validationSchema: userLoginFormSchema,
 });
 
-const maskedUsername = computed(() => {
-  const username = form.values.username;
-  if (!username) return '';
-  if (username.length <= 3) return username;
-  return username.slice(0, 3) + '*'.repeat(username.length - 3);
-});
-
-store.username && form.setFieldValue("username", store.username.slice(0, 3) + '*'.repeat(store.username.length - 3)) 
+store.username && form.setFieldValue("username", store.username) 
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
@@ -72,8 +65,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 v-bind="componentField"
                 :disabled="isLoading"
                 aria-autocomplete="username"
-                :value="maskedUsername"
-                @input="(e:any) => form.setFieldValue('username', e.target.value)"
               />
             </FormControl>
             <FormMessage />
