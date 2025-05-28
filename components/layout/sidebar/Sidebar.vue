@@ -147,13 +147,13 @@ const mainLinks = [
     ],
   },
   {
-    title: "Users",
+    title: "System Users",
     icon: "solar:user-bold",
     size: "22",
     showDropdown: false,
     dropdown: [
       // { title: "Customers Roles", link: "/customerRoles" },
-      { title: "Users", link: "/users", permission: "VIEW_USERS" },
+      { title: "System Users", link: "/users", permission: "VIEW_USERS" },
       // { title: "Permissions", link: "/permissions" },
     ],
   },

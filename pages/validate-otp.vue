@@ -39,7 +39,7 @@
 
         <!-- OTP Input Form -->
         <form @submit.prevent="validateOTP" class="space-y-4 w-full">
-            <div class="grid grid-cols-4 justify-center  w-full">
+            <div class="flex gap-8 justify-center  w-full">
               <input
                 v-for="(digit, index) in 4"
                 :key="index"

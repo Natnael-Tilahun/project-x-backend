@@ -39,10 +39,9 @@ definePageMeta({
         class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]"
       >
         <div class="flex flex-col space-y-2 text-center">
-          <h1 class="text-2xl font-semibold tracking-tight">Login</h1>
-          <!-- <p class="text-sm text-muted-foreground">
-            Enter your email(username) and password below to login
-          </p> -->
+          <h1 class="md:text-3xl text-xl font-bold text-primary mb-2">Welcome to CBE Backend Application</h1>
+          <p class="text-sm text-muted-foreground mb-4">Please login to access the system</p>
+          <h2 class="text-2xl font-semibold tracking-tight">Login</h2>
         </div>
         <LoginForm />
         <!-- <p class="px-8 text-center text-sm text-muted-foreground">

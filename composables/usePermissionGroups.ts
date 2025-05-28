@@ -28,7 +28,7 @@ export const usePermissionGroups = () => {
 
       return data.value ? (data.value as unknown as PermissionGroup[]) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -48,7 +48,7 @@ export const usePermissionGroups = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -73,7 +73,7 @@ export const usePermissionGroups = () => {
 
       return data.value ? (data.value as unknown as PermissionGroup) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -96,7 +96,7 @@ export const usePermissionGroups = () => {
 
       return data.value ? (data.value as unknown as PermissionGroup) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
@@ -119,7 +119,7 @@ export const usePermissionGroups = () => {
 
       return data.value ? (data.value as unknown as PermissionGroup) : null;
     } catch (err) {
-      handleApiError(err);
+      // handleApiError(err);
       return null;
     }
   };
