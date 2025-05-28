@@ -31,7 +31,7 @@ const maskedUsername = computed(() => {
   return username.slice(0, 3) + '*'.repeat(username.length - 3);
 });
 
-form.setFieldValue("username", store.username.slice(0, 3) + '*'.repeat(store.username.length - 3))
+store.username && form.setFieldValue("username", store.username.slice(0, 3) + '*'.repeat(store.username.length - 3)) 
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
