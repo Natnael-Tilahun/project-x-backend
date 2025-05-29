@@ -75,14 +75,14 @@ const fetchStaffAssignmentData = async () => {
   loading.value = true;
   data.value = await getStaffAssignmentById(merchantId.value);
   staffs.value = await getStaffs();
-    offices.value = await getOffices();
-    roles.value = await getStaffRoles();
+  offices.value = await getOffices();
+  roles.value = await getStaffRoles();
   let a = {
     ...data.value,
-    staffId: data.value.staff.id,
-    newRoleId: data.value.role.name,
-    newOfficeId: data.value.office.id,
-    supervisorStaffId: data.value.supervisor?.id,
+    staffId: data.value?.staff?.id,
+    newRoleId: data.value?.role?.name,
+    newOfficeId: data.value?.office?.id,
+    supervisorStaffId: data.value?.supervisor?.id,
     assignmentDate : data.value.startDate
         ? dateFormatter(data.value.startDate)
         : "",
