@@ -40,7 +40,7 @@ export const columns: ColumnDef<LocalizedDefaultMessage>[] = [
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `${route.path}/${row.original.id}`,
             },
-            "View"
+            "View Message Details"
           )
         : h("p", "-");
     },

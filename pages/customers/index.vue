@@ -77,8 +77,8 @@ const searchHandler = async () => {
         <div class="flex items-center gap-4">
           <UiInput
             type="search"
-            placeholder="Search..."
-            class="md:w-[100px] lg:w-[300px]"
+            placeholder="Search by name, email or phone (start from 9)..."
+            class="md:w-[100px] lg:w-[300px] placeholder:text-xs"
             v-model="keyword"
           />
           <UiButton @click="searchHandler">

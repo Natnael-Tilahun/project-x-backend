@@ -69,22 +69,18 @@ const refetch = async () => {
     </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
-        <!-- <CustomersDataTableSearchbar :table="table" /> -->
-        <div class="flex items-center gap-4">
-          <UiInput
-            type="search"
-            placeholder="Search..."
-            class="md:w-[100px] lg:w-[300px]"
-            v-model="keyword"
-          />
-          <UiButton @click="">
-            <Icon
-              name="svg-spinners:8-dots-rotate"
-              v-if="isLoading"
-              class="mr-2 h-4 w-4 animate-spin"
-            ></Icon>
-            Search</UiButton
-          >
+        <div class="flex items-center justify-between">
+          <div class="flex flex-1 items-center space-x-2">
+            <UiInput
+              placeholder="Filter by name"
+              :model-value="(table?.getColumn('name')?.getFilterValue() as string) ?? ''"
+              class="h-8 w-[150px] lg:w-[250px]"
+              @input="
+                table?.getColumn('name')?.setFilterValue($event.target.value)
+              "
+            />
+          </div>
+          <DataTableViewOptions :table="table" />
         </div>
       </template>
     </UiDataTable>
