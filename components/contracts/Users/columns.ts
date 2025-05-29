@@ -77,6 +77,10 @@ export const columns: ColumnDef<ContractUser>[] = [
           )
         : h("p", "-");
     },
+    filterFn: (row, id, value) => {
+      const customer = row.getValue(id);
+      return customer?.fullName?.toLowerCase().includes(value.toLowerCase());
+    }
   },
   {
     accessorKey: "serviceDefinitionRole",

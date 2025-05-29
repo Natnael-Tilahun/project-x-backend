@@ -69,7 +69,21 @@ onMounted(() => {
     >
     </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data || []">
-      <template v-slot:toolbar="{ table }"> </template>
+      <template v-slot:toolbar="{ table }">
+        <div class="flex items-center justify-between">
+          <div class="flex flex-1 items-center space-x-2">
+            <UiInput
+              placeholder="Filter by role name"
+              :model-value="(table?.getColumn('roleName')?.getFilterValue() as string) ?? ''"
+              class="h-8 w-[150px] lg:w-[250px]"
+              @input="
+                table?.getColumn('roleName')?.setFilterValue($event.target.value)
+              "
+            />
+          </div>
+          <DataTableViewOptions :table="table" />
+        </div>
+      </template>
     </UiDataTable>
   </div>
   <div v-if="isError">
