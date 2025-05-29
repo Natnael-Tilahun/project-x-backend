@@ -61,7 +61,7 @@ const refetch = async () => {
         <div class="flex items-center gap-4">
           <div class="flex flex-1 items-center space-x-2">
             <UiInput
-              placeholder="Filter by message"
+              placeholder="Filter by menu message"
               :model-value="(table?.getColumn('message')?.getFilterValue() as string) ?? ''"
               class="h-8 w-[150px] lg:w-[250px]"
               @input="

@@ -40,14 +40,14 @@ export const columns: ColumnDef<LocalizedUssdMenu>[] = [
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `${route.path}/${row.original.id}`,
             },
-            "View"
+            "View Menu Details"
           )
         : h("p", "-");
     },
   },
   {
     accessorKey: "message",
-    header: "Menu Name",
+    header: "Menu Message",
     cell: ({ row }) => {
       const menuName = row.getValue("message");
       return menuName ? h("p", menuName) : h("p", "-");

@@ -39,7 +39,7 @@ export const columns: ColumnDef<ServiceDefinitionRole>[] = [
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `${route.path}?activeTab=serviceDefinitionRoleDetails&serviceDefinitionRoleId=${serviceDefinitionRoleId}`,
             },
-            "View Details"
+            "View Role Details"
           )
         : h("p", "-");
     },

@@ -49,7 +49,7 @@ export const columns: ColumnDef<Merchant>[] = [
               "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
             to: `${route.path}/${merchantId}`,
           },
-          "View"
+          "View Merchant Details"
         );
     },
   },

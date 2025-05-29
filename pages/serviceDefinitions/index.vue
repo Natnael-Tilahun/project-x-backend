@@ -66,7 +66,21 @@ const searchHandler = async () => {
     </NuxtLink>
     </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
-
+      <template v-slot:toolbar="{ table }">
+        <div class="flex items-center justify-between">
+          <div class="flex flex-1 items-center space-x-2">
+            <UiInput
+              placeholder="Filter by name"
+              :model-value="(table?.getColumn('name')?.getFilterValue() as string) ?? ''"
+              class="h-8 w-[150px] lg:w-[250px]"
+              @input="
+                table?.getColumn('name')?.setFilterValue($event.target.value)
+              "
+            />
+          </div>
+          <DataTableViewOptions :table="table" />
+        </div>
+      </template>
     </UiDataTable>
   </div>
   <!-- <div v-else-if="data && !isError && data?.length <= 0">
