@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/userRoles/columns";
+import { columns } from "~/components/staffRoles/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Role } from "~/types";
 
-const { getRoles, isLoading } = useRoles();
+const { getStaffRoles, isLoading } = useStaffRoles();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<Role[]>([]);
@@ -18,9 +18,10 @@ const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    data.value = await getRoles(); // Call your API function to fetch roles
+    data.value = await getStaffRoles(); // Call your API function to fetch roles
+    console.log("jdhf: ", data.value)
   } catch (err) {
-    console.error("Error fetching roles:", err);
+    console.error("Error fetching staff roles:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
@@ -28,7 +29,7 @@ const fetchData = async () => {
   }
 };
 
-await useAsyncData("rolesData", async () => {
+await useAsyncData("staffRolesData", async () => {
   await fetchData();
 });
 </script>
@@ -42,9 +43,9 @@ await useAsyncData("rolesData", async () => {
     class="py-4 flex flex-col space-y-10 mx-auto"
   >
     <UiPermissionGuard permission="CREATE_ROLES" >
-    <NuxtLink to="/userRoles/new" class="w-fit self-end"
+    <NuxtLink to="/staffRoles/new" class="w-fit self-end"
       ><UiButton
-        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add New
+        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add New Staff
         Role</UiButton
       >
     </NuxtLink>
@@ -68,6 +69,9 @@ await useAsyncData("rolesData", async () => {
     </UiDataTable>
   </div>
 
+  <!-- <div v-else-if="data && !isError ">
+    <UiNoResultFound title="Sorry, No role found." />
+  </div> -->
   <div v-if="isError">
     <ErrorMessage :retry="refetch" title="Something went wrong." />
   </div>

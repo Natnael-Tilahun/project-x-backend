@@ -419,6 +419,8 @@ export enum PermissionGroupStatus {
 export enum RoleScope {
   SYSTEM = "SYSTEM",
   CUSTOMER = "CUSTOMER",
+  ORGANIZATIONAL ="ORGANIZATIONAL",
+  BUSINESS="BUSINESS"
 }
 
 export enum DeviceType {

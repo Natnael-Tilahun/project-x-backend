@@ -6,8 +6,8 @@ export const useApi = () => {
 
   const getHeaders = (includeAuth = true) => {
     const headers: Record<string, string> = {
-      'X-App-ID': '0a010fa1-96e8-18fd-8196-ed9cb22d0009',
-      'X-App-Version': '0a010fa1-96e8-18fd-8196-ed9d14d0000a',
+      'X-App-ID': runtimeConfig.public.X_APP_ID as string,
+      'X-App-Version': runtimeConfig.public.X_APP_VERSION as string,
       'X-2FA-Token': store.twoFactorToken ? store.twoFactorToken : ""
     };
 
