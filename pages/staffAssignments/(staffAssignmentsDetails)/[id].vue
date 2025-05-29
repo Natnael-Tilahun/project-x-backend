@@ -18,7 +18,7 @@ const { getStaffAssignmentById, updateStaffAssignment, isLoading, isSubmitting }
   useStaffAssignments();
 const { getStaffs } = useStaffs();
 const { getOffices } = useOffice();
-const { getRoles } = useRoles();
+const { getStaffRoles } = useStaffRoles();
 
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
@@ -76,7 +76,7 @@ const fetchStaffAssignmentData = async () => {
   data.value = await getStaffAssignmentById(merchantId.value);
   staffs.value = await getStaffs();
     offices.value = await getOffices();
-    roles.value = await getRoles();
+    roles.value = await getStaffRoles();
   let a = {
     ...data.value,
     staffId: data.value.staff.id,
