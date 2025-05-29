@@ -502,6 +502,7 @@ interface PaymentIntegration {
   limitPerTransaction?: number | null;
   category?: PaymentCategory | null;
   charge?: Charge | null
+  maxTransactionsPerDay?: number | null
 }
 
 interface Menu {

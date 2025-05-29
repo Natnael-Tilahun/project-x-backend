@@ -372,6 +372,23 @@ onMounted(() => {
                   <FormMessage />
                 </FormItem>
               </FormField>
+              <FormField
+                :model-value="data?.maxTransactionsPerDay"
+                v-slot="{ componentField }"
+                name="maxTransactionsPerDay"
+              >
+                <FormItem>
+                  <FormLabel> Max Transactions Per Day </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="number"
+                      placeholder="Enter max transactions per day"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
             <FormField
               :model-value="data?.integrationType"
               v-slot="{ componentField }"

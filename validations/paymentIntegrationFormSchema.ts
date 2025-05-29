@@ -42,7 +42,7 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     integrationName: z.string(),
     companyName: z.string(),
     description: z.string().optional().nullable(),
-    charge: z.number().optional().nullable(),
+    charge: z.number(),
     iconPath: z.string().optional().nullable(),
     isDraft: z.boolean().optional().nullable().default(false),
     enabled: z.boolean().optional().nullable().default(false),
@@ -76,6 +76,7 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     dailyLimitPerAccount: z.number().optional().nullable(),
     limitPerTransaction: z.number().optional().nullable(),
     category: PaymentCategorySchema,
+    maxTransactionsPerDay: z.number().optional().nullable()
   })
 );
 
