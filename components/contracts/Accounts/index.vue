@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 const openItems = ref(["item-1"]);
 import { toast } from "~/components/ui/toast";
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed } from "vue";
 import { columns } from "~/components/contracts/Accounts/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { getIdFromPath } from "~/lib/utils";
@@ -228,6 +228,21 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
     loading.value = false;
   }
 };
+
+const selectAllAccounts = () => {
+  // Combine both selectedContractAccount and accountsData
+  const allAccounts = [...selectedContractAccount.value, ...(accountsData.value || [])];
+  selectedAccounts.value = [...allAccounts];
+};
+
+const deselectAllAccounts = () => {
+  selectedAccounts.value = [];
+};
+
+const isAllSelected = computed(() => {
+  const allAccounts = [...selectedContractAccount.value, ...(accountsData.value || [])];
+  return allAccounts.length > 0 && selectedAccounts.value.length === allAccounts.length;
+});
 </script>
 
 <template>
@@ -280,14 +295,29 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
 
     <UiCard
 
-      class="w-full flex flex-col border-none gap-2"
+      class="w-full flex flex-col border-none gap-4"
     >
       <!-- <div class="p-6"> -->
       <div class="flex justify-between items-center">
-        <h2 class="text-lg font-semibold">Add Core Customer Accounts</h2>
-        <p class="text-sm text-muted-foreground">
+        <div class="flex items-center justify-between w-full gap-4">
+          <h2 class="text-lg font-semibold">Add Core Customer Accounts</h2>
+          <div class="flex items-center gap-4">
+            <p class="text-sm text-muted-foreground">
           {{ selectedAccounts.length }} selected
-        </p>
+        </p>          
+          <UiLabel name="selectAll" class="text-base flex gap-4 order-1 border px-4 py-2 rounded-md">
+            <UiCheckbox
+            :checked="isAllSelected"
+            id="selectAll"
+            name="selectAll"
+            @click="isAllSelected ? deselectAllAccounts() : selectAllAccounts()"
+            class="h-5 w-5"
+            :disabled="!store.permissions.includes('CREATE_CONTRACT_ACCOUNTS')"
+          />
+          {{ !isAllSelected ? "Select All" : "Deselect All" }}
+          </UiLabel>         
+        </div>
+      </div>
       </div>
 
       <UiAccordion
