@@ -122,7 +122,8 @@ const mainLinks = [
     size: "22",
     showDropdown: true,
     dropdown: [
-      { title: "Roles", link: "/userRoles", permission: "VIEW_ROLES_LIST" },
+      { title: "System Roles", link: "/userRoles", permission: "VIEW_ROLES_LIST" },
+      { title: "Staff Roles", link: "/staffRoles", permission: "VIEW_ROLES_LIST" },
       {
         title: "Permissions",
         link: "/userPermissions",
