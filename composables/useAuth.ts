@@ -240,6 +240,30 @@ export const useAuth = () => {
     }
   };
 
+  const changePassword: (newData: any) => ApiResult<AuthResponse> = async (newData) => {
+    try {
+      const { data, pending, error, status } = await fetch<AuthResponse>(
+        '/api/v1/users/change-password',
+        {
+          method: "POST",
+          body: newData,
+        }
+      );
+      
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return ({ data: data.value as AuthResponse, status});
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
+
   return {
     login,
     userLoggedIn,
@@ -253,6 +277,7 @@ export const useAuth = () => {
     setNewPassword,
     getAuthorities,
     requestTwoFactorAuth,
-    validateTwoFactorAuth
+    validateTwoFactorAuth,
+    changePassword
   };
 };

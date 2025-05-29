@@ -8,19 +8,40 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { settingsFormSchema } from "~/validations/settingsFormSchema";
+import { useToast } from "~/components/ui/toast";
 
 const isLoading = ref(false);
+const {changePassword}= useAuth()
+const { toast } = useToast();
 
 const form = useForm({
   validationSchema: settingsFormSchema,
 });
 
-const onSubmit = form.handleSubmit((values: any) => {
-  console.log("Form submitted!", values);
-  isLoading.value = true;
-  setTimeout(() => {
+const onSubmit = form.handleSubmit(async (values: any) => {
+  try {
+    isLoading.value = true;
+    const newValue = {
+      currentPassword: values.currentPassword,
+      newPassword: values.newPassword
+    }
+    const response = await changePassword(newValue);    
+    if (response.status.value == "success") {
+      toast({
+        title: "Password changed Successfully.",
+        description: "Your old password changed successfully",
+      });
+    }
+  } catch (err: any) {
+    console.error("Error changing password:", err);
+    toast({
+      title: "Error",
+      description: "Failed to change your password. Please try again.",
+      variant: "destructive",
+    });
+  } finally {
     isLoading.value = false;
-  }, 3000);
+  }
 });
 </script>
 
