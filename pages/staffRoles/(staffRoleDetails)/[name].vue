@@ -16,12 +16,12 @@ const { toast } = useToast();
 
 const topAccordionItem = ref("item-1");
 const {
-  getRolePermissions,
-  updateRolePermissions,
-  updateRoleStatus,
+  getStaffRolePermissions,
+  updateStaffRolePermissions,
+  updateStaffRoleStatus,
   isLoading,
   isUpdating,
-} = useRoles();
+} = useStaffRoles();
 const { getAuthorities } = useAuth();
 const loading = ref(isLoading.value);
 const updating = ref(isLoading.value);
@@ -89,7 +89,7 @@ const form = useForm<FormValues>({
 const refetch = async () => {
   try {
     loading.value = true;
-    const fetchedData = await getRolePermissions(name); // Call your API function to fetch roles
+    const fetchedData = await getStaffRolePermissions(name); // Call your API function to fetch roles
     if (fetchedData) {
       data.value = fetchedData;
       const formValues: { [key: string]: any } = {
@@ -140,7 +140,7 @@ const refetch = async () => {
 
 try {
   loading.value = true;
-  const fetchedData = await getRolePermissions(name); // Call your API function to fetch roles
+  const fetchedData = await getStaffRolePermissions(name); // Call your API function to fetch roles
   if (fetchedData) {
     data.value = fetchedData;
     const formValues: { [key: string]: any } = {
@@ -221,7 +221,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     isUpdating.value = true;
     updating.value = true;
-    await updateRolePermissions(name, updatedRoleData); // Call your API function to fetch roles
+    await updateStaffRolePermissions(name, updatedRoleData); // Call your API function to fetch roles
     // await getAuthorities()
     toast({
       title: "Role permissions updated successfully.",
@@ -245,7 +245,7 @@ const updadateRoleStatus = async (status: boolean) => {
   try {
     isUpdating.value = true;
     updating.value = true;
-    await updateRoleStatus(name, status); // Call your API function to fetch roles
+    await updateStaffRoleStatus(name, status); // Call your API function to fetch roles
     await getAuthorities()
     toast({
       title: "Role status updated successfully.",

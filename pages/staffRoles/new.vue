@@ -13,7 +13,7 @@ import { toast } from "~/components/ui/toast";
 import { RoleScope } from "~/global-types";
 import type { Role } from "~/types";
 
-const { createNewRole, isLoading } = await useRoles();
+const { createNewStaffRole, isLoading } = await useStaffRoles();
 const isError = ref(false);
 const data = ref<Role>();
 
@@ -27,7 +27,7 @@ const form = useForm({
     description: "",
     enabled: true,
     enforce2fa: false,
-    scope: RoleScope.SYSTEM
+    scope: RoleScope.ORGANIZATIONAL
   },
 });
 
@@ -35,12 +35,12 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     isSubmitting.value = true;
     isLoading.value = true;
-    data.value = await createNewRole(values); // Call your API function to fetch profile
-    navigateTo(`/userRoles`);
-    console.log("New role data; ", data.value);
+    data.value = await createNewStaffRole(values); // Call your API function to fetch profile
+    navigateTo(`/staffRoles`);
+    console.log("New staff role data; ", data.value);
     toast({
-      title: "Role Created",
-      description: "Role created successfully",
+      title: "Staff Role Created",
+      description: "Staff Role created successfully",
     });
   } catch (err: any) {
     console.error("Error creating new role:", err);
@@ -57,7 +57,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     <div class="pb-4">
       <h1 class="md:text-2xl text-lg font-medium">Add New Role</h1>
       <p class="text-sm text-muted-foreground">
-        Create new user role, role access and system permissions
+        Create new staff role, role access and system permissions
       </p>
     </div>
 
@@ -122,7 +122,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
             <FormField v-slot="{ componentField }" name="scope">
               <FormItem>
                 <FormLabel> Scope </FormLabel>
-                <UiSelect  v-bind="componentField">
+                <UiSelect v-bind="componentField">
                   <FormControl>
                     <UiSelectTrigger>
                       <UiSelectValue placeholder="Select a scope" />

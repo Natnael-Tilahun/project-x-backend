@@ -2,7 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { computed } from "vue";
 import { toast } from "../ui/toast";
-const { deleteRoleById, getRoles, isLoading } = useRoles();
+const { deleteStaffRoleById, isLoading } = useStaffRoles();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const { setIsUpdated } = usePagesInfoStore();
@@ -19,7 +19,7 @@ interface DataTableRowActionsProps<TData> {
 const props = defineProps<DataTableRowActionsProps<any>>();
 
 function viewRollDetails(name: string) {
-  navigateTo(`/userRoles/${name}`);
+  navigateTo(`/staffRoles/${name}`);
   navigator.clipboard.writeText(name);
 }
 
@@ -27,16 +27,16 @@ async function deleteRole(id: string) {
   try {
     isLoading.value = true;
     loading.value = true;
-    await deleteRoleById(id); // Call your API function to fetch roles
-    console.log("Role deleted successfully");
+    await deleteStaffRoleById(id); // Call your API function to fetch roles
+    console.log("Staff Role deleted successfully");
     toast({
-      title: "Role deleted successfully",
+      title: "Staff Role deleted successfully",
     });
     setIsUpdated({ isUpdated: true });
     // Reload the window after deleting the role
     window.location.reload();
   } catch (err) {
-    console.error("Error deleting role:", err);
+    console.error("Error deleting stafff role:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
@@ -78,7 +78,7 @@ async function deleteRole(id: string) {
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
-          This action cannot be undone. This will permanently delete the system role
+          This action cannot be undone. This will permanently delete the staff role
           and remove your data from our servers.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>

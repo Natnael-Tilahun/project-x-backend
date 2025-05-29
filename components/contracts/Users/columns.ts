@@ -45,7 +45,7 @@ export const columns: ColumnDef<ContractUser>[] = [
                 {
                   class: "font-medium text-primary w-fit whitespace-nowrap ",
                 },
-                "View Details"
+                "View User Details"
               ),
               h(
                 AlertDialogContent,
