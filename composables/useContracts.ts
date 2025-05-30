@@ -55,11 +55,11 @@ export const useContracts = () => {
     }
   };
 
-  const searchContract: (keyword: string) => ApiResult<Contract[]> = async (
+  const searchContract: (keyword: string) => ApiResult<Contract> = async (
     keyword
   ) => {
     try {
-      const { data, pending, error, status } = await fetch<Contract[]>(
+      const { data, pending, error, status } = await fetch<Contract>(
         `/api/v1/internal/contracts/search`,
         {
           params: { keyword },
@@ -72,10 +72,10 @@ export const useContracts = () => {
         handleApiError(error);
       }
 
-      return data.value ? (data.value as unknown as Contract[]) : null;
+      return data.value ? (data.value as unknown as Contract) : null;
     } catch (err) {
       // handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
