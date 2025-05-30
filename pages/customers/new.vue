@@ -30,6 +30,7 @@ const { getPermissions } = usePermissions();
 const {
   getCoreAccountsByCustomerId,
   getCoreAccountsByAccount,
+  createNeweCustomer,
   isLoading: isLoadingAccounts,
 } = useCustomers();
 const {
@@ -39,7 +40,7 @@ const {
 } = useContractsCoreCustomersAccount();
 
 const isError = ref(false);
-const coreCustomerSummary = ref<CoreCustomerSummery>()
+const coreCustomerSummary = ref<CoreCustomerSummery>();
 const data = ref<Contract>();
 const isSubmitting = ref(false);
 const permissionsData = ref<Permission[]>([]);
@@ -65,7 +66,7 @@ const setOpenEditModal = (value: boolean) => {
 };
 const isPhoneConfirmed = ref<boolean>(false);
 const formValuesToSubmit = ref<any>(null);
-const isPhoneExist = ref<boolean>(false)
+const isPhoneExist = ref<boolean>(false);
 
 const handleAccountSelect = (account: Account | undefined) => {
   const index = selectedAccounts.value.findIndex(
@@ -121,7 +122,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
     // Construct the contract according to type definition
     const newValues = {
-      phone: values.phone,
+      name: values.name,
       email: values.email,
       nationalId: values.nationalId,
       // name: values.name,
@@ -171,10 +172,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
     // Store the form values in the ref
     formValuesToSubmit.value = newValues;
-    
+
     // Open the confirmation modal
     setOpenEditModal(true);
-
   } catch (err: any) {
     console.error("Error creating new contract:", err.message);
     isError.value = true;
@@ -272,19 +272,20 @@ const searchCoreAccountsByAccountNumberHandler = async () => {
     selectedAccounts.value = [];
     if (accountNumber.value) {
       const response = await getCoreAccountsByAccount(accountNumber.value);
-      haveExistingContract.value = response && response?.contractId ? true : false;
-      if(haveExistingContract.value){
-      toast({
-      title: "Contract already exist for this account.",
-      description: `This account has an contract. Please view the detail for more info.  `,
-    });
-  }
-      coreCustomerSummary.value = response
+      haveExistingContract.value =
+        response && response?.contractId ? true : false;
+      if (haveExistingContract.value) {
+        toast({
+          title: "Contract already exist for this account.",
+          description: `This account has an contract. Please view the detail for more info.  `,
+        });
+      }
+      coreCustomerSummary.value = response;
       contractId.value = response.contractId;
       coreCustomerId.value = response.customerId;
       accountsData.value = response?.coreAccounts;
       accountsData.value =
-      accountsData.value && accountsData.value.length > 0
+        accountsData.value && accountsData.value.length > 0
           ? accountsData.value.filter(
               (acc: Account) =>
                 !selectedAccounts.value.some(
@@ -380,47 +381,46 @@ const handlePhoneConfirmation = async (value: boolean) => {
   isPhoneConfirmed.value = value;
   if (value && formValuesToSubmit.value) {
     try {
-      isSubmitting.value = true
-      const newValues={
+      isSubmitting.value = true;
+      const newValues = {
         ...formValuesToSubmit.value,
-        withPrimaryContractUser: true
-      }
+        withPrimaryContractUser: true,
+      };
       console.log("newValues values:", newValues);
 
-      //   const response = await createNewContract(newValues);
-      // data.value = response
-    
-      // navigateTo(`/contracts`);
+      const response = await createNeweCustomer(newValues);
+      data.value = response;
+      navigateTo(`/customers/${data.value.id}`);
       toast({
         title: "Contract Created",
         description: "Contract created successfully",
       });
     } catch (err: any) {
       console.log("Error creating new contractttt:", err.message);
-      if(err.message == "Phone is already in use!"){
-        isPhoneExist.value = true
+      if (err.message == "Phone is already in use!") {
+        isPhoneExist.value = true;
       }
+      setOpenEditModal(false);
       isError.value = true;
-    }
-    finally{
-      isSubmitting.value = false
+    } finally {
+      isSubmitting.value = false;
     }
   }
   setOpenEditModal(false);
 };
 
-const createNewContractWithoutCustomerHandler = async(value: boolean) => {
-    if (formValuesToSubmit.value && isPhoneExist.value && value) {
+const createNewContractWithoutCustomerHandler = async (value: boolean) => {
+  if (formValuesToSubmit.value && isPhoneExist.value && value) {
     try {
-      isSubmitting.value = true
-       const newValues={
+      isSubmitting.value = true;
+      const newValues = {
         ...formValuesToSubmit.value,
-        withPrimaryContractUser: false
-      }
+        withPrimaryContractUser: false,
+      };
       console.log("Submitting values:", newValues);
-        const response = await createNewContract(newValues);
-      data.value = response
-    
+      const response = await createNewContract(newValues);
+      data.value = response;
+
       navigateTo(`/contracts`);
       toast({
         title: "Contract Created",
@@ -428,21 +428,18 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
       });
     } catch (err: any) {
       console.log("Error creating new contractttt:", err.message);
-      if(err.message == "Phone is already in use!"){
-        isPhoneExist.value = true
+      if (err.message == "Phone is already in use!") {
+        isPhoneExist.value = true;
       }
       isError.value = true;
+    } finally {
+      isSubmitting.value = false;
     }
-    finally{
-      isSubmitting.value = false
-    }
-  setOpenEditModal(false);
-
+    setOpenEditModal(false);
+  } else {
+    return;
   }
-  else{
-    return
-  }
-}
+};
 </script>
 
 <template>
@@ -459,13 +456,13 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
       <div value="roleDetails" class="text-sm md:text-base p-6 basis-full">
         <form @submit="onSubmit">
           <div class="grid md:grid-cols-2 gap-6">
-            <FormField v-slot="{ componentField }" name="phone">
+            <FormField v-slot="{ componentField }" name="name">
               <FormItem>
-                <FormLabel> Phone </FormLabel>
+                <FormLabel> Name </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
-                    placeholder="Enter customer phone number"
+                    placeholder="Enter customer name"
                     v-bind="componentField"
                   />
                 </FormControl>
@@ -658,7 +655,7 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
               class="flex flex-col space-y-8 col-span-full border p-4 rounded-lg"
             >
               <div class="flex gap-8 items-center">
-                <div class="grid w-full max-w-sm items-center gap-2">
+                <!-- <div class="grid w-full max-w-sm items-center gap-2">
                   <UiLabel
                     for="search"
                     class="font-normal text-muted-foreground"
@@ -684,7 +681,7 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
                       Search</UiButton
                     >
                   </div>
-                </div>
+                </div> -->
                 <div class="grid w-full max-w-sm items-center gap-2">
                   <UiLabel
                     for="search"
@@ -1204,7 +1201,7 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
                 </UiCard>
                 <div class="w-full" v-else-if="isError && !isPhoneExist">
                   <ErrorMessage
-                    :title="errorMessage || 'Something went wrong.'"1000179835596
+                    :title="errorMessage || 'Something went wrong.'"
                     :retry="fetchData"
                   />
                 </div>
@@ -1224,6 +1221,7 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
                     })
                   "
                   class="w-fit px-5"
+                  type="button"
                   >View Contract</UiButton
                 >
               </UiCard>
@@ -1232,13 +1230,10 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
                 class="w-full px-6 py-12 text-center flex flex-col items-center justify-center gap-4"
               >
                 <p class="text-muted-foreground">
-                  This Phone already exist. Please create a contract without a customer
+                  This Phone already exist. Please create a contract without a
+                  customer
                 </p>
-                <UiButton
-                  @click="
-                    setOpenEditModal(true)
-                  "
-                  class="w-fit px-5"
+                <UiButton @click="setOpenEditModal(true)" class="w-fit px-5"
                   ><Icon
                     name="material-symbols:add"
                     size="24"
@@ -1280,17 +1275,20 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
           <p class="font-medium pb-3">
+            Please confirm if this phone number is your active phone number.
+            Temporary PIN will be sent to this:
+          </p>
 
-          Please confirm if this phone number is your active phone number.
-          Temporary PIN will be sent to this:
-        </p>
-
-        <div class="flex flex-col gap-1">
-
-          <p >Fullname: <span class="font-bold">{{ coreCustomerSummary?.fullName }}</span></p>
-          <p>Phone Number: <span class="font-bold">{{coreCustomerSummary?.phone}}</span></p>
-        </div>
-
+          <div class="flex flex-col gap-1">
+            <p>
+              Fullname:
+              <span class="font-bold">{{ coreCustomerSummary?.fullName }}</span>
+            </p>
+            <p>
+              Phone Number:
+              <span class="font-bold">{{ coreCustomerSummary?.phone }}</span>
+            </p>
+          </div>
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>
@@ -1304,14 +1302,17 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
         >
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="() => {
-          if(isPhoneExist){
-            createNewContractWithoutCustomerHandler(true)
-          }
-          else{
-            handlePhoneConfirmation(true)
-          }
-          }">
+        <UiAlertDialogAction
+          @click="
+            () => {
+              if (isPhoneExist) {
+                createNewContractWithoutCustomerHandler(true);
+              } else {
+                handlePhoneConfirmation(true);
+              }
+            }
+          "
+        >
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isSubmitting"

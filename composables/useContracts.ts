@@ -11,12 +11,15 @@ export const useContracts = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
-  const getContracts: (page?: number, size?: number) => ApiResult<Contract[]> = async (page, size) => {
+  const getContracts: (
+    page?: number,
+    size?: number
+  ) => ApiResult<Contract[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<Contract[]>(
-        '/api/v1/internal/contracts',
+        "/api/v1/internal/contracts",
         {
-          params: { page, size }
+          params: { page, size },
         }
       );
 
@@ -52,7 +55,33 @@ export const useContracts = () => {
     }
   };
 
-  const getContractByCustomerId: (id: string) => ApiResult<Contract[]> = async (id) => {
+  const searchContract: (keyword: string) => ApiResult<Contract[]> = async (
+    keyword
+  ) => {
+    try {
+      const { data, pending, error, status } = await fetch<Contract[]>(
+        `/api/v1/internal/contracts/search`,
+        {
+          params: { keyword },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Contract[]) : null;
+    } catch (err) {
+      // handleApiError(err);
+      return null;
+    }
+  };
+
+  const getContractByCustomerId: (id: string) => ApiResult<Contract[]> = async (
+    id
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<Contract[]>(
         `/api/v1/internal/contracts/customer/${id}`
@@ -71,7 +100,9 @@ export const useContracts = () => {
     }
   };
 
-  const getContractByCoreCustomerId: (id: string) => ApiResult<Contract[]> = async (id) => {
+  const getContractByCoreCustomerId: (
+    id: string
+  ) => ApiResult<Contract[]> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<Contract[]>(
         `/api/v1/internal/contracts/coreCustomer/${id}`
@@ -90,13 +121,15 @@ export const useContracts = () => {
     }
   };
 
-  const createNewContract: (contractData: any) => ApiResult<Contract> = async (contractData) => {
+  const createNewContract: (contractData: any) => ApiResult<Contract> = async (
+    contractData
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<Contract>(
-        '/api/v1/internal/contracts',
+        "/api/v1/internal/contracts",
         {
           method: "POST",
-          body: contractData
+          body: contractData,
         }
       );
 
@@ -113,13 +146,16 @@ export const useContracts = () => {
     }
   };
 
-  const updateContract: (contractId: string, contractData: any) => ApiResult<Contract> = async (contractId, contractData) => {
+  const updateContract: (
+    contractId: string,
+    contractData: any
+  ) => ApiResult<Contract> = async (contractId, contractData) => {
     try {
       const { data, pending, error, status } = await fetch<Contract>(
         `/api/v1/internal/contracts/${contractId}`,
         {
           method: "PATCH",
-          body: contractData
+          body: contractData,
         }
       );
 
@@ -136,13 +172,16 @@ export const useContracts = () => {
     }
   };
 
-  const updateContractPermissions: (contractId: string, permissionsData: any) => ApiResult<Contract> = async (contractId, permissionsData) => {
+  const updateContractPermissions: (
+    contractId: string,
+    permissionsData: any
+  ) => ApiResult<Contract> = async (contractId, permissionsData) => {
     try {
       const { data, pending, error, status } = await fetch<Contract>(
         `/api/v1/internal/contracts/${contractId}/permissions`,
         {
           method: "PUT",
-          body: permissionsData
+          body: permissionsData,
         }
       );
 
@@ -189,6 +228,7 @@ export const useContracts = () => {
     updateContractPermissions,
     getContractByCoreCustomerId,
     getContractByCustomerId,
+    searchContract,
     isSubmitting,
   };
 };
