@@ -67,9 +67,9 @@ const generateNewOTP = async () => {
           <h1 class="text-2xl font-semibold tracking-tight">
             Invalid Two-Factor Authentication
           </h1>
-          <p class="text-sm text-muted-foreground">
+          <!-- <p class="text-sm text-muted-foreground">
             Your two-factor authentication code is invalid or has expired.
-          </p>
+          </p> -->
         </div>
 
         <!-- Error Icon -->
