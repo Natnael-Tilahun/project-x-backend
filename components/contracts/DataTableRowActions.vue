@@ -55,7 +55,7 @@ async function deleteContracts(id: string) {
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
       <UiPermissionGuard permission="VIEW_CONTRACTS" >
-      <UiDropdownMenuItem @click="viewContractDetail(row.original.contractId)"
+      <UiDropdownMenuItem @click="viewContractDetail(row.original.id)"
         >View and Edit </UiDropdownMenuItem
       >
       </UiPermissionGuard>
