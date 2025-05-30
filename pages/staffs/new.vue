@@ -14,7 +14,7 @@ import type { Office, Role, Staff } from "~/types";
 
 const { createNewStaff, isLoading } = useStaffs();
 const { getOffices, isLoading: isLoadingOffices } = useOffice();
-const { getRoles, isLoading: isLoadingRoles } = useRoles();
+const { getStaffRoles, isLoading: isLoadingRoles } = useStaffRoles();
 const { getStaffs, isLoading: isLoadingStaffs } = useStaffs();
 
 const isError = ref(false);
@@ -67,7 +67,7 @@ const fetchData = async () => {
     loading.value = true;
     staffs.value = await getStaffs() ?? [];
     offices.value = await getOffices() ?? [];
-    roles.value = await getRoles() ?? [];
+    roles.value = await getStaffRoles() ?? [];
   } catch (err) {
     console.error("Error fetching datas:", err);
     isError.value = true;
