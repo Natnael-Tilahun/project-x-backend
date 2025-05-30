@@ -19,7 +19,6 @@ const fetchData = async () => {
     data.value = contracts;
   } catch (err: any) {
     console.error("Error fetching contracts:", err);
-    isError.value = true;
   } finally {
     isLoading.value = false;
     loading.value = false;
@@ -38,10 +37,18 @@ const searchHandler = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    data.value = await searchContract(keyword.value); // Call your API function to fetch roles
+    const response = await searchContract(keyword.value); // Call your API function to fetch roles
+    if (response) {
+      data.value = [];
+      data.value.push(response);
+    }
   } catch (err: any) {
-    console.error("Error fetching contracts:", err);
-    isError.value = true;
+    console.error("Error fetching contracts:", err.message);
+    if (err.message == "Contract not found") {
+      data.value = [];
+    } else {
+      isError.value = true;
+    }
   } finally {
     isLoading.value = false;
     loading.value = false;
@@ -72,8 +79,8 @@ const searchHandler = async () => {
         <div class="flex items-center gap-4">
           <UiInput
             type="search"
-            placeholder="Search by contract id"
-            class="md:w-[100px] lg:w-[300px]"
+            placeholder="Search by customer id or account number"
+            class="md:w-[200px] lg:w-[350px]"
             v-model="keyword"
           />
           <UiButton @click="searchHandler">
