@@ -4,7 +4,8 @@ import { columns } from "~/components/contracts/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Contract } from "~/types";
 
-const { getContracts, getContractById, isLoading } = useContracts();
+const { getContracts, getContractById, searchContract, isLoading } =
+  useContracts();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<Contract[]>([]);
@@ -37,7 +38,7 @@ const searchHandler = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    data.value[0] = await getContractById(keyword.value); // Call your API function to fetch roles
+    data.value = await searchContract(keyword.value); // Call your API function to fetch roles
   } catch (err: any) {
     console.error("Error fetching contracts:", err);
     isError.value = true;
@@ -57,13 +58,13 @@ const searchHandler = async () => {
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-  <UiPermissionGuard permission="CREATE_CONTRACTS" >
-    <NuxtLink to="/contracts/new" class="w-fit self-end">
-      <UiButton class="w-fit self-end px-5"
-        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
-        Contract</UiButton
-      >
-    </NuxtLink>
+    <UiPermissionGuard permission="CREATE_CONTRACTS">
+      <NuxtLink to="/contracts/new" class="w-fit self-end">
+        <UiButton class="w-fit self-end px-5"
+          ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
+          >Create Contract</UiButton
+        >
+      </NuxtLink>
     </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">

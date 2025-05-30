@@ -16,12 +16,12 @@ export const useStaffs = () => {
   ) => ApiResult<Staff[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<Staff[]>(
-        '/api/v1/internal/staff',
+        "/api/v1/internal/staff",
         {
           params: {
             page,
-            size
-          }
+            size,
+          },
         }
       );
 
@@ -57,15 +57,15 @@ export const useStaffs = () => {
     }
   };
 
-  const createNewStaff: (
-    staffData: any
-  ) => ApiResult<Staff> = async (staffData) => {
+  const createNewStaff: (staffData: any) => ApiResult<Staff> = async (
+    staffData
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<Staff>(
-        '/api/v1/internal/staff',
+        "/api/v1/internal/staff",
         {
           method: "POST",
-          body: staffData
+          body: staffData,
         }
       );
 
@@ -91,7 +91,7 @@ export const useStaffs = () => {
         `/api/v1/internal/staff/${staffId}`,
         {
           method: "PATCH",
-          body: staffData
+          body: staffData,
         }
       );
 
@@ -117,7 +117,7 @@ export const useStaffs = () => {
         `/api/v1/internal/contracts/${contractId}/permissions`,
         {
           method: "PUT",
-          body: permissionsData
+          body: permissionsData,
         }
       );
 
@@ -154,6 +154,78 @@ export const useStaffs = () => {
     }
   };
 
+  const activateStaff: (staffId: string) => ApiResult<Staff> = async (
+    staffId
+  ) => {
+    try {
+      const { data, pending, error, status } = await fetch<Staff>(
+        `/api/v1/internal/staff/${staffId}/activate-staff`,
+        {
+          method: "POST",
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Staff) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
+  const deactivateStaff: (staffId: string) => ApiResult<Staff> = async (
+    staffId
+  ) => {
+    try {
+      const { data, pending, error, status } = await fetch<Staff>(
+        `/api/v1/internal/staff/${staffId}/deactivate-staff`,
+        {
+          method: "PATCH",
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Staff) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
+  const resetStaffPassword: (staffId: string) => ApiResult<any> = async (
+    staffId
+  ) => {
+    try {
+      const { data, pending, error, status } = await fetch<any>(
+        `/api/v1/internal/staff/${staffId}/reset-password`,
+        {
+          method: "POST",
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as any) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
   return {
     isLoading,
     getStaffs,
@@ -162,6 +234,9 @@ export const useStaffs = () => {
     deleteStaff,
     updateStaff,
     updateContractPermissions,
+    activateStaff,
+    deactivateStaff,
+    resetStaffPassword,
     isSubmitting,
   };
 };
