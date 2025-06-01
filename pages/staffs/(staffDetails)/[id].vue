@@ -4,7 +4,7 @@ const openItems = ref("staffDetails");
 import { useForm } from "vee-validate";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
-import {newStaffFormSchema } from "~/validations/newStaffFormSchema";
+import { newStaffFormSchema } from "~/validations/newStaffFormSchema";
 import {
   FormControl,
   FormField,
@@ -15,13 +15,20 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Staff } from "~/types";
 import { dateFormatter } from "~/lib/utils";
+import ResetPassword from "~/components/staffs/ResetPassword.vue";
 const route = useRoute();
-const { getStaffById, updateStaff, isLoading, isSubmitting } =
-  useStaffs();
+const {
+  getStaffById,
+  updateStaff,
+  activateStaff,
+  deactivateStaff,
+  isLoading,
+  isSubmitting,
+} = useStaffs();
 
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
-const merchantId = ref<string>("");
+const staffId = ref<string>("");
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
 const isError = ref(false);
@@ -29,7 +36,7 @@ const data = ref<Staff>();
 
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
-merchantId.value = pathSegments.value[pathLength - 1];
+staffId.value = pathSegments.value[pathLength - 1];
 
 function splitPath(path: any) {
   return path.split("/").filter(Boolean);
@@ -39,15 +46,14 @@ const form = useForm({
   validationSchema: newStaffFormSchema,
 });
 
-
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     submitting.value = true;
     isSubmitting.value = true;
     const newValues = {
       ...values,
-      joiningDate: new Date().toISOString()
-    }
+      joiningDate: new Date().toISOString(),
+    };
     data.value = await updateStaff(values.id, newValues); // Call your API function to fetch profile
     navigateTo(`/staffs/${data.value.id}`);
     console.log("New staff data; ", data.value);
@@ -66,28 +72,57 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
 const fetchStaffData = async () => {
   try {
-  isLoading.value = true;
-  loading.value = true;
-  data.value = await getStaffById(merchantId.value);
-  let a = {
-    ...data.value,
-   joiningDate : data.value.joiningDate
+    loading.value = true;
+    data.value = await getStaffById(staffId.value);
+    let a = {
+      ...data.value,
+      joiningDate: data.value.joiningDate
         ? dateFormatter(data.value.joiningDate)
-        : ""
-  };
-  form.setValues(a);
-} catch (err) {
-  console.error("Error fetching staff:", err);
-  isError.value = true;
-} finally {
-  isLoading.value = false;
-  loading.value = false;
-}
-}
+        : "",
+    };
+    form.setValues(a);
+  } catch (err) {
+    console.error("Error fetching staff:", err);
+    isError.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
+
+const handleStaffActivation = async () => {
+  try {
+    submitting.value = true;
+
+    if (data.value?.active) {
+      data.value = await deactivateStaff(staffId.value); // Call your API function to fetch roles
+    } else {
+      data.value = await activateStaff(staffId.value); // Call your API function to fetch roles
+    }
+
+    toast({
+      title: `${
+        data.value?.active
+          ? "Staff activated successfully. "
+          : "Staff deactivated successfully. "
+      }`,
+    });
+  } catch (err: any) {
+    console.error("Error activating staff:", err);
+    toast({
+      title: "Uh oh! Something went wrong.",
+      description: `There was a problem with your request: ${err}`,
+      variant: "destructive",
+    });
+
+    // isError.value = true;
+  } finally {
+    submitting.value = false;
+  }
+};
 
 onMounted(() => {
   fetchStaffData();
-})
+});
 
 // Watch for changes in the route's query parameters
 watch(
@@ -95,13 +130,15 @@ watch(
   (newActiveTab) => {
     if (newActiveTab) {
       openItems.value = newActiveTab as string; // Update the active tab when the query param
-    if (newActiveTab == "staffDetails" || newActiveTab == "staffAssignments" ) {
-      fetchStaffData();
+      if (
+        newActiveTab == "staffDetails" ||
+        newActiveTab == "staffAssignments"
+      ) {
+        fetchStaffData();
+      }
     }
   }
-  }
 );
-
 </script>
 
 <template>
@@ -114,153 +151,193 @@ watch(
       v-model="openItems"
       class="w-full space-y-0"
     >
+      <div class="w-full flex justify-end mb-4 gap-4">
+        <UiButton
+          size="sm"
+          @click="handleStaffActivation"
+          :disabled="submitting"
+          :class="data?.active ? 'bg-red-600' : 'bg-green-600'"
+        >
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="submitting"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          {{ data?.active ? "Deactivate" : "Activate" }}
+        </UiButton>
+        <!-- <UiButton class="bg-red-600">Deactivate</UiButton> -->
+      </div>
       <UiTabsList
         class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
-      <UiPermissionGuard permission="VIEW_STAFF" >
+        <UiPermissionGuard permission="VIEW_STAFF">
+          <UiTabsTrigger
+            value="staffDetails"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'staffDetails',
+                },
+              })
+            "
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+          >
+            Detail Info
+          </UiTabsTrigger>
+        </UiPermissionGuard>
+        <UiPermissionGuard permission="VIEW_STAFF_ASSIGNMENTS">
+          <UiTabsTrigger
+            value="staffAssignments"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'staffAssignments',
+                },
+              })
+            "
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+          >
+            Assignments
+          </UiTabsTrigger>
+        </UiPermissionGuard>
+        <!-- <UiPermissionGuard permission="RESET_STAFF_PASSWORD" > -->
         <UiTabsTrigger
-          value="staffDetails"
+          value="resetPassword"
           @click="
             navigateTo({
               path: route.path,
               query: {
-                activeTab: 'staffDetails',
+                activeTab: 'resetPassword',
               },
             })
           "
           class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
         >
-          Detail Info
+          Reset Password
         </UiTabsTrigger>
-        </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_STAFF_ASSIGNMENTS" >
-        <UiTabsTrigger
-          value="staffAssignments"
-          @click="
-            navigateTo({
-              path: route.path,
-              query: {
-                activeTab: 'staffAssignments',
-              },
-            })
-          "
-          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-        >
-          Assignments
-        </UiTabsTrigger>
-        </UiPermissionGuard>
+        <!-- </UiPermissionGuard> -->
       </UiTabsList>
-      <UiPermissionGuard permission="VIEW_STAFF" >
-      <UiTabsContent
-        value="staffDetails"
-        class="text-base bg-background rounded-lg"
-      >
-    <UiCard class="w-full p-6">
-      <form @submit="onSubmit">
-        <div class="grid grid-cols-2 gap-6">
-          <FormField v-slot="{ componentField }" name="id">
-            <FormItem>
-              <FormLabel>Staff Id </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="text"
-                  disabled
-                  placeholder="Enter staff Id"
-                  v-bind="componentField"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-          <FormField v-slot="{ componentField }" name="firstname">
-            <FormItem>
-              <FormLabel>First Name </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="text"
-                  placeholder="Enter first name"
-                  v-bind="componentField"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-          <FormField v-slot="{ componentField }" name="lastname">
-            <FormItem>
-              <FormLabel>Last Name </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="text"
-                  placeholder="Enter last name"
-                  v-bind="componentField"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-          <FormField v-slot="{ componentField }" name="emailAddress">
-            <FormItem>
-              <FormLabel>Email Address </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="text"
-                  placeholder="Enter email address"
-                  v-bind="componentField"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-          <FormField v-slot="{ componentField }" name="username">
-              <FormItem>
-                <FormLabel>Username</FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter staff user name"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-          <UiPermissionGuard permission="UPDATE_STAFF" >
-          <div class="col-span-full w-full py-4 flex justify-between">
-            <UiButton
-              :disabled="submitting"
-              variant="outline"
-              type="button"
-              @click="$router.go(-1)"
-            >
-              Cancel
-            </UiButton>
-            <UiButton :disabled="submitting" type="submit">
-              <Icon
-                name="svg-spinners:8-dots-rotate"
-                v-if="submitting"
-                class="mr-2 h-4 w-4 animate-spin"
-              ></Icon>
+      <UiPermissionGuard permission="VIEW_STAFF">
+        <UiTabsContent
+          value="staffDetails"
+          class="text-base bg-background rounded-lg"
+        >
+          <UiCard class="w-full p-6">
+            <form @submit="onSubmit">
+              <div class="grid grid-cols-2 gap-6">
+                <FormField v-slot="{ componentField }" name="id">
+                  <FormItem>
+                    <FormLabel>Staff Id </FormLabel>
+                    <FormControl>
+                      <UiInput
+                        type="text"
+                        disabled
+                        placeholder="Enter staff Id"
+                        v-bind="componentField"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                <FormField v-slot="{ componentField }" name="firstname">
+                  <FormItem>
+                    <FormLabel>First Name </FormLabel>
+                    <FormControl>
+                      <UiInput
+                        type="text"
+                        placeholder="Enter first name"
+                        v-bind="componentField"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                <FormField v-slot="{ componentField }" name="lastname">
+                  <FormItem>
+                    <FormLabel>Last Name </FormLabel>
+                    <FormControl>
+                      <UiInput
+                        type="text"
+                        placeholder="Enter last name"
+                        v-bind="componentField"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                <FormField v-slot="{ componentField }" name="emailAddress">
+                  <FormItem>
+                    <FormLabel>Email Address </FormLabel>
+                    <FormControl>
+                      <UiInput
+                        type="text"
+                        placeholder="Enter email address"
+                        v-bind="componentField"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                <FormField v-slot="{ componentField }" name="username">
+                  <FormItem>
+                    <FormLabel>Username</FormLabel>
+                    <FormControl>
+                      <UiInput
+                        type="text"
+                        placeholder="Enter staff user name"
+                        v-bind="componentField"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                <UiPermissionGuard permission="UPDATE_STAFF">
+                  <div class="col-span-full w-full py-4 flex justify-between">
+                    <UiButton
+                      :disabled="submitting"
+                      variant="outline"
+                      type="button"
+                      @click="$router.go(-1)"
+                    >
+                      Cancel
+                    </UiButton>
+                    <UiButton :disabled="submitting" type="submit">
+                      <Icon
+                        name="svg-spinners:8-dots-rotate"
+                        v-if="submitting"
+                        class="mr-2 h-4 w-4 animate-spin"
+                      ></Icon>
 
-              Update
-            </UiButton>
-          </div>
-          </UiPermissionGuard>
-        </div>
-      </form>
-    </UiCard>
-    </UiTabsContent>
-    </UiPermissionGuard>
-    <UiPermissionGuard permission="VIEW_STAFF_ASSIGNMENTS" >
-    <UiTabsContent
-        value="staffAssignments"
-        class="text-base bg-background rounded-lg p-6"
-      >
-      <!-- <UiCard class="w-full p-6">
+                      Update
+                    </UiButton>
+                  </div>
+                </UiPermissionGuard>
+              </div>
+            </form>
+          </UiCard>
+        </UiTabsContent>
+      </UiPermissionGuard>
+      <UiPermissionGuard permission="VIEW_STAFF_ASSIGNMENTS">
+        <UiTabsContent
+          value="staffAssignments"
+          class="text-base bg-background rounded-lg p-6"
+        >
+          <!-- <UiCard class="w-full p-6">
         Staff Assignments
       </UiCard> -->
-      <StaffsAssignments />
-    </UiTabsContent>
-    </UiPermissionGuard>
+          <StaffsAssignments />
+        </UiTabsContent>
+      </UiPermissionGuard>
+      <!-- <UiPermissionGuard permission="RESET_STAFF_PASSWORD" > -->
+      <UiTabsContent
+        value="resetPassword"
+        class="text-base bg-background rounded-lg p-6"
+      >
+        <ResetPassword :email="data?.emailAddress || ''" :staffId="staffId" />
+      </UiTabsContent>
+      <!-- </UiPermissionGuard> -->
     </UiTabs>
     <div v-else-if="data == null || data == undefined">
       <UiNoResultFound title="Sorry, No staff found." />
