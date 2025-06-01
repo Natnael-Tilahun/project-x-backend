@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
-const { deleteStaffAssignment,terminateAssignmentsFromStaffs, isLoading } = useStaffAssignments();
+const { deleteStaffAssignment, terminateAssignmentsFromStaffs, isLoading } =
+  useStaffAssignments();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const openEditModal = ref(false);
@@ -14,8 +15,6 @@ const setOpenEditModal = (value: boolean) => {
 const setOpenEditTerminationModal = (value: boolean) => {
   openEditTeminationModal.value = value;
 };
-
-
 
 const route = useRoute();
 interface DataTableRowActionsProps<TData> {
@@ -83,23 +82,27 @@ async function terminateStaffAssignments(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_STAFF_ASSIGNMENTS" >
-      <UiDropdownMenuItem @click="viewStaffAssignmentDetail(row.original.id)"
-        >View and Edit</UiDropdownMenuItem
-      >
-      <UiDropdownMenuSeparator />
+      <UiPermissionGuard permission="VIEW_STAFF_ASSIGNMENTS">
+        <UiDropdownMenuItem @click="viewStaffAssignmentDetail(row.original.id)"
+          >View and Edit</UiDropdownMenuItem
+        >
+        <UiDropdownMenuSeparator />
       </UiPermissionGuard>
       <!-- <UiPermissionGuard permission="VIEW_STAFF_ASSIGNMENTS" > -->
-      <UiDropdownMenuItem @click="setOpenEditTerminationModal(true)" 
+      <UiDropdownMenuItem @click="setOpenEditTerminationModal(true)"
         >Terminate Assignments</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
       <!-- </UiPermissionGuard> -->
-      <UiPermissionGuard permission="DELETE_STAFF_ASSIGNMENTS" >
-      <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
-        Delete
-        <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
-      </UiDropdownMenuItem>
+      <UiPermissionGuard permission="DELETE_STAFF_ASSIGNMENTS">
+        <UiDropdownMenuItem
+          :disabled="row.original.staff?.id"
+          @click="setOpenEditModal(true)"
+          class="text-red-600"
+        >
+          Delete
+          <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
+        </UiDropdownMenuItem>
       </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
@@ -109,8 +112,8 @@ async function terminateStaffAssignments(id: string) {
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
-          This action cannot be undone. This will permanently delete the
-          staff assignment and remove your data from our servers.
+          This action cannot be undone. This will permanently delete the staff
+          assignment and remove your data from our servers.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>
@@ -130,7 +133,10 @@ async function terminateStaffAssignments(id: string) {
     </UiAlertDialogContent>
   </UiAlertDialog>
 
-  <UiAlertDialog :open="openEditTeminationModal" :onOpenChange="setOpenEditTerminationModal">
+  <UiAlertDialog
+    :open="openEditTeminationModal"
+    :onOpenChange="setOpenEditTerminationModal"
+  >
     <UiAlertDialogContent>
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
@@ -143,7 +149,9 @@ async function terminateStaffAssignments(id: string) {
         <UiAlertDialogCancel @click="setOpenEditTerminationModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="terminateStaffAssignments(row.original.id)">
+        <UiAlertDialogAction
+          @click="terminateStaffAssignments(row.original.id)"
+        >
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"
