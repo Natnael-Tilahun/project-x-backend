@@ -410,10 +410,10 @@ onMounted(async () => {
       </UiCard>
     </div>
     <div v-else>
-      <UiNoResultFound title="Permissoin not found"  />
+      <UiNoResultFound title="Permissoin not found" />
     </div>
     <div v-if="isError">
       <ErrorMessage :retry="refetch" title="Something went wrong." />
     </div>
   </form>
-</template>logout
+</template>

@@ -108,7 +108,9 @@ const closeMenuNav = () => {
     >
       <!-- Page Header -->
       <div class="border-b shadow-none bg-popover text-popover-foreground">
-        <div class="flex h-16 items-center px-3 md:px-8  bg-primary text-primary-foreground shadow-xl">
+        <div
+          class="flex h-16 items-center px-3 md:px-8 bg-primary text-primary-foreground shadow-xl"
+        >
           <!-- <DashboardMainNav class="mx-6" /> -->
           <div class="flex items-center gap-3 md:gap-2">
             <OpenSidebarIcon v-if="isSidebarCollapsed" @click="toggleSidebar" />
@@ -117,14 +119,18 @@ const closeMenuNav = () => {
               <Breadcrumb>
                 <BreadcrumbList>
                   <template v-if="pathSegments.length === 0">
-                    <BreadcrumbItem> 
-                      <BreadcrumbPage class="text-primary-foreground font-black">Dashboard</BreadcrumbPage>
+                    <BreadcrumbItem>
+                      <BreadcrumbPage class="text-primary-foreground font-black"
+                        >Dashboard</BreadcrumbPage
+                      >
                     </BreadcrumbItem>
                   </template>
                   <template v-else>
                     <BreadcrumbItem>
-                      <BreadcrumbLink >
-                        <NuxtLink to="/" class="text-gray-200 font-medium">Dashboard</NuxtLink>
+                      <BreadcrumbLink>
+                        <NuxtLink to="/" class="text-gray-200 font-medium"
+                          >Dashboard</NuxtLink
+                        >
                       </BreadcrumbLink>
                     </BreadcrumbItem>
                     <template
@@ -134,13 +140,18 @@ const closeMenuNav = () => {
                       <BreadcrumbSeparator class="text-primary-foreground" />
                       <BreadcrumbItem>
                         <template v-if="index === pathSegments.length - 1">
-                          <BreadcrumbPage class="text-primary-foreground font-black">
+                          <BreadcrumbPage
+                            class="text-primary-foreground font-black"
+                          >
                             {{ capitalizeRouteName(segment) }}</BreadcrumbPage
                           >
                         </template>
                         <template v-else>
                           <BreadcrumbLink>
-                            <NuxtLink :to="generateLink(index)" class="text-gray-200 font-medium">
+                            <NuxtLink
+                              :to="generateLink(index)"
+                              class="text-gray-200 font-medium"
+                            >
                               {{ capitalizeRouteName(segment) }}</NuxtLink
                             >
                           </BreadcrumbLink>
@@ -154,12 +165,12 @@ const closeMenuNav = () => {
           </div>
 
           <div class="ml-auto flex items-center space-x-2 md:space-x-10">
-            <DashboardSearch />
+            <!-- <DashboardSearch /> -->
             <UiButton
               variant="ghost"
               size="icon"
               @click="toggleTheme"
-              class="bg-primary text-primary-foreground hover:bg-gray-300 dark:bg-gray-500 dark:text-white hover:dark:bg-gray-700 rounded-full"
+              class="bg-gray-700 text-primary-foreground hover:bg-gray-300 dark:bg-gray-700 dark:text-white hover:dark:bg-gray-500 rounded-full"
             >
               <Icon
                 name="tdesign:mode-dark"

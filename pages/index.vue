@@ -70,18 +70,18 @@ watch(
     <div
       class="flex flex-col lg:flex-row gap-5 space-y-0justify-start lg:justify-between"
     >
-      <UiTabsList class="md:justify-start w-fit">
+      <UiTabsList class="md:justify-start w-full bg-slate-200 dark:bg-gray-700">
         <UiTabsTrigger value="overview"> Overview </UiTabsTrigger>
-        <UiTabsTrigger value="analytics" disabled> Analytics </UiTabsTrigger>
+        <!-- <UiTabsTrigger value="analytics" disabled> Analytics </UiTabsTrigger>
         <UiTabsTrigger value="reports" disabled> Reports </UiTabsTrigger>
         <UiTabsTrigger value="notifications" disabled>
           Notifications
-        </UiTabsTrigger>
+        </UiTabsTrigger> -->
       </UiTabsList>
-      <div class="flex items-center space-x-2 w-full md:w-fit">
+      <!-- <div class="flex items-center space-x-2 w-full md:w-fit">
         <DashboardDateRangePicker />
         <UiButton>Download</UiButton>
-      </div>
+      </div> -->
     </div>
 
     <!-- Overview tab component -->
