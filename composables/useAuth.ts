@@ -1,6 +1,12 @@
 import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { OtpDTO, TFAAccessTokenDTO, User, UserInput, VerificationRequest } from "~/types";
+import type {
+  OtpDTO,
+  TFAAccessTokenDTO,
+  User,
+  UserInput,
+  VerificationRequest,
+} from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
@@ -26,11 +32,11 @@ export const useAuth = () => {
   const login: (user: UserInput) => ApiResult<AuthResponse> = async (user) => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
-        '/api/v1/auth/sign-in/password',
+        "/api/v1/auth/sign-in/password",
         {
           method: "POST",
           body: user,
-          includeAuth: false
+          includeAuth: false,
         }
       );
 
@@ -45,7 +51,7 @@ export const useAuth = () => {
         store.$patch({
           ...user,
           ...response,
-          isAuthenticated: true
+          isAuthenticated: true,
         });
         await getAuthorities();
       }
@@ -60,12 +66,12 @@ export const useAuth = () => {
   const getRefreshToken: () => ApiResult<AuthResponse> = async () => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
-        '/api/v1/auth/refresh-token',
+        "/api/v1/auth/refresh-token",
         {
           method: "POST",
           body: {
             refreshToken: store.refreshToken,
-          }
+          },
         }
       );
 
@@ -85,27 +91,27 @@ export const useAuth = () => {
   const getAuthorities: () => ApiResult<AuthResponse> = async () => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
-        '/api/v1/auth/roles'
+        "/api/v1/auth/roles"
       );
 
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        navigateTo("/login")
+        navigateTo("/login");
         await handleApiError(error);
       }
 
       const response = data.value as AuthResponse;
       if (status.value === "success" && response?.permissions) {
         store.$patch({
-          permissions: response.permissions
+          permissions: response.permissions,
         });
       }
 
       return response;
     } catch (err) {
       handleApiError(err);
-      navigateTo("/login")
+      navigateTo("/login");
       return null;
     }
   };
@@ -114,7 +120,7 @@ export const useAuth = () => {
     if (!authUser.value) {
       try {
         const { data, error, status } = await fetch<AuthResponse>(
-          '/api/v1/auth/status'
+          "/api/v1/auth/status"
         );
 
         if (status.value === "error") {
@@ -138,7 +144,7 @@ export const useAuth = () => {
   const getProfile: () => ApiResult<AuthResponse> = async () => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
-        '/api/v1/users/me'
+        "/api/v1/users/me"
       );
 
       isLoading.value = pending.value;
@@ -154,17 +160,19 @@ export const useAuth = () => {
     }
   };
 
-  const setNewPassword: (newData: any) => ApiResult<AuthResponse> = async (newData) => {
+  const setNewPassword: (newData: any) => ApiResult<AuthResponse> = async (
+    newData
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
-        '/api/v1/users/reset-password/finish',
+        "/api/v1/users/reset-password/finish",
         {
           method: "POST",
           body: newData,
-          includeAuth: false
+          includeAuth: false,
         }
       );
-      
+
       isLoading.value = pending.value;
 
       if (status.value === "error") {
@@ -173,12 +181,13 @@ export const useAuth = () => {
 
       return data.value as AuthResponse;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
-  const requestTwoFactorAuth: (deliveryMethod?: string) => ApiResult<OtpDTO> = async (deliveryMethod) => {
+  const requestTwoFactorAuth: (
+    deliveryMethod?: string
+  ) => ApiResult<OtpDTO> = async (deliveryMethod) => {
     try {
       const { data, pending, error, status } = await fetch<OtpDTO>(
         `/api/v1/auth/two-factor/request-token?deliveryMethod=${deliveryMethod}`,
@@ -196,7 +205,7 @@ export const useAuth = () => {
       const response = data.value as OtpDTO;
       if (status.value === "success" && response?.verificationId) {
         store.$patch({
-          verificationId: response.verificationId
+          verificationId: response.verificationId,
         });
       }
 
@@ -207,7 +216,9 @@ export const useAuth = () => {
     }
   };
 
-  const validateTwoFactorAuth: (otp: string) => ApiResult<TFAAccessTokenDTO> = async (otp) => {
+  const validateTwoFactorAuth: (
+    otp: string
+  ) => ApiResult<TFAAccessTokenDTO> = async (otp) => {
     try {
       const { data, pending, error, status } = await fetch<TFAAccessTokenDTO>(
         `/api/v1/auth/two-factor/validate`,
@@ -215,8 +226,8 @@ export const useAuth = () => {
           method: "POST",
           body: {
             verificationId: store.verificationId,
-            otp: otp
-          }
+            otp: otp,
+          },
         }
       );
 
@@ -229,7 +240,7 @@ export const useAuth = () => {
       const response = data.value as TFAAccessTokenDTO;
       if (status.value === "success" && response?.token) {
         store.$patch({
-          twoFactorToken: response.token
+          twoFactorToken: response.token,
         });
       }
 
@@ -240,29 +251,30 @@ export const useAuth = () => {
     }
   };
 
-  const changePassword: (newData: any) => ApiResult<AuthResponse> = async (newData) => {
+  const changePassword: (newData: any) => ApiResult<AuthResponse> = async (
+    newData
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
-        '/api/v1/users/change-password',
+        "/api/v1/users/change-password",
         {
           method: "POST",
           body: newData,
         }
       );
-      
+
       isLoading.value = pending.value;
 
       if (status.value === "error") {
         handleApiError(error);
       }
 
-      return ({ data: data.value as AuthResponse, status});
+      return { data: data.value as AuthResponse, status };
     } catch (err) {
       handleApiError(err);
       return null;
     }
   };
-
 
   return {
     login,
@@ -278,6 +290,6 @@ export const useAuth = () => {
     getAuthorities,
     requestTwoFactorAuth,
     validateTwoFactorAuth,
-    changePassword
+    changePassword,
   };
 };

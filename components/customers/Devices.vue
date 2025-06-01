@@ -7,8 +7,12 @@ import { getIdFromPath } from "~/lib/utils";
 import type { Device } from "~/types";
 
 // const { getUserDevices, suspendDevicesByDeviceId, restoreDevicesByDeviceId, isLoading } = useUsers();
-const { getCustomerDevices, suspendCustomerDevicesByDeviceId, restoreCustomerDevicesByDeviceId, isLoading } = useCustomers();
-
+const {
+  getCustomerDevices,
+  suspendCustomerDevicesByDeviceId,
+  restoreCustomerDevicesByDeviceId,
+  isLoading,
+} = useCustomers();
 
 const data = ref<Device[]>();
 const loading = ref(isLoading.value);
@@ -67,24 +71,22 @@ const handleDeviceSelect = (device: Device) => {
 };
 
 const isDeviceSelected = (device: Device) => {
-  return selectedDevices.value.some(
-    (a) => a.deviceId === device.deviceId
-  );
+  return selectedDevices.value.some((a) => a.deviceId === device.deviceId);
 };
 
 const fetchDevices = async () => {
   try {
-  isLoading.value = true;
-  loading.value = true;
-  data.value = await getCustomerDevices(customerId.value as string); // Call your API function to fetch roles
-  console.log("Devices data: ", data.value);
-} catch (err) {
-  console.error("Error fetching devices:", err);
-  isError.value = true;
-} finally {
-  isLoading.value = false;
-  loading.value = false;
-}
+    isLoading.value = true;
+    loading.value = true;
+    data.value = await getCustomerDevices(customerId.value as string); // Call your API function to fetch roles
+    console.log("Devices data: ", data.value);
+  } catch (err) {
+    console.error("Error fetching devices:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
 };
 
 const manageDevice = async () => {
@@ -92,24 +94,34 @@ const manageDevice = async () => {
     isLoading.value = true;
     loading.value = true;
     if (selectedDeviceSuspended.value) {
-      await restoreCustomerDevicesByDeviceId(customerId.value as string, deviceId.value);
+      await restoreCustomerDevicesByDeviceId(
+        customerId.value as string,
+        deviceId.value
+      );
     } else {
-      await suspendCustomerDevicesByDeviceId(customerId.value as string, deviceId.value);
+      await suspendCustomerDevicesByDeviceId(
+        customerId.value as string,
+        deviceId.value
+      );
     }
     fetchDevices();
     toast({
-      title: selectedDeviceSuspended.value ? "Device restored" : "Device suspended",
-      description: selectedDeviceSuspended.value ? "The device has been restored" : "The device has been suspended",
+      title: selectedDeviceSuspended.value
+        ? "Device restored"
+        : "Device suspended",
+      description: selectedDeviceSuspended.value
+        ? "The device has been restored"
+        : "The device has been suspended",
       variant: "default",
     });
   } catch (err) {
     console.error("Error suspending device:", err);
-    toast({
-      title: "Error suspending device",
-      description: "An error occurred while suspending the device",
-      variant: "destructive",
-    });
-    isError.value = true;
+    // toast({
+    //   title: "Error suspending device",
+    //   description: "An error occurred while suspending the device",
+    //   variant: "destructive",
+    // });
+    // isError.value = true;
   } finally {
     isLoading.value = false;
     loading.value = false;
@@ -124,7 +136,6 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col space-y-8">
-
     <UiCard
       class="grid lg:grid-cols-4 gap-4 md:gap-8 w-full p-6"
       v-if="loading"
@@ -149,7 +160,7 @@ onMounted(() => {
     >
       <!-- <div class="p-6"> -->
       <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-semibold">Associated DevicesSS</h2>
+        <h2 class="text-xl font-semibold">Associated Devices</h2>
         <p class="text-sm text-muted-foreground">
           {{ selectedDevices.length }} selected
         </p>
@@ -167,47 +178,92 @@ onMounted(() => {
             :class="{ 'bg-muted/50': isDeviceSelected(device) }"
             @click.stop="handleDeviceSelect(device)"
           >
-              <!-- <UiCheckbox
+            <!-- <UiCheckbox
                 :checked="isDeviceSelected(device)"
                 @click.stop="handleDeviceSelect(device)"
                 class="h-5 w-5"
               /> -->
-              <UiAccordionTrigger class="hover:no-underline" >
+            <UiAccordionTrigger class="hover:no-underline">
               <div class="flex-1 grid grid-cols-7 gap-4">
-                <div class=" flex flex-col items-start">
+                <div class="flex flex-col items-start">
                   <p class="text-sm text-muted-foreground">Device ID</p>
-                  <p class="font-medium text-wrap text-ellipsis overflow-hidden text-base text-left">{{ device.deviceId }}</p>
+                  <p
+                    class="font-medium text-wrap text-ellipsis overflow-hidden text-base text-left"
+                  >
+                    {{ device.deviceId }}
+                  </p>
                 </div>
-                <div class=" flex flex-col items-center">
+                <div class="flex flex-col items-center">
                   <p class="text-sm text-muted-foreground">Device Name</p>
-                  <p class="font-medium text-wrap text-ellipsis overflow-hidden text-base">{{ device.deviceName }}</p>
+                  <p
+                    class="font-medium text-wrap text-ellipsis overflow-hidden text-base"
+                  >
+                    {{ device.deviceName }}
+                  </p>
                 </div>
-                <div class=" flex flex-col items-center">
+                <div class="flex flex-col items-center">
                   <p class="text-sm text-muted-foreground">Device Type</p>
-                  <p class="font-medium text-nowrap text-ellipsis overflow-hidden text-sm">{{ device.deviceType }}</p>
+                  <p
+                    class="font-medium text-nowrap text-ellipsis overflow-hidden text-sm"
+                  >
+                    {{ device.deviceType }}
+                  </p>
                 </div>
-                <div class=" flex flex-col items-center">
+                <div class="flex flex-col items-center">
                   <p class="text-sm text-muted-foreground">OS Version</p>
                   <p class="font-medium">
                     {{ device.osVersion }}
                   </p>
                 </div>
-                <div class=" flex flex-col items-center">
+                <div class="flex flex-col items-center">
                   <p class="text-sm text-muted-foreground">Active</p>
-                  <UiBadge class="font-medium" :class="{ 'bg-green-500': device.active, 'bg-red-500': !device.active }">
-                    {{ device.active ? 'Active' : 'Inactive' }}
+                  <UiBadge
+                    class="font-medium"
+                    :class="{
+                      'bg-green-500': device.active,
+                      'bg-red-500': !device.active,
+                    }"
+                  >
+                    {{ device.active ? "Active" : "Inactive" }}
                   </UiBadge>
                 </div>
-                <div class=" flex flex-col items-center">
+                <div class="flex flex-col items-center">
                   <p class="text-sm text-muted-foreground">Suspended</p>
-                  <UiBadge class="font-medium" :class="{ 'bg-red-500': device.suspended, 'bg-green-500': !device.suspended }">
-                    {{ device.suspended ? 'Suspended' : 'Not Suspended' }}
+                  <UiBadge
+                    class="font-medium"
+                    :class="{
+                      'bg-red-500': device.suspended,
+                      'bg-green-500': !device.suspended,
+                    }"
+                  >
+                    {{ device.suspended ? "Suspended" : "Not Suspended" }}
                   </UiBadge>
                 </div>
-                <UiPermissionGuard :permission=" device.suspended ? 'RESTORE_CUSTOMER_DEVICE' : 'SUSPEND_CUSTOMER_DEVICE'" >
-                <div class="flex items-start">
-                  <UiButton @click.stop=" () => {deviceId = device.id ?? ''; selectedDeviceSuspended = device.suspended ?? false; setOpenEditModal(true)}" size="sm" class="w-fit self-center px-8" :class="{ 'bg-green-500': device.suspended, 'bg-red-500': !device.suspended }" >{{ device.suspended ? 'Restore' : 'Suspend' }}</UiButton>
-                </div>
+                <UiPermissionGuard
+                  :permission="
+                    device.suspended
+                      ? 'RESTORE_CUSTOMER_DEVICE'
+                      : 'SUSPEND_CUSTOMER_DEVICE'
+                  "
+                >
+                  <div class="flex items-start">
+                    <UiButton
+                      @click.stop="
+                        () => {
+                          deviceId = device.id ?? '';
+                          selectedDeviceSuspended = device.suspended ?? false;
+                          setOpenEditModal(true);
+                        }
+                      "
+                      size="sm"
+                      class="w-fit self-center px-8"
+                      :class="{
+                        'bg-green-500': device.suspended,
+                        'bg-red-500': !device.suspended,
+                      }"
+                      >{{ device.suspended ? "Restore" : "Suspend" }}
+                    </UiButton>
+                  </div>
                 </UiPermissionGuard>
               </div>
             </UiAccordionTrigger>
@@ -219,195 +275,214 @@ onMounted(() => {
             >
               <div>
                 <p class="text-sm text-muted-foreground">Device ID</p>
-                <p class="font-medium text-wrap">{{ device.deviceId || '-' }}</p>
+                <p class="font-medium text-wrap">
+                  {{ device.deviceId || "-" }}
+                </p>
+              </div>
+              <div>
+                <p class="text-sm text-muted-foreground">ID</p>
+                <p class="font-medium text-wrap">
+                  {{ device.id || "-" }}
+                </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Device Name</p>
                 <p class="font-medium w-full break-words whitespace-normal">
-                  {{ device.deviceName || '-' }}</p>
+                  {{ device.deviceName || "-" }}
+                </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Device Type</p>
                 <p class="font-medium">
-                  {{ device.deviceType || '-' }}
+                  {{ device.deviceType || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">OS Version</p>
                 <p class="font-medium">
-                  {{ device.osVersion || '-' }}
+                  {{ device.osVersion || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Country</p>
                 <p class="font-medium">
-                  {{ device.country || '-' }}
+                  {{ device.country || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">City</p>
                 <p class="font-medium">
-                  {{ device.city || '-' }}
+                  {{ device.city || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">State</p>
                 <p class="font-medium">
-                  {{ device.state || '-' }}
+                  {{ device.state || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Time Zone</p>
                 <p class="font-medium">
-                  {{ device.timeZone || '-' }}
+                  {{ device.timeZone || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">ISP</p>
                 <p class="font-medium">
-                  {{ device.isp || '-' }}
+                  {{ device.isp || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">IP Address</p>
                 <p class="font-medium">
-                  {{ device.ipAddress || '-' }}
+                  {{ device.ipAddress || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Locale</p>
                 <p class="font-medium">
-                  {{ device.locale || '-' }}
+                  {{ device.locale || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">User Agent</p>
                 <p class="font-medium">
-                  {{ device.userAgent || '-' }}
+                  {{ device.userAgent || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Request Source</p>
                 <p class="font-medium">
-                  {{ device.requestSource || '-' }}
+                  {{ device.requestSource || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">App Version</p>
                 <p class="font-medium">
-                  {{ device.appVersion || '-' }}
+                  {{ device.appVersion || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Platform</p>
                 <p class="font-medium">
-                  {{ device.platform || '-' }}
+                  {{ device.platform || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">OS Family</p>
                 <p class="font-medium">
-                  {{ device.osFamily || '-' }}
+                  {{ device.osFamily || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Device Family</p>
                 <p class="font-medium">
-                  {{ device.deviceFamily || '-' }}
+                  {{ device.deviceFamily || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">User Agent Family</p>
                 <p class="font-medium">
-                  {{ device.userAgentFamily || '-' }}
+                  {{ device.userAgentFamily || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Created By</p>
                 <p class="font-medium">
-                  {{ device.createdBy || '-' }}
+                  {{ device.createdBy || "-" }}
                 </p>
               </div>
 
               <div>
                 <p class="text-sm text-muted-foreground">Created Date</p>
                 <p class="font-medium">
-                  {{ device.createdDate ? new Date(device.createdDate).toLocaleDateString() : '-' }}
+                  {{
+                    device.createdDate
+                      ? new Date(device.createdDate).toLocaleDateString()
+                      : "-"
+                  }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Last Modified By</p>
                 <p class="font-medium">
-                  {{ device.lastModifiedBy || '-' }}
+                  {{ device.lastModifiedBy || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Last Modified Date</p>
                 <p class="font-medium">
-                  {{ device.lastModifiedDate ? new Date(device.lastModifiedDate).toLocaleDateString() : '-' }}
+                  {{
+                    device.lastModifiedDate
+                      ? new Date(device.lastModifiedDate).toLocaleDateString()
+                      : "-"
+                  }}
                 </p>
               </div>
 
               <div>
                 <p class="text-sm text-muted-foreground">Application Name</p>
                 <p class="font-medium">
-                  {{ device.applicationName || '-' }}
+                  {{ device.applicationName || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Application Id</p>
                 <p class="font-medium text-wrap">
-                  {{ device.applicationId || '-' }}
+                  {{ device.applicationId || "-" }}
                 </p>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">application Version Id</p>
+                <p class="text-sm text-muted-foreground">
+                  application Version Id
+                </p>
                 <p class="font-medium text-wrap">
-                  {{ device.applicationVersionId || '-' }}
+                  {{ device.applicationVersionId || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Package Name</p>
                 <p class="font-medium text-wrap">
-                  {{ device.packageName || '-' }}
+                  {{ device.packageName || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Version Number</p>
                 <p class="font-medium">
-                  {{ device.versionNumber || '-' }}
+                  {{ device.versionNumber || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Build Number</p>
                 <p class="font-medium">
-                  {{ device.buildNumber || '-' }}
+                  {{ device.buildNumber || "-" }}
                 </p>
               </div>
               <div class="flex-col items-start w-full flex-wrap">
                 <p class="text-sm text-muted-foreground">Build Signature</p>
                 <p class="font-medium w-full break-words whitespace-normal">
-                  {{ device.buildSignature || '-' }}
+                  {{ device.buildSignature || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Installer Store</p>
                 <p class="font-medium text-wrap">
-                  {{ device.installerStore || '-' }}
+                  {{ device.installerStore || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Install Time</p>
                 <p class="font-medium">
-                  {{ device.installTime || '-' }}
+                  {{ device.installTime || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Last Update Time</p>
                 <p class="font-medium">
-                  {{ device.lastUpdateTime || '-' }}
+                  {{ device.lastUpdateTime || "-" }}
                 </p>
-              </div>  
+              </div>
             </div>
           </UiAccordionContent>
         </UiAccordionItem>
@@ -423,8 +498,8 @@ onMounted(() => {
       <p class="text-muted-foreground">No devices found for this customer</p>
     </UiCard>
     <div v-if="isError && !loading">
-    <ErrorMessage :retry="fetchDevices" title="Something went wrong." />
-  </div>
+      <ErrorMessage :retry="fetchDevices" title="Something went wrong." />
+    </div>
   </div>
 
   <UiAlertDialog :open="openEditModal" :onOpenChange="setOpenEditModal">
@@ -432,7 +507,8 @@ onMounted(() => {
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
-          This will {{ selectedDeviceSuspended ? 'restore' : 'suspend' }} the device.
+          This will {{ selectedDeviceSuspended ? "restore" : "suspend" }} the
+          device.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>

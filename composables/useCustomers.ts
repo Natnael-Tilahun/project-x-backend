@@ -13,12 +13,15 @@ export const useCustomers = () => {
   const pageNumbers = ref<number>(pageNumber);
   const pageSizes = ref<number>(pageSize);
 
-  const getCustomers: (page?: number, size?: number) => ApiResult<Customer[]> = async (page, size) => {
+  const getCustomers: (
+    page?: number,
+    size?: number
+  ) => ApiResult<Customer[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<Customer[]>(
-        '/api/v1/internal/customers/list',
+        "/api/v1/internal/customers/list",
         {
-          params: { page, size }
+          params: { page, size },
         }
       );
 
@@ -54,7 +57,9 @@ export const useCustomers = () => {
     }
   };
 
-  const getCoreCustomerByAccountNumber: (accountNumber: string) => ApiResult<Customer> = async (accountNumber) => {
+  const getCoreCustomerByAccountNumber: (
+    accountNumber: string
+  ) => ApiResult<Customer> = async (accountNumber) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/customers/core/${accountNumber}`
@@ -73,7 +78,9 @@ export const useCustomers = () => {
     }
   };
 
-  const getCoreAccountsByCustomerId: (customerId: string) => ApiResult<Customer> = async (customerId) => {
+  const getCoreAccountsByCustomerId: (
+    customerId: string
+  ) => ApiResult<Customer> = async (customerId) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/core/accounts/customer/${customerId}`
@@ -92,7 +99,9 @@ export const useCustomers = () => {
     }
   };
 
-  const getCoreAccountsByAccount: (accountNumber: number) => ApiResult<CoreCustomerSummery> = async (accountNumber) => {
+  const getCoreAccountsByAccount: (
+    accountNumber: number
+  ) => ApiResult<CoreCustomerSummery> = async (accountNumber) => {
     try {
       const { data, pending, error, status } = await fetch<CoreCustomerSummery>(
         `/api/v1/internal/contract-core-customers/by-core-account-number/${accountNumber}`
@@ -111,12 +120,14 @@ export const useCustomers = () => {
     }
   };
 
-  const searchCustomers: (keyword: string) => ApiResult<any> = async (keyword) => {
+  const searchCustomers: (keyword: string) => ApiResult<any> = async (
+    keyword
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
-        '/api/v1/internal/customers/search',
+        "/api/v1/internal/customers/search",
         {
-          params: { keyword }
+          params: { keyword },
         }
       );
 
@@ -128,12 +139,13 @@ export const useCustomers = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
-  const activateCustomerById: (id: string) => ApiResult<Customer> = async (id) => {
+  const activateCustomerById: (id: string) => ApiResult<Customer> = async (
+    id
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/customers/${id}/activate-customer`,
@@ -148,12 +160,13 @@ export const useCustomers = () => {
 
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
-  const deActivateCustomerById: (id: string) => ApiResult<Customer> = async (id) => {
+  const deActivateCustomerById: (id: string) => ApiResult<Customer> = async (
+    id
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/customers/${id}/deactivate-customer`,
@@ -168,18 +181,20 @@ export const useCustomers = () => {
 
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
-  const linkCoreBankCustomer: (id: string, coreCustomerId: string) => ApiResult<Customer> = async (id, coreCustomerId) => {
+  const linkCoreBankCustomer: (
+    id: string,
+    coreCustomerId: string
+  ) => ApiResult<Customer> = async (id, coreCustomerId) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/customers/${id}/link-core-bank-customer`,
         {
           method: "POST",
-          body: { coreCustomerId }
+          body: { coreCustomerId },
         }
       );
 
@@ -196,7 +211,9 @@ export const useCustomers = () => {
     }
   };
 
-  const unLinkCoreBankCustomer: (id: string) => ApiResult<Customer> = async (id) => {
+  const unLinkCoreBankCustomer: (id: string) => ApiResult<Customer> = async (
+    id
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
         `/api/v1/internal/customers/${id}/unlink-core-bank-customer`,
@@ -231,18 +248,19 @@ export const useCustomers = () => {
 
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
-  const createNeweCustomer: (customerData: any) => ApiResult<Customer> = async (customerData) => {
+  const createNeweCustomer: (customerData: any) => ApiResult<Customer> = async (
+    customerData
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<Customer>(
-        '/api/v1/internal/customers/create',
+        "/api/v1/internal/customers/create",
         {
           method: "POST",
-          body: customerData
+          body: customerData,
         }
       );
 
@@ -254,8 +272,7 @@ export const useCustomers = () => {
 
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
@@ -274,12 +291,13 @@ export const useCustomers = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
-  const getCustomerDevices: (customerId: string) => ApiResult<Device[]> = async (customerId) => {
+  const getCustomerDevices: (
+    customerId: string
+  ) => ApiResult<Device[]> = async (customerId) => {
     try {
       const { data, pending, error, status } = await fetch<Device[]>(
         `/api/v1/internal/customers/${customerId}/devices`
@@ -291,14 +309,27 @@ export const useCustomers = () => {
         handleApiError(error);
       }
 
-      return data.value ? (data.value as unknown as Device[]) : null;
+      // Convert the raw data before Vue's reactivity system processes it
+      const rawData = JSON.parse(JSON.stringify(data.value));
+      const devices = rawData
+        ? rawData.map((device) => ({
+            ...device,
+            id: device.id.toString(),
+          }))
+        : null;
+
+      console.log("dddd: ", devices);
+
+      return devices;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
-  const getCustomerDevicesByDeviceId: (customerId: string, deviceId: string) => ApiResult<User> = async (customerId, deviceId) => {
+  const getCustomerDevicesByDeviceId: (
+    customerId: string,
+    deviceId: string
+  ) => ApiResult<User> = async (customerId, deviceId) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         `/api/v1/internal/customers/${customerId}/devices/${deviceId}`
@@ -312,12 +343,14 @@ export const useCustomers = () => {
 
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
-  const suspendCustomerDevicesByDeviceId: (customerId: string, deviceId: string) => ApiResult<User> = async (customerId, deviceId) => {
+  const suspendCustomerDevicesByDeviceId: (
+    customerId: string,
+    deviceId: string
+  ) => ApiResult<User> = async (customerId, deviceId) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         `/api/v1/internal/customers/${customerId}/devices/${deviceId}/suspend`,
@@ -332,12 +365,14 @@ export const useCustomers = () => {
 
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
-  const restoreCustomerDevicesByDeviceId: (customerId: string, deviceId: string) => ApiResult<User> = async (customerId, deviceId) => {
+  const restoreCustomerDevicesByDeviceId: (
+    customerId: string,
+    deviceId: string
+  ) => ApiResult<User> = async (customerId, deviceId) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
         `/api/v1/internal/customers/${customerId}/devices/${deviceId}/restore`,
@@ -352,8 +387,7 @@ export const useCustomers = () => {
 
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
@@ -375,6 +409,6 @@ export const useCustomers = () => {
     getCustomerDevicesByDeviceId,
     suspendCustomerDevicesByDeviceId,
     restoreCustomerDevicesByDeviceId,
-    getCoreAccountsByAccount
+    getCoreAccountsByAccount,
   };
 };

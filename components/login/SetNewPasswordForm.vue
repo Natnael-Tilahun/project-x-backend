@@ -41,7 +41,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     key: route.query.key,
     newPassword: values.newPassword,
   };
-console.log("userCredentials: ",userCredentials)
+  console.log("userCredentials: ", userCredentials);
   try {
     const data = await setNewPassword(userCredentials);
     // Get the current base URL from the runtime config
@@ -49,17 +49,13 @@ console.log("userCredentials: ",userCredentials)
     const homeUrl = runtimeConfig.public.HOME_URL;
     // Extract the domain from the API base URL    // Construct the login URL with the current domain
     const loginUrl = `${homeUrl}/login`;
-    navigateTo(loginUrl, { replace: true, external:true });
+    navigateTo(loginUrl, { replace: true, external: true });
     toast({
       title: "Password updated successfully",
       description: "You can now login with your new password",
     });
   } catch (error) {
     console.error("Login error: ", error);
-    toast({
-      title: "Password update failed",
-      description: "Please try again",
-    });
   } finally {
     isLoading.value = false;
   }
