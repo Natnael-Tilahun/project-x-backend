@@ -32,7 +32,9 @@ const CreditAccountNumberVariableTypeSchema = z
   .nativeEnum(CreditAccountNumberVariableType)
   .nullable()
   .optional();
-const PaymentCategorySchema = z.enum(Object.keys(PaymentCategory) as [string, ...string[]]);
+const PaymentCategorySchema = z.enum(
+  Object.keys(PaymentCategory) as [string, ...string[]]
+);
 
 export const paymentIntegrationFormSchema = toTypedSchema(
   z.object({
@@ -64,7 +66,7 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     confirmRecipientIdentity: z.boolean().optional().nullable().default(false),
     reEnquirePaymentDetailBeforePayment: z.boolean().optional().nullable(),
     singleFormPayment: z.boolean().optional().nullable().default(false),
-    defaultPaymentReason: z.string().optional().nullable(),
+    defaultPaymentReason: z.string().max(35).optional().nullable(),
     // categoryMenus: z.array(z.any()).optional().nullable(),
     locals: z.array(z.any()).optional().nullable(),
     forms: z.array(z.any()).optional().nullable(),
@@ -76,7 +78,7 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     dailyLimitPerAccount: z.number().optional().nullable(),
     limitPerTransaction: z.number().optional().nullable(),
     category: PaymentCategorySchema,
-    maxTransactionsPerDay: z.number().optional().nullable()
+    maxTransactionsPerDay: z.number().optional().nullable(),
   })
 );
 
