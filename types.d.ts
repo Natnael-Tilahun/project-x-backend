@@ -85,11 +85,11 @@ interface User {
   lastModifiedDate?: string | null;
   isEnrolled?: boolean | null;
   authorities?: string[] | null;
-  blockExpirationTime?:	string
-  blockLevel?:	integer
-  staff?:	boolean
-  customer?:	boolean
-  operator?:	boolean
+  blockExpirationTime?: string;
+  blockLevel?: integer;
+  staff?: boolean;
+  customer?: boolean;
+  operator?: boolean;
 }
 
 interface Device {
@@ -118,16 +118,16 @@ interface Device {
   lastModifiedDate?: string | Date | null;
   active?: boolean;
   suspended?: boolean;
-  applicationName?:	string
-  applicationId?:	string
-  applicationVersionId?:	string
-  packageName?:	string
-  versionNumber?:	string
-  buildNumber?:	string
-  buildSignature?:	string
-  installerStore?:	string
-  installTime?:	string
-  lastUpdateTime?:	string
+  applicationName?: string;
+  applicationId?: string;
+  applicationVersionId?: string;
+  packageName?: string;
+  versionNumber?: string;
+  buildNumber?: string;
+  buildSignature?: string;
+  installerStore?: string;
+  installTime?: string;
+  lastUpdateTime?: string;
 }
 
 interface UserInput {
@@ -160,8 +160,8 @@ interface Permission {
   createdDate?: Date;
   lastModifiedBy?: string;
   lastModifiedDate?: Date;
-  deletedBy?:	string
-  deletedDate?:	string
+  deletedBy?: string;
+  deletedDate?: string;
   grouping: string;
   code: string;
   entityName: string;
@@ -170,12 +170,12 @@ interface Permission {
     min: 0;
     max: 50;
   };
-  scope?: PermissionScope,
+  scope?: PermissionScope;
   type: PermissionType;
-  category: PermissionCategory
+  category: PermissionCategory;
   selected?: boolean;
-  enabled?:	boolean
-  deleted?:	boolean
+  enabled?: boolean;
+  deleted?: boolean;
 }
 
 enum Status {
@@ -284,7 +284,7 @@ interface Customer {
   olbAllowed?: boolean;
   staffMember?: boolean;
   roles: [Role];
-  contractId?:string
+  contractId?: string;
 }
 
 interface Address {
@@ -501,8 +501,8 @@ interface PaymentIntegration {
   dailyLimitPerAccount?: number | null;
   limitPerTransaction?: number | null;
   category?: PaymentCategory | null;
-  charge?: Charge | null
-  maxTransactionsPerDay?: number | null
+  charge?: Charge | null;
+  maxTransactionsPerDay?: number | null;
 }
 
 interface Menu {
@@ -784,7 +784,7 @@ interface Contract {
       ]
     | null;
   permissions?: Permissions[];
-  withPrimaryContractUser: boolean
+  withPrimaryContractUser: boolean;
 }
 
 interface ServiceDefinition {
@@ -862,7 +862,7 @@ interface ContractCoreCustomer {
   country?: string;
 }
 
-interface CoreCustomerSummery{
+interface CoreCustomerSummery {
   contractId?: string;
   customerBranchCode?: string;
   customerId?: string;
@@ -937,18 +937,17 @@ interface Staff {
   firstname: string;
   lastname: string;
   displayName?: string | null;
-  username?: string | null
+  username?: string | null;
   mobileNo?: string | null;
   emailAddress: string | null;
   active?: boolean | null;
   joiningDate?: string | null;
-  assign?:	boolean
-newOfficeId?:	string | null
-supervisorStaffId?:	string | null
-newRoleId?:	string | null
-remarks?:	string  | null
-assignmentDate?:	string | null
-
+  assign?: boolean;
+  newOfficeId?: string | null;
+  supervisorStaffId?: string | null;
+  newRoleId?: string | null;
+  remarks?: string | null;
+  assignmentDate?: string | null;
 }
 
 interface Office {
@@ -972,7 +971,7 @@ interface StaffAssignment {
   supervisorStaffId?: string | null;
   newOfficeId: string;
   newRoleId: string;
-  remarks?: string | null
+  remarks?: string | null;
 }
 
 interface UssdLanguage {
@@ -1018,7 +1017,7 @@ interface LocalizedUssdMenu {
 interface Charge {
   id?: number;
   chargeCode?: string;
-  category?:string;
+  category?: string;
   type: ChargeType;
   description: string;
   shortDescription?: string;
@@ -1057,23 +1056,23 @@ export interface ApiResponse<T> {
     };
   };
   status: {
-    value: 'success' | 'error';
+    value: "success" | "error";
   };
 }
 
 export interface OtpDTO {
-  verificationId:	string
-  phone?:	string
-  expiryTime?:	string
-  }
-
-export interface TFAAccessTokenDTO{
-  token:	string
-  validFrom:	string
-  validTo:	string
+  verificationId: string;
+  phone?: string;
+  expiryTime?: string;
 }
 
-export interface VerificationRequest{
-  verificationId: string
-  otp?: 	string
+export interface TFAAccessTokenDTO {
+  token: string;
+  validFrom: string;
+  validTo: string;
+}
+
+export interface VerificationRequest {
+  verificationId: string;
+  otp?: string;
 }
