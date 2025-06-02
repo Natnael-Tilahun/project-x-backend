@@ -11,6 +11,7 @@ import { useToast } from "~/components/ui/toast";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { RoleScope } from "~/global-types";
 import type { Role, Permission } from "~/types";
+import { systemRolesFormSchema } from "~/validations/systemRolesFormSchema";
 
 const { toast } = useToast();
 
@@ -83,7 +84,7 @@ const groupedPermissions = () => {
 };
 
 const form = useForm<FormValues>({
-  // validationSchema: rolesFormSchema,
+  validationSchema: systemRolesFormSchema,
 });
 
 const refetch = async () => {
@@ -216,6 +217,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
   const updatedRoleData = {
     permissions: updatedPermissions,
+    ...values
   };
 
   try {
@@ -250,6 +252,7 @@ const updadateRoleStatus = async (status: boolean) => {
     toast({
       title: "Role status updated successfully.",
     });
+    await refetch();
   } catch (err: any) {
     console.error("Error updating role status:", err);
     toast({
@@ -257,7 +260,6 @@ const updadateRoleStatus = async (status: boolean) => {
       description: `There was a problem with your request: ${err}`,
       variant: "destructive",
     });
-    await refetch();
     isError.value = true;
   } finally {
     isUpdating.value = false;
@@ -291,12 +293,13 @@ const updadateRoleStatus = async (status: boolean) => {
                 <UiPermissionGuard permission="UPDATE_ROLE" >
                 <UiBadge
                   class="font-bold px-2 py-1"
-                  >Enabled</UiBadge
+                  >{{data.enabled ? "Enabled":"Disabled"}}</UiBadge
                 >
                 <FormField v-slot="{ value, handleChange }" name="enabled">
                   <FormItem>
                     <FormControl>
                       <UiSwitch
+                      class="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
                         :checked="value"
                         @update:checked="handleChange"
                         @click="updadateRoleStatus(value)"
@@ -318,7 +321,6 @@ const updadateRoleStatus = async (status: boolean) => {
                       <FormControl>
                         <UiSwitch
                           :checked="value"
-                          disabled
                           @update:checked="handleChange"
                         />
                       </FormControl>
@@ -338,7 +340,6 @@ const updadateRoleStatus = async (status: boolean) => {
                         <UiSelectContent>
                           <UiSelectGroup>
                             <UiSelectItem
-                              :disabled="true"
                               v-for="item in Object.values(RoleScope)"
                               :value="item"
                             >
@@ -357,7 +358,6 @@ const updadateRoleStatus = async (status: boolean) => {
                     <FormControl class="w-full">
                       <UiTextarea
                         type="text"
-                        disabled
                         placeholder="description"
                         v-bind="componentField"
                         aria-autocomplete="description"
