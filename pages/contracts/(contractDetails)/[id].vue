@@ -67,6 +67,7 @@ const fetchContract = async () => {
 
 onMounted(() => {
   fetchContract();
+  openItems.value = route.query.activeTab || "contractDetails" ;
 });
 
 const onSubmit = form.handleSubmit(async (values: any) => {
