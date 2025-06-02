@@ -56,7 +56,7 @@ export const columns: ColumnDef<StaffAssignment>[] = [
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/staffs/${staffId}`,
+              to: `/staffs/${staffId}?activeTab=staffDetails`,
             },
             "View Staff"
           )
@@ -94,7 +94,7 @@ export const columns: ColumnDef<StaffAssignment>[] = [
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/userRoles/${roleName}`,
+              to: `/staffRoles/${roleName}`,
             },
             row.getValue("role")?.name
           )
@@ -113,9 +113,9 @@ export const columns: ColumnDef<StaffAssignment>[] = [
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}/${supervisorId}`,
+              to: `/staffs/${supervisorId}`,
             },
-            row.getValue("supervisor")?.firstname + " " + row.getValue("supervisor")?.lastname
+            "View Supervisor"
           )
         : h("p", "-");
     },

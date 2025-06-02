@@ -16,10 +16,10 @@ const PermissionSchema = z.object({
   selected: z.boolean().optional(),
 });
 
-const scopeSchema = z.nativeEnum(RoleScope).optional();
+const scopeSchema = z.nativeEnum(RoleScope);
 
 
-export const rolesFormSchema = toTypedSchema(
+export const systemRolesFormSchema = toTypedSchema(
   z.object({
     name: z.string({ required_error: "Name is required." }),
     description: z.string().optional(),
