@@ -1078,3 +1078,25 @@ export interface VerificationRequest {
   verificationId: string;
   otp?: string;
 }
+
+export interface MenuItem {
+  title: string;
+  link?: string;
+  icon: string;
+  size?: string;
+  showDropdown?: boolean;
+  permission?: string;
+  dropdown?: {
+    title: string;
+    link: string;
+    permission: string;
+  }[];
+}
+
+export interface SearchResult {
+  title: string;
+  link: string;
+  icon: string;
+  isMainMenu: boolean;
+  parentMenu?: string;
+}

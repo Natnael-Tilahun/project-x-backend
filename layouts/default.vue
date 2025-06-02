@@ -165,7 +165,7 @@ const closeMenuNav = () => {
           </div>
 
           <div class="ml-auto flex items-center space-x-2 md:space-x-10">
-            <!-- <DashboardSearch /> -->
+            <DashboardSearch />
             <UiButton
               variant="ghost"
               size="icon"
