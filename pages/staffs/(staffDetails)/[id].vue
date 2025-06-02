@@ -76,6 +76,7 @@ const fetchStaffData = async () => {
     data.value = await getStaffById(staffId.value);
     let a = {
       ...data.value,
+      username: data.value?.user?.login,
       joiningDate: data.value.joiningDate
         ? dateFormatter(data.value.joiningDate)
         : "",
@@ -151,7 +152,7 @@ watch(
       v-model="openItems"
       class="w-full space-y-0"
     >
-      <div class="w-full flex justify-end mb-4 gap-4">
+      <div class="w-full flex justify-end mb-4 gap-4 px-6">
         <UiButton
           size="sm"
           @click="handleStaffActivation"
@@ -289,6 +290,22 @@ watch(
                         placeholder="Enter staff user name"
                         v-bind="componentField"
                       />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                <FormField v-slot="{ componentField }" name="active">
+                  <FormItem>
+                    <FormLabel>Active</FormLabel>
+                    <FormControl>
+                      <div class="flex items-start gap-2 h-full">
+                        <UiBadge
+                        class="w-fit h-fit py-1 px-4"
+                             :class="data?.active  ? 'bg-green-500' : 'bg-red-500'"
+                        >
+                          {{ data?.active ? "Active" : "Inactive" }}
+                      </UiBadge>
+                    </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>

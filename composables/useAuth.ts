@@ -83,8 +83,7 @@ export const useAuth = () => {
 
       return data.value as AuthResponse;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
@@ -129,8 +128,7 @@ export const useAuth = () => {
 
         return data.value as AuthResponse;
       } catch (err) {
-        handleApiError(err);
-        return null;
+        throw err;
       }
     }
     return null;
@@ -155,8 +153,7 @@ export const useAuth = () => {
 
       return data.value as AuthResponse;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
@@ -166,6 +163,31 @@ export const useAuth = () => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
         "/api/v1/users/reset-password/finish",
+        {
+          method: "POST",
+          body: newData,
+          includeAuth: false,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value as AuthResponse;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const initPasswordReset: (newData: any) => ApiResult<AuthResponse> = async (
+    newData
+  ) => {
+    try {
+      const { data, pending, error, status } = await fetch<AuthResponse>(
+        "/api/v1/users/reset-password/init",
         {
           method: "POST",
           body: newData,
@@ -211,8 +233,7 @@ export const useAuth = () => {
 
       return response;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
@@ -246,12 +267,11 @@ export const useAuth = () => {
 
       return response;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
-  const changePassword: (newData: any) => ApiResult<AuthResponse> = async (
+  const changePassword: (newData: any) => ApiResult<any> = async (
     newData
   ) => {
     try {
@@ -269,10 +289,9 @@ export const useAuth = () => {
         handleApiError(error);
       }
 
-      return { data: data.value as AuthResponse, status };
+      return { data: data.value as any, status };
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
@@ -291,5 +310,6 @@ export const useAuth = () => {
     requestTwoFactorAuth,
     validateTwoFactorAuth,
     changePassword,
+    initPasswordReset
   };
 };

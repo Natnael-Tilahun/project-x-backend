@@ -39,9 +39,9 @@ definePageMeta({
       >
         <div class="flex flex-col space-y-2 text-center">
           <h1 class="text-2xl font-semibold tracking-tight">Forgot Password</h1>
-          <!-- <p class="text-sm text-muted-foreground">
-            Enter your email(username) and password below to login
-          </p> -->
+          <p class="text-sm text-muted-foreground">
+            Enter your email and we'll send you a link to reset your password
+          </p>
         </div>
         <ForgotPasswordForm />
         <!-- <p class="px-8 text-center text-sm text-muted-foreground">

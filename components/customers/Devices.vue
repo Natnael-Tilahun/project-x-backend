@@ -3,6 +3,7 @@ const openItems = ref(["item-1"]);
 
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
+import { DeviceStatus } from "~/global-types";
 import { getIdFromPath } from "~/lib/utils";
 import type { Device } from "~/types";
 
@@ -32,7 +33,7 @@ const openEditModal = ref(false);
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
-const selectedDeviceSuspended = ref(false);
+const selectedDeviceSuspended = ref("");
 const deviceId = ref<string>("");
 
 const displayApiDataOnLabel = (data: any) => {
@@ -93,7 +94,7 @@ const manageDevice = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    if (selectedDeviceSuspended.value) {
+    if (selectedDeviceSuspended.value == DeviceStatus.SUSPENDED) {
       await restoreCustomerDevicesByDeviceId(
         customerId.value as string,
         deviceId.value
@@ -106,10 +107,10 @@ const manageDevice = async () => {
     }
     fetchDevices();
     toast({
-      title: selectedDeviceSuspended.value
+      title: selectedDeviceSuspended.value == DeviceStatus.SUSPENDED
         ? "Device restored"
         : "Device suspended",
-      description: selectedDeviceSuspended.value
+      description: selectedDeviceSuspended.value == DeviceStatus.SUSPENDED
         ? "The device has been restored"
         : "The device has been suspended",
       variant: "default",
@@ -184,7 +185,7 @@ onMounted(() => {
                 class="h-5 w-5"
               /> -->
             <UiAccordionTrigger class="hover:no-underline">
-              <div class="flex-1 grid grid-cols-7 gap-4">
+              <div class="flex-1 grid grid-cols-6 gap-4">
                 <div class="flex flex-col items-start">
                   <p class="text-sm text-muted-foreground">Device ID</p>
                   <p
@@ -215,7 +216,7 @@ onMounted(() => {
                     {{ device.osVersion }}
                   </p>
                 </div>
-                <div class="flex flex-col items-center">
+                <!-- <div class="flex flex-col items-center">
                   <p class="text-sm text-muted-foreground">Active</p>
                   <UiBadge
                     class="font-medium"
@@ -226,22 +227,24 @@ onMounted(() => {
                   >
                     {{ device.active ? "Active" : "Inactive" }}
                   </UiBadge>
-                </div>
+                </div> -->
                 <div class="flex flex-col items-center">
-                  <p class="text-sm text-muted-foreground">Suspended</p>
+                  <p class="text-sm text-muted-foreground">Status</p>
                   <UiBadge
                     class="font-medium"
                     :class="{
-                      'bg-red-500': device.suspended,
-                      'bg-green-500': !device.suspended,
+                      'bg-red-500': device.deviceStatus === DeviceStatus.SUSPENDED,
+                      'bg-green-500': device.deviceStatus === DeviceStatus.ACTIVE,
+                      'bg-orange-500': device.deviceStatus === DeviceStatus.INACTIVE,
+                      'bg-gray-300': device.deviceStatus === DeviceStatus.UNENEOLLED || device.deviceStatus === DeviceStatus.NEW || device.deviceStatus === DeviceStatus.PENDING || device.deviceStatus === DeviceStatus.NONE,
                     }"
                   >
-                    {{ device.suspended ? "Suspended" : "Not Suspended" }}
+                    {{ device.deviceStatus }}
                   </UiBadge>
                 </div>
                 <UiPermissionGuard
                   :permission="
-                    device.suspended
+                    device.deviceStatus === DeviceStatus.SUSPENDED
                       ? 'RESTORE_CUSTOMER_DEVICE'
                       : 'SUSPEND_CUSTOMER_DEVICE'
                   "
@@ -251,17 +254,17 @@ onMounted(() => {
                       @click.stop="
                         () => {
                           deviceId = device.id ?? '';
-                          selectedDeviceSuspended = device.suspended ?? false;
+                          selectedDeviceSuspended = device.deviceStatus || '';
                           setOpenEditModal(true);
                         }
                       "
                       size="sm"
                       class="w-fit self-center px-8"
                       :class="{
-                        'bg-green-500': device.suspended,
-                        'bg-red-500': !device.suspended,
+                        'bg-green-500': device.deviceStatus === DeviceStatus.SUSPENDED,
+                        'bg-red-500': device.deviceStatus === DeviceStatus.ACTIVE || device.deviceStatus === DeviceStatus.INACTIVE || device.deviceStatus === DeviceStatus.UNENEOLLED || device.deviceStatus === DeviceStatus.NEW || device.deviceStatus === DeviceStatus.PENDING || device.deviceStatus === DeviceStatus.NONE,
                       }"
-                      >{{ device.suspended ? "Restore" : "Suspend" }}
+                      >{{ device.deviceStatus === DeviceStatus.SUSPENDED ? "Restore" : "Suspend" }}
                     </UiButton>
                   </div>
                 </UiPermissionGuard>
@@ -507,7 +510,7 @@ onMounted(() => {
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
-          This will {{ selectedDeviceSuspended ? "restore" : "suspend" }} the
+          This will {{ selectedDeviceSuspended == DeviceStatus.SUSPENDED ? "restore" : "suspend" }} the
           device.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
