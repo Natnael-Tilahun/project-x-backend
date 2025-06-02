@@ -73,7 +73,21 @@ await useAsyncData("contractsData", async () => {
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
     <UiPermissionGuard permission="CREATE_CONTRACTS">
-      <NuxtLink to="/contracts/new" class="w-fit self-end">
+      <NuxtLink v-if="data.length > 0" 
+      @click="
+          navigateTo({
+            path: `/contracts/${data[0].id}`,
+            query: {
+              activeTab: 'newCoreCustomer',
+            },
+          })"
+      class="w-fit self-end">
+        <UiButton class="w-fit self-end px-5"
+          ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
+          >Add Customer ID</UiButton
+        >
+      </NuxtLink>
+      <NuxtLink v-else to="/contracts/new" class="w-fit self-end">
         <UiButton class="w-fit self-end px-5"
           ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
           >Create Contract</UiButton
