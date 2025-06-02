@@ -1,5 +1,6 @@
 import {
   ChargeType,
+  DeviceStatus,
   LanguageRelatedStatus,
   PaymentIntegrationType,
   PermissionCategory,
@@ -128,6 +129,7 @@ interface Device {
   installerStore?: string;
   installTime?: string;
   lastUpdateTime?: string;
+  deviceStatus?: DeviceStatus;
 }
 
 interface UserInput {

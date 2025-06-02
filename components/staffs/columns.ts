@@ -110,16 +110,9 @@ export const columns: ColumnDef<Staff>[] = [
     header: "Active",
     cell: ({ row }) => {
       const active = row.getValue("active");
-      return active
-        ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            row.getValue("active")
-          )
-        : h("p", "-");
+      if (active) {
+        return h(Badge, { class: " bg-green-600 " }, "Active");
+      } else return h(Badge, { class: "bg-red-500 " }, "Inactive");
     },
   },
   {

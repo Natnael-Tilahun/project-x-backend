@@ -15,7 +15,7 @@ import { useAuth } from "~/composables/useAuth";
 import { useRouter } from "vue-router";
 
 const store = useAuthStore();
-const { login, isLoading } = useAuth();
+const { login,initPasswordReset, isLoading } = useAuth();
 const router = useRouter();
 let showPassword = ref(false);
 let showConfirmPassword = ref(false);
@@ -26,23 +26,15 @@ const form = useForm({
   validationSchema: forgotPasswordFormSchema,
 });
 
-const togglePasswordVisibility = () => {
-  showPassword.value = !showPassword.value;
-};
-
-const toggleConfirmPasswordVisibility = () => {
-  showConfirmPassword.value = !showConfirmPassword.value;
-};
-
 const onSubmit = form.handleSubmit(async (values: any) => {
   isLoading.value = true;
   const userCredentials = {
-    email: values.email,
-    password: values.newPassword,
+    mail: values.email,
   };
-console.log("userCredentials: ",userCredentials)
+  console.log("userCredentials: ",userCredentials)
   try {
-    // const data = await login(userCredentials);
+    const data = await initPasswordReset(userCredentials);
+    console.log("data: ", data)
     // If login is successful, navigate to the home page
     navigateTo("/login", { replace: true });
   } catch (error) {
@@ -73,7 +65,7 @@ console.log("userCredentials: ",userCredentials)
             <FormMessage />
           </FormItem>
         </FormField>
-        <FormField v-slot="{ componentField }" name="newPassword">
+        <!-- <FormField v-slot="{ componentField }" name="newPassword">
           <FormItem>
             <FormLabel>New Password</FormLabel>
             <FormControl>
@@ -136,13 +128,13 @@ console.log("userCredentials: ",userCredentials)
             </FormControl>
             <FormMessage />
           </FormItem>
-        </FormField>
+        </FormField> -->
         <div class="flex justify-end items-center pb-3">
           <NuxtLink
             to="/login"
-            class="text-primary text-right text-sm font-medium"
+            class="text-primary text-right text-sm font-medium px-1"
           >
-            SignIn
+            Back to Login
           </NuxtLink>
         </div>
         <UiButton :disabled="isLoading">

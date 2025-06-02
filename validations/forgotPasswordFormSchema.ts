@@ -5,11 +5,11 @@ export const forgotPasswordFormSchema = toTypedSchema(
   z
     .object({
       email: z.string(),
-      newPassword: z.string().min(6),
-      confirmPassword: z.string().min(6),
+      // newPassword: z.string().min(6),
+      // confirmPassword: z.string().min(6),
     })
-    .refine((data) => data.newPassword == data.confirmPassword, {
-      message: "Password don't match!",
-      path: ["confirmPassword"],
-    })
+    // .refine((data) => data.newPassword == data.confirmPassword, {
+    //   message: "Password don't match!",
+    //   path: ["confirmPassword"],
+    // })
 );

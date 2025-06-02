@@ -33,8 +33,7 @@ export const useCustomers = () => {
 
       return data.value ? (data.value as unknown as Customer[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
@@ -52,8 +51,7 @@ export const useCustomers = () => {
 
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
@@ -73,8 +71,7 @@ export const useCustomers = () => {
 
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
@@ -94,8 +91,7 @@ export const useCustomers = () => {
 
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
@@ -115,8 +111,7 @@ export const useCustomers = () => {
 
       return data.value ? (data.value as unknown as CoreCustomerSummery) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
@@ -206,8 +201,7 @@ export const useCustomers = () => {
 
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
@@ -228,8 +222,7 @@ export const useCustomers = () => {
 
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err;
     }
   };
 
@@ -312,9 +305,9 @@ export const useCustomers = () => {
       // Convert the raw data before Vue's reactivity system processes it
       const rawData = JSON.parse(JSON.stringify(data.value));
       const devices = rawData
-        ? rawData.map((device) => ({
+        ? rawData.map((device:Device) => ({
             ...device,
-            id: device.id.toString(),
+            id: device?.id?.toString(),
           }))
         : null;
 
