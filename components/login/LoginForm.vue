@@ -83,7 +83,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                   placeholder="******"
                   v-bind="componentField"
                   :disabled="isLoading"
-                  aria-autocomplete="password"
+                  aria-autocomplete="off"
                 />
                 <!-- 
                 <Icon
@@ -122,12 +122,12 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               </div>
             </FormItem>
           </FormField> -->
-          <NuxtLink
+          <!-- <NuxtLink
             to="/forgotPassword"
             class="text-primary text-right text-sm"
           >
             Forgot Password?
-          </NuxtLink>
+          </NuxtLink> -->
         </div>
         <UiButton :disabled="isLoading">
           <Icon

@@ -430,6 +430,17 @@ export enum DeviceType {
   UNKNOWN = "UNKNOWN",
 }
 
+export enum DeviceStatus {
+  ACTIVE = "ACTIVE",
+  LOCKED = "LOCKED",
+  SUSPENDED = "SUSPENDED",
+  INACTIVE = "INACTIVE",
+  PENDING = "PENDING",
+  UNENEOLLED = "UNENEOLLED",
+  NEW = "NEW",
+  NONE = "NONE",
+}
+
 export enum Gender {
   MALE = "MALE",
   FEMALE = "FEMALE",

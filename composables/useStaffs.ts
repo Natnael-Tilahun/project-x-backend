@@ -184,7 +184,7 @@ export const useStaffs = () => {
       const { data, pending, error, status } = await fetch<Staff>(
         `/api/v1/internal/staff/${staffId}/deactivate-staff`,
         {
-          method: "PATCH",
+          method: "POST",
         }
       );
 
