@@ -110,7 +110,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                   placeholder="******"
                   v-bind="componentField"
                   :disabled="isLoading"
-                  aria-autocomplete="password"
+                  aria-autocomplete="off"
                 />
 
                 <Icon

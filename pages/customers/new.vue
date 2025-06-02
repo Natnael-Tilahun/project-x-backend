@@ -20,12 +20,15 @@ import type {
   CoreCustomerSummery,
   Permission,
   ServiceDefinition,
+  ServiceDefinitionRole,
 } from "~/types";
 import { NuxtLink } from "#components";
 
 const { createNewContract, isLoading } = useContracts();
 const { getServiceDefinitions, getServiceDefinitionById } =
   useServiceDefinitions();
+  const {  getServiceDefinitionRoleById, getServiceDefinitionRolesByServiceDefinitionId } =
+  useServiceDefinitionsRoles();
 const { getPermissions } = usePermissions();
 const {
   getCoreAccountsByCustomerId,
@@ -44,8 +47,9 @@ const coreCustomerSummary = ref<CoreCustomerSummery>();
 const data = ref<Contract>();
 const isSubmitting = ref(false);
 const permissionsData = ref<Permission[]>([]);
-const serviceDefinitionPermissionsData = ref<Permission[]>([]);
+const serviceDefinitionRolePermissionsData = ref<Permission[]>([]);
 const serviceDefinitionsData = ref<ServiceDefinition[]>([]);
+const serviceDefinitionsRolesData = ref<ServiceDefinitionRole[]>([]);
 const selectedPermissions = ref<Permission[]>([]);
 const selectedCoreCustomerPermissions = ref<Permission[]>([]);
 const selectedAccountPermissions = ref<Permission[]>([]);
@@ -127,7 +131,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       nationalId: values.nationalId,
       // name: values.name,
       description: values.description,
-      serviceType: values.serviceType,
+      serviceDefinitionRoleId: values.serviceDefinitionRoleId,
       serviceDefinitionId: values.serviceDefinitionId,
       permissionCodes: !values.inheritParentServicePermissions
         ? values.permissionCodes || []
@@ -184,20 +188,34 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   }
 });
 
-const fetchServiceDefinitionPermissions = async (newType: string) => {
+const fetchServiceDefinitionRolePermissions = async (newType: string) => {
   try {
     console.log(
       "form.values?.serviceDefinition: ",
-      form.values?.serviceDefinition
+      form.values?.serviceDefinitionRoleId
     );
     if (newType) {
-      const serviceDefinition = await getServiceDefinitionById(newType);
-      serviceDefinitionPermissionsData.value =
+      const serviceDefinition = await getServiceDefinitionRoleById(newType);
+      serviceDefinitionRolePermissionsData.value =
         serviceDefinition?.permissions || [];
       console.log(
-        "serviceDefinitionPermissionsData.value: ",
-        serviceDefinitionPermissionsData.value
+        "serviceDefinitionRolePermissionsData.value: ",
+        serviceDefinitionRolePermissionsData.value
       );
+    }
+  } catch (err) {
+    console.error("Error fetching service definition permissions:", err);
+  }
+};
+
+const fetchServiceDefinitionRoles = async (newType: string) => {
+  try {
+    if (newType) {
+      const serviceDefinitionRoles = await getServiceDefinitionRolesByServiceDefinitionId(newType);
+      console.log("service definition roles: ", serviceDefinitionRoles)
+      serviceDefinitionsRolesData.value =
+        serviceDefinitionRoles || [];
+        form.setFieldValue("serviceDefinitionRoleId", null)
     }
   } catch (err) {
     console.error("Error fetching service definition permissions:", err);
@@ -363,14 +381,26 @@ onMounted(async () => {
   await fetchContractCoreCustomerAccounts();
 });
 
-// Watch for changes in payment operation type
+// Watch for changes in service definition role
 watch(
-  () => form.values.serviceDefinition,
+  () => form.values.serviceDefinitionRoleId,
   async (newType) => {
-    console.log("newType: ", newType);
     // If the service definition has changed, clear the permissions
     if (newType) {
-      const serviceDefinition = await fetchServiceDefinitionPermissions(
+      const serviceDefinition = await fetchServiceDefinitionRolePermissions(
+        newType
+      );
+    }
+  }
+);
+
+// Watch for changes in service definitions
+watch(
+  () => form.values.serviceDefinitionId,
+  async (newType) => {
+    // If the service definition has changed, clear the permissions
+    if (newType) {
+      const serviceDefinition = await fetchServiceDefinitionRoles(
         newType
       );
     }
@@ -445,10 +475,9 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
 <template>
   <div class="w-full h-full flex flex-col gap-8">
     <div class="">
-      <h1 class="md:text-2xl text-lg font-medium">Create New Contract</h1>
+      <h1 class="md:text-2xl text-lg font-medium">Create New Customer</h1>
       <p class="text-sm text-muted-foreground">
-        Create new contract by including name, service type, permissions, and
-        service definition
+        Create new customer by including service definition, core customer id and  accounts
       </p>
     </div>
 
@@ -458,18 +487,18 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
           <div class="grid md:grid-cols-2 gap-6">
             <FormField v-slot="{ componentField }" name="name">
               <FormItem>
-                <FormLabel> Name </FormLabel>
+                <FormLabel>Contract Name </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
-                    placeholder="Enter customer name"
+                    placeholder="Enter contract name"
                     v-bind="componentField"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="email">
+            <!-- <FormField v-slot="{ componentField }" name="email">
               <FormItem>
                 <FormLabel> Email </FormLabel>
                 <FormControl>
@@ -481,8 +510,8 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            </FormField>
-            <FormField v-slot="{ componentField }" name="nationalId">
+            </FormField> -->
+            <!-- <FormField v-slot="{ componentField }" name="nationalId">
               <FormItem>
                 <FormLabel> National Id </FormLabel>
                 <FormControl>
@@ -494,7 +523,7 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            </FormField>
+            </FormField> -->
             <!-- <FormField v-slot="{ componentField }" name="name">
               <FormItem>
                 <FormLabel>Name </FormLabel>
@@ -512,7 +541,7 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
               <FormItem>
                 <FormLabel> Service Definition </FormLabel>
                 <UiSelect
-                  @update:value="fetchServiceDefinitionPermissions"
+                  @update:value="fetchServiceDefinitionRoles"
                   v-bind="componentField"
                 >
                   <FormControl>
@@ -536,6 +565,34 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
                 <FormMessage />
               </FormItem>
             </FormField>
+            <FormField v-slot="{ componentField }" name="serviceDefinitionRoleId">
+              <FormItem>
+                <FormLabel> Service Definition Role</FormLabel>
+                <UiSelect
+                  @update:value="fetchServiceDefinitionRolePermissions"
+                  v-bind="componentField"
+                >
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue
+                        placeholder="Select a service definition first"
+                      />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in serviceDefinitionsRolesData"
+                        :value="item?.id || ''"
+                      >
+                        {{ item.roleName }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
             <FormField
               v-slot="{ value, handleChange }"
               name="inheritParentServicePermissions"
@@ -544,7 +601,7 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
                 class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
               >
                 <FormLabel class="text-base">
-                  Inherit Parent Contract Permissions
+                  Inherit Parent Service Definition Permissions
                 </FormLabel>
                 <FormControl>
                   <UiSwitch :checked="value" @update:checked="handleChange" />
@@ -603,7 +660,7 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
                         </UiCommandEmpty>
                         <UiCommandGroup>
                           <UiCommandItem
-                            v-for="permission in serviceDefinitionPermissionsData"
+                            v-for="permission in serviceDefinitionRolePermissionsData"
                             :key="permission.code"
                             :value="permission.code"
                             @select="
@@ -995,7 +1052,7 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
                             <FormItem>
                               <FormLabel
                                 class="text-sm text-muted-foreground font-normal"
-                                >Select Account Permissions</FormLabel
+                                >Select Account Permissions {{ account.accountNumber}}</FormLabel
                               >
                               <UiPopover>
                                 <UiPopoverTrigger asChild>

@@ -27,6 +27,7 @@ export const newCustomerformSchema = toTypedSchema(
     // name: z.string().nullable(),
     permissionCodes: z.array(z.string()).optional().nullable(),
     serviceDefinitionId: z.string().nullable(),
+    serviceDefinitionRoleId: z.string({message: "Please, First select a service definition"}),
     withPrimaryContractUser: z.boolean().default(true),
     inheritParentServicePermissions: z
       .boolean()
