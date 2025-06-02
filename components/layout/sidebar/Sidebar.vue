@@ -98,9 +98,12 @@
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth"; // Add your auth store import
-const { hasPermissions } = useAuthStore();
+import type { MenuItem } from "~/types";
 
-const mainLinks = [
+const authStore = useAuthStore();
+
+// Define the mainLinks array
+const mainLinks: MenuItem[] = [
   {
     title: "Dashboard",
     icon: "ri:home-8-line",
@@ -451,11 +454,9 @@ function isRouteActive(path: string) {
   return route.path.startsWith(path);
 }
 
-const authStore = useAuthStore();
-
 // Add this helper function
-const hasVisibleDropdownItems = (link) => {
-  return link.dropdown?.some((item) => hasPermissions(item?.permission));
+const hasVisibleDropdownItems = (link: MenuItem) => {
+  return link.dropdown?.some((item) => (authStore as any).hasPermissions(item.permission ?? ''));
 };
 </script>
 
