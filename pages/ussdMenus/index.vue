@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { columns } from "~/components/ussdMenus/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { UssdMenuList } from "~/types";
+import { ref, onMounted, provide, computed } from "vue"; // Added provide, useAsyncData, computed
+import { columns as tableColumns } from "~/components/ussdMenus/columns";
 
 const { getUssdMenusWithChilds, isLoading } = useUssdMenus();
 const keyword = ref<string>("");
@@ -17,9 +17,9 @@ const getUssdMenusData = async () => {
     loading.value = true;
     isError.value = false;
     const ussdMenus = await getUssdMenusWithChilds(0, 100);
-    data.value = ussdMenus.sort((a, b) =>
+    data.value = ussdMenus?.sort((a, b) =>
       a.menuName.toLowerCase().localeCompare(b.menuName.toLowerCase())
-    );
+    ) ?? [];
   } catch (error) {
     console.error("Error fetching ussd menus:", error);
     isError.value = true;
@@ -36,6 +36,11 @@ await useAsyncData("ussdMenusData", async () => {
 const refetch = async () => {
   await getUssdMenusData();
 };
+
+// Provide the refetch function
+provide('refetchUssdMenus', refetch);
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->

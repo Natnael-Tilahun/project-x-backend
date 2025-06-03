@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/vue-table";
-
+import { h, inject } from "vue"; // Import inject
 import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
@@ -7,7 +7,9 @@ import UssdMenusDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { UssdMenuList } from "~/types";
 
-export const columns: ColumnDef<UssdMenuList>[] = [
+type RefetchFunction = () => Promise<void>;
+
+export const columns= (refetch: RefetchFunction): ColumnDef<UssdMenuList>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -81,6 +83,7 @@ export const columns: ColumnDef<UssdMenuList>[] = [
         { class: "relative" },
         h(UssdMenusDataTableRowActionsVue, {
           row,
+          refetch
         })
       );
     },

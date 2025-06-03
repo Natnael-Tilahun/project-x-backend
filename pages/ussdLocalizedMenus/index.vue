@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { columns } from "~/components/ussdLocalizedMenus/columns";
+import { ref, onMounted, provide, computed } from "vue"; // Added provide, useAsyncData, computed
+import { columns as tableColumns } from "~/components/ussdLocalizedMenus/columns"; // Renamed to avoid conflict
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { LocalizedUssdMenu } from "~/types";
 
@@ -18,9 +18,12 @@ const getUssdLocalizedMenusData = async () => {
     isError.value = false;
     const ussdLocalizedMenus = await getUssdLocalizedMenus(0, 100);
     // Sort integrations by name alphabetically
-    data.value = ussdLocalizedMenus.sort((a, b) =>
+    const sortedData = ussdLocalizedMenus?.sort((a, b) =>
       a.message.toLowerCase().localeCompare(b.message.toLowerCase())
-    );
+    ) ?? [];
+    // Force reactivity update by creating a new array
+    data.value = [...sortedData];
+    console.log("Data updated:", data.value.length, "items"); // Debug log
   } catch (error) {
     console.error("Error fetching ussd localized menus:", error);
     isError.value = true;
@@ -30,13 +33,22 @@ const getUssdLocalizedMenusData = async () => {
   }
 };
 
+// Initial data fetch
 await useAsyncData("ussdLocalizedMenusData", async () => {
   await getUssdLocalizedMenusData();
 });
 
 const refetch = async () => {
+  console.log("Refetching USSD Localized Menus data..."); // For debugging
   await getUssdLocalizedMenusData();
+  console.log("Refetch completed"); // Debug log
 };
+
+// Provide the refetch function
+provide('refetchUssdLocalizedMenus', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->

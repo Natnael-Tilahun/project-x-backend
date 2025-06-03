@@ -14,7 +14,11 @@ const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
 
 function viewUssdMenuDetail(id: string) {
   console.log("id: ", id);
@@ -31,8 +35,8 @@ async function deleteUssdMenuHandler(id: string) {
     toast({
       title: "Ussd menu deleted successfully",
     });
-    // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
+    setOpenEditModal(false); // Close modal on success
   } catch (err) {
     console.error("Error deleting ussd menu:", err);
     isError.value = true;

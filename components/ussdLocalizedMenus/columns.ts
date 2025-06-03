@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/vue-table";
-
+import { h, inject } from "vue"; // Import inject
 import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
@@ -7,7 +7,10 @@ import UssdLocalizedMenusDataTableRowActionsVue from "./DataTableRowActions.vue"
 import { NuxtLink } from "#components";
 import type { LocalizedUssdMenu } from "~/types";
 
-export const columns: ColumnDef<LocalizedUssdMenu>[] = [
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<LocalizedUssdMenu>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -50,7 +53,7 @@ export const columns: ColumnDef<LocalizedUssdMenu>[] = [
     header: "Menu Message",
     cell: ({ row }) => {
       const menuName = row.getValue("message");
-      return menuName ? h("p", menuName) : h("p", "-");
+      return menuName ? h("p", row.getValue("message")) : h("p", "-");
     },
   },
   {
@@ -115,6 +118,7 @@ export const columns: ColumnDef<LocalizedUssdMenu>[] = [
         { class: "relative" },
         h(UssdLocalizedMenusDataTableRowActionsVue, {
           row,
+          refetch,
         })
       );
     },

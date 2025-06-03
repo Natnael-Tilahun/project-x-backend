@@ -1,13 +1,17 @@
 import type { ColumnDef } from "@tanstack/vue-table";
+import { h, inject } from "vue"; // Import inject
 
 import { Checkbox } from "../ui/checkbox";
-import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
+// import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue"; // Not used in snippet
 import { Badge } from "../ui/badge";
 import UssdLanguagesDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { UssdLanguage } from "~/types";
 
-export const columns: ColumnDef<UssdLanguage>[] = [
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<UssdLanguage>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -30,7 +34,7 @@ export const columns: ColumnDef<UssdLanguage>[] = [
     accessorKey: "languageName",
     header: "Name",
     cell: ({ row }) => {
-      const route = useRoute();
+      // const route = useRoute(); // useRoute should be fine here if Nuxt auto-imports it
       const name = row.getValue("languageName");
       return name
         ? h(
@@ -38,9 +42,9 @@ export const columns: ColumnDef<UssdLanguage>[] = [
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}/${row.original.id}`,
+              to: `/ussdLanguages/${row.original.id}`, // Simplified path construction
             },
-            row.getValue("languageName")
+            () => row.getValue("languageName") // Content as a render function
           )
         : h("p", "-");
     },
@@ -50,7 +54,7 @@ export const columns: ColumnDef<UssdLanguage>[] = [
     header: "Language Type",
     cell: ({ row }) => {
       const languageType = row.getValue("languageType");
-      return languageType ? h("p", languageType) : h("p", "-");
+      return languageType ? h("p", String(languageType)) : h("p", "-"); // Ensure string
     },
   },
   {
@@ -59,9 +63,9 @@ export const columns: ColumnDef<UssdLanguage>[] = [
     cell: ({ row }) => {
       const status = row.getValue("status");
       if (status == "Visible") {
-        return h(Badge, { class: "bg-green-600 " }, row.getValue("status"));
+        return h(Badge, { class: "bg-green-600 " }, () => String(status)); // Content as a render function
       } else {
-        return h(Badge, { class: "bg-red-500 whitespace-nowrap" }, row.getValue("status"));
+        return h(Badge, { class: "bg-red-500 whitespace-nowrap" }, () => String(status)); // Content as a render function
       }
     },
   },
@@ -75,6 +79,7 @@ export const columns: ColumnDef<UssdLanguage>[] = [
         { class: "relative" },
         h(UssdLanguagesDataTableRowActionsVue, {
           row,
+          refetch,
         })
       );
     },
