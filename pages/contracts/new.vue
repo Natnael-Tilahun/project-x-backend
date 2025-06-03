@@ -20,6 +20,7 @@ import type {
   CoreCustomerSummery,
   Permission,
   ServiceDefinition,
+  ServiceDefinitionRole,
 } from "~/types";
 import { NuxtLink } from "#components";
 
@@ -37,6 +38,8 @@ const {
   updateContractCoreCustomerAccountStatus,
   isLoading: isLoadingContractCoreCustomerAccount,
 } = useContractsCoreCustomersAccount();
+const {  getServiceDefinitionRoleById, getServiceDefinitionRolesByServiceDefinitionId } =
+  useServiceDefinitionsRoles();
 
 const isError = ref(false);
 const coreCustomerSummary = ref<CoreCustomerSummery>()
@@ -58,6 +61,9 @@ const accountsData = ref<any>();
 const selectedContractAccount = ref<ContractAccount[]>([]);
 const contractCoreCustomerId = ref<any>();
 const haveExistingContract = ref<boolean>();
+const serviceDefinitionsRolesData = ref<ServiceDefinitionRole[]>([]);
+const serviceDefinitionRolePermissionsData = ref<Permission[]>([]);
+
 const contractId = ref<string>();
 const openEditModal = ref(false);
 const setOpenEditModal = (value: boolean) => {
@@ -127,6 +133,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       description: values.description,
       serviceType: values.serviceType,
       serviceDefinitionId: values.serviceDefinitionId,
+      serviceDefinitionRoleId: values.serviceDefinitionRoleId,
       permissionCodes: !values.inheritParentServicePermissions
         ? values.permissionCodes || []
         : [],
@@ -183,25 +190,41 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   }
 });
 
-const fetchServiceDefinitionPermissions = async (newType: string) => {
+const fetchServiceDefinitionRolePermissions = async (newType: string) => {
   try {
     console.log(
       "form.values?.serviceDefinition: ",
-      form.values?.serviceDefinition
+      form.values?.serviceDefinitionRoleId
     );
     if (newType) {
-      const serviceDefinition = await getServiceDefinitionById(newType);
-      serviceDefinitionPermissionsData.value =
+      const serviceDefinition = await getServiceDefinitionRoleById(newType);
+      serviceDefinitionRolePermissionsData.value =
         serviceDefinition?.permissions || [];
       console.log(
-        "serviceDefinitionPermissionsData.value: ",
-        serviceDefinitionPermissionsData.value
+        "serviceDefinitionRolePermissionsData.value: ",
+        serviceDefinitionRolePermissionsData.value
       );
     }
   } catch (err) {
     console.error("Error fetching service definition permissions:", err);
   }
 };
+
+const fetchServiceDefinitionRoles = async (newType: string) => {
+  try {
+    if (newType) {
+      const serviceDefinitionRoles = await getServiceDefinitionRolesByServiceDefinitionId(newType);
+      console.log("service definition roles: ", serviceDefinitionRoles)
+      serviceDefinitionsRolesData.value =
+        serviceDefinitionRoles || [];
+        form.setFieldValue("serviceDefinitionRoleId", null)
+    }
+  } catch (err) {
+    console.error("Error fetching service definition permissions:", err);
+  }
+};
+
+
 
 const fetchData = async () => {
   try {
@@ -361,14 +384,28 @@ onMounted(async () => {
   await fetchContractCoreCustomerAccounts();
 });
 
-// Watch for changes in payment operation type
+
+
+// Watch for changes in service definition role
 watch(
-  () => form.values.serviceDefinition,
+  () => form.values.serviceDefinitionRoleId,
   async (newType) => {
-    console.log("newType: ", newType);
     // If the service definition has changed, clear the permissions
     if (newType) {
-      const serviceDefinition = await fetchServiceDefinitionPermissions(
+      const serviceDefinition = await fetchServiceDefinitionRolePermissions(
+        newType
+      );
+    }
+  }
+);
+
+// Watch for changes in service definitions
+watch(
+  () => form.values.serviceDefinitionId,
+  async (newType) => {
+    // If the service definition has changed, clear the permissions
+    if (newType) {
+      const serviceDefinition = await fetchServiceDefinitionRoles(
         newType
       );
     }
@@ -506,7 +543,7 @@ const isPhoneExistHandler = (value) => {
               <FormItem>
                 <FormLabel> Service Definition </FormLabel>
                 <UiSelect
-                  @update:value="fetchServiceDefinitionPermissions"
+                  @update:value="fetchServiceDefinitionRoles"
                   v-bind="componentField"
                 >
                   <FormControl>
@@ -523,6 +560,34 @@ const isPhoneExistHandler = (value) => {
                         :value="item?.id || ''"
                       >
                         {{ item.name }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="serviceDefinitionRoleId">
+              <FormItem>
+                <FormLabel> Service Definition Role</FormLabel>
+                <UiSelect
+                  @update:value="fetchServiceDefinitionRolePermissions"
+                  v-bind="componentField"
+                >
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue
+                        placeholder="Select a service definition first"
+                      />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in serviceDefinitionsRolesData"
+                        :value="item?.id || ''"
+                      >
+                        {{ item.roleName }}
                       </UiSelectItem>
                     </UiSelectGroup>
                   </UiSelectContent>
@@ -597,7 +662,7 @@ const isPhoneExistHandler = (value) => {
                         </UiCommandEmpty>
                         <UiCommandGroup>
                           <UiCommandItem
-                            v-for="permission in serviceDefinitionPermissionsData"
+                            v-for="permission in serviceDefinitionRolePermissionsData"
                             :key="permission.code"
                             :value="permission.code"
                             @select="
