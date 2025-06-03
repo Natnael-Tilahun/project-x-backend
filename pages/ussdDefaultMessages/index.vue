@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { columns } from "~/components/defaultMessages/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { DefaultMessage } from "~/types";
+import { ref, onMounted, provide, computed } from "vue"; // Added provide, useAsyncData, computed
+import { columns as tableColumns } from "~/components/defaultMessages/columns";
 
 const { getUssdDefaultMessages, isLoading } = useUssdDefaultMessage();
 const keyword = ref<string>("");
@@ -18,9 +18,9 @@ const getUssdDefaultMessagesData = async () => {
     isError.value = false;
     const ussdDefaultMessages = await getUssdDefaultMessages(0, 100);
     // Sort integrations by name alphabetically
-    data.value = ussdDefaultMessages.sort((a, b) =>
+    data.value = ussdDefaultMessages?.sort((a, b) =>
       a.title.toLowerCase().localeCompare(b.title.toLowerCase())
-    );
+    ) ?? [];
   } catch (error) {
     console.error("Error fetching ussd default messages:", error);
     isError.value = true;
@@ -37,6 +37,12 @@ await useAsyncData("ussdDefaultMessagesData", async () => {
 const refetch = async () => {
   await getUssdDefaultMessagesData();
 };
+
+
+// Provide the refetch function
+provide('refetchDefaultMessages', refetch);
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->

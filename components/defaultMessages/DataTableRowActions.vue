@@ -14,7 +14,10 @@ const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
 
 function viewUssdDefaultMessageDetail(id: string) {
   console.log("id: ", id);
@@ -31,8 +34,8 @@ async function deleteUssdDefaultMessageHandler(id: string) {
     toast({
       title: "Ussd default message deleted successfully",
     });
-    // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
+    setOpenEditModal(false); // Close modal on success
   } catch (err) {
     console.error("Error deleting ussd default message:", err);
     isError.value = true;
