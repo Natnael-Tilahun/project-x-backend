@@ -1,52 +1,57 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { columns } from "~/components/ussdLanguages/columns";
+import { ref, onMounted, provide, computed } from "vue"; // Added provide, useAsyncData, computed
+import { columns as tableColumns } from "~/components/ussdLanguages/columns"; // Renamed to avoid conflict
 import { useUssdLanguages } from "~/composables/useUssdLanguages";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { UssdLanguage } from "~/types";
 
-const { getUssdLanguages, isLoading } = useUssdLanguages();
+const { getUssdLanguages, isLoading: composableIsLoading } = useUssdLanguages(); // Renamed
 const keyword = ref<string>("");
 const data = ref<UssdLanguage[]>([]);
-const loading = ref(isLoading.value);
+const pageIsLoading = ref(true); // For overall page loading, distinct from composable's
 const isError = ref(false);
-const router = useRouter(); // {{ edit_2 }}
+// const router = useRouter(); // Not used here
 
 const getUssdLanguageData = async () => {
   try {
-    isLoading.value = true;
-    loading.value = true;
+    pageIsLoading.value = true; // Use page's loading state
     isError.value = false;
     const ussdLanguages = await getUssdLanguages(0, 100);
-    // Sort integrations by name alphabetically
-    data.value = ussdLanguages.sort((a, b) =>
+    data.value = ussdLanguages?.sort((a, b) =>
       a.languageName.toLowerCase().localeCompare(b.languageName.toLowerCase())
-    );
+    ) ?? [];
   } catch (error) {
     console.error("Error fetching ussd languages:", error);
     isError.value = true;
   } finally {
-    isLoading.value = false;
-    loading.value = false;
+    pageIsLoading.value = false; // Use page's loading state
   }
 };
 
+// Initial data fetch
 await useAsyncData("ussdLanguagesData", async () => {
   await getUssdLanguageData();
+  // pageIsLoading will be set to false by getUssdLanguageData
 });
 
 const refetch = async () => {
   await getUssdLanguageData();
 };
+
+// Provide the refetch function
+provide('refetchUssdLanguages', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
+
 </script>
 
-<!-- Render DataTable only if data is available -->
 <template>
-  <div v-if="isLoading" class="py-10 flex justify-center w-full">
+  <div v-if="pageIsLoading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
   <div
-    v-else-if="data && !isError && !isLoading"
+    v-else-if="data && data.length > 0 && !isError && !pageIsLoading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
     <UiPermissionGuard permission="CREATE_USSD_LANGUAGES">
@@ -74,7 +79,18 @@ const refetch = async () => {
       </template>
     </UiDataTable>
   </div>
-  <div v-if="isError && !isLoading">
+  <div v-else-if="data && data.length === 0 && !isError && !pageIsLoading" class="py-10 text-center">
+    <p class="text-lg text-gray-600">No USSD languages found.</p>
+    <UiPermissionGuard permission="CREATE_USSD_LANGUAGES">
+        <NuxtLink to="/ussdLanguages/new" class="mt-4 inline-block">
+            <UiButton class="px-5">
+                <Icon name="material-symbols:add" size="24" class="mr-2"></Icon>
+                Create New USSD Language
+            </UiButton>
+        </NuxtLink>
+    </UiPermissionGuard>
+  </div>
+  <div v-if="isError && !pageIsLoading">
     <ErrorMessage :retry="refetch" title="Something went wrong." />
   </div>
 </template>

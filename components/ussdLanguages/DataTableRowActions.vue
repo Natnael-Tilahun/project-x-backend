@@ -2,44 +2,56 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { useUssdLanguages } from "~/composables/useUssdLanguages";
-const { deleteUssdLanguage, isLoading } = useUssdLanguages();
-const loading = ref(isLoading.value);
-const isError = ref(false);
-const openEditModal = ref(false);
-const setOpenEditModal = (value: boolean) => {
-  openEditModal.value = value;
-};
 
-const route = useRoute();
+const { deleteUssdLanguage, isLoading: composableIsLoading } = useUssdLanguages(); // Renamed to avoid conflict
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['languageDeleted', 'editLanguage']); // Added 'languageDeleted'
+
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+
+const localIsLoading = ref(false); // Local loading state for the delete button
+const isError = ref(false);
+const openDeleteConfirmModal = ref(false); // Renamed for clarity
+
+const setOpenDeleteConfirmModal = (value: boolean) => {
+  openDeleteConfirmModal.value = value;
+};
+
+// const route = useRoute(); // Not used in this snippet, can be removed if not needed elsewhere
 
 function viewUssdLanguageDetail(id: string) {
   console.log("id: ", id);
   navigateTo(`/ussdLanguages/${id}`);
-  navigator.clipboard.writeText(id);
+  // navigator.clipboard.writeText(id); // Optional
 }
 
 async function deleteUssdLanguageHandler(id: string) {
   try {
-    isLoading.value = true;
-    loading.value = true;
-    await deleteUssdLanguage(id); // Call your API function to fetch roles
+    localIsLoading.value = true;
+    isError.value = false; // Reset error state
+    await deleteUssdLanguage(id);
     console.log("Ussd language deleted successfully");
     toast({
       title: "Ussd language deleted successfully",
+      variant: "default", // Changed from "success" to "default"
     });
-    // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
+    setOpenDeleteConfirmModal(false); // Close modal on success
   } catch (err) {
     console.error("Error deleting ussd language:", err);
+    toast({
+      title: "Error deleting USSD language",
+      description: (err as Error)?.message || "An unexpected error occurred.",
+      variant: "destructive",
+    });
     isError.value = true;
   } finally {
-    isLoading.value = false;
-    loading.value = false;
-    setOpenEditModal(false);
+    localIsLoading.value = false;
   }
 }
 </script>
@@ -64,7 +76,7 @@ async function deleteUssdLanguageHandler(id: string) {
       <UiPermissionGuard permission="DELETE_USSD_LANGUAGES">
         <UiDropdownMenuSeparator />
         <UiDropdownMenuItem
-          @click="setOpenEditModal(true)"
+          @click="setOpenDeleteConfirmModal(true)"
           class="text-red-600"
         >
           Delete
@@ -74,7 +86,7 @@ async function deleteUssdLanguageHandler(id: string) {
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 
-  <UiAlertDialog :open="openEditModal" :onOpenChange="setOpenEditModal">
+  <UiAlertDialog :open="openDeleteConfirmModal" :onOpenChange="setOpenDeleteConfirmModal">
     <UiAlertDialogContent>
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
@@ -84,16 +96,16 @@ async function deleteUssdLanguageHandler(id: string) {
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>
-        <UiAlertDialogCancel @click="setOpenEditModal(false)">
+        <UiAlertDialogCancel @click="setOpenDeleteConfirmModal(false)">
           Cancel
         </UiAlertDialogCancel>
         <UiAlertDialogAction
           @click="deleteUssdLanguageHandler(row.original.id)"
+          :disabled="localIsLoading"
         >
           <Icon
             name="svg-spinners:8-dots-rotate"
-            v-if="isLoading"
-            :disabled="isLoading"
+            v-if="localIsLoading"
             class="mr-2 h-4 w-4 animate-spin"
           ></Icon>
           Continue

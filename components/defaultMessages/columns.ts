@@ -1,5 +1,5 @@
 import type { ColumnDef } from "@tanstack/vue-table";
-
+import { h, inject } from "vue"; // Import inject
 import { Checkbox } from "../ui/checkbox";
 import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
@@ -7,7 +7,9 @@ import UssdDefaultMessagesDataTableRowActionsVue from "./DataTableRowActions.vue
 import { NuxtLink } from "#components";
 import type { DefaultMessage } from "~/types";
 
-export const columns: ColumnDef<DefaultMessage>[] = [
+type RefetchFunction = () => Promise<void>;
+
+export const columns= (refetch: RefetchFunction): ColumnDef<DefaultMessage>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -63,6 +65,7 @@ export const columns: ColumnDef<DefaultMessage>[] = [
         { class: "relative" },
         h(UssdDefaultMessagesDataTableRowActionsVue, {
           row,
+          refetch
         })
       );
     },

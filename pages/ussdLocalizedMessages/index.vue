@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
-import { columns } from "~/components/ussdLocalizedMessages/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { LocalizedDefaultMessage } from "~/types";
+import { ref, onMounted, provide, computed } from "vue"; // Added provide, useAsyncData, computed
+import { columns as tableColumns } from "~/components/ussdLocalizedMessages/columns";
 
 const { getUssdLocalizedDefaultMessages, isLoading } =
   useUssdLocalizedDefaultMessage();
@@ -22,9 +22,9 @@ const getUssdLocalizedDefaultMessagesData = async () => {
       100
     );
     // Sort integrations by name alphabetically
-    data.value = ussdLocalizedDefaultMessages.sort((a, b) =>
+    data.value = ussdLocalizedDefaultMessages?.sort((a, b) =>
       a.message.toLowerCase().localeCompare(b.message.toLowerCase())
-    );
+    ) ?? [];
   } catch (error) {
     console.error("Error fetching ussd localized default messages:", error);
     isError.value = true;
@@ -41,6 +41,11 @@ await useAsyncData("ussdLocalizedDefaultMessagesData", async () => {
 const refetch = async () => {
   await getUssdLocalizedDefaultMessagesData();
 };
+
+// Provide the refetch function
+provide('refetchUssdLocalizedDefaultMessages', refetch);
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->
