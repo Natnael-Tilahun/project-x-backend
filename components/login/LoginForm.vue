@@ -127,7 +127,7 @@ const onSubmit = form.handleSubmit(async (values) => {
 
 <template>
   <div :class="cn('grid gap-6', $attrs.class ?? '')">
-    <form @submit="onSubmit">
+    <form @submit="onSubmit" autocomplete="off" novalidate>
       <div class="grid gap-3">
         <!-- Username Field -->
         <FormField name="username" v-slot="{ field, meta }">
@@ -142,7 +142,11 @@ const onSubmit = form.handleSubmit(async (values) => {
                 @focus="isUsernameFocused = true"
                 @blur="(e) => { isUsernameFocused = false; field.onBlur(e); }"
                 :disabled="isLoading"
-                aria-autocomplete="username"
+                aria-autocomplete="off"
+                autocomplete="off"
+                autocorrect="off"
+                autocapitalize="off"
+                spellcheck="false"
                 :aria-invalid="meta.touched && !meta.valid"
               />
             </FormControl>
@@ -165,7 +169,11 @@ const onSubmit = form.handleSubmit(async (values) => {
                   @update:model-value="field.onChange"
                   @blur="field.onBlur"
                   :disabled="isLoading"
-                  aria-autocomplete="current-password"
+                  autocomplete="new-password"
+                  aria-autocomplete="off"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  spellcheck="false"
                   class="pl-3 pr-10 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow"
                   :aria-invalid="meta.touched && !meta.valid"
                 />
