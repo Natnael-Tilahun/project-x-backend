@@ -294,6 +294,7 @@ const searchCoreAccountsByAccountNumberHandler = async () => {
     selectedAccounts.value = [];
     if (accountNumber.value) {
       const response = await getCoreAccountsByAccount(accountNumber.value);
+      form.setFieldValue("name", response?.fullName)
       haveExistingContract.value = response && response?.contractId ? true : false;
       if(haveExistingContract.value){
       toast({
@@ -514,7 +515,7 @@ const isPhoneExistHandler = (value) => {
                 class="flex flex-row items-center gap-6 px-4 py-2 border rounded-md w-fit"
               >
                 <FormLabel class="text-base">
-                  Create without customer
+                  Create without user
                 </FormLabel>
                 <FormControl>
                   <UiSwitch :checked="value" @update:checked="() => {
@@ -526,190 +527,6 @@ const isPhoneExistHandler = (value) => {
           </div>
 
           <div class="grid md:grid-cols-2 gap-6">
-            <FormField v-slot="{ componentField }" name="name">
-              <FormItem>
-                <FormLabel>Name </FormLabel>
-                <FormControl>
-                  <UiInput
-                    type="text"
-                    placeholder="Enter contract name"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField v-slot="{ componentField }" name="serviceDefinitionId">
-              <FormItem>
-                <FormLabel> Service Definition </FormLabel>
-                <UiSelect
-                  @update:value="fetchServiceDefinitionRoles"
-                  v-bind="componentField"
-                >
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue
-                        placeholder="Select a service definition"
-                      />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in serviceDefinitionsData"
-                        :value="item?.id || ''"
-                      >
-                        {{ item.name }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField v-slot="{ componentField }" name="serviceDefinitionRoleId">
-              <FormItem>
-                <FormLabel> Service Definition Role</FormLabel>
-                <UiSelect
-                  @update:value="fetchServiceDefinitionRolePermissions"
-                  v-bind="componentField"
-                >
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue
-                        placeholder="Select a service definition first"
-                      />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in serviceDefinitionsRolesData"
-                        :value="item?.id || ''"
-                      >
-                        {{ item.roleName }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField
-              v-slot="{ value, handleChange }"
-              name="inheritParentServicePermissions"
-            >
-              <FormItem
-                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
-              >
-                <FormLabel class="text-base">
-                  Inherit Parent Contract Permissions
-                </FormLabel>
-                <FormControl>
-                  <UiSwitch :checked="value" @update:checked="handleChange" />
-                </FormControl>
-              </FormItem>
-            </FormField>
-            <FormField
-              :model-value="data?.permissionCodes"
-              v-slot="{ componentField, errorMessage }"
-              name="permissionCodes"
-              v-if="!form.values.inheritParentServicePermissions"
-            >
-              <FormItem>
-                <FormLabel>Select Permissions</FormLabel>
-                <UiPopover>
-                  <UiPopoverTrigger asChild>
-                    <FormControl>
-                      <div
-                        variant="outline"
-                        role="combobox"
-                        class="w-full text-sm text-left border flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
-                        :class="{
-                          'text-muted-foreground':
-                            !data?.permissionCodes?.length,
-                        }"
-                      >
-                        {{
-                          selectedPermissions?.length
-                            ? selectedPermissions
-                                .map(
-                                  (permission: Permission) => permission.code
-                                )
-                                .join(", ")
-                            : "Select permissions"
-                        }}
-                        <Icon
-                          name="material-symbols:unfold-more-rounded"
-                          class="ml-2 h-4 w-4 shrink-0 opacity-50"
-                        />
-                      </div>
-                    </FormControl>
-                  </UiPopoverTrigger>
-                  <UiPopoverContent class="w-full self-start p-0">
-                    <UiCommand>
-                      <UiCommandInput placeholder="Search product menus..." />
-                      <UiCommandList>
-                        <UiCommandEmpty>
-                          <div class="text-sm text-muted-foreground p-6">
-                            <p>No permissions found.</p>
-                            <p>
-                              Please select a service definition. If you have
-                              selected a service definition, please check your
-                              permissions.
-                            </p>
-                          </div>
-                        </UiCommandEmpty>
-                        <UiCommandGroup>
-                          <UiCommandItem
-                            v-for="permission in serviceDefinitionRolePermissionsData"
-                            :key="permission.code"
-                            :value="permission.code"
-                            @select="
-                              () => {
-                                const isSelected =
-                                  selectedPermissions.some(
-                                    (selected: Permission) => selected.code === permission.code
-                                  );
-
-                                if (isSelected) {
-                                  selectedPermissions =
-                                      selectedPermissions.filter(
-                                      (selected: Permission) =>
-                                        selected.code !== permission.code
-                                    );
-                                } else {
-                                  selectedPermissions.push(permission);
-                                }
-
-                                form.setFieldValue(
-                                  'permissionCodes',
-                                  selectedPermissions.map(
-                                    (permission: Permission) => permission.code
-                                  )
-                                );
-                              }
-                            "
-                          >
-                            {{ permission.code }}
-                            <UiCheckbox
-                              :checked="
-                                selectedPermissions.some(
-                                  (selected: Permission) => selected.code === permission.code
-                                )
-                              "
-                              class="ml-auto"
-                            />
-                          </UiCommandItem>
-                        </UiCommandGroup>
-                      </UiCommandList>
-                    </UiCommand>
-                  </UiPopoverContent>
-                </UiPopover>
-                <FormMessage>{{ errorMessage }}</FormMessage>
-              </FormItem>
-            </FormField>
-
             <div
               class="flex flex-col space-y-8 col-span-full border p-4 rounded-lg"
             >
@@ -1304,6 +1121,189 @@ const isPhoneExistHandler = (value) => {
                 >
               </UiCard>
             </div>
+            <FormField v-slot="{ componentField }" name="name">
+              <FormItem>
+                <FormLabel>Name </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter contract name"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="serviceDefinitionId">
+              <FormItem>
+                <FormLabel> Service Definition </FormLabel>
+                <UiSelect
+                  @update:value="fetchServiceDefinitionRoles"
+                  v-bind="componentField"
+                >
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue
+                        placeholder="Select a service definition"
+                      />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in serviceDefinitionsData"
+                        :value="item?.id || ''"
+                      >
+                        {{ item.name }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="serviceDefinitionRoleId">
+              <FormItem>
+                <FormLabel> Service Definition Role</FormLabel>
+                <UiSelect
+                  @update:value="fetchServiceDefinitionRolePermissions"
+                  v-bind="componentField"
+                >
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue
+                        placeholder="Select a service definition first"
+                      />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in serviceDefinitionsRolesData"
+                        :value="item?.id || ''"
+                      >
+                        {{ item.roleName }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              v-slot="{ value, handleChange }"
+              name="inheritParentServicePermissions"
+            >
+              <FormItem
+                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
+              >
+                <FormLabel class="text-base">
+                  Inherit Parent Contract Permissions
+                </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value" @update:checked="handleChange" />
+                </FormControl>
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="data?.permissionCodes"
+              v-slot="{ componentField, errorMessage }"
+              name="permissionCodes"
+              v-if="!form.values.inheritParentServicePermissions"
+            >
+              <FormItem>
+                <FormLabel>Select Permissions</FormLabel>
+                <UiPopover>
+                  <UiPopoverTrigger asChild>
+                    <FormControl>
+                      <div
+                        variant="outline"
+                        role="combobox"
+                        class="w-full text-sm text-left border flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
+                        :class="{
+                          'text-muted-foreground':
+                            !data?.permissionCodes?.length,
+                        }"
+                      >
+                        {{
+                          selectedPermissions?.length
+                            ? selectedPermissions
+                                .map(
+                                  (permission: Permission) => permission.code
+                                )
+                                .join(", ")
+                            : "Select permissions"
+                        }}
+                        <Icon
+                          name="material-symbols:unfold-more-rounded"
+                          class="ml-2 h-4 w-4 shrink-0 opacity-50"
+                        />
+                      </div>
+                    </FormControl>
+                  </UiPopoverTrigger>
+                  <UiPopoverContent class="w-full self-start p-0">
+                    <UiCommand>
+                      <UiCommandInput placeholder="Search product menus..." />
+                      <UiCommandList>
+                        <UiCommandEmpty>
+                          <div class="text-sm text-muted-foreground p-6">
+                            <p>No permissions found.</p>
+                            <p>
+                              Please select a service definition. If you have
+                              selected a service definition, please check your
+                              permissions.
+                            </p>
+                          </div>
+                        </UiCommandEmpty>
+                        <UiCommandGroup>
+                          <UiCommandItem
+                            v-for="permission in serviceDefinitionRolePermissionsData"
+                            :key="permission.code"
+                            :value="permission.code"
+                            @select="
+                              () => {
+                                const isSelected =
+                                  selectedPermissions.some(
+                                    (selected: Permission) => selected.code === permission.code
+                                  );
+
+                                if (isSelected) {
+                                  selectedPermissions =
+                                      selectedPermissions.filter(
+                                      (selected: Permission) =>
+                                        selected.code !== permission.code
+                                    );
+                                } else {
+                                  selectedPermissions.push(permission);
+                                }
+
+                                form.setFieldValue(
+                                  'permissionCodes',
+                                  selectedPermissions.map(
+                                    (permission: Permission) => permission.code
+                                  )
+                                );
+                              }
+                            "
+                          >
+                            {{ permission.code }}
+                            <UiCheckbox
+                              :checked="
+                                selectedPermissions.some(
+                                  (selected: Permission) => selected.code === permission.code
+                                )
+                              "
+                              class="ml-auto"
+                            />
+                          </UiCommandItem>
+                        </UiCommandGroup>
+                      </UiCommandList>
+                    </UiCommand>
+                  </UiPopoverContent>
+                </UiPopover>
+                <FormMessage>{{ errorMessage }}</FormMessage>
+              </FormItem>
+            </FormField>
 
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
