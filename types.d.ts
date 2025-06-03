@@ -765,6 +765,7 @@ interface Contract {
   description?: string | null;
   serviceType?: ServiceType | null;
   serviceDefinition?: ServiceDefinition | null;
+  serviceDefinitionRole?:ServiceDefinitionRole | null;
   permissionCodes?: string[] | null;
   inheritParentServicePermissions?: boolean | null;
   coreCustomers?:

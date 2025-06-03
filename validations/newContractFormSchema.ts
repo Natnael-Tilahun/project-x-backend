@@ -6,7 +6,8 @@ export const newContractFormSchema = toTypedSchema(
     id: z.string().optional().nullable(),
     name: z.string().nullable(),
     permissionCodes: z.array(z.string()).optional().nullable(),
-    serviceDefinitionId: z.string().nullable(),
+    serviceDefinitionId: z.string(),
+    serviceDefinitionRoleId: z.string({message: "This field is required. Please, First select a service definition"}),
     withPrimaryContractUser: z.boolean().default(true),
     inheritParentServicePermissions: z
       .boolean()
