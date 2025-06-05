@@ -92,7 +92,7 @@ export const useServiceDefinitionsRoles = () => {
   ) => ApiResult<ServiceDefinitionRole> = async (serviceDefinitionRoleData) => {
     try {
       const { data, pending, error, status } = await fetch<ServiceDefinitionRole>(
-        '/api/v1/internal/service-definition-roles',
+        '/api/v1/internal/service-definition-roles/create',
         {
           method: "POST",
           body: serviceDefinitionRoleData
@@ -164,6 +164,31 @@ export const useServiceDefinitionsRoles = () => {
     }
   };
 
+  const setDefaultServiceDefinitionRole: (
+    serviceDefinitionId: string,
+    serviceDefinitionRoleId: any
+  ) => ApiResult<any> = async (serviceDefinitionId, serviceDefinitionRoleId) => {
+    try {
+      const { data, pending, error, status } = await fetch<any>(
+        `/api/v1/internal/service-definition-roles/service-definitions/${serviceDefinitionId}/roles/${serviceDefinitionRoleId}/set-default`,
+        {
+          method: "POST",
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as any) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
   const deleteServiceDefinitionRole: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
@@ -193,6 +218,7 @@ export const useServiceDefinitionsRoles = () => {
     updateServiceDefinitionRole,
     updateServiceDefinitionRolePermissions,
     getServiceDefinitionRolesByServiceDefinitionId,
+    setDefaultServiceDefinitionRole,
     isSubmitting,
   };
 };
