@@ -209,7 +209,7 @@ onMounted(async () => {
             >
               Cancel
             </UiButton>
-            <UiButton :disabled="isLoading" size="lg" type="submit">
+            <UiButton disabled :disabled="isLoading" size="lg" type="submit">
               <Icon
                 name="svg-spinners:8-dots-rotate"
                 v-if="isLoading"
