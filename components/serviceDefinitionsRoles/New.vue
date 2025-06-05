@@ -43,7 +43,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     const newValues = {
       ...values,
       permissions: selectedPermissions.value,
-      serviceDefinition: serviceDefinition.value,
+      serviceDefinitionId: serviceDefinition.value?.id,
     }
     data.value = await createNewServiceDefinitionRole(newValues); // Call your API function to fetch profile
     navigateTo({

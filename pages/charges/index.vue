@@ -33,7 +33,8 @@ const fetchData = async () => {
 const refreshCoreHandler = async () => {
   try {
     submitting.value = true;
-    data.value = await refreshCoreCharges(); // Call your API function to fetch roles
+    data.value = await refreshCoreCharges() || []; // Call your API function to fetch roles
+    await fetchData();
     toast({
       title: "Core refreshed successfully",
       description: "Charges have been refreshed.",
@@ -79,7 +80,7 @@ await useAsyncData("chargesData", async () => {
           v-if="submitting"
           class="mr-2 h-4 w-4 animate-spin"
         ></Icon>
-        Refresh Core</UiButton
+        Refresh From Core</UiButton
       >
     </div>
     <UiDataTable :columns="columns" :data="data">
