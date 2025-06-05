@@ -13,7 +13,7 @@ export const useProfile = () => {
   const getProfile: () => ApiResult<Profile> = async () => {
     try {
       const { data, pending, error, status } = await fetch<Profile>(
-        '/api/v1/staffs/me'
+        '/api/v1/internal/staff/me'
       );
 
       isLoading.value = pending.value;
@@ -32,7 +32,7 @@ export const useProfile = () => {
   const getCurrentAssignments: () => ApiResult<StaffAssignment[]> = async () => {
     try {
       const { data, pending, error, status } = await fetch<StaffAssignment[]>(
-        '/api/v1/staffs/me/current-assignments'
+        '/api/v1/internal/staff/me/current-assignments'
       );
 
       isLoading.value = pending.value;

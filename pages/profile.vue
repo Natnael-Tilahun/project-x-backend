@@ -94,12 +94,13 @@ onMounted(async () => {
               <FormMessage />
             </FormItem>
           </FormField> -->
-          <FormField v-slot="{ componentField }" name="firstName">
+          <FormField v-slot="{ componentField }" name="firstname">
             <FormItem>
               <FormLabel> First Name </FormLabel>
               <FormControl>
                 <UiInput
                   type="text"
+                  disabled
                   placeholder="Enter first name"
                   v-bind="componentField"
                 />
@@ -107,25 +108,13 @@ onMounted(async () => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="middleName">
-            <FormItem>
-              <FormLabel> Middle Name </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="text"
-                  placeholder="Enter middle name"
-                  v-bind="componentField"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-          <FormField v-slot="{ componentField }" name="lastName">
+          <FormField v-slot="{ componentField }" name="lastname">
             <FormItem>
               <FormLabel> Last Name </FormLabel>
               <FormControl>
                 <UiInput
                   type="text"
+                  disabled
                   placeholder="Enter last name"
                   v-bind="componentField"
                 />
@@ -133,12 +122,13 @@ onMounted(async () => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="email">
+          <FormField v-slot="{ componentField }" name="emailAddress">
             <FormItem>
               <FormLabel> Email Address </FormLabel>
               <FormControl>
                 <UiInput
                   type="text"
+                  disabled
                   placeholder="Enter Email Address"
                   v-bind="componentField"
                 />
@@ -146,8 +136,8 @@ onMounted(async () => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="phone">
-            <FormItem>
+          <FormField v-slot="{ componentField }" name="mobileNo">
+          <FormItem>
               <FormLabel> Phone </FormLabel>
               <FormControl>
                 <UiInput
@@ -157,9 +147,9 @@ onMounted(async () => {
                 />
               </FormControl>
               <FormMessage />
-            </FormItem>
+          </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="authorities">
+          <!-- <FormField v-slot="{ componentField }" name="authorities">
             <FormItem>
               <FormLabel> Role </FormLabel>
               <FormControl>
@@ -171,13 +161,14 @@ onMounted(async () => {
               </FormControl>
               <FormMessage />
             </FormItem>
-          </FormField>
-          <FormField v-slot="{ componentField }" name="activated">
+          </FormField> -->
+          <FormField v-slot="{ componentField }" name="active">
             <FormItem>
               <FormLabel> Is Active </FormLabel>
               <FormControl>
                 <UiInput
                   type="text"
+                  disabled
                   placeholder="Enter status"
                   v-bind="componentField"
                 />
