@@ -1,7 +1,7 @@
 import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
-import type { Profile } from "~/types";
+import type { Profile, StaffAssignment } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
@@ -13,7 +13,7 @@ export const useProfile = () => {
   const getProfile: () => ApiResult<Profile> = async () => {
     try {
       const { data, pending, error, status } = await fetch<Profile>(
-        '/api/v1/users/me'
+        '/api/v1/staffs/me'
       );
 
       isLoading.value = pending.value;
@@ -29,8 +29,28 @@ export const useProfile = () => {
     }
   };
 
+  const getCurrentAssignments: () => ApiResult<StaffAssignment[]> = async () => {
+    try {
+      const { data, pending, error, status } = await fetch<StaffAssignment[]>(
+        '/api/v1/staffs/me/current-assignments'
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as StaffAssignment[]) : null;
+    } catch (err) {
+      // handleApiError(err);
+      return null;
+    }
+  };
+
   return {
     isLoading,
     getProfile,
+    getCurrentAssignments
   };
 };
