@@ -830,7 +830,7 @@ interface ServiceDefinition {
 interface ServiceDefinitionRole {
   id?: string;
   isDefault?: boolean;
-  serviceDefinition: ServiceDefinition;
+  serviceDefinitionId: string;
   permissions?: Permission[];
   roleName: string;
   roleDescription: string;

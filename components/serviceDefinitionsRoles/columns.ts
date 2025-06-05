@@ -26,41 +26,20 @@ export const columns: ColumnDef<ServiceDefinitionRole>[] = [
     enableHiding: false,
   },
   {
-    accessorKey: "id",
-    header: "Info",
-    cell: ({ row }) => {
-      const serviceDefinitionRoleId = row.original.id;
-      const route = useRoute();
-      return serviceDefinitionRoleId
-        ? h(
-            NuxtLink,
-            {
-              class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}?activeTab=serviceDefinitionRoleDetails&serviceDefinitionRoleId=${serviceDefinitionRoleId}`,
-            },
-            "View Role Details"
-          )
-        : h("p", "-");
-    },
-  },
-  {
     accessorKey: "roleName",
     header: "Role Name",
     cell: ({ row }) => {
       const serviceDefinitionRoleId = row.original.id;
       const roleName = row.original.roleName;
       const route = useRoute();
-      return roleName
-        ? h(
-          "div",
-          {
-            class:
-            "w-fit whitespace-nowrap truncate hover:w-full",
-          },
-          roleName
-        )
-        : h("p", "-");
+      return h(
+            NuxtLink,
+            {
+              class:
+                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+              to: `${route.path}?activeTab=serviceDefinitionRoleDetails&serviceDefinitionRoleId=${serviceDefinitionRoleId}`,
+            },
+            roleName || "View Role Details")
     },
   },
   {
@@ -94,7 +73,7 @@ export const columns: ColumnDef<ServiceDefinitionRole>[] = [
               class:
                 `max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium ${isDefault ? "bg-green-500": "bg-red-500"}`,
             },
-            row.getValue("isDefault")
+            row.getValue("isDefault") ?? "false"
           )
         
     },
