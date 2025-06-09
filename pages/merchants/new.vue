@@ -10,6 +10,7 @@ import {
 import { ref, onBeforeUnmount } from "vue";
 import { toast } from "~/components/ui/toast";
 import { newMerchantFormSchema } from "~/validations/newMerchantFormSchema";
+import type { Merchant } from "~/types";
 const { createNeweMerchant, isLoading } = useMerchants();
 const isError = ref(false);
 const data = ref<Merchant>();
@@ -63,7 +64,7 @@ onBeforeUnmount(() => {
           <div class="grid grid-cols-2 gap-6">
             <FormField v-slot="{ componentField }" name="customerId">
               <FormItem>
-                <FormLabel>Customer Id </FormLabel>
+                <FormLabel>Customer Id <span class="text-red-500">*</span> </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
@@ -76,7 +77,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="businessName">
               <FormItem>
-                <FormLabel>Business Name </FormLabel>
+                <FormLabel>Business Name <span class="text-red-500">*</span>  </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
@@ -89,7 +90,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="businessPhoneNumber">
               <FormItem>
-                <FormLabel>Business Phone Number </FormLabel>
+                <FormLabel>Business Phone Number <span class="text-red-500">*</span>  </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
@@ -115,7 +116,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="businessType">
               <FormItem>
-                <FormLabel> Business Type </FormLabel>
+                <FormLabel> Business Type <span class="text-red-500">*</span>  </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
@@ -193,7 +194,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="tradeLicenseNumber">
               <FormItem>
-                <FormLabel> Trade License Number </FormLabel>
+                <FormLabel> Trade License Number <span class="text-red-500">*</span> </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
@@ -206,7 +207,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="tradeLicenseIssueDate">
               <FormItem>
-                <FormLabel> Trade License Issue Date </FormLabel>
+                <FormLabel> Trade License Issue Date <span class="text-red-500">*</span>  </FormLabel>
                 <FormControl>
                   <UiInput
                     type="date"
@@ -222,7 +223,7 @@ onBeforeUnmount(() => {
               name="tradeLicenseExpiryDate"
             >
               <FormItem>
-                <FormLabel> Trade License Expiry Date </FormLabel>
+                <FormLabel> Trade License Expiry Date <span class="text-red-500">*</span>  </FormLabel>
                 <FormControl>
                   <UiInput
                     type="date"
@@ -235,7 +236,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="taxPayerIdNumber">
               <FormItem>
-                <FormLabel> Tax Payer Id Number </FormLabel>
+                <FormLabel> Tax Payer Id Number <span class="text-red-500">*</span>  </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
@@ -248,7 +249,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="taxPayerIssueDate">
               <FormItem>
-                <FormLabel> Tax Payer Issue Date </FormLabel>
+                <FormLabel> Tax Payer Issue Date <span class="text-red-500">*</span>  </FormLabel>
                 <FormControl>
                   <UiInput
                     type="date"
@@ -261,7 +262,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="taxPayerExpiryDate">
               <FormItem>
-                <FormLabel> Tax Payer Expiry Date </FormLabel>
+                <FormLabel> Tax Payer Expiry Date <span class="text-red-500">*</span>  </FormLabel>
                 <FormControl>
                   <UiInput
                     type="date"

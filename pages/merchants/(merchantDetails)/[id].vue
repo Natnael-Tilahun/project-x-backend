@@ -97,6 +97,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormControl>
                 <UiInput
                   type="text"
+                  disabled
                   placeholder="Enter merchant Id"
                   v-bind="componentField"
                 />
@@ -201,6 +202,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormControl>
                 <UiInput
                   type="text"
+                  disabled
                   placeholder="Enter short code"
                   v-bind="componentField"
                 />

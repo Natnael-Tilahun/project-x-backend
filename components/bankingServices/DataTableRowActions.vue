@@ -2,6 +2,13 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 const { deleteBankingService, isLoading } = useBankingServices();
+
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['languageDeleted', 'editLanguage']); // Added 'languageDeleted'
+
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const openEditModal = ref(false);
@@ -13,7 +20,7 @@ const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+// const props = defineProps<DataTableRowActionsProps<any>>();
 
 function viewBankingServiceDetail(id: string) {
   navigateTo(`/bankingServices/${id}`);
@@ -30,10 +37,13 @@ async function deleteBankingServices(id: string) {
       title: "Banking service deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    // window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
+    setOpenEditModal(false);
   } catch (err) {
     console.error("Error deleting banking service:", err);
     isError.value = true;
+    setOpenEditModal(false);
   } finally {
     isLoading.value = false;
     loading.value = false;
