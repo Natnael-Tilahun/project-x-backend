@@ -103,6 +103,7 @@ const togglePasswordVisibility = () => {
 };
 
 const onSubmit = form.handleSubmit(async (values) => {
+  console.log("values: ", values)
   isLoading.value = true;
   // `values.username` will be the ACTUAL, unmasked username
   const userCredentials = {
@@ -127,9 +128,8 @@ const onSubmit = form.handleSubmit(async (values) => {
 
 <template>
   <div :class="cn('grid gap-6', $attrs.class ?? '')">
-    <form @submit="onSubmit" autocomplete="off" novalidate>
+    <form @submit="onSubmit" autocomplete="off" aria-autocomplete="none" novalidate>
       <div class="grid gap-3">
-        <!-- Username Field -->
         <FormField name="username" v-slot="{ field, meta }">
           <FormItem>
             <FormLabel>Username or Email</FormLabel>
@@ -142,7 +142,7 @@ const onSubmit = form.handleSubmit(async (values) => {
                 @focus="isUsernameFocused = true"
                 @blur="(e) => { isUsernameFocused = false; field.onBlur(e); }"
                 :disabled="isLoading"
-                aria-autocomplete="off"
+                aria-autocomplete="none"
                 autocomplete="off"
                 autocorrect="off"
                 autocapitalize="off"
@@ -154,11 +154,10 @@ const onSubmit = form.handleSubmit(async (values) => {
           </FormItem>
         </FormField>
 
-        <!-- Password Field -->
         <FormField name="password" v-slot="{ field, meta }">
           <FormItem>
             <FormLabel>Password</FormLabel>
-            <FormControl>
+            <FormControl aria-autocomplete="new-password">
               <div
                 class="relative flex items-center bg-background border border-input rounded-md focus-within:ring-1 focus-within:ring-ring"
               >
@@ -170,8 +169,7 @@ const onSubmit = form.handleSubmit(async (values) => {
                   @blur="field.onBlur"
                   :disabled="isLoading"
                   autocomplete="new-password"
-                  aria-autocomplete="off"
-                  autocorrect="off"
+                  aria-autocomplete="nope"
                   autocapitalize="off"
                   spellcheck="false"
                   class="pl-3 pr-10 border-0 focus-visible:ring-0 focus-visible:ring-offset-0 flex-grow"
@@ -195,25 +193,7 @@ const onSubmit = form.handleSubmit(async (values) => {
           </FormItem>
         </FormField>
 
-        <!-- Remember Me Checkbox (Example using explicit slot) -->
-        <FormField name="rememberMe" v-slot="{ field, value, handleChange }">
-            <FormItem
-              class="flex flex-row w-fit items-start gap-x-3 space-y-0 py-4"
-            >
-              <FormControl>
-                <UiCheckbox
-                  :checked="!!value"
-                  @update:checked="handleChange"
-                  :aria-label="field.name"
-                />
-              </FormControl>
-              <div class="space-y-1 leading-none">
-                <FormLabel>Remember Me</FormLabel>
-              </div>
-            </FormItem>
-          </FormField>
-
-        <UiButton type="submit" :disabled="isLoading || !form.meta.value.valid">
+        <UiButton class="mt-2" type="submit" :disabled="isLoading || !form.meta.value.valid">
           <Icon
             v-if="isLoading"
             name="svg-spinners:8-dots-rotate"

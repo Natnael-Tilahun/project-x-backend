@@ -498,36 +498,18 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                     </div>
 
                     <div class="space-y-6 md:space-y-0 border-b-2 pb-4">
-                      <div class="flex items-center justify-between">
                         <h1 class="text-base text-muted-foreground">
                           Address1
                         </h1>
-                        <UiButton class="pr-5" variant="outline">
-                          <Icon
-                            name="material-symbols:edit-outline"
-                            class="w-5 h-5 mr-2 fill-black"
-                          />
-                          Edit</UiButton
-                        >
-                      </div>
                       <div class="grid grid-cols-1 lg:grid-cols-2">
                         <p>{{ data?.addressLine1 || "Not Setted" }}</p>
                       </div>
                     </div>
 
                     <div class="space-y-6 md:space-y-0 border-b-2 pb-4">
-                      <div class="flex items-center justify-between">
                         <h1 class="text-base text-muted-foreground">
                           Address2
                         </h1>
-                        <UiButton class="pr-5" variant="outline">
-                          <Icon
-                            name="material-symbols:edit-outline"
-                            class="w-5 h-5 mr-2 fill-black"
-                          />
-                          Edit</UiButton
-                        >
-                      </div>
                       <div class="grid grid-cols-1 lg:grid-cols-2">
                         <p>
                           {{ data?.addressLine2 || "Not Setted" }}
@@ -536,16 +518,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                     </div>
 
                     <div class="space-y-6 md:space-y-0 border-b-2 pb-4">
-                      <div class="flex items-center justify-between">
                         <h1 class="text-base text-muted-foreground">State</h1>
-                        <UiButton class="pr-5" variant="outline">
-                          <Icon
-                            name="material-symbols:edit-outline"
-                            class="w-5 h-5 mr-2 fill-black"
-                          />
-                          Edit</UiButton
-                        >
-                      </div>
                       <div class="grid grid-cols-1 lg:grid-cols-2">
                         <p>
                           {{ data?.state || "Not Setted" }}
@@ -554,16 +527,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                     </div>
 
                     <div class="space-y-6 md:space-y-0 border-b-2 pb-4">
-                      <div class="flex items-center justify-between">
                         <h1 class="text-base text-muted-foreground">City</h1>
-                        <UiButton class="pr-5" variant="outline">
-                          <Icon
-                            name="material-symbols:edit-outline"
-                            class="w-5 h-5 mr-2 fill-black"
-                          />
-                          Edit</UiButton
-                        >
-                      </div>
                       <div class="grid grid-cols-1 lg:grid-cols-2">
                         <p>
                           {{ data?.city || "Not Setted" }}
@@ -572,34 +536,16 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                     </div>
 
                     <div class="md:space-y-0 space-y-6 border-b-2 pb-4">
-                      <div class="flex items-center justify-between">
                         <h1 class="text-base text-muted-foreground">
                           Contact Numbers
                         </h1>
-                        <UiButton class="pr-5" variant="outline">
-                          <Icon
-                            name="material-symbols:edit-outline"
-                            class="w-5 h-5 mr-2 fill-black"
-                          />
-                          Edit</UiButton
-                        >
-                      </div>
                       <div class="grid grid-cols-1 lg:grid-cols-2">
                         <p>{{ data?.phone || "-" }}</p>
                       </div>
                     </div>
 
                     <div class="md:space-y-0 space-y-6">
-                      <div class="flex items-center justify-between">
                         <h1 class="text-base text-muted-foreground">Email</h1>
-                        <UiButton class="pr-5" variant="outline">
-                          <Icon
-                            name="material-symbols:edit-outline"
-                            class="w-5 h-5 mr-2 fill-black"
-                          />
-                          Edit</UiButton
-                        >
-                      </div>
                       <div class="grid grid-cols-1 lg:grid-cols-2">
                         <p>{{ data?.email || "-" }}</p>
                       </div>
@@ -881,7 +827,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
         </UiTabsContent>
 
         <UiTabsContent value="pinReset" class="space-y-4 py-8">
-          <CustomersPinReset :phone="data?.phone" :customerId="customerId" />
+          <CustomersPinReset :phone="data?.phone" :customerId="customerId" :coreCustomerId="data?.coreCustomerId" />
         </UiTabsContent>
 
            <UiPermissionGuard permission="VIEW_CUSTOMER_DEVICES" >
