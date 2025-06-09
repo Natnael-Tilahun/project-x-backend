@@ -9,11 +9,13 @@ import {
 } from "@/components/ui/form";
 import { profileFormSchema } from "~/validations/profileFormSchema";
 import { toast } from "~/components/ui/toast";
+import type { Profile } from "~/types";
 
 const { getProfile, isLoading } = useProfile();
 const loading = ref(isLoading.value);
 const isError = ref(false);
-const data = ref<User>();
+const data = ref<Profile>();
+const openItems = ref("profileInfo");
 
 // const { getProfile, isLoading } = useAuth();
 // const isLoading = ref(false);
@@ -54,7 +56,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="w-full flex flex-col gap-8">
+  <div class="w-full flex flex-col">
     <div class="pb-4">
       <h1 class="md:text-2xl text-lg font-medium">Profile</h1>
       <p class="text-sm text-muted-foreground">Update your profile</p>
@@ -77,7 +79,28 @@ onMounted(async () => {
       </div>
     </UiCard>
 
-    <UiCard v-else class="p-6">
+    <UiCard v-else >
+      <UiTabs v-model="openItems" class="w-full space-y-0">
+      <UiTabsList
+        class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
+      >
+        <UiTabsTrigger
+          value="profileInfo"
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+        Profile Details
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="assignments"
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Assignments
+        </UiTabsTrigger>
+        </UiTabsList>
+        <UiTabsContent
+        value="profileInfo"
+        class="text-base bg-background p-6 rounded-lg"
+      >
       <form @submit="onSubmit">
         <div class="grid grid-cols-2 gap-6">
           <!-- <FormField v-slot="{ componentField }" name="employeeId">
@@ -100,7 +123,6 @@ onMounted(async () => {
               <FormControl>
                 <UiInput
                   type="text"
-                  disabled
                   placeholder="Enter first name"
                   v-bind="componentField"
                 />
@@ -113,8 +135,8 @@ onMounted(async () => {
               <FormLabel> Last Name </FormLabel>
               <FormControl>
                 <UiInput
+                  class="disabled:text-black opacity"
                   type="text"
-                  disabled
                   placeholder="Enter last name"
                   v-bind="componentField"
                 />
@@ -128,7 +150,6 @@ onMounted(async () => {
               <FormControl>
                 <UiInput
                   type="text"
-                  disabled
                   placeholder="Enter Email Address"
                   v-bind="componentField"
                 />
@@ -137,7 +158,7 @@ onMounted(async () => {
             </FormItem>
           </FormField>
           <FormField v-slot="{ componentField }" name="mobileNo">
-          <FormItem>
+            <FormItem>
               <FormLabel> Phone </FormLabel>
               <FormControl>
                 <UiInput
@@ -147,7 +168,7 @@ onMounted(async () => {
                 />
               </FormControl>
               <FormMessage />
-          </FormItem>
+            </FormItem>
           </FormField>
           <!-- <FormField v-slot="{ componentField }" name="authorities">
             <FormItem>
@@ -164,15 +185,15 @@ onMounted(async () => {
           </FormField> -->
           <FormField v-slot="{ componentField }" name="active">
             <FormItem>
-              <FormLabel> Is Active </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="text"
-                  disabled
-                  placeholder="Enter status"
-                  v-bind="componentField"
-                />
-              </FormControl>
+              <FormLabel> Status </FormLabel>
+              <!-- <FormControl> -->
+                <UiBadge
+                  class="p-2 rounded-md w-full hover:bg-green-500"
+                  :class="data?.active ? 'bg-green-500' : 'bg-red-500'"
+                >
+                  {{ data?.active ? "Active" : "Inactive" }}
+                </UiBadge>
+              <!-- </FormControl> -->
               <FormMessage />
             </FormItem>
           </FormField>
@@ -189,7 +210,7 @@ onMounted(async () => {
               <FormMessage />
             </FormItem>
           </FormField> -->
-
+<!-- 
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="isLoading"
@@ -209,9 +230,17 @@ onMounted(async () => {
 
               Update
             </UiButton>
-          </div>
+          </div> -->
         </div>
       </form>
+      </UiTabsContent>
+      <UiTabsContent
+        value="assignments"
+        class="text-base bg-background p-6 rounded-lg"
+      >
+        <ProfileAssignments />
+      </UiTabsContent>
+      </UiTabs>
     </UiCard>
   </div>
 </template>

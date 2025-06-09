@@ -6,8 +6,13 @@ import { Badge } from "../ui/badge";
 import BankingServicesDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { BankingService } from "~/types";
+import { h, inject } from "vue"; // Import inject
 
-export const columns: ColumnDef<BankingService>[] = [
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<BankingService>[] => [
+// export const columns: ColumnDef<BankingService>[] = [
   {
     id: "select",
     header: ({ table }) =>
@@ -90,6 +95,7 @@ export const columns: ColumnDef<BankingService>[] = [
         { class: "relative" },
         h(BankingServicesDataTableRowActionsVue, {
           row,
+          refetch
         })
       );
     },

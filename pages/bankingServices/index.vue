@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "@/components/bankingServices/columns";
+// import { columns } from "@/components/bankingServices/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { BankingService } from "~/types";
+import { columns as tableColumns } from "~/components/bankingServices/columns"; // Renamed to avoid conflict
 
 const { getBankingServices, getBankingServiceById, isLoading } = useBankingServices();
 const loading = ref(isLoading.value);
@@ -46,6 +47,12 @@ const searchHandler = async () => {
     loading.value = false;
   }
 };
+
+// Provide the refetch function
+provide('refetchBankingServices', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->
