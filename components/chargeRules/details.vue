@@ -142,6 +142,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormControl>
                   <UiInput
                     type="number"
+                    step="any"
                     placeholder="Enter amount range start"
                     v-bind="componentField"
                   />
@@ -163,6 +164,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormControl>
                   <UiInput
                     type="number"
+                    step="any"
                     placeholder="Enter amount range end"
                     v-bind="componentField"
                   />
@@ -181,6 +183,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormControl>
                   <UiInput
                     type="number"
+                    step="any"
                     placeholder="Enter fixed amount	"
                     v-bind="componentField"
                   />
@@ -199,6 +202,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormControl>
                   <UiInput
                     type="number"
+                    step="any"
                     placeholder="Enter percentage"
                     v-bind="componentField"
                   />

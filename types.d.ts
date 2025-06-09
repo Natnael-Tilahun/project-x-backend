@@ -200,8 +200,8 @@ interface Profile {
     maxLength: 50;
     minLength: 1;
   };
-  email?: string;
-  phone?: string & {
+  emailAddress?: string;
+  mobileNo?: string & {
     maxLength: 30;
     minLength: 8;
   };
@@ -209,7 +209,8 @@ interface Profile {
   newEmail?: string;
   newEmailKey?: string;
   newEmailExpiration?: Date;
-  activated: boolean;
+  joiningDate?:string
+  active: boolean;
   langKey?: string;
   maxLength?: 10;
   minLength?: 2;
@@ -228,9 +229,10 @@ interface Profile {
   emailVerified?: boolean;
   verified?: boolean;
   firstName?: string;
-  middleName?: string;
+  middleName?: string;joiningDate
   lastName?: string;
   phone?: string;
+  user?: User | null
 }
 
 interface Customer {
