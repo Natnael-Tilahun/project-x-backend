@@ -10,6 +10,7 @@ const openEditModal = ref(false);
 const showSuccess = ref(false);
 const responseData = ref()
 const phoneNumber = ref("")
+	
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
@@ -17,12 +18,15 @@ const setOpenEditModal = (value: boolean) => {
 const props = defineProps<{
   customerId: string;
   phone?: string
+  coreCustomerId?:string
 }>();
 
+const coreCustomerId = ref(props?.coreCustomerId || "")
 
 if(props.phone){
 phoneNumber.value = props.phone
 }
+
 
 
 
@@ -65,7 +69,7 @@ const handlePinReset = async () => {
           <div>
             <h3 class="text-lg font-semibold">Reset Customer PIN</h3>
             <p class="text-sm text-muted-foreground">
-              Reset the PIN for Phone Number: <strong>{{phoneNumber }} </strong> and Customer ID: <strong>{{ customerId }}</strong>
+              Reset the PIN for Phone Number: <strong>{{phoneNumber }} </strong> and Customer ID: <strong>{{ coreCustomerId }}</strong>
             </p>
           </div>
         </div>
