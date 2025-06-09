@@ -1,25 +1,21 @@
 <script setup lang="ts">
 import DashboardDateRangePicker from "~/components/dashboard/DateRangePicker.vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import type { Customer, Integration, Merchant, Role } from "~/types";
+import type { Customer, Integration, Merchant, Staff } from "~/types";
 
-const { hasPermissions } = useAuthStore();
-console.log("hjkjk: ", hasPermissions("BYPASS_TWOFACTOR"));
-console.log("hjkjk: ", hasPermissions("ALL_FUNCTIONS"));
-console.log("hjkjk: ", hasPermissions("ALL_FUNCTONS"));
-
-const { getRoles } = useRoles();
+const authStore = useAuthStore(); // Make sure this is your Pinia auth store instance
+const { getStaffs } = useStaffs();
 const { getMerchants } = useMerchants();
 const { getCustomers } = useCustomers();
 const { getIntegrations } = useIntegrations();
 
 const isLoading = ref(true);
 const isError = ref(false);
-const roleData = ref<Role[]>([]);
+const staffData = ref<Staff[]>([]);
 const merchantData = ref<Merchant[]>([]);
 const customerData = ref<Customer[]>([]);
 const integrationData = ref<Integration[]>([]);
-const roleNumber = computed(() => roleData.value.length);
+const staffNumber = computed(() => staffData.value.length);
 const merchantNumber = computed(() => merchantData.value.length);
 const customerNumber = computed(() => customerData.value.length);
 const integrationNumber = computed(() => integrationData.value.length);
@@ -29,12 +25,12 @@ const fetchData = async () => {
   isError.value = false;
   try {
     [
-      roleData.value,
+      staffData.value,
       merchantData.value,
       customerData.value,
       integrationData.value,
     ] = await Promise.all([
-      getRoles().catch(() => []),
+      getStaffs().catch(() => []),
       getMerchants().catch(() => []),
       getCustomers().catch(() => []),
       getIntegrations().catch(() => []),
@@ -66,7 +62,8 @@ watch(
 </script>
 
 <template>
-  <UiTabs default-value="overview" class="space-y-12 dark:bg-dark-background">
+  <UiTabs default-value="overview" class="space-y-6 dark:bg-dark-background">
+    <h1 class="text-xl font-bold">Welcome {{ authStore.username }}</h1>
     <div
       class="flex flex-col lg:flex-row gap-5 space-y-0justify-start lg:justify-between"
     >
@@ -85,7 +82,7 @@ watch(
     </div>
 
     <!-- Overview tab component -->
-    <UiTabsContent value="overview" class="space-y-4">
+    <UiTabsContent value="overview" class="space-y-6">
       <div
         class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4"
         v-if="isLoading"
@@ -122,10 +119,10 @@ watch(
           !isError &&
           customerData &&
           merchantData &&
-          roleData &&
+          staffData &&
           integrationData
         "
-        class="space-y-4"
+        class="space-y-6"
       >
         <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
           <UiCard>
@@ -177,7 +174,7 @@ watch(
             <UiCardHeader
               class="flex flex-row items-center justify-between space-y-0 pb-2"
             >
-              <UiCardTitle class="text-sm font-medium"> Roles </UiCardTitle>
+              <UiCardTitle class="text-sm font-medium"> Staffs </UiCardTitle>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 viewBox="0 0 24 24"
@@ -188,12 +185,13 @@ watch(
                 strokeWidth="2"
                 class="h-4 w-4 text-muted-foreground"
               >
-                <rect width="20" height="14" x="2" y="5" rx="2" />
-                <path d="M2 10h20" />
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75" />
               </svg>
             </UiCardHeader>
             <UiCardContent>
-              <div class="text-2xl font-bold">{{ roleNumber }}</div>
+              <div class="text-2xl font-bold">{{ staffNumber }}</div>
               <p class="text-xs text-muted-foreground">+19% from last month</p>
             </UiCardContent>
           </UiCard>
@@ -223,21 +221,13 @@ watch(
             </UiCardContent>
           </UiCard>
         </div>
-        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
+        <div>
           <UiCard class="col-span-4">
             <UiCardHeader>
               <UiCardTitle>Overview</UiCardTitle>
             </UiCardHeader>
             <UiCardContent class="pl-2">
               <DashboardOverview />
-            </UiCardContent>
-          </UiCard>
-          <UiCard class="col-span-3">
-            <UiCardHeader>
-              <UiCardTitle>Recent Customers</UiCardTitle>
-            </UiCardHeader>
-            <UiCardContent>
-              <DashboardRecentSales :customerData="customerData" />
             </UiCardContent>
           </UiCard>
         </div>
