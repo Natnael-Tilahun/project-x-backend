@@ -10,11 +10,16 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['menuDeleted', 'editMenu']); // Added 'languageDeleted'
+
 const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
 
 function viewMenuDetail(id: string) {
   console.log("id: ", id);
@@ -32,7 +37,7 @@ async function deleteMenuHandler(id: string) {
       title: "Menu deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
     console.error("Error deleting menu:", err);
     isError.value = true;

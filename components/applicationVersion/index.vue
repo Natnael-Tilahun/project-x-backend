@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
-import { columns } from "~/components/applicationVersion/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { splitPath } from "~/lib/utils";
+import { columns as tableColumns } from "~/components/applicationVersion/columns"; // Renamed to avoid conflict
+import type { AppVersion } from "~/types";
+
 const { getApplicationVersions } = useApplications();
 const loading = ref(false);
 const isError = ref(false);
-const data = ref<ApplicationVersion[]>([]);
+const data = ref<AppVersion[]>([]);
 const { pageNumber } = usePagesInfoStore();
 const applicationId = ref<string>("");
 const route = useRoute();
@@ -17,7 +19,7 @@ pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
 applicationId.value = pathSegments.value[pathLength - 1];
 
-const fetchData = async () => {
+const fetchApplicationVersionsData = async () => {
   if (!applicationId.value) return;
 
   try {
@@ -32,15 +34,20 @@ const fetchData = async () => {
 };
 
 const refetch = async () => {
-  await fetchData();
+  await fetchApplicationVersionsData();
 };
 
 onMounted(async () => {
   if (applicationId.value) {
-    await fetchData();
+    await fetchApplicationVersionsData();
   }
 });
 
+// Provide the refetch function
+provide('refetchApplicationVersions', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <template>

@@ -1,24 +1,25 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/integrations/columns";
 import { useIntegrations } from "~/composables/useIntegrations";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { ApiIntegration } from "~/types";
+import { columns as tableColumns } from "~/components/integrations/columns"; // Renamed to avoid conflict
 
 const { getIntegrations } = useIntegrations();
 const keyword = ref<string>("");
 const data = ref<ApiIntegration[]>([]);
-const isLoading = ref(true);
+const isLoading = ref(false);
 const isError = ref(false);
 const router = useRouter(); // {{ edit_2 }}
 
-const fetchData = async () => {
+const getApiIntegrationData = async () => {
   try {
+    isLoading.value = true
     const integrations = await getIntegrations(0, 100);
     // Sort integrations by name alphabetically
-    data.value = integrations.sort((a, b) =>
+    data.value = integrations?.sort((a, b) =>
       a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-    );
+    ) ?? []
   } catch (error) {
     console.error("Error fetching integrations:", error);
     isError.value = true;
@@ -27,12 +28,13 @@ const fetchData = async () => {
   }
 };
 
-await useAsyncData("integrationsData", async () => {
-  await fetchData();
+onMounted(async() => {
+  await getApiIntegrationData();
 });
 
+
 const refetch = async () => {
-  await fetchData();
+  await getApiIntegrationData();
 };
 
 // const searchHandler = async () => {
@@ -48,6 +50,13 @@ const refetch = async () => {
 //     loading.value = false;
 //   }
 // };
+
+// Provide the refetch function
+
+provide('refetchApiIntegrations', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->

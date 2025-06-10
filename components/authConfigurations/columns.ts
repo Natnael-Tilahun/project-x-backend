@@ -5,6 +5,7 @@ import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import AuthConfigurationsDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
+import type { AuthConfiguration } from "~/types";
 
 export const columns: ColumnDef<AuthConfiguration>[] = [
   {

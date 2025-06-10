@@ -5,8 +5,13 @@ import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import ChargeRuleDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
+import type { ChargeRule } from "~/types";
+import { h, inject } from "vue"; // Import inject
 
-export const columns: ColumnDef<ApplicationVersion>[] = [
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<ChargeRule>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -79,6 +84,7 @@ export const columns: ColumnDef<ApplicationVersion>[] = [
         { class: "relative" },
         h(ChargeRuleDataTableRowActionsVue, {
           row,
+          refetch
         })
       );
     },

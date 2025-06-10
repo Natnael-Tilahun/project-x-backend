@@ -6,7 +6,13 @@ import { Badge } from "../ui/badge";
 import OfficesDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { Office } from "~/types";
-export const columns: ColumnDef<Office>[] = [
+import { h, inject } from "vue"; // Import inject
+
+
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<Office>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -164,6 +170,7 @@ export const columns: ColumnDef<Office>[] = [
         { class: "relative" },
         h(OfficesDataTableRowActionsVue, {
           row,
+          refetch
         })
       );
     },

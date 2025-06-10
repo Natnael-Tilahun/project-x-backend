@@ -13,7 +13,11 @@ const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['merchantDeleted', 'editMerchant']); // Added 'languageDeleted'
 
 function viewCustomerDetail(id: string) {
   navigateTo(`/merchants/${id}`);
@@ -30,7 +34,7 @@ async function deleteMerchants(id: string) {
       title: "Merchant deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
     console.error("Error deleting merchant:", err);
     isError.value = true;

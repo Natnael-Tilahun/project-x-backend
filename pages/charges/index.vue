@@ -1,32 +1,26 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/charges/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { toast } from "~/components/ui/toast";
 import type { Charge } from "~/types";
+import { columns as tableColumns } from "~/components/charges/columns"; // Renamed to avoid conflict
 
-const { getCharges, refreshCoreCharges, isLoading } = useCharges();
-const loading = ref(isLoading.value);
+const { getCharges, refreshCoreCharges } = useCharges();
+const isLoading = ref(false);
 const submitting = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<Charge[]>([]);
 const { pageNumber } = usePagesInfoStore();
 
-const refetch = async () => {
-  await fetchData();
-};
-
-const fetchData = async () => {
+const fetchChargesData = async () => {
   try {
     isLoading.value = true;
-    loading.value = true;
     data.value = await getCharges(0, 1000000); // Call your API function to fetch roles
   } catch (err) {
     console.error("Error fetching charges:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
 
@@ -34,7 +28,7 @@ const refreshCoreHandler = async () => {
   try {
     submitting.value = true;
     data.value = await refreshCoreCharges() || []; // Call your API function to fetch roles
-    await fetchData();
+    await fetchChargesData();
     toast({
       title: "Core refreshed successfully",
       description: "Charges have been refreshed.",
@@ -51,13 +45,23 @@ const refreshCoreHandler = async () => {
   }
 };
 
-await useAsyncData("chargesData", async () => {
-  await fetchData();
+onMounted(() => {
+  fetchChargesData();
 });
+
+const refetch = async () => {
+  await fetchChargesData();
+};
+
+// Provide the refetch function
+provide('refetchCharges', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <template>
-  <div v-if="loading" class="py-10 flex justify-center items-center">
+  <div v-if="isLoading" class="py-10 flex justify-center items-center">
     <UiLoading />
   </div>
   <div

@@ -30,7 +30,7 @@ async function deleteCustomer(id: string) {
       title: "Customer deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    // window.location.reload();
   } catch (err) {
     console.error("Error deleting customers:", err);
     isError.value = true;

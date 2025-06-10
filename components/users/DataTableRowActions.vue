@@ -13,7 +13,11 @@ const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['systemUsersDeleted', 'editSystemUser']); // Added 'languageDeleted'
 
 function viewUserDetail(id: string) {
   navigateTo(`/users/${id}`);
@@ -30,7 +34,7 @@ async function deleteUser(id: string) {
       title: "User deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
     console.error("Error deleting users:", err);
     isError.value = true;

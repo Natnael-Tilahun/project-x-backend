@@ -5,8 +5,14 @@ import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import MenusDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
+import { h, inject } from "vue"; // Import inject
+import type { Menu } from "~/types";
 
-export const columns: ColumnDef<Menu>[] = [
+
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<Menu>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -131,7 +137,7 @@ export const columns: ColumnDef<Menu>[] = [
     cell: ({ row }) => {
       const dynamicPaymentMenus = row.getValue("dynamicPaymentMenus");
       return dynamicPaymentMenus
-        ? h("p", dynamicPaymentMenus.length)
+        ? h("p", dynamicPaymentMenus?.length)
         : h("p", "-");
     },
   },
@@ -145,6 +151,7 @@ export const columns: ColumnDef<Menu>[] = [
         { class: "relative" },
         h(MenusDataTableRowActionsVue, {
           row,
+          refetch
         })
       );
     },

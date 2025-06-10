@@ -5,8 +5,13 @@ import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import PaymentIntegrationsDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
+import type { PaymentIntegration } from "~/types";
+import { h, inject } from "vue"; // Import inject
 
-export const columns: ColumnDef<PaymentIntegration>[] = [
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<PaymentIntegration>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -128,6 +133,7 @@ export const columns: ColumnDef<PaymentIntegration>[] = [
         { class: "relative" },
         h(PaymentIntegrationsDataTableRowActionsVue, {
           row,
+          refetch
         })
       );
     },

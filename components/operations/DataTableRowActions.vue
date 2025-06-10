@@ -10,11 +10,17 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['operationDeleted', 'editOperation']); // Added 'languageDeleted'
+
 const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+// const props = defineProps<DataTableRowActionsProps<any>>();
 
 function viewIntegrationDetail(id: string) {
   navigateTo({
@@ -37,7 +43,8 @@ async function deleteOperationHandler(id: string) {
       title: "Operation deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    // window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
     console.error("Error deleting operations:", err);
     isError.value = true;

@@ -5,8 +5,14 @@ import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import IntegrationsDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
+import type { ApiIntegration } from "~/types";
+import { h, inject } from "vue"; // Import inject
 
-export const columns: ColumnDef<ApiIntegration>[] = [
+
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<ApiIntegration>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -127,6 +133,7 @@ export const columns: ColumnDef<ApiIntegration>[] = [
         { class: "relative" },
         h(IntegrationsDataTableRowActionsVue, {
           row,
+          refetch
         })
       );
     },

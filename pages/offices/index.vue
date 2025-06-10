@@ -1,19 +1,18 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/offices/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Office } from "~/types";
+import { columns as tableColumns } from "~/components/offices/columns"; // Renamed to avoid conflict
 
-const { getOffices, getOfficeById, isLoading } = useOffice();
-const loading = ref(isLoading.value);
+const { getOffices, getOfficeById } = useOffice();
+const isLoading = ref(false);
 const isError = ref(false);
 const data = ref<Office[]>([]);
 const keyword = ref<string>("");
 
-const fetchData = async () => {
+const fetchOfficesData = async () => {
   try {
     isLoading.value = true;
-    loading.value = true;
     const offices = await getOffices(0, 100000000);
     // Sort integrations by name alphabetically
     data.value = offices.sort((a:Office, b:Office) => {
@@ -27,36 +26,40 @@ const fetchData = async () => {
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
 
 const refetch = async () => {
-  await fetchData();
+  await fetchOfficesData();
 };
 
-await useAsyncData("officesData", async () => {
-  await fetchData();
+onMounted(() => {
+  fetchOfficesData();
 });
+
 
 const searchHandler = async () => {
   try {
     isLoading.value = true;
-    loading.value = true;
     data.value[0] = await getOfficeById(keyword.value); // Call your API function to fetch roles
   } catch (err: any) {
     console.error("Error fetching offices:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
+
+// Provide the refetch function
+provide('refetchStaffs', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->
 <template>
-  <div v-if="loading" class="py-10 flex justify-center w-full">
+  <div v-if="isLoading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
   <div
