@@ -103,7 +103,6 @@ const togglePasswordVisibility = () => {
 };
 
 const onSubmit = form.handleSubmit(async (values) => {
-  console.log("values: ", values)
   isLoading.value = true;
   // `values.username` will be the ACTUAL, unmasked username
   const userCredentials = {
@@ -116,6 +115,8 @@ const onSubmit = form.handleSubmit(async (values) => {
 
   try {
     await login(userCredentials);
+         // Trigger the storage event in other tabs by setting a new value
+      localStorage.setItem('auth-event', `login-${Date.now()}`);
     navigateTo("/", { replace: true });
   } catch (error) {
     console.error("Login error: ", error);
