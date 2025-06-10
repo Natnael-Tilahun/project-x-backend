@@ -5,8 +5,12 @@ import { Badge } from "../ui/badge";
 import UserRolesDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { Role } from "~/types";
+import { h, inject } from "vue"; // Import inject
 
-export const columns: ColumnDef<Role>[] = [
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<Role>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -83,30 +87,12 @@ export const columns: ColumnDef<Role>[] = [
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const { getRoles, isLoading } = useRoles();
-      const loading = ref(isLoading.value);
-      const isError = ref(false);
-      const data = ref<Role[]>([]);
-      const refetch = async () => {
-        alert("jkjk");
-        try {
-          isError.value = false; // Reset isError flag
-          loading.value = true; // Show loading indicator
-          data.value = await getRoles(); // Call your API function to refetch roles
-        } catch (err) {
-          console.error("Error refetching roles:", err);
-          isError.value = true; // Set isError flag on error
-        } finally {
-          console.log("finally");
-          loading.value = false; // Hide loading indicator
-        }
-      };
       return h(
         "div",
         { class: "relative" },
         h(UserRolesDataTableRowActionsVue, {
           row,
-          refetch,
+          refetch
         })
       );
     },

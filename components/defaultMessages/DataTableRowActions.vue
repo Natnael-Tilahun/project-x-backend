@@ -34,7 +34,7 @@ async function deleteUssdDefaultMessageHandler(id: string) {
     toast({
       title: "Ussd default message deleted successfully",
     });
-    await props.refetch(); // Call refetch after successful deletion
+    await props.refetch(); // Call refetch after successful deletionSS
     setOpenEditModal(false); // Close modal on success
   } catch (err) {
     console.error("Error deleting ussd default message:", err);

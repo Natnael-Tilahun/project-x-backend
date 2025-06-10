@@ -10,11 +10,17 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['apiIntegrationDeleted', 'editApiIntegrtion']); // Added 'languageDeleted'
+
 const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+// const props = defineProps<DataTableRowActionsProps<any>>();
 
 function viewIntegrationDetail(id: string) {
   navigateTo(`/integrations/${id}`);
@@ -31,7 +37,7 @@ async function deleteIntegrationHandler(id: string) {
       title: "Integration deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
     console.error("Error deleting integrations:", err);
     isError.value = true;

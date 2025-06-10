@@ -22,7 +22,12 @@ interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
   refetch: () => Promise<void>; // Accept refetch as a prop
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['chargeRuleDeleted', 'editChargeRules']); // Added 'languageDeleted'
 
 function viewApplicationDetails(id: string) {
   navigateTo(
@@ -41,7 +46,7 @@ async function deleteChargeRule(id: string) {
     });
     setIsUpdated({ isUpdated: true });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
     console.error("Error deleting the charge rule:", err);
     isError.value = true;

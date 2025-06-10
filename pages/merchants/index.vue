@@ -1,22 +1,21 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/merchants/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Merchant } from "~/types";
+import { columns as tableColumns } from "~/components/merchants/columns"; // Renamed to avoid conflict
 
-const { getMerchants, getMerchantById, isLoading } = useMerchants();
-const loading = ref(isLoading.value);
+const { getMerchants, getMerchantById } = useMerchants();
+const isLoading = ref(false);
 const isError = ref(false);
 const data = ref<Merchant[]>([]);
 const keyword = ref<string>("");
 
-const fetchData = async () => {
+const fetchMerchantsData = async () => {
   try {
     isLoading.value = true;
-    loading.value = true;
     const merchants = await getMerchants(0, 100000000);
     // Sort integrations by name alphabetically
-    data.value = merchants.sort((a, b) =>
+    data.value = merchants?.sort((a, b) =>
       a?.businessName?.toLowerCase().localeCompare(b?.businessName?.toLowerCase())
     );
   } catch (err: any) {
@@ -24,36 +23,39 @@ const fetchData = async () => {
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
-
-const refetch = async () => {
-  await fetchData();
-};
-
-await useAsyncData("merchantsData", async () => {
-  await fetchData();
-});
 
 const searchHandler = async () => {
   try {
     isLoading.value = true;
-    loading.value = true;
     data.value[0] = await getMerchantById(keyword.value); // Call your API function to fetch roles
   } catch (err: any) {
     console.error("Error fetching merchants:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
+
+onMounted(() => {
+  fetchMerchantsData();
+});
+
+const refetch = async () => {
+  await fetchMerchantsData();
+};
+
+// Provide the refetch function
+provide('refetchContracts', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->
 <template>
-  <div v-if="loading" class="py-10 flex justify-center w-full">
+  <div v-if="isLoading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
   <div

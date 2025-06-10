@@ -12,11 +12,16 @@ const setOpenEditModal = (value: boolean) => {
 };
 
 const route = useRoute();
+
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
   refetch: () => Promise<void>; // Accept refetch as a prop
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['systemRoleDeleted', 'editSystemRole']); // Added 'languageDeleted'
 
 function viewRollDetails(name: string) {
   navigateTo(`/userRoles/${name}`);
@@ -34,7 +39,7 @@ async function deleteRole(id: string) {
     });
     setIsUpdated({ isUpdated: true });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
     console.error("Error deleting role:", err);
     isError.value = true;

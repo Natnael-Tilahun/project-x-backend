@@ -7,7 +7,7 @@ const props = defineProps<{
   row: Row<any>;
   refetch: () => Promise<void>;
 }>();
-const emit = defineEmits(['languageDeleted', 'editLanguage']); // Added 'languageDeleted'
+const emit = defineEmits(["languageDeleted", "editLanguage"]); // Added 'languageDeleted'
 
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -64,17 +64,20 @@ async function deleteBankingServices(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-  <UiPermissionGuard permission="VIEW_BANKING_SERVICES" >
-      <UiDropdownMenuItem @click="viewBankingServiceDetail(row.original.id)"
-        >View and Edit</UiDropdownMenuItem
-      >
+      <UiPermissionGuard permission="VIEW_BANKING_SERVICES">
+        <UiDropdownMenuItem @click="viewBankingServiceDetail(row.original.id)"
+          >View and Edit</UiDropdownMenuItem
+        >
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_BANKING_SERVICES" >  
-            <UiDropdownMenuSeparator />
-      <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
-        Delete
-        <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
-      </UiDropdownMenuItem>
+      <UiPermissionGuard permission="DELETE_BANKING_SERVICES">
+        <UiDropdownMenuSeparator />
+        <UiDropdownMenuItem
+          @click="setOpenEditModal(true)"
+          class="text-red-600"
+        >
+          Delete
+          <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
+        </UiDropdownMenuItem>
       </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
@@ -84,8 +87,8 @@ async function deleteBankingServices(id: string) {
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
-          This action cannot be undone. This will permanently delete the
-          banking service and remove your data from our servers.
+          This action cannot be undone. This will permanently delete the banking
+          service and remove your data from our servers.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>

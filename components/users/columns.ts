@@ -6,26 +6,12 @@ import { Badge } from "../ui/badge";
 import UsersDataTableRowActionsVue from "./DataTableRowActions.vue";
 import type { User } from "~/types";
 import { NuxtLink } from "#components";
-// import { Badge } from "../ui/badge";
+import { h, inject } from "vue"; // Import inject
 
-// This type is used to define the shape of our data.
-// You can use a Zod schema here if you want.
-// export interface User {
-//   id: string;
-//   fullName: string;
-//   userName: string;
-//   email: string;
-//   role: string;
-//   status:
-//   | "Active"
-//   | "processing"
-//   | "Suspended"
-//   | "Locked"
-//   | "New"
-//   | "UnEnrolled";
-// }
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
 
-export const columns: ColumnDef<User>[] = [
+export const columns = (refetch: RefetchFunction): ColumnDef<User>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -197,6 +183,7 @@ export const columns: ColumnDef<User>[] = [
         { class: "relative" },
         h(UsersDataTableRowActionsVue, {
           row,
+          refetch
         })
       );
     },

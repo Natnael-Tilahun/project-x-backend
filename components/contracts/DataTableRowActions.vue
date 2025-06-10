@@ -13,7 +13,11 @@ const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['contractDeleted', 'editContract']); // Added 'languageDeleted'
 
 function viewContractDetail(id: string) {
   navigateTo(`/contracts/${id}`);
@@ -30,7 +34,7 @@ async function deleteContracts(id: string) {
       title: "Contract deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
     console.error("Error deleting contract:", err);
     isError.value = true;

@@ -4,18 +4,17 @@ import type { LocalizedDefaultMessage } from "~/types";
 import { ref, onMounted, provide, computed } from "vue"; // Added provide, useAsyncData, computed
 import { columns as tableColumns } from "~/components/ussdLocalizedMessages/columns";
 
-const { getUssdLocalizedDefaultMessages, isLoading } =
+const { getUssdLocalizedDefaultMessages } =
   useUssdLocalizedDefaultMessage();
 const keyword = ref<string>("");
 const data = ref<LocalizedDefaultMessage[]>([]);
-const loading = ref(isLoading.value);
+const isLoading = ref(false);
 const isError = ref(false);
 const router = useRouter(); // {{ edit_2 }}
 
 const getUssdLocalizedDefaultMessagesData = async () => {
   try {
     isLoading.value = true;
-    loading.value = true;
     isError.value = false;
     const ussdLocalizedDefaultMessages = await getUssdLocalizedDefaultMessages(
       0,
@@ -30,13 +29,13 @@ const getUssdLocalizedDefaultMessagesData = async () => {
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
 
-await useAsyncData("ussdLocalizedDefaultMessagesData", async () => {
-  await getUssdLocalizedDefaultMessagesData();
+onMounted(() => {
+  getUssdLocalizedDefaultMessagesData();
 });
+
 
 const refetch = async () => {
   await getUssdLocalizedDefaultMessagesData();

@@ -4,17 +4,16 @@ import { columns as tableColumns } from "~/components/ussdLocalizedMenus/columns
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { LocalizedUssdMenu } from "~/types";
 
-const { getUssdLocalizedMenus, isLoading } = useUssdLocalizedMenus();
+const { getUssdLocalizedMenus } = useUssdLocalizedMenus();
 const keyword = ref<string>("");
 const data = ref<LocalizedUssdMenu[]>([]);
-const loading = ref(isLoading.value);
+const isLoading = ref(false);
 const isError = ref(false);
 const router = useRouter(); // {{ edit_2 }}
 
 const getUssdLocalizedMenusData = async () => {
   try {
     isLoading.value = true;
-    loading.value = true;
     isError.value = false;
     const ussdLocalizedMenus = await getUssdLocalizedMenus(0, 100);
     // Sort integrations by name alphabetically
@@ -29,19 +28,16 @@ const getUssdLocalizedMenusData = async () => {
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
 
-// Initial data fetch
-await useAsyncData("ussdLocalizedMenusData", async () => {
-  await getUssdLocalizedMenusData();
+onMounted(() => {
+  getUssdLocalizedMenusData();
 });
 
+
 const refetch = async () => {
-  console.log("Refetching USSD Localized Menus data..."); // For debugging
   await getUssdLocalizedMenusData();
-  console.log("Refetch completed"); // Debug log
 };
 
 // Provide the refetch function

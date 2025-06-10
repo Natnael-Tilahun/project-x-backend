@@ -1,22 +1,21 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/staffs/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Staff } from "~/types";
+import { columns as tableColumns } from "~/components/staffs/columns"; // Renamed to avoid conflict
 
-const { getStaffs, getStaffById, isLoading } = useStaffs();
-const loading = ref(isLoading.value);
+const { getStaffs, getStaffById } = useStaffs();
+const isLoading = ref();
 const isError = ref(false);
 const data = ref<Staff[]>([]);
 const keyword = ref<string>("");
 
-const fetchData = async () => {
+const fetchStaffData = async () => {
   try {
     isLoading.value = true;
-    loading.value = true;
     const staffs = await getStaffs(0, 100000000);
     // Sort integrations by name alphabetically
-    data.value = staffs.sort((a:Staff, b:Staff) => {
+    data.value = staffs?.sort((a:Staff, b:Staff) => {
       if (a.firstname && b.firstname) {
         return a.firstname.toLowerCase().localeCompare(b.firstname.toLowerCase());
       }
@@ -27,17 +26,17 @@ const fetchData = async () => {
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
 
 const refetch = async () => {
-  await fetchData();
+  await fetchStaffData();
 };
 
-await useAsyncData("staffsData", async () => {
-  await fetchData();
+onMounted(() => {
+  fetchStaffData();
 });
+
 
 const searchHandler = async () => {
   try {
@@ -52,11 +51,17 @@ const searchHandler = async () => {
     loading.value = false;
   }
 };
+
+// Provide the refetch function
+provide('refetchStaffs', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->
 <template>
-  <div v-if="loading" class="py-10 flex justify-center w-full">
+  <div v-if="isLoading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
   <div

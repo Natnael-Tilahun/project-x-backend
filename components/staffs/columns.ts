@@ -6,7 +6,13 @@ import { Badge } from "../ui/badge";
 import StaffsDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { Staff } from "~/types";
-export const columns: ColumnDef<Staff>[] = [
+import { h, inject } from "vue"; // Import inject
+
+
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<Staff>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -161,6 +167,7 @@ export const columns: ColumnDef<Staff>[] = [
         { class: "relative" },
         h(StaffsDataTableRowActionsVue, {
           row,
+          refetch
         })
       );
     },

@@ -1,7 +1,9 @@
 <script lang="ts" setup>
 const openItems = ref("");
 import { ref } from "vue";
-import { columns } from "~/components/operations/columns";
+// import { columns } from "~/components/operations/columns";
+import type { ApiOperation, Local } from "~/types";
+import { columns as tableColumns } from "~/components/operations/columns"; // Renamed to avoid conflict
 
 const route = useRoute();
 const { getIntegrationOperations } = useIntegrations();
@@ -50,6 +52,18 @@ const getApiOperationsData = async () => {
 onMounted(() => {
   getApiOperationsData();
 });
+
+const refetch = async () => {
+  await getApiOperationsData();
+};
+
+
+// Provide the refetch function
+provide('refetchApiOperations', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
+
 </script>
 
 <template>

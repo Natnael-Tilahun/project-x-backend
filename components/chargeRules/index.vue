@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from "vue";
-import { columns } from "~/components/chargeRules/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { getIdFromPath, splitPath } from "~/lib/utils";
 import type { ChargeRule } from "~/types";
+import { columns as tableColumns } from "~/components/chargeRules/columns"; // Renamed to avoid conflict
 
 const { getChargeById, getChargeRulesByChargeId } = useCharges();
 const { pageNumber } = usePagesInfoStore();
@@ -15,7 +15,7 @@ const chargeId = ref<string>("");
 const route = useRoute();
 chargeId.value = getIdFromPath();
 
-const fetchData = async () => {
+const fetchChargeRulesData = async () => {
   if (!chargeId.value) return;
 
   try {
@@ -30,15 +30,23 @@ const fetchData = async () => {
   }
 };
 
-const refetch = async () => {
-  await fetchData();
-};
 
 onMounted(async () => {
   if (chargeId.value) {
-    await fetchData();
+    await fetchChargeRulesData();
   }
 });
+
+const refetch = async () => {
+  await fetchChargeRulesData();
+};
+
+
+// Provide the refetch function
+provide('refetchChargeRules', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <template>
