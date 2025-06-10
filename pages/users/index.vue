@@ -1,25 +1,20 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/users/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { useUsers } from "~/composables/useUsers";
 import type { User } from "~/types";
+import { columns as tableColumns } from "~/components/users/columns"; // Renamed to avoid conflict
 
 
-const { getUsers, searchUsers, isLoading } = useUsers();
-const loading = ref(isLoading.value);
+const { getUsers, searchUsers,  } = useUsers();
+const isLoading = ref(false);
 const isError = ref(false);
 const data = ref<User[]>([]);
 const keyword = ref<string>("");
 
-const refetch = async () => {
-  await fetchData();
-};
-
-const fetchData = async () => {
+const fetchSystemUserData = async () => {
   try {
     isLoading.value = true;
-    loading.value = true;
     const users = await getUsers(0, 1000000000); // Call your API function to fetch roles
     data.value = users.filter(user => {
       if(!user.staff && !user.operator && !user.customer){
@@ -38,32 +33,39 @@ const fetchData = async () => {
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
-
-await useAsyncData("usersData", async () => {
-  await fetchData();
-});
 
 const searchHandler = async () => {
   try {
     isLoading.value = true;
-    loading.value = true;
     data.value = await searchUsers(keyword.value); // Call your API function to fetch roles
   } catch (err: any) {
     console.error("Error fetching users:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
+
+onMounted(() => {
+  fetchSystemUserData();
+});
+
+const refetch = async () => {
+  await fetchSystemUserData();
+};
+
+// Provide the refetch function
+provide('refetchSystemUsers', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->
 <template>
-  <div v-if="loading" class="py-10 flex justify-center w-full">
+  <div v-if="isLoading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
 

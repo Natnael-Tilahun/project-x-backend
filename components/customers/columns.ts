@@ -5,6 +5,7 @@ import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
 import CustomerDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
+import type { Customer } from "~/types";
 
 export const columns: ColumnDef<Customer>[] = [
   {

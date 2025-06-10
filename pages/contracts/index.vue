@@ -1,42 +1,31 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/contracts/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Contract } from "~/types";
+import { columns as tableColumns } from "~/components/contracts/columns"; // Renamed to avoid conflict
 
-const { getContracts, getContractById, searchContract, isLoading } =
+const { getContracts, getContractById, searchContract } =
   useContracts();
-const loading = ref(isLoading.value);
+const isLoading = ref(false);
 const isError = ref(false);
 const data = ref<Contract[]>([]);
 const keyword = ref<string>("");
 
-const fetchData = async () => {
+const fetchContractsData = async () => {
   try {
     isLoading.value = true;
-    loading.value = true;
     const contracts = await getContracts(0, 100000000);
     data.value = contracts;
   } catch (err: any) {
     console.error("Error fetching contracts:", err);
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
-
-const refetch = async () => {
-  await fetchData();
-};
-
-await useAsyncData("contractsData", async () => {
-  await fetchData();
-});
 
 const searchHandler = async () => {
   try {
     isLoading.value = true;
-    loading.value = true;
     const response = await searchContract(keyword.value); // Call your API function to fetch roles
     if (response) {
       data.value = [];
@@ -51,14 +40,27 @@ const searchHandler = async () => {
     }
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
+
+onMounted(() => {
+  fetchContractsData();
+});
+
+const refetch = async () => {
+  await fetchContractsData();
+};
+
+// Provide the refetch function
+provide('refetchContracts', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->
 <template>
-  <div v-if="loading" class="py-10 flex justify-center w-full">
+  <div v-if="isLoading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
   <div

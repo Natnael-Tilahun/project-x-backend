@@ -1,24 +1,25 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/paymentIntegrations/columns";
 import { usePaymentIntegrations } from "~/composables/usePaymentIntegrations";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import { columns as tableColumns } from "~/components/paymentIntegrations/columns"; // Renamed to avoid conflict
+import type { PaymentIntegration } from "~/types";
 
 const { getPaymentIntegrations } = usePaymentIntegrations();
 const keyword = ref<string>("");
-const data = ref<ApiPaymentIntegration[]>([]);
-const isLoading = ref(true);
+const data = ref<PaymentIntegration[]>([]);
+const isLoading = ref(false);
 const isError = ref(false);
 const router = useRouter(); // {{ edit_2 }}
 
-const fetchData = async () => {
+const fetchPaymentIntegrationData = async () => {
   try {
     const paymentIntegrations = await getPaymentIntegrations(0, 100);
     // Sort integrations by name alphabetically
-    data.value = paymentIntegrations.sort((a, b) =>
-      a.integrationName
+    data.value = paymentIntegrations?.sort((a, b) =>
+      a?.integrationName
         .toLowerCase()
-        .localeCompare(b.integrationName.toLowerCase())
+        .localeCompare(b?.integrationName.toLowerCase())
     );
   } catch (error) {
     console.error("Error fetching payment integrations:", error);
@@ -28,13 +29,19 @@ const fetchData = async () => {
   }
 };
 
-onMounted(async () => {
-  await fetchData();
+onMounted(() => {
+  fetchPaymentIntegrationData();
 });
 
 const refetch = async () => {
-  await fetchData();
+  await fetchPaymentIntegrationData();
 };
+
+// Provide the refetch function
+provide('refetchSystemRoles', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->

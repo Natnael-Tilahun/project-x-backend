@@ -16,7 +16,11 @@ interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
   refetch: () => Promise<void>; // Accept refetch as a prop
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['applicationDeleted', 'editApplication']); // Added 'languageDeleted'
 
 function viewApplicationDetails(id: string) {
   navigateTo(`/applications/${id}`);
@@ -32,7 +36,7 @@ async function deleteApplication(id: string) {
     });
     setIsUpdated({ isUpdated: true });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
     console.error("Error deleting application:", err);
     isError.value = true;

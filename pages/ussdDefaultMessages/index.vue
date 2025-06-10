@@ -4,17 +4,16 @@ import type { DefaultMessage } from "~/types";
 import { ref, onMounted, provide, computed } from "vue"; // Added provide, useAsyncData, computed
 import { columns as tableColumns } from "~/components/defaultMessages/columns";
 
-const { getUssdDefaultMessages, isLoading } = useUssdDefaultMessage();
+const { getUssdDefaultMessages } = useUssdDefaultMessage();
 const keyword = ref<string>("");
 const data = ref<DefaultMessage[]>([]);
-const loading = ref(isLoading.value);
+const isLoading = ref(false);
 const isError = ref(false);
 const router = useRouter(); // {{ edit_2 }}
 
 const getUssdDefaultMessagesData = async () => {
   try {
     isLoading.value = true;
-    loading.value = true;
     isError.value = false;
     const ussdDefaultMessages = await getUssdDefaultMessages(0, 100);
     // Sort integrations by name alphabetically
@@ -26,13 +25,14 @@ const getUssdDefaultMessagesData = async () => {
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
 
-await useAsyncData("ussdDefaultMessagesData", async () => {
-  await getUssdDefaultMessagesData();
+
+onMounted(() => {
+  getUssdDefaultMessagesData();
 });
+
 
 const refetch = async () => {
   await getUssdDefaultMessagesData();

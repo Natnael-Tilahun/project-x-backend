@@ -1,40 +1,44 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/userRoles/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Role } from "~/types";
+import { columns as tableColumns } from "~/components/userRoles/columns"; // Renamed to avoid conflict
 
-const { getRoles, isLoading } = useRoles();
-const loading = ref(isLoading.value);
+const { getRoles,  } = useRoles();
+const isLoading = ref(false);
 const isError = ref(false);
 const data = ref<Role[]>([]);
 const { pageNumber } = usePagesInfoStore();
 
-const refetch = async () => {
-  await fetchData();
-};
-
-const fetchData = async () => {
+const fetchSystemRoleData = async () => {
   try {
     isLoading.value = true;
-    loading.value = true;
     data.value = await getRoles(); // Call your API function to fetch roles
   } catch (err) {
     console.error("Error fetching roles:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
   }
 };
 
-await useAsyncData("rolesData", async () => {
-  await fetchData();
+onMounted(() => {
+  fetchSystemRoleData();
 });
+
+const refetch = async () => {
+  await fetchSystemRoleData();
+};
+
+// Provide the refetch function
+provide('refetchSystemRoles', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <template>
-  <div v-if="loading" class="py-10 flex justify-center items-center">
+  <div v-if="isLoading" class="py-10 flex justify-center items-center">
     <UiLoading />
   </div>
   <div
