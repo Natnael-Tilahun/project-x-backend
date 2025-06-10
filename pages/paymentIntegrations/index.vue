@@ -14,7 +14,8 @@ const router = useRouter(); // {{ edit_2 }}
 
 const fetchPaymentIntegrationData = async () => {
   try {
-    const paymentIntegrations = await getPaymentIntegrations(0, 100);
+    isLoading.value = true;
+    const paymentIntegrations = await getPaymentIntegrations(0, 1000);
     // Sort integrations by name alphabetically
     data.value = paymentIntegrations?.sort((a, b) =>
       a?.integrationName
@@ -29,8 +30,8 @@ const fetchPaymentIntegrationData = async () => {
   }
 };
 
-onMounted(() => {
-  fetchPaymentIntegrationData();
+onMounted(async () => {
+  await fetchPaymentIntegrationData();
 });
 
 const refetch = async () => {
@@ -38,7 +39,7 @@ const refetch = async () => {
 };
 
 // Provide the refetch function
-provide('refetchSystemRoles', refetch);
+provide("refetchPaymentIntegrations", refetch);
 
 // Generate columns by passing the refetch function
 const columns = computed(() => tableColumns(refetch));
@@ -56,13 +57,13 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-  <UiPermissionGuard permission="CREATE_PAYMENT_INTEGRATION" >
-    <NuxtLink to="/paymentIntegrations/new" class="w-fit self-end">
-      <UiButton class="w-fit self-end px-5"
-        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
-        >Configure New</UiButton
-      >
-    </NuxtLink>
+    <UiPermissionGuard permission="CREATE_PAYMENT_INTEGRATION">
+      <NuxtLink to="/paymentIntegrations/new" class="w-fit self-end">
+        <UiButton class="w-fit self-end px-5"
+          ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
+          >Configure New</UiButton
+        >
+      </NuxtLink>
     </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
@@ -73,7 +74,9 @@ const columns = computed(() => tableColumns(refetch));
               :model-value="(table?.getColumn('integrationName')?.getFilterValue() as string) ?? ''"
               class="h-8 w-[150px] lg:w-[250px]"
               @input="
-                table?.getColumn('integrationName')?.setFilterValue($event.target.value)
+                table
+                  ?.getColumn('integrationName')
+                  ?.setFilterValue($event.target.value)
               "
             />
           </div>
