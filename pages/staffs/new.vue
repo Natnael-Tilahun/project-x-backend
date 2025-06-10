@@ -109,6 +109,19 @@ onMounted(() => {
                 <FormMessage />
               </FormItem>
             </FormField>
+            <FormField v-slot="{ componentField }" name="middlename">
+              <FormItem>
+                <FormLabel>Middle Name </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter staff middle name"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
             <FormField v-slot="{ componentField }" name="lastname">
               <FormItem>
                 <FormLabel>Last Name </FormLabel>
@@ -122,6 +135,19 @@ onMounted(() => {
                 <FormMessage />
               </FormItem>
             </FormField>
+            <FormField v-slot="{ componentField }" name="staffId">
+              <FormItem>
+                <FormLabel> Staff Id </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter staff id"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
             <FormField v-slot="{ componentField }" name="emailAddress">
               <FormItem>
                 <FormLabel> Email Address </FormLabel>
@@ -129,6 +155,19 @@ onMounted(() => {
                   <UiInput
                     type="text"
                     placeholder="Enter email address"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="mobileNo">
+              <FormItem>
+                <FormLabel> Phone Number </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter phone number"
                     v-bind="componentField"
                   />
                 </FormControl>
