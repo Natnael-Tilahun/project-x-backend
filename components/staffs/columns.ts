@@ -70,23 +70,6 @@ export const columns = (refetch: RefetchFunction): ColumnDef<Staff>[] => [
     },
   },
   {
-    accessorKey: "displayName",
-    header: "Display Name",
-    cell: ({ row }) => {
-      const displayName = row.getValue("displayName");
-      return displayName
-        ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            row.getValue("displayName")
-          )
-        : h("p", "-");
-    },
-  },
-  {
     accessorKey: "mobileNo",
     header: "Phone Number",
     cell: ({ row }) => {
@@ -134,25 +117,6 @@ export const columns = (refetch: RefetchFunction): ColumnDef<Staff>[] => [
                 "whitespace-nowrap truncate hover:w-full font-medium",
             },
             new Date(row.getValue("joiningDate")).toDateString()
-          )
-        : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "user",
-    header: "User",
-    cell: ({ row }) => {
-      const userId = row.original.user?.id;
-      const route = useRoute();
-      return userId
-        ? h(
-            NuxtLink,
-            {
-              class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}/${userId}`,
-            },
-            row.getValue("user")?.phone
           )
         : h("p", "-");
     },

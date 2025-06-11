@@ -218,6 +218,30 @@ export const useContracts = () => {
     }
   };
 
+  const refreshContractCoreCustomers: (
+    contractId: string,
+  ) => ApiResult<Contract> = async (contractId) => {
+    try {
+      const { data, pending, error, status } = await fetch<Contract>(
+        `/api/v1/internal/contracts/${contractId}/refresh-core-customers`,
+        {
+          method: "POST",
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Contract) : null;
+    } catch (err) {
+      // handleApiError(err);
+      return null;
+    }
+  };
+
   return {
     isLoading,
     getContracts,
@@ -229,6 +253,7 @@ export const useContracts = () => {
     getContractByCoreCustomerId,
     getContractByCustomerId,
     searchContract,
+    refreshContractCoreCustomers,
     isSubmitting,
   };
 };
