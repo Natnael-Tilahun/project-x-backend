@@ -169,11 +169,11 @@ const mainLinks: MenuItem[] = [
     dropdown: [
       { title: "Staffs", link: "/staffs", permission: "VIEW_STAFF" },
       { title: "Offices", link: "/offices", permission: "VIEW_OFFICES" },
-      {
-        title: "Staff Assignments",
-        link: "/staffAssignments",
-        permission: "VIEW_STAFF_ASSIGNMENTS",
-      },
+      // {
+      //   title: "Staff Assignments",
+      //   link: "/staffAssignments",
+      //   permission: "VIEW_STAFF_ASSIGNMENTS",
+      // },
     ],
   },
   // {

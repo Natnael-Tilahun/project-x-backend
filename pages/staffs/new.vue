@@ -7,7 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { ref, onBeforeUnmount } from "vue";
+import { ref, onBeforeUnmount, watch } from "vue";
 import { toast } from "~/components/ui/toast";
 import { newStaffFormSchema } from "~/validations/newStaffFormSchema";
 import type { Office, Role, Staff } from "~/types";
@@ -28,6 +28,27 @@ const staffs = ref<Staff[]>([]);
 const form = useForm({
   validationSchema: newStaffFormSchema,
 });
+
+// Add this watch effect to update username when relevant fields change
+watch(
+  [
+    () => form.values.firstname,
+    () => form.values.middlename,
+    () => form.values.lastname,
+    () => form.values.staffId
+  ],
+  ([firstname, middlename, lastname, staffId]) => {
+    if (firstname || middlename || lastname || staffId) {
+      const firstChar = firstname ? firstname.charAt(0).toUpperCase() : '';
+      const middleChar = middlename ? middlename.charAt(0).toUpperCase() : '';
+      const lastChar = lastname ? lastname.charAt(0).toUpperCase() : '';
+      const staffIdPart = staffId ? staffId.toLowerCase() : '';
+      
+      const username = `${firstChar}${middleChar}${lastChar}${staffIdPart}`;
+      form.setFieldValue('username', username);
+    }
+  }
+);
 
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
@@ -164,7 +185,8 @@ onMounted(() => {
             <FormField v-slot="{ componentField }" name="mobileNo">
               <FormItem>
                 <FormLabel> Phone Number </FormLabel>
-                <FormControl>
+                <FormControl
+                >
                   <UiInput
                     type="text"
                     placeholder="Enter phone number"
@@ -179,6 +201,7 @@ onMounted(() => {
                 <FormLabel>Username</FormLabel>
                 <FormControl>
                   <UiInput
+                    disabled
                     type="text"
                     placeholder="Enter staff user name"
                     v-bind="componentField"

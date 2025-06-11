@@ -6,7 +6,13 @@ import { Badge } from "../ui/badge";
 import StaffAssignmentsDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { StaffAssignment } from "~/types";
-export const columns: ColumnDef<StaffAssignment>[] = [
+import { h, inject } from "vue"; // Import inject
+
+
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<StaffAssignment>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -102,25 +108,6 @@ export const columns: ColumnDef<StaffAssignment>[] = [
     },
   },
   {
-    accessorKey: "supervisor",
-    header: "Supervisor",
-    cell: ({ row }) => {
-      const supervisorId = row.original.supervisor?.id;
-      const route = useRoute();
-      return supervisorId
-        ? h(
-            NuxtLink,
-            {
-              class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/staffs/${supervisorId}`,
-            },
-            "View Supervisor"
-          )
-        : h("p", "-");
-    },
-  },
-  {
     accessorKey: "startDate",
     header: "Assignment Date",
     cell: ({ row }) => {
@@ -147,6 +134,7 @@ export const columns: ColumnDef<StaffAssignment>[] = [
         { class: "relative" },
         h(StaffAssignmentsDataTableRowActionsVue, {
           row,
+          refetch
         })
       );
     },

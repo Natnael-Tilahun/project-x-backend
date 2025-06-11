@@ -100,7 +100,6 @@ async function terminateStaffAssignments(id: string) {
       <!-- </UiPermissionGuard> -->
       <UiPermissionGuard permission="DELETE_STAFF_ASSIGNMENTS">
         <UiDropdownMenuItem
-          :disabled="row.original.staff?.id"
           @click="setOpenEditModal(true)"
           class="text-red-600"
         >

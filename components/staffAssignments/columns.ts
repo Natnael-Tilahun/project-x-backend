@@ -107,25 +107,6 @@ export const columns = (refetch: RefetchFunction): ColumnDef<StaffAssignment>[] 
     },
   },
   {
-    accessorKey: "supervisor",
-    header: "Supervisor",
-    cell: ({ row }) => {
-      const supervisorId = row.original.supervisor?.id;
-      const route = useRoute();
-      return supervisorId
-        ? h(
-            NuxtLink,
-            {
-              class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}/${supervisorId}`,
-            },
-            row.getValue("supervisor")?.firstname + " " + row.getValue("supervisor")?.lastname
-          )
-        : h("p", "-");
-    },
-  },
-  {
     accessorKey: "startDate",
     header: "Assignment Date",
     cell: ({ row }) => {

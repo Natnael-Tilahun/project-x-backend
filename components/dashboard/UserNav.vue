@@ -42,7 +42,7 @@ const logoutHandler = async () => {
         </NuxtLink>
         <NuxtLink to="/settings">
           <UiDropdownMenuItem>
-            Settings
+            Change Password
             <UiDropdownMenuShortcut>⌘S</UiDropdownMenuShortcut>
           </UiDropdownMenuItem>
         </NuxtLink>
