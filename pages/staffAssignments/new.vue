@@ -45,7 +45,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       title: "Staff assignment Created",
       description: "Staff assignment created successfully",
     });
-    navigateTo(`/staffAssignments/d7670f39-9554-4de6-83cf-7a28f774bafa?activeTab=staffAssignments`);
+    navigateTo(`/staffs/${data.value?.staff.id}?activeTab=staffAssignments`);
   } catch (err: any) {
     console.error("Error creating new staff assignment:", err.message);
     isError.value = true;
@@ -161,7 +161,7 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="supervisorStaffId">
+            <!-- <FormField v-slot="{ componentField }" name="supervisorStaffId">
               <FormItem class="w-full">
                 <FormLabel> Supervisor </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -180,7 +180,7 @@ onMounted(() => {
                 </UiSelect>
                 <FormMessage />
               </FormItem>
-            </FormField>
+            </FormField> -->
 
             <FormField v-slot="{ componentField }" name="assignmentDate">
               <FormItem>

@@ -20,7 +20,12 @@ const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['staffAssignmentsDeleted', 'editStaffAssignments']); // Added 'languageDeleted'
 
 function viewStaffAssignmentDetail(id: string) {
   navigateTo(`/staffAssignments/${id}`);
@@ -37,7 +42,7 @@ async function deleteStaffAssignments(id: string) {
       title: "Staff assignment deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
     console.error("Error deleting staff assignment:", err);
     isError.value = true;
@@ -58,7 +63,7 @@ async function terminateStaffAssignments(id: string) {
       title: "Staff assignment terminated successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
     console.error("Error terminating staff assignment:", err);
     isError.value = true;
@@ -96,7 +101,6 @@ async function terminateStaffAssignments(id: string) {
       <!-- </UiPermissionGuard> -->
       <UiPermissionGuard permission="DELETE_STAFF_ASSIGNMENTS">
         <UiDropdownMenuItem
-          disabled
           @click="setOpenEditModal(true)"
           class="text-red-600"
         >

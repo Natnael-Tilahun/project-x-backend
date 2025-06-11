@@ -191,26 +191,6 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="supervisorStaffId">
-              <FormItem class="w-full">
-                <FormLabel> Supervisor </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a supervisor" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem v-for="item in staffs" :value="item.id">
-                        {{ item.firstname }} {{ item.lastname }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
-              </FormItem>
-            </FormField>
 
           <FormField v-slot="{ componentField }" name="assignmentDate">
             <FormItem>

@@ -1,4 +1,5 @@
 import { useAuth } from './useAuth';
+import { toast } from "~/components/ui/toast";
 
 export const useInactivityTimer = (timeoutMinutes: number = 30) => {
   const { logout } = useAuth();
@@ -10,6 +11,11 @@ export const useInactivityTimer = (timeoutMinutes: number = 30) => {
       clearTimeout(inactivityTimer);
     }
     inactivityTimer = setTimeout(() => {
+      toast({
+        title: "Session timeout due to user inactivity.",
+        description: "Please login again.",
+        variant: "destructive"
+      });
       logout();
     }, timeoutMs);
   };
