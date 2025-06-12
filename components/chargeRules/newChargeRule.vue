@@ -151,6 +151,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormControl>
                   <UiInput
                     type="number"
+                    step="any"
                     placeholder="Enter percentage"
                     v-bind="componentField"
                   />
