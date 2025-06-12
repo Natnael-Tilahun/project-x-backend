@@ -152,6 +152,56 @@ export const usePaymentIntegrations = () => {
     }
   };
 
+  const importPaymentIntegration: (
+    page?: number,
+    size?: number
+  ) => ApiResult<PaymentIntegration[]> = async (page, size) => {
+    try {
+      const { data, pending, error, status } = await fetch<PaymentIntegration[]>(
+        '/api/v1/internal/payment-integrations/export',
+        {
+          params: { page, size }
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as PaymentIntegration[]) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
+  const exportPaymentIntegration: (
+    paymentIntegrationData: any
+  ) => ApiResult<PaymentIntegration> = async (paymentIntegrationData) => {
+    try {
+      const { data, pending, error, status } = await fetch<PaymentIntegration>(
+        '/api/v1/internal/payment-integrations/import',
+        {
+          method: "POST",
+          body: paymentIntegrationData
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as PaymentIntegration) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
   return {
     isLoading,
     getPaymentIntegrations,
@@ -160,6 +210,8 @@ export const usePaymentIntegrations = () => {
     createNewPaymentIntegration,
     deletePaymentIntegration,
     updatePaymentIntegration,
+    exportPaymentIntegration,
+    importPaymentIntegration,
     isSubmitting,
   };
 };

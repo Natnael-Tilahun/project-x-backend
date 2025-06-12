@@ -228,7 +228,7 @@ const fetchData = async () => {
     permissionsData.value = permissions.sort((a: Permission, b: Permission) =>
       a?.code?.toLowerCase().localeCompare(b?.code?.toLowerCase())
     );
-    const serviceDefinitions = await getServiceDefinitions();
+    const serviceDefinitions = await getServiceDefinitions(0,1000000);
     serviceDefinitionsData.value = serviceDefinitions;
   } catch (err) {
     console.error("Error fetching permissions:", err);
