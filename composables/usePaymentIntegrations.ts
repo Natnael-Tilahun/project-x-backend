@@ -153,31 +153,6 @@ export const usePaymentIntegrations = () => {
   };
 
   const importPaymentIntegration: (
-    page?: number,
-    size?: number
-  ) => ApiResult<PaymentIntegration[]> = async (page, size) => {
-    try {
-      const { data, pending, error, status } = await fetch<PaymentIntegration[]>(
-        '/api/v1/internal/payment-integrations/export',
-        {
-          params: { page, size }
-        }
-      );
-
-      isLoading.value = pending.value;
-
-      if (status.value === "error") {
-        handleApiError(error);
-      }
-
-      return data.value ? (data.value as unknown as PaymentIntegration[]) : null;
-    } catch (err) {
-      handleApiError(err);
-      return null;
-    }
-  };
-
-  const exportPaymentIntegration: (
     paymentIntegrationData: any
   ) => ApiResult<PaymentIntegration> = async (paymentIntegrationData) => {
     try {
@@ -187,6 +162,25 @@ export const usePaymentIntegrations = () => {
           method: "POST",
           body: paymentIntegrationData
         }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as PaymentIntegration) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
+  const exportPaymentIntegration: (id:string) => ApiResult<PaymentIntegration> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<PaymentIntegration>(
+        `/api/v1/internal/payment-integrations/${id}/export`,
       );
 
       isLoading.value = pending.value;

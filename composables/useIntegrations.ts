@@ -138,7 +138,7 @@ export const useIntegrations = () => {
   };
 
 
-  const exportIntegration: (integrationData: any) => ApiResult<ApiIntegration> = async (integrationData) => {
+  const importIntegration: (integrationData: any) => ApiResult<ApiIntegration> = async (integrationData) => {
     try {
       const { data, pending, error, status } = await fetch<ApiIntegration>(
         '/api/v1/internal/api-integrations/import',
@@ -161,13 +161,10 @@ export const useIntegrations = () => {
     }
   };
 
-  const importIntegration: (page?: number, size?: number) => ApiResult<ApiIntegration[]> = async (page, size) => {
+  const exportIntegration: (id:string) => ApiResult<ApiIntegration> = async (id) => {
     try {
-      const { data, pending, error, status } = await fetch<ApiIntegration[]>(
-        '/api/v1/internal/api-integrations/export',
-        {
-          params: { page, size }
-        }
+      const { data, pending, error, status } = await fetch<ApiIntegration>(
+        `/api/v1/internal/api-integrations/${id}/export`,
       );
 
       isLoading.value = pending.value;
@@ -176,7 +173,7 @@ export const useIntegrations = () => {
         handleApiError(error);
       }
 
-      return data.value ? (data.value as unknown as ApiIntegration[]) : null;
+      return data.value ? (data.value as unknown as ApiIntegration) : null;
     } catch (err) {
       handleApiError(err);
       return null;

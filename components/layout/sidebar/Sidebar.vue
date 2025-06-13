@@ -233,11 +233,6 @@ const mainLinks: MenuItem[] = [
         permission: "VIEW_PAYMENT_INTEGRATIONS",
       },
       {
-        title: "Import Export Integrations",
-        link: "/importExportIntegrations",
-        permission: "VIEW_PAYMENT_INTEGRATIONS",
-      },
-      {
         title: "Menu Categories",
         link: "/menuCategories",
         permission: "VIEW_INTEGRATION_MENUS",
