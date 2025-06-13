@@ -1020,7 +1020,7 @@ interface LocalizedUssdMenu {
 }
 
 interface Charge {
-  id?: number;
+  id?: string;
   chargeCode?: string;
   category?: string;
   type: ChargeType;
