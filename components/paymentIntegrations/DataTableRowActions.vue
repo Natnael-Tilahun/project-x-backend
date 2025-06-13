@@ -2,10 +2,15 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { usePaymentIntegrations } from "~/composables/usePaymentIntegrations";
-const { deletePaymentIntegration, isLoading } = usePaymentIntegrations();
+const { deletePaymentIntegration, exportPaymentIntegration, isLoading } = usePaymentIntegrations();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const openEditModal = ref(false);
+const openExportModal = ref(false);
+
+const setOpenExportModal = (value: boolean) => {
+  openExportModal.value = value;
+};
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
@@ -43,6 +48,27 @@ async function deletePaymentIntegrationHandler(id: string) {
     isLoading.value = false;
     loading.value = false;
     setOpenEditModal(false);
+  }
+}
+
+async function exportIntegrationHandler(id: string) {
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    await exportPaymentIntegration (id); // Call your API function to fetch roles
+    console.log("Integration exported successfully");
+    toast({
+      title: "Payment Integration exported successfully",
+    });
+    // Reload the window after deleting the role
+    await props.refetch(); // Call refetch after successful deletion
+  } catch (err) {
+    console.error("Error exporting payment integration:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+    setOpenExportModal(false);
   }
 }
 </script>
@@ -90,6 +116,33 @@ async function deletePaymentIntegrationHandler(id: string) {
         <UiAlertDialogAction
           @click="deletePaymentIntegrationHandler(row.original.id)"
         >
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="isLoading"
+            :disabled="isLoading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
+
+
+  <UiAlertDialog :open="openExportModal" :onOpenChange="setOpenExportModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure?dd</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          This action cannot be undone. This will import the
+          integration data and download it to your file system.
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenExportModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction @click="exportIntegrationHandler(row.original.id)">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"

@@ -11,6 +11,8 @@ const data = ref<PaymentIntegration[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
 const router = useRouter(); // {{ edit_2 }}
+const openImportDialog = ref(false)
+const isDownloading = ref(false)
 
 const fetchPaymentIntegrationData = async () => {
   try {
@@ -43,6 +45,11 @@ provide("refetchPaymentIntegrations", refetch);
 
 // Generate columns by passing the refetch function
 const columns = computed(() => tableColumns(refetch));
+
+const closeImportDialog = async () => {
+  openImportDialog.value = false
+};
+
 </script>
 
 <!-- Render DataTable only if data is available -->
@@ -58,12 +65,35 @@ const columns = computed(() => tableColumns(refetch));
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
     <UiPermissionGuard permission="CREATE_PAYMENT_INTEGRATION">
+      <div class="flex items-center justify-end gap-6">
+
       <NuxtLink to="/paymentIntegrations/new" class="w-fit self-end">
         <UiButton class="w-fit self-end px-5"
           ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
           >Configure New</UiButton
         >
       </NuxtLink>
+
+      <UiSheet v-model:open="openImportDialog">
+          <UiSheetTrigger>
+            <UiButton class="self-end" :disabled="isDownloading" type="submit">
+              <Icon
+                name="svg-spinners:8-dots-rotate"
+                v-if="isDownloading"
+                class="mr-2 h-4 w-4 animate-spin"
+              ></Icon>
+
+              Import Payment Integration
+            </UiButton>
+          </UiSheetTrigger>
+
+          <UiSheetContent
+            class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+          >
+            <PaymentIntegrationsImportPaymentIntegration @closeImportDialog="closeImportDialog"  @refresh="refetch" />
+          </UiSheetContent>
+        </UiSheet>
+        </div>
     </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">

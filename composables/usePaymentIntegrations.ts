@@ -152,6 +152,50 @@ export const usePaymentIntegrations = () => {
     }
   };
 
+  const importPaymentIntegration: (
+    paymentIntegrationData: any
+  ) => ApiResult<PaymentIntegration> = async (paymentIntegrationData) => {
+    try {
+      const { data, pending, error, status } = await fetch<PaymentIntegration>(
+        '/api/v1/internal/payment-integrations/import',
+        {
+          method: "POST",
+          body: paymentIntegrationData
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as PaymentIntegration) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
+  const exportPaymentIntegration: (id:string) => ApiResult<PaymentIntegration> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<PaymentIntegration>(
+        `/api/v1/internal/payment-integrations/${id}/export`,
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as PaymentIntegration) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
   return {
     isLoading,
     getPaymentIntegrations,
@@ -160,6 +204,8 @@ export const usePaymentIntegrations = () => {
     createNewPaymentIntegration,
     deletePaymentIntegration,
     updatePaymentIntegration,
+    exportPaymentIntegration,
+    importPaymentIntegration,
     isSubmitting,
   };
 };

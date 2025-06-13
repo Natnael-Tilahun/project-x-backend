@@ -137,6 +137,49 @@ export const useIntegrations = () => {
     }
   };
 
+
+  const importIntegration: (integrationData: any) => ApiResult<ApiIntegration> = async (integrationData) => {
+    try {
+      const { data, pending, error, status } = await fetch<ApiIntegration>(
+        '/api/v1/internal/api-integrations/import',
+        {
+          method: "POST",
+          body: integrationData
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as ApiIntegration) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
+  const exportIntegration: (id:string) => ApiResult<ApiIntegration> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<ApiIntegration>(
+        `/api/v1/internal/api-integrations/${id}/export`,
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as ApiIntegration) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
   return {
     isLoading,
     getIntegrations,
@@ -145,6 +188,8 @@ export const useIntegrations = () => {
     deleteIntegration,
     updateIntegration,
     getIntegrationOperations,
+    importIntegration,
+    exportIntegration,
     isSubmitting,
   };
 };
