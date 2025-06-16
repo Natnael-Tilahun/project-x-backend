@@ -52,10 +52,29 @@ export const useMenus = () => {
     }
   };
 
+  const getChildrensByParentId: (id: string) => ApiResult<Menu> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<Menu>(
+        `/api/v1/internal/menus/${id}/children`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Menu) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
   const createNewMenu: (menuData: any) => ApiResult<Menu> = async (menuData) => {
     try {
       const { data, pending, error, status } = await fetch<Menu>(
-        '/api/v1/internal/menus',
+        '/api/v1/internal/menus/create',
         {
           method: "POST",
           body: menuData
@@ -124,9 +143,9 @@ export const useMenus = () => {
   const updateChildrenMenus: (menuId: string, menuData: any) => ApiResult<Menu> = async (menuId, menuData) => {
     try {
       const { data, pending, error, status } = await fetch<Menu>(
-        `/api/v1/internal/menus/${menuId}/children`,
+        `/api/v1/internal/menus/${menuId}/add-children`,
         {
-          method: "PUT",
+          method: "POST",
           body: menuData
         }
       );
@@ -168,6 +187,7 @@ export const useMenus = () => {
     isLoading,
     getMenus,
     getMenuById,
+    getChildrensByParentId,
     createNewMenu,
     deleteMenu,
     updateMenu,
