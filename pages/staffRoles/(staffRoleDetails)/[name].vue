@@ -199,8 +199,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   const updatedPermissions =
     data.value?.permissionUsageData?.reduce(
       (acc: Record<string, boolean>, permission: Permission) => {
-        if (values[permission.code] != undefined) {
-          acc[permission.code] = values[permission.code];
+        if (form.values[permission.code] != undefined) {
+          acc[permission.code] = form.values[permission.code];
         } else if (
           data.value?.permissionUsageData?.find(
             (p) => p.code === permission.code
@@ -217,15 +217,18 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     ) || {};
 
   const updatedRoleData = {
+    name: values.name,
+    description: values.description,
+    enforce2fa: values.enforce2fa,
+    enabled: values.enabled,
     permissions: updatedPermissions,
-    ...values
+    scope: RoleScope.ORGANIZATIONAL
   };
 
   try {
     isUpdating.value = true;
     updating.value = true;
-    await updateStaffRolePermissions(name, updatedRoleData); // Call your API function to fetch roles
-    // await getAuthorities()
+    await updateStaffRolePermissions(name, updatedRoleData);
     toast({
       title: "Role permissions updated successfully.",
     });

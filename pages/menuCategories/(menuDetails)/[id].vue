@@ -25,6 +25,7 @@ const {
   updateMenu,
   updateProductMenus,
   updateChildrenMenus,
+  getChildrensByParentId,
   isLoading,
   isSubmitting,
 } = useMenus();
@@ -38,6 +39,8 @@ const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
 const allPaymentIntegrations = ref<PaymentIntegration[]>([]);
 const allMenus = ref<Menu[]>([]);
+const allMenuChildrens = ref<Menu[]>([]);
+
 const selectedDynamicPaymentMenus = ref<PaymentIntegration[]>([]);
 const selectedChildren = ref<Menu[]>([]);
 const isError = ref(false);
@@ -73,7 +76,7 @@ const getMenuDetails = async () => {
       await getUploadedImage(data.value?.iconPath);
     }
     selectedDynamicPaymentMenus.value = data.value?.dynamicPaymentMenus || [];
-    selectedChildren.value = data.value?.children || [];
+    // selectedChildren.value = data.value?.children || [];
     form.setValues(data.value);
   } catch (err) {
     console.error("Error fetching menu:", err);
@@ -100,6 +103,20 @@ const getMenusData = async () => {
   }
 };
 
+const getMenuChildrensData = async () => {
+  try {
+    if(data.value?.parent?.id){
+      selectedChildren.value = await getChildrensByParentId(data.value?.parent?.id);
+      console.log("allMenuChildrens: ", selectedChildren.value)
+    }
+  } catch (err) {
+    console.error("Error fetching menu childrens:", err);
+  }
+};
+
+
+
+
 // onMounted(async () => {
 //   getPaymentIntegrationData();
 //   getMenusData();
@@ -109,12 +126,14 @@ await useAsyncData("menuData", () => {
   getMenuDetails();
   getPaymentIntegrationData();
   getMenusData();
+  getMenuChildrensData()
 });
 
 const refetch = async () => {
   await getPaymentIntegrationData();
   await getMenuDetails();
   await getMenusData();
+  getMenuChildrensData()
 };
 
 const onSubmit = form.handleSubmit(async (values: any) => {
@@ -255,9 +274,9 @@ const updateProductMenu = async () => {
 const updateChildrenMenu = async () => {
   try {
     childrenMenuLoading.value = true;
-    const updatedValues = form.values.children.map((menu: any) => ({
-      id: menu.id,
-    }));
+    const updatedValues = {
+      childIds: form.values.children.map((menu: any) => (menu.id))
+    }
     await updateChildrenMenus(menuId.value, updatedValues);
     toast({
       title: "Children Menu Updated",

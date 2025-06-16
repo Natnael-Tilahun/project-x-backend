@@ -31,8 +31,7 @@ export const usePaymentIntegrations = () => {
 
       return data.value ? (data.value as unknown as PaymentIntegration[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
