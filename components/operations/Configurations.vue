@@ -30,6 +30,7 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import JSONTree from "@/components/JSONTree.vue";
+import type { ApiOperation } from "~/types";
 
 const openItems = ref("configuration");
 const jsonData = {

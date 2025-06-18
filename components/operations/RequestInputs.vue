@@ -12,6 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { DataType, LogicalOperators, Operators } from "@/global-types";
+import type { RequestInput } from "~/types";
 
 const route = useRoute();
 const {
@@ -92,7 +93,7 @@ const createNewParameter = form.handleSubmit(async (values: any) => {
     loading.value = true;
     const data = {
       ...values,
-      apiOperation: { id: operationId.value },
+      apiOperationId :operationId.value
     };
     const createdRequestInput = await createNewRequestInput(data);
 

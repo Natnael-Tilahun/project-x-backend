@@ -123,7 +123,7 @@ const createNewFieldHandler = form.handleSubmit(async (values: any) => {
     }
     const data = {
       ...values,
-      form: { id: formId.value },
+      formId: formId.value,
     };
 
     const createdField = await createNewField(data);

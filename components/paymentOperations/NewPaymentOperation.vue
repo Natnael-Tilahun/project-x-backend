@@ -134,7 +134,7 @@ const fetchData = async () => {
     selectedApiIntegration.value = apiIntegrations.value[0].id;
     selectedApiOperations.value = apiOperations.value.filter(
       (operation) =>
-        operation?.apiIntegration?.id === selectedApiIntegration.value
+        operation?.apiIntegrationId === selectedApiIntegration.value
     );
     paymentIntegrationData.value = allPaymentIntegrations.value.filter(
       (integration) => integration.id === integrationId.value
@@ -168,19 +168,10 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     loading.value = true;
     const paymentOperationData = {
       ...values,
-      paymentIntegration: { id: integrationId.value },
-      prevPaymentOperation:
-        typeof values.prevPaymentOperation === "string"
-          ? { id: values.prevPaymentOperation }
-          : values.prevPaymentOperation,
-      nextPaymentOperation:
-        typeof values.nextPaymentOperation === "string"
-          ? { id: values.nextPaymentOperation }
-          : values.nextPaymentOperation,
-      apiOperation:
-        typeof values.apiOperation == "string"
-          ? { id: values.apiOperation }
-          : values.apiOperation,
+      paymentIntegrationId: integrationId.value,
+      prevPaymentOperationId: values.prevPaymentOperation,
+      nextPaymentOperationId: values.nextPaymentOperation,
+      apiOperationId: values.apiOperation,
       form: values.form ? values.form : null,
       apiRequestMappingsRegistry: values.apiRequestMappingsRegistry
         ? values.apiRequestMappingsRegistry
@@ -191,9 +182,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     // formId.value = response.form.id;
     form.setValues({
       ...response,
-      prevPaymentOperation: response.prevPaymentOperation?.id,
-      nextPaymentOperation: response.nextPaymentOperation?.id,
-      apiOperation: response.apiOperation?.id,
+      prevPaymentOperationId: response.prevPaymentOperationId,
+      nextPaymentOperationId: response.nextPaymentOperationId,
+      apiOperationId: response.apiOperationId,
     });
     operationId.value = data.value.id;
     router.push(
@@ -218,7 +209,7 @@ function splitPath(path: any) {
 
 watch(selectedApiIntegration, async (newApiIntegrationId) => {
   selectedApiOperations.value = apiOperations.value.filter(
-    (operation) => operation?.apiIntegration?.id === newApiIntegrationId
+    (operation) => operation?.apiIntegrationId === newApiIntegrationId
   );
 });
 </script>
@@ -522,7 +513,7 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
             </FormItem>
           </FormField>
           <FormField
-            :model-value="data?.apiOperation?.id"
+            :model-value="data?.apiOperationId"
             v-slot="{ componentField }"
             name="apiOperation"
           >
@@ -549,7 +540,7 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
             </FormItem>
           </FormField>
           <FormField
-            :model-value="data?.prevPaymentOperation?.id"
+            :model-value="data?.prevPaymentOperationId"
             v-slot="{ componentField }"
             name="prevPaymentOperation"
           >
@@ -579,7 +570,7 @@ watch(selectedApiIntegration, async (newApiIntegrationId) => {
             </FormItem>
           </FormField>
           <FormField
-            :model-value="data?.nextPaymentOperation?.id"
+            :model-value="data?.nextPaymentOperationId"
             v-slot="{ componentField }"
             name="nextPaymentOperation"
           >
