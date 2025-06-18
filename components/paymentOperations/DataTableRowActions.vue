@@ -14,7 +14,11 @@ const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['operationDeleted', 'editOperation']); // Added 'languageDeleted'
 
 function viewIntegrationDetail(id: string) {
   navigateTo({
@@ -37,7 +41,7 @@ async function deletePaymentOperationHandler(id: string) {
       title: "Payment Operation deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
     console.error("Error deleting payment operations:", err);
     isError.value = true;

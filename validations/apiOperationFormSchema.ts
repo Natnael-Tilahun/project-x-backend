@@ -12,10 +12,10 @@ export const apiOperationFormSchema = toTypedSchema(
     httpMethod: httpMethodSchema,
     endpointPath: z.string(),
     requestBodyTemplate: z.string().optional().nullable(),
-    // responseOutputs: z.string().optional().nullable(),
-    // requestInputs: z.string().optional().nullable(),
+    responseOutputs: z.any().optional().nullable(),
+    requestInputs: z.any().optional().nullable(),
     integrationOperations: z.string().optional().nullable(),
-    apiIntegration: z.any().optional().nullable(),
+    apiIntegrationId: z.string().optional().nullable(),
     bodyType: bodyTypeSchema,
     apiOperationPath: z.string().optional().nullable(),
   })

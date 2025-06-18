@@ -60,9 +60,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     loading.value = true;
     const operationData = {
       ...values,
-      apiIntegration: {
-        id: integrationId.value,
-      },
+      apiIntegrationId:integrationId.value,
     };
     console.log("Operation Data: ", operationData);
     data.value = await createNewOperation(operationData); // Call your API function to fetch profile

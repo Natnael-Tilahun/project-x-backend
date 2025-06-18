@@ -2,7 +2,8 @@
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 import { PaymentOperationType } from "@/global-types";
-import { columns } from "~/components/paymentOperations/columns";
+import { columns as tableColumns } from "~/components/paymentOperations/columns"; // Renamed to avoid conflict
+
 import type { PaymentOperation } from "~/types";
 
 const {
@@ -45,6 +46,12 @@ onMounted(() => {
 const refetch = async () => {
   await getAllPaymentOperations();
 };
+
+// Provide the refetch function
+provide('refetchApiOperations', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <template>

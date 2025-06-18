@@ -11,6 +11,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import type { ResponseOutput } from "~/types";
 
 const route = useRoute();
 
@@ -75,7 +76,7 @@ const onSubmitNewParameter = form.handleSubmit(async (values: any) => {
     loading.value = true;
     const data = {
       ...values,
-      apiOperation: { id: operationId.value },
+      apiOperationId: operationId.value
     };
     const createdResponseOutput = await createNewResponseOutput(data);
 
@@ -119,7 +120,7 @@ const deleteResponseOutputHandler = async (id: string) => {
   }
 };
 
-const newParameter = ref<ResponseOutput | null>(null);
+const newParameter = ref<ResponseOutput| null>(null);
 
 const addNewParameter = () => {
   if (newParameter.value && !isParameterFilled(newParameter.value)) {
