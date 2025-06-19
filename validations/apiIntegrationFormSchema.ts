@@ -16,7 +16,7 @@ export const apiIntegrationFormSchema = toTypedSchema(
     timeout: z.number().optional().nullable(),
     retryRetries: z.number().optional().nullable(),
     retryDelay: z.number().optional().nullable(),
-    apiOperations: z.array(z.any()).optional().nullable(),
+    apiOperations: z.any().optional().nullable(),
     apiIntegrationPath: z.string().optional().nullable(),
     authConfig: z.any().optional().nullable(),
     protocol: ProtocolSchema,
