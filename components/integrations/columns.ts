@@ -75,14 +75,6 @@ export const columns = (refetch: RefetchFunction): ColumnDef<ApiIntegration>[] =
     },
   },
   {
-    accessorKey: "auth",
-    header: "Auth",
-    cell: ({ row }) => {
-      const auth = row.getValue("auth");
-      return auth ? h("p", auth) : h("p", "-");
-    },
-  },
-  {
     accessorKey: "version",
     header: "Version",
     cell: ({ row }) => {
@@ -97,30 +89,6 @@ export const columns = (refetch: RefetchFunction): ColumnDef<ApiIntegration>[] =
             row.getValue("version")
           )
         : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "timeout",
-    header: "Timeout",
-    cell: ({ row }) => {
-      const timeout = row.getValue("timeout");
-      return timeout ? h("p", timeout) : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "retryRetries",
-    header: "Retry Retries",
-    cell: ({ row }) => {
-      const retryRetries = row.getValue("retryRetries");
-      return retryRetries ? h("p", retryRetries) : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "retryDelay",
-    header: "Retry Delay",
-    cell: ({ row }) => {
-      const retryDelay = row.getValue("retryDelay");
-      return retryDelay != null ? h("p", retryDelay) : h("p", "-");
     },
   },
   {

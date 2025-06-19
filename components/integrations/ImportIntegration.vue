@@ -76,9 +76,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     console.log("file data: ", fileData.value)
 
     // Here you would typically send the fileData.value to your API
-    // const updatedApiIntegration = await importIntegration(
-    //   fileData.value
-    // );
+    const updatedApiIntegration = await importIntegration(
+      fileData.value
+    );
 
     toast({
       title: "Api Integration Imported",

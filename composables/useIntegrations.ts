@@ -8,8 +8,8 @@ import { handleApiError } from "~/types/api";
 export const useIntegrations = () => {
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
+  const runtimeConfig = useRuntimeConfig();
   const { fetch } = useApi();
-  const { toast } = useToast();
 
   const getIntegrations: (page?: number, size?: number) => ApiResult<ApiIntegration[]> = async (page, size) => {
     try {

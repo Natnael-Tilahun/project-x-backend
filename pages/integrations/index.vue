@@ -102,6 +102,7 @@ const columns = computed(() => tableColumns(refetch));
             <IntegrationsImportIntegration @closeImportDialog="closeImportDialog"  @refresh="refetch" />
           </UiSheetContent>
         </UiSheet>
+        <IntegrationsExportAllIntegrations />
       </div>
     </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
