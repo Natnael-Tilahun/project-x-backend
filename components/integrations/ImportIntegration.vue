@@ -18,6 +18,7 @@ const fileInputKey = ref(0); // For resetting file input
 const fileData = ref(null);
 const selectedFile = ref<File | null>(null);
 const openExportModal = ref(false);
+const importProgress = ref(0); // Progress percentage (0-100)
 
 
 const setOpenExportModal = (value: boolean) => {
@@ -78,11 +79,20 @@ const doImport = async () => {
   try {
     isImporting.value = true;
     isError.value = false;
+    importProgress.value = 0;
 
     const formData = new FormData();
     formData.append('file', selectedFile.value);
 
-    await importIntegration(formData);
+    await importIntegration(formData,
+    {
+      onUploadProgress: (progressEvent: ProgressEvent) => {
+        if (progressEvent.lengthComputable) {
+          importProgress.value = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        }
+      }
+    }
+    );
 
     toast({
       title: "Api Integration Imported",
@@ -93,6 +103,7 @@ const doImport = async () => {
     fileInputKey.value++;
     fileData.value = null;
     selectedFile.value = null;
+    importProgress.value = 0;
 
     emit("refresh");
     emit("closeImportDialog")
@@ -105,6 +116,7 @@ const doImport = async () => {
       description: "Failed to import integration data",
       variant: "destructive"
     });
+    isImporting.value = false;
   } finally {
     isImporting.value = false;
   }
@@ -176,8 +188,18 @@ const handleImportClick = async () => {
 
   <UiAlertDialog :open="openExportModal" :onOpenChange="setOpenExportModal">
     <UiAlertDialogContent>
-      <UiAlertDialogHeader>
-        <UiAlertDialogTitle
+      <UiAlertDialogHeader class="relative">
+
+     <div v-if="isImporting" class="absolute top-[0%] flex flex-col justify-center w-full h-full">
+        <UiProgress
+          class="rounded-full w-full bg-gray-200"
+          :model-value="isImporting ? importProgress : 0"
+          :max="100"
+        />
+        <div  class="text-center mt-2">
+          {{ importProgress }}%
+        </div>
+        </div>        <UiAlertDialogTitle
           >This will import the api integration. Are you absolutely
           sure?</UiAlertDialogTitle
         >
@@ -190,7 +212,7 @@ const handleImportClick = async () => {
         <UiAlertDialogCancel @click="setOpenExportModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="doImport">
+        <UiAlertDialogAction @click="doImport" :disabled="isImporting">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isImporting"

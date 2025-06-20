@@ -1,8 +1,13 @@
 <script setup lang="ts">
+import axios from "axios";
 import { toast } from "../ui/toast";
+import type { AxiosProgressEvent } from "axios";
+
 const isError = ref(false);
 const openExportModal = ref(false);
 const isDownloading = ref(false);
+const isImporting = ref(false);
+const importProgress = ref(0); // Progress percentage (0-100)
 
 
 const setOpenExportModal = (value: boolean) => {
@@ -12,25 +17,36 @@ const setOpenExportModal = (value: boolean) => {
 async function exportAllIntegrationHandler() {
   isDownloading.value = true;
   isError.value = false;
+  isImporting.value = true;
+  isError.value = false;
+  importProgress.value = 0;
   try {
     const runtimeConfig = useRuntimeConfig();
     const { getHeaders } = useApi();
 
-    const response = await fetch(
+    const response = await axios.get(
       `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations/export-all`,
       {
-        method: "GET",
-        headers: getHeaders(true),
+        headers: {
+          ...getHeaders(true),
+          'Content-Type': 'multipart/form-data'
+        },
+        onDownloadProgress: (progressEvent: AxiosProgressEvent) => {
+          if (progressEvent.total && progressEvent.loaded) {
+            importProgress.value = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          }
+        },
+        responseType: 'blob'
       }
     );
 
-    if (!response.ok) {
+    if (response.status < 200 || response.status >= 300) {
       throw new Error(`Export failed: ${response.statusText}`);
     }
 
     const filename = "exported_all_payment_integrations.json";
 
-    const blob = await response.blob();
+    const blob = response.data;
     const url = URL.createObjectURL(blob);
 
     const link = document.createElement("a");
@@ -51,6 +67,7 @@ async function exportAllIntegrationHandler() {
     });
   } finally {
     isDownloading.value = false;
+    isImporting.value = false;
     setOpenExportModal(false);
   }
 }
@@ -75,6 +92,15 @@ async function exportAllIntegrationHandler() {
   <UiAlertDialog :open="openExportModal" :onOpenChange="setOpenExportModal">
     <UiAlertDialogContent>
       <UiAlertDialogHeader>
+        <UiProgress
+          class="rounded-full"
+          v-if="isImporting"
+          :model-value="isImporting ? importProgress : 0"
+          :max="100"
+        />
+        <div v-if="isImporting" class="text-center mt-2">
+          {{ importProgress }}%
+        </div>
         <UiAlertDialogTitle
           >This will export all payement integrations. Are you absolutely
           sure?</UiAlertDialogTitle

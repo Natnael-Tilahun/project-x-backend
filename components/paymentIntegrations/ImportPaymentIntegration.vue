@@ -18,6 +18,7 @@ const fileInputKey = ref(0); // For resetting file input
 const fileData = ref(null);
 const selectedFile = ref<File | null>(null);
 const openExportModal = ref(false);
+const importProgress = ref(0); // Progress percentage (0-100)
 
 
 const setOpenExportModal = (value: boolean) => {
@@ -78,11 +79,18 @@ const doImport = async () => {
   try {
     isImporting.value = true;
     isError.value = false;
+    importProgress.value = 0;
 
     const formData = new FormData();
     formData.append('file', selectedFile.value);
 
-    await importPaymentIntegration(formData);
+    await importPaymentIntegration(formData, {
+      onUploadProgress: (progressEvent: ProgressEvent) => {
+        if (progressEvent.lengthComputable) {
+          importProgress.value = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+        }
+      }
+    });
 
     toast({
       title: "Payment Integration Imported",
@@ -93,6 +101,7 @@ const doImport = async () => {
     fileInputKey.value++;
     fileData.value = null;
     selectedFile.value = null;
+    importProgress.value = 0;
 
     emit("refresh");
     emit("closeImportDialog")
@@ -105,6 +114,7 @@ const doImport = async () => {
       description: "Failed to import payment integration data",
       variant: "destructive"
     });
+    isImporting.value = false;
   } finally {
     isImporting.value = false;
   }
@@ -176,11 +186,20 @@ const handleImportClick = async () => {
 
   <UiAlertDialog :open="openExportModal" :onOpenChange="setOpenExportModal">
     <UiAlertDialogContent>
-      <UiAlertDialogHeader>
-        <UiAlertDialogTitle
-          >This will import payment integrations. Are you absolutely
-          sure?</UiAlertDialogTitle
-        >
+      <UiAlertDialogHeader class="relative">
+        <div v-if="isImporting" class="absolute top-[30%] w-full">
+        <UiProgress
+          class="rounded-full w-full"
+          :model-value="isImporting ? importProgress : 0"
+          :max="100"
+        />
+        <div  class="text-center mt-2">
+          {{ importProgress }}%
+        </div>
+        </div>
+        <UiAlertDialogTitle>
+          This will import payment integrations. Are you absolutely sure?
+        </UiAlertDialogTitle>
         <UiAlertDialogDescription>
           This action cannot be undone. This will import the payment integrations
           data and save it to the payment integrations.
@@ -190,14 +209,14 @@ const handleImportClick = async () => {
         <UiAlertDialogCancel @click="setOpenExportModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="doImport">
+        <UiAlertDialogAction @click="doImport" :disabled="isImporting">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isImporting"
-            :disabled="isImporting"
             class="mr-2 h-4 w-4 animate-spin"
           ></Icon>
-          Continue
+          <span v-if="!isImporting">Continue</span>
+          <span v-else>Importing...</span>
         </UiAlertDialogAction>
       </UiAlertDialogFooter>
     </UiAlertDialogContent>
