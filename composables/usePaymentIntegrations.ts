@@ -4,6 +4,7 @@ import type { PaymentIntegration, PaymentOperation } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
+import axios from 'axios';
 
 export const usePaymentIntegrations = () => {
   const isLoading = ref<boolean>(false);
@@ -146,8 +147,30 @@ export const usePaymentIntegrations = () => {
     }
   };
 
-  const importPaymentIntegration: (formData: FormData) => ApiResult<PaymentIntegration> = async (formData) => {
+  const importPaymentIntegration: (formData: FormData, options?: { onUploadProgress?: (progressEvent: any) => void }) => ApiResult<PaymentIntegration> = async (formData, options) => {
     try {
+      if (options && options.onUploadProgress) {
+        const runtimeConfig = useRuntimeConfig();
+        const { getHeaders } = useApi();
+        // Use axios for upload progress
+        try {
+          const response = await axios.post<PaymentIntegration>(
+            `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations/import-bulk`,
+            formData,
+            {
+              headers: {
+                ...getHeaders(true),
+                'Content-Type': 'multipart/form-data' 
+              },
+              onUploadProgress: options.onUploadProgress,
+            }
+          );
+          return response.data as unknown as PaymentIntegration;
+        } catch (error: any) {
+          throw error;
+        }
+      }
+      // Default: use fetch
       const { data, pending, error, status } = await fetch<PaymentIntegration>(
         '/api/v1/internal/payment-integrations/import-bulk',
         {
