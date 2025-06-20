@@ -8,8 +8,8 @@ import { handleApiError } from "~/types/api";
 export const useIntegrations = () => {
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
+  const runtimeConfig = useRuntimeConfig();
   const { fetch } = useApi();
-  const { toast } = useToast();
 
   const getIntegrations: (page?: number, size?: number) => ApiResult<ApiIntegration[]> = async (page, size) => {
     try {
@@ -28,8 +28,7 @@ export const useIntegrations = () => {
 
       return data.value ? (data.value as unknown as ApiIntegration[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -47,8 +46,7 @@ export const useIntegrations = () => {
 
       return data.value ? (data.value as unknown as ApiIntegration) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -70,8 +68,7 @@ export const useIntegrations = () => {
 
       return data.value ? (data.value as unknown as ApiIntegration) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -93,8 +90,7 @@ export const useIntegrations = () => {
 
       return data.value ? (data.value as unknown as ApiIntegration) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -113,8 +109,7 @@ export const useIntegrations = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -132,19 +127,17 @@ export const useIntegrations = () => {
 
       return data.value ? (data.value as unknown as ApiOperation[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
-
-  const importIntegration: (integrationData: any) => ApiResult<ApiIntegration> = async (integrationData) => {
+  const importIntegration: (formData: FormData) => ApiResult<ApiIntegration> = async (formData) => {
     try {
       const { data, pending, error, status } = await fetch<ApiIntegration>(
-        '/api/v1/internal/api-integrations/import',
+        '/api/v1/internal/api-integrations/import-bulk',
         {
           method: "POST",
-          body: integrationData
+          body:  formData,
         }
       );
 
@@ -156,8 +149,7 @@ export const useIntegrations = () => {
 
       return data.value ? (data.value as unknown as ApiIntegration) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -175,8 +167,7 @@ export const useIntegrations = () => {
 
       return data.value ? (data.value as unknown as ApiIntegration) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

@@ -106,24 +106,6 @@ export const columns = (refetch: RefetchFunction): ColumnDef<PaymentIntegration>
     },
   },
   {
-    accessorKey: "confirmRecipientIdentity",
-    header: "Confirm Recipient Identity",
-    cell: ({ row }) => {
-      const confirmRecipientIdentity = row.getValue("confirmRecipientIdentity");
-      return confirmRecipientIdentity ? h("p", "Yes") : h("p", "No");
-    },
-  },
-  {
-    accessorKey: "reEnquirePaymentDetailBeforePayment",
-    header: "Re-Enquire Payment Detail Before Payment",
-    cell: ({ row }) => {
-      const reEnquirePaymentDetailBeforePayment = row.getValue(
-        "reEnquirePaymentDetailBeforePayment"
-      );
-      return reEnquirePaymentDetailBeforePayment ? h("p", "Yes") : h("p", "No");
-    },
-  },
-  {
     header: "Actions",
     id: "actions",
     enableHiding: false,

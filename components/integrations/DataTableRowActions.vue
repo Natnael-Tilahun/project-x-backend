@@ -58,13 +58,25 @@ async function exportIntegrationHandler(id: string) {
   try {
     isLoading.value = true;
     loading.value = true;
-    await exportIntegration(id); // Call your API function to fetch roles
+    const data = await exportIntegration(id); // Get the JSON data
     console.log("Integration exported successfully");
     toast({
       title: "Integration exported successfully",
     });
-    // Reload the window after deleting the role
-    await props.refetch(); // Call refetch after successful deletion
+
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${data?.data[0]?.name}_api_integration_${id}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    await props.refetch(); // Call refetch after successful export
   } catch (err) {
     console.error("Error exporting integration:", err);
     isError.value = true;
@@ -140,7 +152,7 @@ async function exportIntegrationHandler(id: string) {
   <UiAlertDialog :open="openExportModal" :onOpenChange="setOpenExportModal">
     <UiAlertDialogContent>
       <UiAlertDialogHeader>
-        <UiAlertDialogTitle>Are you absolutely sure?dd</UiAlertDialogTitle>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
           This action cannot be undone. This will import the
           integration data and download it to your file system.

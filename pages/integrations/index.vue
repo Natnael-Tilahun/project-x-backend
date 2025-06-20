@@ -75,9 +75,9 @@ const columns = computed(() => tableColumns(refetch));
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
     <UiPermissionGuard permission="CREATE_API_INTEGRATION">
-      <div class="flex items-center justify-end gap-6">
-        <NuxtLink to="/integrations/new" class="w-fit self-end">
-          <UiButton class="w-fit self-end px-5"
+      <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-4">
+        <NuxtLink to="/integrations/new" class="w-fit">
+          <UiButton class="w-fit px-5"
             ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
             >Configure New</UiButton
           >
@@ -85,7 +85,7 @@ const columns = computed(() => tableColumns(refetch));
 
         <UiSheet v-model:open="openImportDialog">
           <UiSheetTrigger>
-            <UiButton class="self-end" :disabled="isDownloading" type="submit">
+            <UiButton :disabled="isDownloading" type="submit">
               <Icon
                 name="svg-spinners:8-dots-rotate"
                 v-if="isDownloading"
@@ -102,6 +102,7 @@ const columns = computed(() => tableColumns(refetch));
             <IntegrationsImportIntegration @closeImportDialog="closeImportDialog"  @refresh="refetch" />
           </UiSheetContent>
         </UiSheet>
+        <IntegrationsExportAllIntegrations />
       </div>
     </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">

@@ -52,16 +52,29 @@ async function deletePaymentIntegrationHandler(id: string) {
 }
 
 async function exportIntegrationHandler(id: string) {
+
   try {
     isLoading.value = true;
     loading.value = true;
-    await exportPaymentIntegration (id); // Call your API function to fetch roles
-    console.log("Integration exported successfully");
+    const data = await exportPaymentIntegration(id); // Get the JSON data
+    console.log("Payment Integration exported successfully");
     toast({
       title: "Payment Integration exported successfully",
     });
-    // Reload the window after deleting the role
-    await props.refetch(); // Call refetch after successful deletion
+
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${data?.data[0]?.integrationName	}_payment_integration_${id}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    await props.refetch(); // Call refetch after successful export
   } catch (err) {
     console.error("Error exporting payment integration:", err);
     isError.value = true;
@@ -91,6 +104,12 @@ async function exportIntegrationHandler(id: string) {
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
+           <!-- <UiPermissionGuard permission="EXPORT_API_INTEGRATIONS" > -->
+            <UiDropdownMenuItem  @click="setOpenExportModal(true)"
+        >Export Payment Integration</UiDropdownMenuItem
+      >
+      <UiDropdownMenuSeparator />
+    <!-- </UiPermissionGuard> -->
   <UiPermissionGuard permission="DELETE_PAYMENT_INTEGRATION" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
@@ -132,7 +151,7 @@ async function exportIntegrationHandler(id: string) {
   <UiAlertDialog :open="openExportModal" :onOpenChange="setOpenExportModal">
     <UiAlertDialogContent>
       <UiAlertDialogHeader>
-        <UiAlertDialogTitle>Are you absolutely sure?dd</UiAlertDialogTitle>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
           This action cannot be undone. This will import the
           integration data and download it to your file system.
