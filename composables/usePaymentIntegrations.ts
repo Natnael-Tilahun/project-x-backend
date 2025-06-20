@@ -51,8 +51,7 @@ export const usePaymentIntegrations = () => {
 
       return data.value ? (data.value as unknown as PaymentIntegration) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -72,8 +71,7 @@ export const usePaymentIntegrations = () => {
 
       return data.value ? (data.value as unknown as PaymentOperation[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -97,8 +95,7 @@ export const usePaymentIntegrations = () => {
 
       return data.value ? (data.value as unknown as PaymentIntegration) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -126,8 +123,7 @@ export const usePaymentIntegrations = () => {
 
       return data.value ? (data.value as unknown as PaymentIntegration) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -146,20 +142,17 @@ export const usePaymentIntegrations = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
-  const importPaymentIntegration: (
-    paymentIntegrationData: any
-  ) => ApiResult<PaymentIntegration> = async (paymentIntegrationData) => {
+  const importPaymentIntegration: (formData: FormData) => ApiResult<PaymentIntegration> = async (formData) => {
     try {
       const { data, pending, error, status } = await fetch<PaymentIntegration>(
-        '/api/v1/internal/payment-integrations/import',
+        '/api/v1/internal/payment-integrations/import-bulk',
         {
           method: "POST",
-          body: paymentIntegrationData
+          body:  formData,
         }
       );
 
@@ -171,8 +164,7 @@ export const usePaymentIntegrations = () => {
 
       return data.value ? (data.value as unknown as PaymentIntegration) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -190,8 +182,7 @@ export const usePaymentIntegrations = () => {
 
       return data.value ? (data.value as unknown as PaymentIntegration) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

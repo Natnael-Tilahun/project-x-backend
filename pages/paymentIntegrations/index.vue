@@ -65,9 +65,9 @@ const closeImportDialog = async () => {
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
     <UiPermissionGuard permission="CREATE_PAYMENT_INTEGRATION">
-      <div class="flex items-center justify-end gap-6">
+      <div class="flex flex-col md:flex-row w-full md:items-center md:justify-end gap-4">
 
-      <NuxtLink to="/paymentIntegrations/new" class="w-fit self-end">
+      <NuxtLink to="/paymentIntegrations/new" class="w-fit">
         <UiButton class="w-fit self-end px-5"
           ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
           >Configure New</UiButton
@@ -86,13 +86,13 @@ const closeImportDialog = async () => {
               Import Payment Integration
             </UiButton>
           </UiSheetTrigger>
-
           <UiSheetContent
             class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
           >
             <PaymentIntegrationsImportPaymentIntegration @closeImportDialog="closeImportDialog"  @refresh="refetch" />
           </UiSheetContent>
         </UiSheet>
+        <PaymentIntegrationsExportAllPaymentIntegrations />
         </div>
     </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">

@@ -70,7 +70,7 @@ async function exportIntegrationHandler(id: string) {
 
     const link = document.createElement("a");
     link.href = url;
-    link.download = `${data?.name}_api_integration_${id}.json`;
+    link.download = `${data?.data[0]?.name}_api_integration_${id}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -152,7 +152,7 @@ async function exportIntegrationHandler(id: string) {
   <UiAlertDialog :open="openExportModal" :onOpenChange="setOpenExportModal">
     <UiAlertDialogContent>
       <UiAlertDialogHeader>
-        <UiAlertDialogTitle>Are you absolutely sure?dd</UiAlertDialogTitle>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
           This action cannot be undone. This will import the
           integration data and download it to your file system.

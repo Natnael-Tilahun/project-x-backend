@@ -12,10 +12,17 @@ import {
 
 const { importPaymentIntegration } = usePaymentIntegrations();
 
-const submitting = ref(false);
+const isImporting = ref(false);
 const isError = ref(false);
 const fileInputKey = ref(0); // For resetting file input
 const fileData = ref(null);
+const selectedFile = ref<File | null>(null);
+const openExportModal = ref(false);
+
+
+const setOpenExportModal = (value: boolean) => {
+  openExportModal.value = value;
+};
 
 // Define validation schema for the form
 const validationSchema = {
@@ -38,14 +45,12 @@ const handleFileSelect = async (event: Event) => {
   if (!input.files?.length) return;
 
   const file = input.files[0];
-  
+  selectedFile.value = file; // Store the file
+
   try {
-    // Read the file content
     const text = await file.text();
     const jsonData = JSON.parse(text);
     fileData.value = jsonData;
-    
-    // Set the file in the form
     form.setFieldValue('uploadFile', file);
   } catch (error) {
     console.error('Error reading file:', error);
@@ -59,8 +64,9 @@ const handleFileSelect = async (event: Event) => {
   }
 };
 
-const onSubmit = form.handleSubmit(async (values: any) => {
-  if (!fileData.value) {
+// Separate the import logic from the form validation
+const doImport = async () => {
+  if (!selectedFile.value) {
     toast({
       title: "Error",
       description: "Please select a valid JSON file",
@@ -70,28 +76,27 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   }
 
   try {
-    submitting.value = true;
+    isImporting.value = true;
     isError.value = false;
 
-    console.log("file data: ", fileData.value)
+    const formData = new FormData();
+    formData.append('file', selectedFile.value);
 
-    // Here you would typically send the fileData.value to your API
-    // const updatedApiIntegration = await importPaymentIntegration(
-    //   fileData.value
-    // );
+    await importPaymentIntegration(formData);
 
     toast({
       title: "Payment Integration Imported",
       description: "Payment integration imported successfully",
     });
 
-    // Reset form and file input
     form.resetForm();
     fileInputKey.value++;
     fileData.value = null;
+    selectedFile.value = null;
 
-    // Emit refresh event after successful update
     emit("refresh");
+    emit("closeImportDialog")
+    setOpenExportModal(false); // Close dialog after import
   } catch (err: any) {
     console.error("Error importing payment integration:", err);
     isError.value = true;
@@ -101,9 +106,17 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       variant: "destructive"
     });
   } finally {
-    submitting.value = false;
+    isImporting.value = false;
   }
-});
+};
+
+// This runs validation and opens the dialog if valid
+const handleImportClick = async () => {
+  const isValid = await form.validate();
+  if (isValid.valid) {
+    setOpenExportModal(true);
+  }
+};
 </script>
 
 <template>
@@ -117,7 +130,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <div class="grid grid-cols-2 gap-6 w-full">
                 <FormField name="uploadFile">
                   <FormItem>
-                    <FormLabel>Upload Integration Data (JSON)</FormLabel>
+                    <FormLabel>Upload Payment Integration Data (JSON)</FormLabel>
                     <FormControl>
                       <UiInput
                         :key="fileInputKey"
@@ -133,17 +146,21 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
                 <div class="col-span-full w-full py-4 flex justify-between">
                   <UiButton
-                    :disabled="submitting"
+                    :disabled="isImporting"
                     variant="outline"
                     type="button"
                     @click="emit('closeImportDialog')"
                   >
                     Cancel
                   </UiButton>
-                  <UiButton :disabled="submitting" type="submit">
+                  <UiButton
+                    type="button"
+                    :disabled="isImporting"
+                    @click="handleImportClick"
+                  >
                     <Icon
                       name="svg-spinners:8-dots-rotate"
-                      v-if="submitting"
+                      v-if="isImporting"
                       class="mr-2 h-4 w-4 animate-spin"
                     />
                     Import
@@ -156,6 +173,35 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       </UiSheetDescription>
     </UiSheetHeader>
   </UiSheet>
+
+  <UiAlertDialog :open="openExportModal" :onOpenChange="setOpenExportModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle
+          >This will import payment integrations. Are you absolutely
+          sure?</UiAlertDialogTitle
+        >
+        <UiAlertDialogDescription>
+          This action cannot be undone. This will import the payment integrations
+          data and save it to the payment integrations.
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenExportModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction @click="doImport">
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="isImporting"
+            :disabled="isImporting"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
 </template>
 
 <style lang="css" scoped></style>

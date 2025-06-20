@@ -17,7 +17,7 @@ async function exportAllIntegrationHandler() {
     const { getHeaders } = useApi();
 
     const response = await fetch(
-      `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-integrations/export-all`,
+      `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations/export-all`,
       {
         method: "GET",
         headers: getHeaders(true),
@@ -28,7 +28,7 @@ async function exportAllIntegrationHandler() {
       throw new Error(`Export failed: ${response.statusText}`);
     }
 
-    const filename = "exported_all_integrations.json";
+    const filename = "exported_all_payment_integrations.json";
 
     const blob = await response.blob();
     const url = URL.createObjectURL(blob);
@@ -40,12 +40,12 @@ async function exportAllIntegrationHandler() {
     URL.revokeObjectURL(url);
 
     toast({
-      title: "All Integrations exported successfully",
+      title: "All Payment Integrations exported successfully",
     });
   } catch (err) {
     isError.value = true;
     toast({
-      title: "Error exporting all integrations",
+      title: "Error exporting all payment integrations",
       description: err instanceof Error ? err.message : "Unknown error",
       variant: "destructive",
     });
@@ -69,18 +69,18 @@ async function exportAllIntegrationHandler() {
       class="mr-2 h-4 w-4 animate-spin"
     ></Icon>
 
-    Export All Integration
+    Export All Payment Integration
   </UiButton>
 
   <UiAlertDialog :open="openExportModal" :onOpenChange="setOpenExportModal">
     <UiAlertDialogContent>
       <UiAlertDialogHeader>
         <UiAlertDialogTitle
-          >This will export all integrations. Are you absolutely
+          >This will export all payement integrations. Are you absolutely
           sure?</UiAlertDialogTitle
         >
         <UiAlertDialogDescription>
-          This action cannot be undone. This will export all the integration
+          This action cannot be undone. This will export all the payment integration
           data and download it to your file system.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
