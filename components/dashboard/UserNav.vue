@@ -5,8 +5,8 @@ const { logout, isLoading } = useAuth();
 const logoutHandler = async () => {
   logout().then((data) => {
     console.log("User logged out successfully!");
-       // Trigger the storage event
-       localStorage.setItem('auth-event', `logout-${Date.now()}`);
+    // Trigger the storage event
+    //  localStorage.setItem('auth-event', `logout-${Date.now()}`);
   });
 };
 </script>
