@@ -20,20 +20,29 @@ let showPassword = ref(false);
 
 // --- Username Masking Logic ---
 const isUsernameFocused = ref(false);
-const MASK_CHAR = '*';
-const MASK_VISIBLE_PREFIX = 2; 
-const MASK_VISIBLE_SUFFIX_LOCAL = 0; 
+const MASK_CHAR = "*";
+const MASK_VISIBLE_PREFIX = 2;
+const MASK_VISIBLE_SUFFIX_LOCAL = 0;
 const MASK_VISIBLE_DOMAIN_PREFIX = 2;
-const MASK_MIN_LEN_FOR_MASKING_LOCAL = 3; 
-const MASK_MIN_LEN_FOR_MASKING_DOMAIN = 3; 
+const MASK_MIN_LEN_FOR_MASKING_LOCAL = 3;
+const MASK_MIN_LEN_FOR_MASKING_DOMAIN = 3;
 
-function robustMask(part: string, prefixLen: number, suffixLen: number, minLenToMask: number): string {
+function robustMask(
+  part: string,
+  prefixLen: number,
+  suffixLen: number,
+  minLenToMask: number
+): string {
   const len = part.length;
   if (!part || len < minLenToMask || len <= prefixLen + suffixLen) {
     return part;
   }
   const maskedCoreLength = Math.max(0, len - prefixLen - suffixLen);
-  return part.substring(0, prefixLen) + MASK_CHAR.repeat(maskedCoreLength) + part.substring(len - suffixLen);
+  return (
+    part.substring(0, prefixLen) +
+    MASK_CHAR.repeat(maskedCoreLength) +
+    part.substring(len - suffixLen)
+  );
 }
 
 const maskUsernameForDisplay = (username: string | undefined): string => {
@@ -42,28 +51,47 @@ const maskUsernameForDisplay = (username: string | undefined): string => {
   if (username.includes("@")) {
     const parts = username.split("@");
     const localPart = parts[0];
-    const domainPart = parts.length > 1 ? parts.slice(1).join('@') : "";
+    const domainPart = parts.length > 1 ? parts.slice(1).join("@") : "";
 
-    const maskedLocal = robustMask(localPart, MASK_VISIBLE_PREFIX, MASK_VISIBLE_SUFFIX_LOCAL, MASK_MIN_LEN_FOR_MASKING_LOCAL);
-    
+    const maskedLocal = robustMask(
+      localPart,
+      MASK_VISIBLE_PREFIX,
+      MASK_VISIBLE_SUFFIX_LOCAL,
+      MASK_MIN_LEN_FOR_MASKING_LOCAL
+    );
+
     if (!domainPart) return maskedLocal;
 
-    const domainSegments = domainPart.split('.');
+    const domainSegments = domainPart.split(".");
     if (domainSegments.length > 1) {
-      const mainDomain = domainSegments.slice(0, -1).join('.');
+      const mainDomain = domainSegments.slice(0, -1).join(".");
       const tld = domainSegments[domainSegments.length - 1];
-      const maskedMainDomain = robustMask(mainDomain, MASK_VISIBLE_DOMAIN_PREFIX, 0, MASK_MIN_LEN_FOR_MASKING_DOMAIN);
+      const maskedMainDomain = robustMask(
+        mainDomain,
+        MASK_VISIBLE_DOMAIN_PREFIX,
+        0,
+        MASK_MIN_LEN_FOR_MASKING_DOMAIN
+      );
       return `${maskedLocal}@${maskedMainDomain}.${tld}`;
     } else {
-      const maskedDomain = robustMask(domainPart, MASK_VISIBLE_DOMAIN_PREFIX, 0, MASK_MIN_LEN_FOR_MASKING_DOMAIN);
+      const maskedDomain = robustMask(
+        domainPart,
+        MASK_VISIBLE_DOMAIN_PREFIX,
+        0,
+        MASK_MIN_LEN_FOR_MASKING_DOMAIN
+      );
       return `${maskedLocal}@${maskedDomain}`;
     }
   } else {
-    return robustMask(username, MASK_VISIBLE_PREFIX, 0, MASK_MIN_LEN_FOR_MASKING_LOCAL);
+    return robustMask(
+      username,
+      MASK_VISIBLE_PREFIX,
+      0,
+      MASK_MIN_LEN_FOR_MASKING_LOCAL
+    );
   }
 };
 // --- End Username Masking Logic ---
-
 
 const form = useForm({
   validationSchema: userLoginFormSchema,
@@ -83,20 +111,24 @@ const usernameToDisplay = computed(() => {
     return actualUsername.value || ""; // Show actual value when focused or if it's empty
   }
   // Not focused: show masked value if actualUsername exists, otherwise empty string
-  return actualUsername.value ? maskUsernameForDisplay(actualUsername.value) : "";
+  return actualUsername.value
+    ? maskUsernameForDisplay(actualUsername.value)
+    : "";
 });
 
 // If store.username can load asynchronously and you want to update the form:
-watch(() => authStore.username, (newUsername) => {
-  if (newUsername && newUsername !== form.values.username) {
-    // Only update if it changed and differs from current form value,
-    // and perhaps only if the field hasn't been touched by the user yet.
-    if (!form.meta.value.touchedFields.username) {
-         form.setFieldValue("username", newUsername);
+watch(
+  () => authStore.username,
+  (newUsername) => {
+    if (newUsername && newUsername !== form.values.username) {
+      // Only update if it changed and differs from current form value,
+      // and perhaps only if the field hasn't been touched by the user yet.
+      if (!form.meta.value.touchedFields.username) {
+        form.setFieldValue("username", newUsername);
+      }
     }
   }
-});
-
+);
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
@@ -115,8 +147,8 @@ const onSubmit = form.handleSubmit(async (values) => {
 
   try {
     await login(userCredentials);
-         // Trigger the storage event in other tabs by setting a new value
-      localStorage.setItem('auth-event', `login-${Date.now()}`);
+    // Trigger the storage event in other tabs by setting a new value
+    // localStorage.setItem('auth-event', `login-${Date.now()}`);
     navigateTo("/", { replace: true });
   } catch (error) {
     console.error("Login error: ", error);
@@ -129,7 +161,12 @@ const onSubmit = form.handleSubmit(async (values) => {
 
 <template>
   <div :class="cn('grid gap-6', $attrs.class ?? '')">
-    <form @submit="onSubmit" autocomplete="off" aria-autocomplete="none" novalidate>
+    <form
+      @submit="onSubmit"
+      autocomplete="off"
+      aria-autocomplete="none"
+      novalidate
+    >
       <div class="grid gap-3">
         <FormField name="username" v-slot="{ field, meta }">
           <FormItem>
@@ -141,7 +178,12 @@ const onSubmit = form.handleSubmit(async (values) => {
                 :model-value="usernameToDisplay"
                 @update:model-value="field.onChange"
                 @focus="isUsernameFocused = true"
-                @blur="(e) => { isUsernameFocused = false; field.onBlur(e); }"
+                @blur="
+                  (e) => {
+                    isUsernameFocused = false;
+                    field.onBlur(e);
+                  }
+                "
                 :disabled="isLoading"
                 aria-autocomplete="none"
                 autocomplete="off"
@@ -194,7 +236,11 @@ const onSubmit = form.handleSubmit(async (values) => {
           </FormItem>
         </FormField>
 
-        <UiButton class="mt-2" type="submit" :disabled="isLoading || !form.meta.value.valid">
+        <UiButton
+          class="mt-2"
+          type="submit"
+          :disabled="isLoading || !form.meta.value.valid"
+        >
           <Icon
             v-if="isLoading"
             name="svg-spinners:8-dots-rotate"
