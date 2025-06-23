@@ -29,8 +29,7 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -48,8 +47,7 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -67,8 +65,7 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -90,8 +87,7 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -113,8 +109,7 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -136,8 +131,7 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -159,8 +153,7 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -179,8 +172,7 @@ export const useMenus = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
