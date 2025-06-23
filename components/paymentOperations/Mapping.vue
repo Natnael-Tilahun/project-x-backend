@@ -38,7 +38,7 @@ const isFetching = ref(false);
 const isDeleting = ref(false);
 const isError = ref(false);
 const operationId = ref<string>("");
-const apiOperationId = ref<string>("");
+const apiOperationsId = ref<string>("");
 const apiOperationRequestInputName = ref<string[]>([]);
 const MappingPathPrefixs = ref(Object.values(MappingPathPrefix)[0]);
 const mappingPathValues = ref<string[]>([]);
@@ -91,7 +91,7 @@ const getOperationData = async () => {
         paymentOperationType,
         apiRequestMappingsRegistry: registryData,
         form,
-        apiOperation,
+        apiOperationId,
       } = paymentOperationData.value;
 
       // Update form fields
@@ -123,7 +123,7 @@ const getOperationData = async () => {
       }
 
       apiRequestMappingsRegistry.value = registryData || [];
-      apiOperationId.value = apiOperation?.id;
+      apiOperationsId.value = paymentOperationData.value.apiOperationId;
 
       // Update available mapping path values based on the prefix
       if (mappingPathPrefix.value) {
@@ -146,7 +146,7 @@ const getOperationData = async () => {
 
 const getApiOperationData = async () => {
   try {
-    if (!apiOperationId.value) {
+    if (!apiOperationsId.value) {
       console.warn("Api Operation ID is not available");
       toast({
         title: "Api Operation ID is required",
@@ -157,7 +157,7 @@ const getApiOperationData = async () => {
       return;
     }
     loading.value = true;
-    apiOperationData.value = await getOperationById(apiOperationId.value);
+    apiOperationData.value = await getOperationById(apiOperationsId.value);
     apiOperationRequestInputName.value = apiOperationData.value?.requestInputs
       ?.filter((input) => !input.isHidden)
       ?.map((input) => input.inputName);
@@ -180,7 +180,7 @@ onMounted(async () => {
   if (operationId.value) {
     await getOperationData();
   }
-  if (apiOperationId.value) {
+  if (apiOperationsId.value) {
     await getApiOperationData();
   }
 });

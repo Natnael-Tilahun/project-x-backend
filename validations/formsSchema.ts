@@ -12,7 +12,7 @@ export const formsSchema = toTypedSchema(
     defaultLanguageCode: z.string().optional().nullable(),
     formType: FormTypeSchema,
     stepOrder: z.number().nullable(),
-    paymentOperation: z.string().optional().nullable(),
+    paymentOperationId: z.string().optional().nullable(),
     locals: z.array(z.string()).optional().nullable(),
     fields: z.array(z.any()).optional().nullable(),
   })

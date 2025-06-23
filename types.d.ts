@@ -318,6 +318,7 @@ interface Merchant {
 
 interface Integration {
   id: string;
+  legacyId?: string | null;
   isDraft: boolean;
   integrationName: string;
   companyName: string;
@@ -347,6 +348,7 @@ enum HttpMethod {
 
 interface ApiOperation {
   id: string;
+  legacyId?: string | null;
   operationName: string;
   httpMethod: HttpMethod;
   bodyType?: BodyType;
@@ -355,12 +357,13 @@ interface ApiOperation {
   responseOutputs?: [];
   requestInputs?: [];
   integrationOperations?: string;
-  apiIntegration?: ApiIntegration;
+  apiIntegrationId?: string | null;
   apiOperationPath?: string;
 }
 
 interface ApiIntegration {
   id: string;
+  legacyId?: string | null;
   name: string;
   url: string;
   type: IntegrationType;
@@ -406,12 +409,13 @@ enum OperatorToCompareValue {
 
 interface ResponseOutput {
   id: string;
+  legacyId?: string | null;
   outputName: string;
   dataType: DataType;
   responseValuePath: string;
   responseScope: ResponseScope;
   isRequired: boolean;
-  apiOperation: ApiOperation;
+  apiOperationId?: string | null;
   integrationFieldMappings?: [IntegrationFieldMapping];
   validationConfig?: ValidationConfig | null;
 }
@@ -446,6 +450,7 @@ interface ValidationRule {
 
 interface RequestInput {
   id: string;
+  legacyId?: string | null;
   inputName: string;
   inputType: InputType;
   dataType: DataType;
@@ -460,14 +465,15 @@ interface RequestInput {
   transformationRule?: string;
   isRequired?: boolean;
   isHidden?: boolean;
-  apiOperation?: ApiOperation;
+  apiOperationId?: string | null;
   integrationFieldMappings?: [IntegrationFieldMapping];
   validationConfig?: ValidationConfig | null;
 }
 
 interface PaymentIntegration {
   id?: string;
-  alternateId?: string;
+  legacyId?: string | null;
+  alternateId?: string | null;
   defaultLanguageCode?: string | null;
   integrationName?: string | null;
   companyName?: string | null;
@@ -511,6 +517,7 @@ interface PaymentIntegration {
 
 interface Menu {
   id?: string;
+  legacyId?: string | null;
   defaultLanguageCode?: string | null;
   menuName?: string | null;
   menuDescription?: string | null;
@@ -542,13 +549,14 @@ interface ApiRequestMappingsRegistry {
 
 interface PaymentOperation {
   id?: string | null;
+  legacyId?: string | null;
   name?: string | null;
   description?: string | null;
   paymentOperationType?: PaymentOperationType | null;
-  nextPaymentOperation?: PaymentOperation | null;
-  prevPaymentOperation?: PaymentOperation | null;
-  paymentIntegration?: PaymentIntegration | null;
-  apiOperation?: ApiOperation | null;
+  nextPaymentOperationId?: string | null;
+  prevPaymentOperationId?: string | null;
+  paymentIntegrationId?: string | null;
+  apiOperationId?: string | null;
   form?: Form | null;
   apiRequestMappingsRegistry?: ApiRequestMappingsRegistry[] | null;
   amountEnquiryPath?: string | null;
@@ -559,6 +567,7 @@ interface PaymentOperation {
 
 interface Field {
   id?: string;
+  legacyId?:string | null;
   defaultLanguageCode?: string | null;
   dataType?: DataType | null;
   isUnique?: boolean | null;
@@ -583,7 +592,7 @@ interface Field {
   displayOptions?: DisplayOptions | null;
   validationConfig?: ValidationConfig | null;
   validationMessage?: string | null;
-  form?: Form | null;
+  formId?: string | null;
   rememberValue?: boolean | null;
   rememberExpiryDays?: number | null;
 }
@@ -691,8 +700,8 @@ interface Form {
   formDescription?: string | null;
   formType?: FormType | null;
   stepOrder?: number | null;
-  paymentOperation?: PaymentOperation | null;
-  paymentIntegration?: PaymentIntegration | null;
+  paymentOperationId?: string | null;
+  paymentIntegrationId?: string | null;
   locals?: string[] | null;
   fields?: Field[] | null;
 }
@@ -719,7 +728,7 @@ interface AuthConfiguration {
   additionalParams?: {
     [key: string]: string;
   } | null;
-  customAuthOperation?: ApiOperation | null;
+  customAuthOperationId?: string | null;
   apiIntegration?: ApiIntegration | null;
 }
 
@@ -1020,7 +1029,7 @@ interface LocalizedUssdMenu {
 }
 
 interface Charge {
-  id?: number;
+  id?: string;
   chargeCode?: string;
   category?: string;
   type: ChargeType;

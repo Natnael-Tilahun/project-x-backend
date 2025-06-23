@@ -80,7 +80,7 @@ export const useOperations = () => {
       const { data, pending, error, status } = await fetch<ApiOperation>(
         `/api/v1/internal/api-operations/${id}`,
         {
-          method: "PUT",
+          method: "PATCH",
           body: operation
         }
       );

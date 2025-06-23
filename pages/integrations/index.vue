@@ -9,17 +9,20 @@ const { getIntegrations } = useIntegrations();
 const keyword = ref<string>("");
 const data = ref<ApiIntegration[]>([]);
 const isLoading = ref(false);
+const isDownloading = ref(false);
 const isError = ref(false);
 const router = useRouter(); // {{ edit_2 }}
+const openImportDialog = ref(false)
 
 const getApiIntegrationData = async () => {
   try {
-    isLoading.value = true
+    isLoading.value = true;
     const integrations = await getIntegrations(0, 100);
     // Sort integrations by name alphabetically
-    data.value = integrations?.sort((a, b) =>
-      a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-    ) ?? []
+    data.value =
+      integrations?.sort((a, b) =>
+        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+      ) ?? [];
   } catch (error) {
     console.error("Error fetching integrations:", error);
     isError.value = true;
@@ -28,13 +31,16 @@ const getApiIntegrationData = async () => {
   }
 };
 
-onMounted(async() => {
+onMounted(async () => {
   await getApiIntegrationData();
 });
 
-
 const refetch = async () => {
   await getApiIntegrationData();
+};
+
+const closeImportDialog = async () => {
+  openImportDialog.value = false
 };
 
 // const searchHandler = async () => {
@@ -53,7 +59,7 @@ const refetch = async () => {
 
 // Provide the refetch function
 
-provide('refetchApiIntegrations', refetch);
+provide("refetchApiIntegrations", refetch);
 
 // Generate columns by passing the refetch function
 const columns = computed(() => tableColumns(refetch));
@@ -68,13 +74,36 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-  <UiPermissionGuard permission="CREATE_API_INTEGRATION" >
-    <NuxtLink to="/integrations/new" class="w-fit self-end">
-      <UiButton class="w-fit self-end px-5"
-        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
-        >Configure New</UiButton
-      >
-    </NuxtLink>
+    <UiPermissionGuard permission="CREATE_API_INTEGRATION">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-4">
+        <NuxtLink to="/integrations/new" class="w-fit">
+          <UiButton class="w-fit px-5"
+            ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
+            >Configure New</UiButton
+          >
+        </NuxtLink>
+
+        <UiSheet v-model:open="openImportDialog">
+          <UiSheetTrigger>
+            <UiButton :disabled="isDownloading" type="submit">
+              <Icon
+                name="svg-spinners:8-dots-rotate"
+                v-if="isDownloading"
+                class="mr-2 h-4 w-4 animate-spin"
+              ></Icon>
+
+              Import Integration
+            </UiButton>
+          </UiSheetTrigger>
+
+          <UiSheetContent
+            class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+          >
+            <IntegrationsImportIntegration @closeImportDialog="closeImportDialog"  @refresh="refetch" />
+          </UiSheetContent>
+        </UiSheet>
+        <IntegrationsExportAllIntegrations />
+      </div>
     </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">

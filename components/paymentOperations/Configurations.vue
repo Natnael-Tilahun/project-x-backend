@@ -20,6 +20,7 @@ import {
   CreditAccountNumberVariableType,
   PaymentIntegrationType,
 } from "@/global-types";
+import type { ApiOperation } from "~/types";
 
 const route = useRoute();
 const {
@@ -85,10 +86,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           TransactionAmountType.USER_DEFINED
           ? values?.minimumAmountEnquiryPath
           : null,
-      apiOperation:
-        typeof values.apiOperation === "string"
-          ? { id: values.apiOperation }
-          : values.apiOperation,
+      apiOperationId: values.apiOperation,
       paymentIntegration:
         typeof values.paymentIntegration === "string"
           ? { id: values.paymentIntegration }
@@ -215,11 +213,14 @@ const fetchData = async () => {
       getIntegrations(0, 1000).catch(() => []),
     ]);
 
-    selectedApiIntegration.value = apiIntegrations.value[0].id;
+    // selectedApiIntegration.value = data.value.apiOperationId;
     selectedApiOperations.value = apiOperations.value.filter(
-      (operation) =>
-        operation?.apiIntegration?.id === selectedApiIntegration.value
+      (operation:ApiOperation) =>
+      {
+        return operation?.id === data.value.apiOperationId
+      }
     );
+    selectedApiIntegration.value = apiIntegrations.value.filter(integration => (integration.id === selectedApiOperations.value[0]?.apiIntegrationId))[0]?.id
     route.query.formId = data.value?.form?.id;
     formId.value = data.value?.form?.id;
 
@@ -273,7 +274,7 @@ watch(
   selectedApiIntegration,
   async (newApiIntegrationId) => {
     selectedApiOperations.value = apiOperations.value.filter(
-      (operation) => operation?.apiIntegration?.id === newApiIntegrationId
+      (operation) => operation?.apiIntegrationId === newApiIntegrationId
     );
   },
   { immediate: true }
@@ -601,7 +602,7 @@ watch(
             </FormItem>
           </FormField>
           <FormField
-            :model-value="data?.apiOperation?.id"
+            :model-value="data?.apiOperationId"
             v-slot="{ componentField }"
             name="apiOperation"
           >
@@ -631,7 +632,7 @@ watch(
             </FormItem>
           </FormField>
           <FormField
-            :model-value="data?.prevPaymentOperation?.id"
+            :model-value="data?.prevPaymentOperationId"
             v-slot="{ componentField }"
             name="prevPaymentOperation"
           >
@@ -662,7 +663,7 @@ watch(
             </FormItem>
           </FormField>
           <FormField
-            :model-value="data?.nextPaymentOperation?.id"
+            :model-value="data?.nextPaymentOperationId"
             v-slot="{ componentField }"
             name="nextPaymentOperation"
           >

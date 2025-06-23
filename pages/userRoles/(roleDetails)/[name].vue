@@ -198,8 +198,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   const updatedPermissions =
     data.value?.permissionUsageData?.reduce(
       (acc: Record<string, boolean>, permission: Permission) => {
-        if (values[permission.code] != undefined) {
-          acc[permission.code] = values[permission.code];
+        if (form.values[permission.code] != undefined) {
+          acc[permission.code] = form.values[permission.code];
         } else if (
           data.value?.permissionUsageData?.find(
             (p) => p.code === permission.code

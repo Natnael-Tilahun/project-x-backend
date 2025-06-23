@@ -2,10 +2,15 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { usePaymentIntegrations } from "~/composables/usePaymentIntegrations";
-const { deletePaymentIntegration, isLoading } = usePaymentIntegrations();
+const { deletePaymentIntegration, exportPaymentIntegration, isLoading } = usePaymentIntegrations();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const openEditModal = ref(false);
+const openExportModal = ref(false);
+
+const setOpenExportModal = (value: boolean) => {
+  openExportModal.value = value;
+};
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
@@ -45,6 +50,40 @@ async function deletePaymentIntegrationHandler(id: string) {
     setOpenEditModal(false);
   }
 }
+
+async function exportIntegrationHandler(id: string) {
+
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    const data = await exportPaymentIntegration(id); // Get the JSON data
+    console.log("Payment Integration exported successfully");
+    toast({
+      title: "Payment Integration exported successfully",
+    });
+
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${data?.data[0]?.integrationName	}_payment_integration_${id}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    await props.refetch(); // Call refetch after successful export
+  } catch (err) {
+    console.error("Error exporting payment integration:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+    setOpenExportModal(false);
+  }
+}
 </script>
 
 <template>
@@ -65,6 +104,12 @@ async function deletePaymentIntegrationHandler(id: string) {
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
+           <!-- <UiPermissionGuard permission="EXPORT_API_INTEGRATIONS" > -->
+            <UiDropdownMenuItem  @click="setOpenExportModal(true)"
+        >Export Payment Integration</UiDropdownMenuItem
+      >
+      <UiDropdownMenuSeparator />
+    <!-- </UiPermissionGuard> -->
   <UiPermissionGuard permission="DELETE_PAYMENT_INTEGRATION" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
@@ -90,6 +135,33 @@ async function deletePaymentIntegrationHandler(id: string) {
         <UiAlertDialogAction
           @click="deletePaymentIntegrationHandler(row.original.id)"
         >
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="isLoading"
+            :disabled="isLoading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
+
+
+  <UiAlertDialog :open="openExportModal" :onOpenChange="setOpenExportModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          This action cannot be undone. This will import the
+          integration data and download it to your file system.
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenExportModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction @click="exportIntegrationHandler(row.original.id)">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"

@@ -26,7 +26,7 @@ export const rolesFormSchema = toTypedSchema(
     enforce2fa: z.boolean().optional().default(true),
     enabled: z.boolean().optional().default(true),
     scope: scopeSchema,
-    permissionUsageData: z.array(PermissionSchema).optional(),
+    permissions: z.array(z.any()).optional(),
   })
 );
 

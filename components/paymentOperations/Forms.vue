@@ -12,6 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { FormType } from "@/global-types";
+import type { Form } from "~/types";
 
 const route = useRoute();
 const {
@@ -106,7 +107,7 @@ const onSubmit = formForm.handleSubmit(async (values: Form) => {
     loading.value = true;
     const formData = {
       ...values,
-      paymentOperation: { id: operationId.value },
+      paymentOperationId: operationId.value
     };
     if (isNewForm.value) {
       console.log("isNewForm: ", isNewForm.value);
@@ -114,7 +115,7 @@ const onSubmit = formForm.handleSubmit(async (values: Form) => {
       data.value = response;
       formForm.setValues({
         ...response,
-        paymentOperation: response.paymentOperation?.id,
+        paymentOperationId: response?.paymentOperationId,
       });
       openItems.value = "fields";
       console.log("response: ", response);
