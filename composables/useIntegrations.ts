@@ -132,7 +132,7 @@ export const useIntegrations = () => {
     }
   };
 
-  const importIntegration: (formData: FormData, options?: { onUploadProgress?: (progressEvent: any) => void }) => ApiResult<PaymentIntegration> = async (formData, options) => {
+  const importIntegration: (formData: FormData, options?: { onUploadProgress?: (progressEvent: any) => void }) => ApiResult<ApiIntegration> = async (formData, options) => {
     try {
       if (options && options.onUploadProgress) {
         const runtimeConfig = useRuntimeConfig();
