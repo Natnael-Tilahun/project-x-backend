@@ -154,8 +154,8 @@ async function exportIntegrationHandler(id: string) {
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
-          This action cannot be undone. This will import the
-          integration data and download it to your file system.
+          This action cannot be undone. It will export this
+          api integration data and download it to your file system.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>

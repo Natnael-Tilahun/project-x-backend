@@ -2,12 +2,17 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { useMenus } from "~/composables/useMenus";
-const { deleteMenu, isLoading } = useMenus();
+const { deleteMenu, exportMenus, isLoading } = useMenus();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const openEditModal = ref(false);
+const openExportModal = ref(false);
+
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
+};
+const setOpenExportModal = (value: boolean) => {
+  openExportModal.value = value;
 };
 
 const props = defineProps<{
@@ -47,6 +52,39 @@ async function deleteMenuHandler(id: string) {
     setOpenEditModal(false);
   }
 }
+
+async function exportMenusHandler(id: string) {
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    const data = await exportMenus(id); // Get the JSON data
+    console.log("Menu exported successfully");
+    toast({
+      title: "Menus exported successfully",
+    });
+
+    const jsonStr = JSON.stringify(data, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${data?.data[0]?.name}_menu_${id}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    await props.refetch(); // Call refetch after successful export
+  } catch (err) {
+    console.error("Error exporting integration:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+    setOpenExportModal(false);
+  }
+}
 </script>
 
 <template>
@@ -67,6 +105,12 @@ async function deleteMenuHandler(id: string) {
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
+           <!-- <UiPermissionGuard permission="EXPORT_API_INTEGRATIONS" > -->
+            <UiDropdownMenuItem  @click="setOpenExportModal(true)"
+        >Export Menu</UiDropdownMenuItem
+      >
+      <UiDropdownMenuSeparator />
+    <!-- </UiPermissionGuard> -->
   <UiPermissionGuard permission="DELETE_INTEGRATION_MENUS" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
@@ -90,6 +134,32 @@ async function deleteMenuHandler(id: string) {
           Cancel
         </UiAlertDialogCancel>
         <UiAlertDialogAction @click="deleteMenuHandler(row.original.id)">
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="isLoading"
+            :disabled="isLoading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
+
+  <UiAlertDialog :open="openExportModal" :onOpenChange="setOpenExportModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          This action cannot be undone. It will export this
+          menu data and download it to your file system.
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenExportModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction @click="exportMenusHandler(row.original.id)">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"
