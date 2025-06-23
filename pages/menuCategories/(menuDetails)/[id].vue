@@ -106,7 +106,7 @@ const getMenusData = async () => {
 const getMenuChildrensData = async () => {
   try {
     if(data.value?.parent?.id){
-      selectedChildren.value = await getChildrensByParentId(data.value?.parent?.id);
+      selectedChildren.value = await getChildrensByParentId(data.value?.parentId);
       console.log("allMenuChildrens: ", selectedChildren.value)
     }
   } catch (err) {
@@ -114,15 +114,7 @@ const getMenuChildrensData = async () => {
   }
 };
 
-
-
-
-// onMounted(async () => {
-//   getPaymentIntegrationData();
-//   getMenusData();
-// });
-
-await useAsyncData("menuData", () => {
+onMounted(() => {
   getMenuDetails();
   getPaymentIntegrationData();
   getMenusData();
@@ -133,7 +125,7 @@ const refetch = async () => {
   await getPaymentIntegrationData();
   await getMenuDetails();
   await getMenusData();
-  getMenuChildrensData()
+  await getMenuChildrensData()
 };
 
 const onSubmit = form.handleSubmit(async (values: any) => {
@@ -225,7 +217,7 @@ const getUploadedImage = async (iconPath) => {
       imagePreview.value = URL.createObjectURL(response);
     }
     // Handle base64 response
-    else if (typeof response === "string" && response.startsWith("data:")) {
+    else if (typeof response === "string" && response?.startsWith("data:")) {
       imagePreview.value = response;
     }
     // Handle raw base64 (without data URI prefix)

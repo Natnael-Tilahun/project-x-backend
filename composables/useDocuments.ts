@@ -48,13 +48,14 @@ export const useDocuments = () => {
       isLoading.value = pending.value;
 
       if (status.value === "error") {
-        handleApiError(error);
+      console.log("error getting files: ", error)
+        // handleApiError(error);
       }
 
       return data.value ? (data.value as unknown as File) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      // throw err
+      console.log("error getting files: ", err)
     }
   };
 

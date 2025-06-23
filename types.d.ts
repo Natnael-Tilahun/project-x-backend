@@ -524,7 +524,7 @@ interface Menu {
   iconPath?: string | null;
   enabled?: boolean | null;
   productMenus?: PaymentIntegration[] | null;
-  parent?: Menu | null;
+  parentId?: string | null;
   children?: Menu[] | null;
   menuLayoutType?: MenuLayoutType | null;
   gridNumberOfColumns?: number | null;
