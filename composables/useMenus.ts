@@ -228,24 +228,6 @@ export const useMenus = () => {
     }
   };
 
-  const exportMenus: (id:string) => ApiResult<Menu> = async (id) => {
-    try {
-      const { data, pending, error, status } = await fetch<Menu>(
-        `/api/v1/internal/menus/${id}/export`,
-      );
-
-      isLoading.value = pending.value;
-
-      if (status.value === "error") {
-        handleApiError(error);
-      }
-
-      return data.value ? (data.value as unknown as Menu) : null;
-    } catch (err) {
-      throw err
-    }
-  };
-
   return {
     isLoading,
     getMenus,
@@ -257,7 +239,6 @@ export const useMenus = () => {
     updateProductMenus,
     updateChildrenMenus,
     importMenus,
-    exportMenus,
     isSubmitting,
   };
 };
