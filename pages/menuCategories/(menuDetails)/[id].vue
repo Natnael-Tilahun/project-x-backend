@@ -105,8 +105,8 @@ const getMenusData = async () => {
 
 const getMenuChildrensData = async () => {
   try {
-    if(data.value?.parent?.id){
-      selectedChildren.value = await getChildrensByParentId(data.value?.parentId);
+    if(menuId.value){
+      selectedChildren.value = await getChildrensByParentId(menuId.value);
       console.log("allMenuChildrens: ", selectedChildren.value)
     }
   } catch (err) {
