@@ -11,6 +11,8 @@ const data = ref<Menu[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
 const router = useRouter(); // {{ edit_2 }}
+const openImportDialog = ref(false)
+const isDownloading = ref(false);
 
 const getMenuData = async () => {
   try {
@@ -43,6 +45,10 @@ provide('refetchMenus', refetch);
 
 // Generate columns by passing the refetch function
 const columns = computed(() => tableColumns(refetch));
+
+const closeImportDialog = async () => {
+  openImportDialog.value = false
+};
 </script>
 
 <!-- Render DataTable only if data is available -->
@@ -55,12 +61,35 @@ const columns = computed(() => tableColumns(refetch));
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
   <UiPermissionGuard permission="CREATE_INTEGRATION_MENUS" >
-    <NuxtLink to="/menuCategories/new" class="w-fit self-end">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-4">
+      <NuxtLink to="/menuCategories/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
         >Configure New</UiButton
       >
     </NuxtLink>
+
+        <UiSheet v-model:open="openImportDialog">
+          <UiSheetTrigger>
+            <UiButton :disabled="isDownloading" type="submit">
+              <Icon
+                name="svg-spinners:8-dots-rotate"
+                v-if="isDownloading"
+                class="mr-2 h-4 w-4 animate-spin"
+              ></Icon>
+
+              Import Menus
+            </UiButton>
+          </UiSheetTrigger>
+
+          <UiSheetContent
+            class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+          >
+            <MenusImportMenus @closeImportDialog="closeImportDialog"  @refresh="refetch" />
+          </UiSheetContent>
+        </UiSheet>
+        <MenusExportAllMenus />
+      </div>
     </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">

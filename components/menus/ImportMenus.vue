@@ -10,7 +10,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-const { importIntegration } = useIntegrations();
+const { importMenus } = useMenus();
 
 const isImporting = ref(false);
 const isError = ref(false);
@@ -84,7 +84,7 @@ const doImport = async () => {
     const formData = new FormData();
     formData.append('file', selectedFile.value);
 
-    await importIntegration(formData,
+    await importMenus(formData,
     {
       onUploadProgress: (progressEvent: ProgressEvent) => {
         if (progressEvent.lengthComputable) {
@@ -95,8 +95,8 @@ const doImport = async () => {
     );
 
     toast({
-      title: "Api Integration Imported",
-      description: "Api integration imported successfully",
+      title: "Menus Imported",
+      description: "Menus imported successfully",
     });
 
     form.resetForm();
@@ -109,11 +109,11 @@ const doImport = async () => {
     emit("closeImportDialog")
     setOpenExportModal(false); // Close dialog after import
   } catch (err: any) {
-    console.error("Error importing api integration:", err);
+    console.error("Error importing menus:", err);
     isError.value = true;
     toast({
       title: "Error",
-      description: "Failed to import integration data",
+      description: "Failed to import menus data",
       variant: "destructive"
     });
     isImporting.value = false;
@@ -134,7 +134,7 @@ const handleImportClick = async () => {
 <template>
   <UiSheet>
     <UiSheetHeader>
-      <UiSheetTitle class="border-b-2">Import Api Integration</UiSheetTitle>
+      <UiSheetTitle class="border-b-2">Import Menus</UiSheetTitle>
       <UiSheetDescription class="py-4 space-y-4">
         <div class="flex flex-col gap-6 items-center">
           <UiCard class="w-full p-6">
@@ -142,7 +142,7 @@ const handleImportClick = async () => {
               <div class="grid grid-cols-2 gap-6 w-full">
                 <FormField name="uploadFile">
                   <FormItem>
-                    <FormLabel>Upload Integration Data (JSON)</FormLabel>
+                    <FormLabel>Upload Menus Data (JSON)</FormLabel>
                     <FormControl>
                       <UiInput
                         :key="fileInputKey"
@@ -200,12 +200,12 @@ const handleImportClick = async () => {
           {{ importProgress }}%
         </div>
         </div>        <UiAlertDialogTitle
-          >This will import the api integration. Are you absolutely
+          >This will import the menus. Are you absolutely
           sure?</UiAlertDialogTitle
         >
         <UiAlertDialogDescription>
-          This action cannot be undone. This will import the api integrations
-          data and save it to the api integrations.
+          This action cannot be undone. This will import the menus
+          data and save it to the menus.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>

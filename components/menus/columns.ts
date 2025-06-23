@@ -59,14 +59,6 @@ export const columns = (refetch: RefetchFunction): ColumnDef<Menu>[] => [
     },
   },
   {
-    accessorKey: "iconPath",
-    header: "Icon",
-    cell: ({ row }) => {
-      const iconPath = row.getValue("iconPath");
-      return iconPath ? h("p", iconPath) : h("p", "-");
-    },
-  },
-  {
     accessorKey: "menuLayoutType",
     header: "Layout Type",
     cell: ({ row }) => {
@@ -91,54 +83,18 @@ export const columns = (refetch: RefetchFunction): ColumnDef<Menu>[] => [
     },
   },
   {
-    accessorKey: "paginationType",
-    header: "Pagination Type",
-    cell: ({ row }) => {
-      const paginationType = row.getValue("paginationType");
-      return paginationType ? h("p", paginationType) : h("p", "-");
-    },
-  },
-  {
     accessorKey: "enabled",
     header: "Enabled",
     cell: ({ row }) => {
       const enabled = row.getValue("enabled");
-      return enabled ? h("p", enabled) : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "defaultLanguageCode",
-    header: "Default Language Code",
-    cell: ({ row }) => {
-      const defaultLanguageCode = row.getValue("defaultLanguageCode");
-      return defaultLanguageCode ? h("p", defaultLanguageCode) : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "children",
-    header: "Children",
-    cell: ({ row }) => {
-      const children = row.getValue("children");
-      return children
-        ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            children.length
-          )
-        : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "dynamicPaymentMenus",
-    header: "Dynamic Paymen t Menus",
-    cell: ({ row }) => {
-      const dynamicPaymentMenus = row.getValue("dynamicPaymentMenus");
-      return dynamicPaymentMenus
-        ? h("p", dynamicPaymentMenus?.length)
-        : h("p", "-");
+      return h(
+        Badge,
+        {
+          class:
+            `max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium ${enabled ? "bg-green-500": "bg-red-500"}`,
+        },
+        row.getValue("enabled") ? "Enabled" : "Disabled"
+      );
     },
   },
   {
