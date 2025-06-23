@@ -4,6 +4,7 @@ import { useApi } from "./useApi";
 import type { Menu } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
+import axios from "axios";
 
 export const useMenus = () => {
   const isLoading = ref<boolean>(false);
@@ -183,6 +184,68 @@ export const useMenus = () => {
     }
   };
 
+  const importMenus: (formData: FormData, options?: { onUploadProgress?: (progressEvent: any) => void }) => ApiResult<Menu> = async (formData, options) => {
+    try {
+      if (options && options.onUploadProgress) {
+        const runtimeConfig = useRuntimeConfig();
+        const { getHeaders } = useApi();
+        // Use axios for upload progress
+        try {
+          const response = await axios.post<Menu>(
+            `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus/import-bulk`,
+            formData,
+            {
+              headers: {
+                ...getHeaders(true),
+                'Content-Type': 'multipart/form-data' 
+              },
+              onUploadProgress: options.onUploadProgress,
+            }
+          );
+          return response.data as unknown as Menu;
+        } catch (error: any) {
+          throw error;
+        }
+      }
+      // Default: use fetch
+      const { data, pending, error, status } = await fetch<Menu>(
+        '/api/v1/internal/menus/import-bulk',
+        {
+          method: "POST",
+          body:  formData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Menu) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  const exportMenus: (id:string) => ApiResult<Menu> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<Menu>(
+        `/api/v1/internal/menus/${id}/export`,
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Menu) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
   return {
     isLoading,
     getMenus,
@@ -193,6 +256,8 @@ export const useMenus = () => {
     updateMenu,
     updateProductMenus,
     updateChildrenMenus,
+    importMenus,
+    exportMenus,
     isSubmitting,
   };
 };
