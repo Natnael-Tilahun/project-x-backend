@@ -17,7 +17,7 @@ import type { ServiceDefinition, Permission, BankingService } from "~/types";
 import { ServiceType, ServiceDefinitionStatus, PermissionCategory } from "@/global-types";
 
 const route = useRoute();
-const { getServiceDefinitionById, updateServiceDefinition, isLoading, isSubmitting } =
+const { getServiceDefinitionById, updateServiceDefinition, getServiceDefinitionPermissions,createNewServiceDefinitionPermission, isLoading, isSubmitting } =
   useServiceDefinitions();
 
 const { getPermissions } = usePermissions();
@@ -31,9 +31,7 @@ const submitting = ref(isLoading.value);
 
 const isError = ref(false);
 const data = ref<ServiceDefinition>();
-const permissionsData = ref<Permission[]>([]);
 const bankingServices = ref<BankingService[]>([]);
-const selectedPermissions = ref<Permission[]>([]);
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
 serviceDefinitionId.value = pathSegments.value[pathLength - 1];
@@ -51,12 +49,6 @@ try {
   isLoading.value = true;
   loading.value = true;
     data.value = await getServiceDefinitionById(serviceDefinitionId.value);
-  const permissions = await getPermissions(0,100000);
-  permissionsData.value = permissions.filter((permission: Permission) => permission.category == PermissionCategory.CUSTOMER)
-  permissionsData.value = permissionsData.value.sort((a: Permission, b: Permission) =>
-      a?.code?.toLowerCase().localeCompare(b?.code?.toLowerCase())
-    );
-  selectedPermissions.value = data.value?.permissions || []
   bankingServices.value = await getBankingServices();
   let a = {
         ...data.value,
@@ -71,6 +63,7 @@ try {
   loading.value = false;
 }
 }
+
 
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
@@ -97,6 +90,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
 onMounted(() => {
   fetchServiceDefinitions();
+  // fetchServiceDefinitionPermissions()
 });
 
 onBeforeUnmount(() => {
@@ -114,6 +108,7 @@ watch(
       openItems.value = newActiveTab as string; // Update the active tab when the query param
     if (newActiveTab == "serviceDefinitionDetails" || newActiveTab == "serviceDefinitionPermissions" || newActiveTab == "serviceDefinitionRoles" || newActiveTab == "serviceDefinitionRoleDetails" || newActiveTab == "newServiceDefinitionRole") {
       fetchServiceDefinitions();
+      // fetchServiceDefinitionPermissions()
     }
   }
   }
@@ -290,71 +285,6 @@ watch(
               <FormMessage />
             </FormItem>
           </FormField>
-          <FormField v-slot="{ componentField }" name="defaultGroup">
-            <FormItem>
-              <FormLabel>Service Definition Default Group </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="text"
-                  placeholder="Enter service definition Default Group"
-                  v-bind="componentField"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-          <FormField v-slot="{ componentField }" name="numberOfFeatures">
-            <FormItem>
-              <FormLabel>Service Definition Number Of Features </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="number"
-                  placeholder="Enter service definition Number Of Features"
-                  v-bind="componentField"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-          <FormField v-slot="{ componentField }" name="numberOfActiveRoles">
-            <FormItem>
-              <FormLabel>Service Definition Number Of Active Roles </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="number"
-                  placeholder="Enter service definition Number Of Active Roles"
-                  v-bind="componentField"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-          <FormField v-slot="{ componentField }" name="numberOfRoles">
-            <FormItem>
-              <FormLabel>Service Definition Number Of Roles </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="number"
-                  placeholder="Enter service definition Number Of Roles"
-                  v-bind="componentField"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
-          <FormField v-slot="{ componentField }" name="numberOfContracts">
-            <FormItem>
-              <FormLabel>Service Definition Number Of Contracts </FormLabel>
-              <FormControl>
-                <UiInput
-                  type="number"
-                  placeholder="Enter service definition Number Of Contracts"
-                  v-bind="componentField"
-                />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          </FormField>
           <FormField v-slot="{ componentField }" name="status">
               <FormItem>
                 <FormLabel> Service Definition Status </FormLabel>
@@ -401,6 +331,76 @@ watch(
                 <FormMessage />
               </FormItem>
             </FormField>
+          <FormField v-slot="{ componentField }" name="defaultGroup">
+            <FormItem>
+              <FormLabel>Service Definition Default Role </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="text"
+                  disabled
+                  placeholder="Enter service definition Default Group"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="numberOfFeatures">
+            <FormItem>
+              <FormLabel>Service Definition Number Of Features </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="number"
+                  disabled
+                  placeholder="Enter service definition Number Of Features"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="numberOfActiveRoles">
+            <FormItem>
+              <FormLabel>Service Definition Number Of Active Roles </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="number"
+                  disabled
+                  placeholder="Enter service definition Number Of Active Roles"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="numberOfRoles">
+            <FormItem>
+              <FormLabel>Service Definition Number Of Roles </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="number"
+                  disabled
+                  placeholder="Enter service definition Number Of Roles"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="numberOfContracts">
+            <FormItem>
+              <FormLabel>Service Definition Number Of Contracts </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="number"
+                  disabled
+                  placeholder="Enter service definition Number Of Contracts"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
       
             <UiPermissionGuard permission="UPDATE_SERVICE_DEFINITIONS" >
           <div class="col-span-full w-full py-4 flex justify-between">
@@ -433,7 +433,7 @@ watch(
     value="serviceDefinitionPermissions"
     class="text-base bg-background rounded-lg"
     >
-    <ServiceDefinitionsPermissions :serviceDefinitionProps="data" />
+    <ServiceDefinitionsPermissions />
     </UiTabsContent>
     </UiPermissionGuard>
     <UiPermissionGuard permission="VIEW_SERVICE_DEFINITION_ROLES" >

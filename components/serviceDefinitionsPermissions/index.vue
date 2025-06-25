@@ -15,40 +15,34 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { ServiceDefinition, Permission } from "~/types";
 import { PermissionCategory } from "~/global-types";
+import { getIdFromPath } from "~/lib/utils";
 
 const route = useRoute();
-const { updateServiceDefinition, isLoading, isSubmitting } =
+const { createNewServiceDefinitionPermission,getServiceDefinitionPermissions, isLoading, isSubmitting } =
   useServiceDefinitions();
 const { getPermissions } = usePermissions();
 
-const pathSegments = ref([]);
-pathSegments.value = splitPath(route.path);
-const pathLength = pathSegments.value.length;
 const serviceDefinitionId = ref<string>("");
-serviceDefinitionId.value = pathSegments.value[pathLength - 1];
+serviceDefinitionId.value = getIdFromPath(route.path);
 
-function splitPath(path: any) {
-  return path.split("/").filter(Boolean);
-}
-
-const selectedPermissions = ref<Permission[]>([]);
+const selectedPermissions = ref<string[]>([]);
 const permissionsData = ref<Permission[]>([]);
 const isError = ref(false);
-const data = ref<ServiceDefinition>();
+const data = ref<Permission[]>();
 
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
-const serviceDefinition = ref<ServiceDefinition>();
+// const serviceDefinition = ref<ServiceDefinition>();
 
-const props = defineProps<{
-  serviceDefinitionProps?: ServiceDefinition;
-}>();
+// const props = defineProps<{
+//   serviceDefinitionProps?: ServiceDefinition;
+// }>();
 
-if (props?.serviceDefinitionProps) {
-  serviceDefinition.value = props?.serviceDefinitionProps;
-  data.value = serviceDefinition.value;
-  selectedPermissions.value = serviceDefinition.value?.permissions || [];
-}
+// if (props?.serviceDefinitionPermissionsProps) {
+//   serviceDefinition.value = props?.serviceDefinitionProps;
+//   data.value = serviceDefinition.value;
+//   selectedPermissions.value = serviceDefinition.value?.permissions || [];
+// }
 
 const form = useForm({
   validationSchema: "",
@@ -59,10 +53,10 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = true;
     isSubmitting.value = true;
     const newValues = {
-      ...data.value,
-      permissions: selectedPermissions.value,
+      permissionCodes: selectedPermissions.value,
     };
-    data.value = await updateServiceDefinition(
+    console.log("new values: ", newValues)
+    data.value = await createNewServiceDefinitionPermission(
       serviceDefinitionId.value,
       newValues
     );
@@ -95,8 +89,25 @@ const fetchData = async () => {
   }
 };
 
+const fetchServiceDefinitionPermissions = async() => {
+try {
+  isLoading.value = true;
+  loading.value = true;
+  const response = await getServiceDefinitionPermissions(serviceDefinitionId.value);
+  selectedPermissions.value = response?.map(permission => permission.permissionCode) || []
+  console.log("permissions response: ", selectedPermissions.value)
+} catch (err) {
+  console.error("Error fetching service definition permissions:", err);
+  isError.value = true;
+} finally {
+  isLoading.value = false;
+  loading.value = false;
+}
+}
+
 await useAsyncData("permissionsData", async () => {
   await fetchData();
+  await fetchServiceDefinitionPermissions()
 });
 
 // Add computed property to check if all permissions are selected
@@ -104,13 +115,13 @@ const allSelected = computed(() => {
   if (!permissionsData.value || permissionsData.value.length === 0)
     return false;
   return permissionsData.value.every((permission) =>
-    selectedPermissions.value.some((p) => p.code === permission.code)
+    selectedPermissions.value.some((p) => p === permission.code)
   );
 });
 
 // Function to select all permissions
 const selectAll = () => {
-  selectedPermissions.value = [...permissionsData.value];
+  selectedPermissions.value = permissionsData.value.map(permission => permission.code);
 };
 
 // Function to deselect all permissions
@@ -186,7 +197,7 @@ const deselectAll = () => {
             v-for="permission in permissionsData"
             :key="permission.code"
             :model-value="
-              selectedPermissions.some((p) => p.code === permission.code)
+              selectedPermissions.some((p) => p === permission.code)
             "
             v-slot="{ handleChange }"
             name="permissions"
@@ -198,15 +209,15 @@ const deselectAll = () => {
                 <UiCheckbox
                   class="order-first self-center"
                   :checked="
-                    selectedPermissions.some((p) => p.code === permission.code)
+                    selectedPermissions.some((p) => p === permission.code)
                   "
                   @update:checked="
                     (checked) => {
                       if (checked) {
-                        selectedPermissions.push(permission);
+                        selectedPermissions.push(permission.code);
                       } else {
                         selectedPermissions = selectedPermissions.filter(
-                          (p) => p.code !== permission.code
+                          (p) => p !== permission.code
                         );
                       }
                     }

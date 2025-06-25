@@ -166,6 +166,7 @@ interface Permission {
   deletedDate?: string;
   grouping: string;
   code: string;
+  permissionCode?: string;
   entityName: string;
   actionName: string;
   description: string & {

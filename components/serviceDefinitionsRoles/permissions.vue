@@ -19,6 +19,11 @@ import { getIdFromPath } from "~/lib/utils";
 const route = useRoute();
 const { updateServiceDefinitionRolePermissions, isLoading, isSubmitting } =
   useServiceDefinitionsRoles();
+  const { getServiceDefinitionPermissions} =
+  useServiceDefinitions();
+
+const serviceDefinitionId = ref<string>("");
+serviceDefinitionId.value = getIdFromPath(route.path);
 
 const contractId = ref<string>("");
 contractId.value = getIdFromPath();
@@ -26,12 +31,10 @@ contractId.value = getIdFromPath();
 const serviceDefinitionRoleId = ref<string>("");
 serviceDefinitionRoleId.value = route.query.serviceDefinitionRoleId as string;
 
-const selectedPermissions = ref<Permission[]>([]);
+const selectedPermissions = ref<string[]>([]);
 const permissionsData = ref<Permission[]>([]);
 const isError = ref(false);
-const data = ref<ServiceDefinitionRole>();
-const serviceDefinition = ref<ServiceDefinition>()
-
+const data = ref<Permission[]>();
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
 
@@ -41,13 +44,13 @@ const allSelected = computed(() => {
   if (!permissionsData.value || permissionsData.value.length === 0)
     return false;
   return permissionsData.value.every((permission) =>
-    selectedPermissions.value.some((p) => p.code === permission.code)
+    selectedPermissions.value.some((p) => p === permission.permissionCode)
   );
 });
 
 // Function to select all permissions
 const selectAll = () => {
-  selectedPermissions.value = [...permissionsData.value];
+  selectedPermissions.value = permissionsData.value.map(permission => permission?.permissionCode);
 };
 
 // Function to deselect all permissions
@@ -56,20 +59,20 @@ const deselectAll = () => {
 };
 
 const props = defineProps<{
-  serviceDefinitionsProps?: ServiceDefinition;
   permissionsData?: Permission[];
 }>();
 
 
 const emit = defineEmits(["refresh"]);
 
-if (props?.serviceDefinitionsProps) {
-  serviceDefinition.value = props?.serviceDefinitionsProps;
-  permissionsData.value = serviceDefinition.value?.permissions || [];
-}
+// if (props?.serviceDefinitionsProps) {
+//   serviceDefinition.value = props?.serviceDefinitionsProps;
+//   permissionsData.value = serviceDefinition.value?.permissions || [];
+// }
 
 if (props?.permissionsData) {
-  selectedPermissions.value = props?.permissionsData;
+  selectedPermissions.value = props?.permissionsData.map(permission => permission.permissionCode);
+  console.log("selectedPermissions: ", selectedPermissions.value)
 }
 
 
@@ -82,10 +85,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = true;
     isSubmitting.value = true;
     const newValues = {
-      permissionCodes: selectedPermissions.value.map(
-        (permission: any) => permission.code
-      ),
+      permissionCodes: selectedPermissions.value
     };
+    console.log("new valuesss: ", newValues)
     data.value = await updateServiceDefinitionRolePermissions(
       serviceDefinitionRoleId.value,
       newValues
@@ -102,6 +104,26 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = false;
     submitting.value = false;
   }
+});
+
+const fetchServiceDefinitionPermissions = async() => {
+try {
+  isLoading.value = true;
+  loading.value = true;
+  const response = await getServiceDefinitionPermissions(serviceDefinitionId.value);
+  permissionsData.value = response || []
+  console.log("service definition permissions response: ", permissionsData.value)
+} catch (err) {
+  console.error("Error fetching service definition permissions:", err);
+  isError.value = true;
+} finally {
+  isLoading.value = false;
+  loading.value = false;
+}
+}
+
+onMounted(() => {
+  fetchServiceDefinitionPermissions();
 });
 </script>
 
@@ -210,7 +232,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 v-for="permission in permissionsData"
                 :key="permission.code"
                 :model-value="
-                  selectedPermissions.some((p) => p.code === permission.code)
+                  selectedPermissions.some((p) => p === permission.permissionCode)
                 "
                 v-slot="{ handleChange }"
                 name="permissions"
@@ -223,16 +245,16 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                       class="order-first self-center"
                       :checked="
                         selectedPermissions.some(
-                          (p) => p.code === permission.code
+                          (p) => p === permission.permissionCode
                         )
                       "
                       @update:checked="
                         (checked) => {
                           if (checked) {
-                            selectedPermissions.push(permission);
+                            selectedPermissions.push(permission?.permissionCode);
                           } else {
                             selectedPermissions = selectedPermissions.filter(
-                              (p) => p.code !== permission.code
+                              (p) => p !== permission.permissionCode
                             );
                           }
                         }
@@ -240,7 +262,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                     />
                   </FormControl>
                   <FormLabel class="font-normal text-sm">
-                    {{ permission.code }}
+                    {{ permission.permissionCode }}
                   </FormLabel>
                   <FormMessage />
                 </FormItem>

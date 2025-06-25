@@ -146,7 +146,33 @@ export const useServiceDefinitionsRoles = () => {
       const { data, pending, error, status } = await fetch<ServiceDefinitionRole>(
         `/api/v1/internal/service-definition-roles/${serviceDefinitionRoleId}/permissions`,
         {
-          method: "PUT",
+          method: "POST",
+          body: permissionsData
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as ServiceDefinitionRole) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
+  const deleteServiceDefinitionRolePermissions: (
+    serviceDefinitionRoleId: string,
+    permissionsData: any
+  ) => ApiResult<ServiceDefinitionRole> = async (serviceDefinitionRoleId, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<ServiceDefinitionRole>(
+        `/api/v1/internal/service-definition-roles/${serviceDefinitionRoleId}/permissions`,
+        {
+          method: "DELETE",
           body: permissionsData
         }
       );
@@ -219,6 +245,7 @@ export const useServiceDefinitionsRoles = () => {
     updateServiceDefinitionRolePermissions,
     getServiceDefinitionRolesByServiceDefinitionId,
     setDefaultServiceDefinitionRole,
+    deleteServiceDefinitionRolePermissions,
     isSubmitting,
   };
 };

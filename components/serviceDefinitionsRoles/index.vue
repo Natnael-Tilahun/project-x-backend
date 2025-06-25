@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import { columns } from "~/components/serviceDefinitionsRoles/columns";
 import type { ServiceDefinitionRole, ServiceDefinition } from "~/types";
+import { columns as tableColumns } from "~/components/serviceDefinitionsRoles/columns"; // Renamed to avoid conflict
 
 
 const { getServiceDefinitionsRoles, getServiceDefinitionRoleById, updateServiceDefinitionRole, getServiceDefinitionRolesByServiceDefinitionId } =
@@ -37,9 +37,19 @@ const getServiceDefinitionRolesData = async () => {
   }
 };
 
-onMounted(() => {
-  getServiceDefinitionRolesData();
+const refetch = async () => {
+  await getServiceDefinitionRolesData();
+};
+
+onMounted(async () => {
+    await getServiceDefinitionRolesData();
 });
+
+// Provide the refetch function
+provide('refetchserviceDefinitions', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <template>

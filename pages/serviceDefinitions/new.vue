@@ -10,7 +10,7 @@ import {
 import { ref, onBeforeUnmount } from "vue";
 import { toast } from "~/components/ui/toast";
 import { newServiceDefinitionFormSchema } from "~/validations/newServiceDefinitionFormSchema";
-import { ServiceType, ServiceDefinitionStatus } from "@/global-types";
+import { ServiceType, ServiceDefinitionStatus, PermissionCategory } from "@/global-types";
 import type { ServiceDefinition, Permission, BankingService } from "~/types";
 
 const { createNewServiceDefinition, isLoading } = useServiceDefinitions();
@@ -30,7 +30,8 @@ const form = useForm({
 const fetchData = async () => {
   try {
     const permissions = await getPermissions(0,100000);
-    permissionsData.value = permissions.sort((a: Permission, b: Permission) =>
+    permissionsData.value = permissions.filter((permission: Permission) => permission.category == PermissionCategory.CUSTOMER)
+    permissionsData.value = permissionsData.value.sort((a: Permission, b: Permission) =>
       a?.code?.toLowerCase().localeCompare(b?.code?.toLowerCase())
     );
     console.log("permissions: ", permissionsData.value);
@@ -55,7 +56,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       service: services.value.find((service: BankingService) => service.id === values.service),
     }
     data.value = await createNewServiceDefinition(newValues); // Call your API function to fetch profile
-    navigateTo(`/serviceDefinitionsRolesDetails/${data.value?.id}`);
+    navigateTo(`/serviceDefinitions/${data.value?.id}`);
     toast({
       title: "Service Definition Created",
       description: "Service Definition created successfully",
@@ -139,7 +140,7 @@ onBeforeUnmount(() => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="defaultGroup">
+            <!-- <FormField v-slot="{ componentField }" name="defaultGroup">
               <FormItem>
                 <FormLabel>Default Group </FormLabel>
                 <FormControl>
@@ -203,7 +204,7 @@ onBeforeUnmount(() => {
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            </FormField>
+            </FormField> -->
             <FormField v-slot="{ componentField }" name="status">
               <FormItem>
                 <FormLabel> Status </FormLabel>
