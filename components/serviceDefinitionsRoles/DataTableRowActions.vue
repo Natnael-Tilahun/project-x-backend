@@ -13,7 +13,11 @@ const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['serviceDefinitionRoleDeleted', 'editServiceDefinitionRole']); // Added 'languageDeleted'
 
 function viewServiceDefinitionRoleDetail(id: string) {
   navigateTo({
@@ -33,7 +37,7 @@ async function deleteServiceDefinitionRoles(id: string) {
     toast({
       title: "Service definition role deleted successfully",
     });
-    window.location.reload();
+    await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
     console.error("Error deleting service definition role:", err);
     isError.value = true;

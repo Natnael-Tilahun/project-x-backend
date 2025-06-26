@@ -1,6 +1,6 @@
 import { toast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { ServiceDefinitionRole } from "~/types";
+import type { Permission, ServiceDefinitionRole } from "~/types";
 import { ServiceDefinitionStatus } from "~/global-types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
@@ -146,7 +146,33 @@ export const useServiceDefinitionsRoles = () => {
       const { data, pending, error, status } = await fetch<ServiceDefinitionRole>(
         `/api/v1/internal/service-definition-roles/${serviceDefinitionRoleId}/permissions`,
         {
-          method: "PUT",
+          method: "POST",
+          body: permissionsData
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as ServiceDefinitionRole) : null;
+    } catch (err) {
+      handleApiError(err);
+      return null;
+    }
+  };
+
+  const deleteServiceDefinitionRolePermissions: (
+    serviceDefinitionRoleId: string,
+    permissionsData: any
+  ) => ApiResult<ServiceDefinitionRole> = async (serviceDefinitionRoleId, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<ServiceDefinitionRole>(
+        `/api/v1/internal/service-definition-roles/${serviceDefinitionRoleId}/permissions`,
+        {
+          method: "DELETE",
           body: permissionsData
         }
       );
@@ -209,6 +235,49 @@ export const useServiceDefinitionsRoles = () => {
     }
   };
 
+  const getServiceDefinitionRolePermissions: (id: string) => ApiResult<Permission[]> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/service-definition-roles/${id}/permissions`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  const createNewServiceDefinitionRolePermission: (
+    id:string,
+   permissionsData: any
+  ) => ApiResult<Permission[]> = async (id, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/service-definition-roles/${id}/permissions`,
+        {
+          method: "POST",
+          body: permissionsData
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
   return {
     isLoading,
     getServiceDefinitionsRoles,
@@ -219,6 +288,9 @@ export const useServiceDefinitionsRoles = () => {
     updateServiceDefinitionRolePermissions,
     getServiceDefinitionRolesByServiceDefinitionId,
     setDefaultServiceDefinitionRole,
+    deleteServiceDefinitionRolePermissions,
+    getServiceDefinitionRolePermissions,
+    createNewServiceDefinitionRolePermission,
     isSubmitting,
   };
 };

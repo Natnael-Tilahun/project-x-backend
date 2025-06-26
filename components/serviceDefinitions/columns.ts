@@ -86,7 +86,7 @@ export const columns = (refetch: RefetchFunction): ColumnDef<ServiceDefinition>[
   },
   {
     accessorKey: "defaultGroup",
-    header: "Default Group",
+    header: "Default Role",
     cell: ({ row }) => {
       const defaultGroup = row.getValue("defaultGroup");
       return defaultGroup
@@ -97,74 +97,6 @@ export const columns = (refetch: RefetchFunction): ColumnDef<ServiceDefinition>[
                 "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
             },
             row.getValue("defaultGroup")
-          )
-        : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "numberOfFeatures",
-    header: "Number of Features",
-    cell: ({ row }) => {
-      const numberOfFeatures = row.getValue("numberOfFeatures");
-      return numberOfFeatures
-        ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            row.getValue("numberOfFeatures")
-          )
-        : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "numberOfActiveRoles",
-    header: "Number of Active Roles",
-    cell: ({ row }) => {
-      const numberOfActiveRoles = row.getValue("numberOfActiveRoles");
-      return numberOfActiveRoles
-        ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            row.getValue("numberOfActiveRoles")
-          )
-        : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "numberOfRoles",
-    header: "Number of Roles",
-    cell: ({ row }) => {
-      const numberOfRoles = row.getValue("numberOfRoles");
-      return numberOfRoles
-        ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            row.getValue("numberOfRoles")
-          )
-        : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "numberOfContracts",
-    header: "Number of Contracts",
-    cell: ({ row }) => {
-      const numberOfContracts = row.getValue("numberOfContracts");
-      return numberOfContracts
-        ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            row.getValue("numberOfContracts")
           )
         : h("p", "-");
     },
@@ -188,7 +120,7 @@ export const columns = (refetch: RefetchFunction): ColumnDef<ServiceDefinition>[
   },
   {
     accessorKey: "service",
-    header: "Service",
+    header: "Banking Service",
     cell: ({ row }) => {
       const service = row.getValue("service")?.id;
       return service

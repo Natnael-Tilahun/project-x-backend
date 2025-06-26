@@ -10,7 +10,6 @@ export const newServiceDefinitionFormSchema = toTypedSchema(
     id: z.string().optional().nullable(),
     name: z.string(),
     serviceType: ServiceTypeSchema,
-    permissions: z.array(z.any()).optional().nullable(),
     description: z.any().optional().nullable(),
     defaultGroup: z.string().optional().nullable(),
     numberOfFeatures: z.number().optional().nullable(),

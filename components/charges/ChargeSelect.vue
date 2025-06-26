@@ -51,8 +51,8 @@ const handleSelect = (charge: Charge) => {
           <UiCommandGroup>
             <UiCommandItem
               v-for="charge in charges"
-              :key="charge.id"
-              :value="charge.chargeCode"
+              :key="charge.id || charge.chargeCode"
+              :value="charge.id"
               @select="() => handleSelect(charge)"
             >
               {{ charge.chargeCode }}

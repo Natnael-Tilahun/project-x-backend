@@ -23,7 +23,7 @@ import {
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { useDocuments } from "~/composables/useDocuments";
-import type { PaymentIntegration, ApiOperation } from "~/types";
+import type { PaymentIntegration, ApiOperation, Charge } from "~/types";
 import ChargeSelect from "~/components/charges/ChargeSelect.vue";
 
 const route = useRoute();
@@ -81,9 +81,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     loading.value = true;
     const data = {
       ...values,
-      charge: {
-        id: values.charge
-      },
       maximumAmount:
         values?.maximumAmountVariableType == MaximumAmountVariableType.FIXED &&
         values?.transactionAmountType == TransactionAmountType.USER_DEFINED
@@ -925,19 +922,19 @@ onMounted(() => {
                 </FormField>
 
                 <FormField
-                  :model-value="data?.visiblity"
+                  :model-value="data?.visibility"
                   v-slot="{ componentField }"
-                  name="visiblity"
+                  name="visibility"
                 >
                   <FormItem>
-                    <FormLabel> Visiblity </FormLabel>
+                    <FormLabel> Visibility</FormLabel>
                     <UiSelect v-bind="componentField">
                       <FormControl>
                         <UiSelectTrigger>
                           <UiSelectValue
                             :placeholder="
-                              data?.visiblity
-                                ? data?.visiblity
+                              data?.visibility	
+                                ? data?.visibility	
                                 : 'Select a visibility'
                             "
                           />
@@ -960,9 +957,9 @@ onMounted(() => {
                 </FormField>
 
                 <FormField
-                  :model-value="data?.charge?.id"
+                  :model-value="data?.chargeId"
                   v-slot="{ componentField }"
-                  name="charge"
+                  name="chargeId"
                 >
                   <FormItem>
                     <FormLabel>Charge</FormLabel>

@@ -5,8 +5,12 @@ import ServiceDefinitionsRolesDataTableRowActionsVue from "./DataTableRowActions
 import { NuxtLink } from "#components";
 import type { ServiceDefinitionRole } from "~/types";
 import Badge from "../ui/badge/Badge.vue";
+import { h, inject } from "vue"; // Import inject
 
-export const columns: ColumnDef<ServiceDefinitionRole>[] = [
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<ServiceDefinitionRole>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -88,6 +92,7 @@ export const columns: ColumnDef<ServiceDefinitionRole>[] = [
         { class: "relative" },
         h(ServiceDefinitionsRolesDataTableRowActionsVue, {
           row,
+          refetch
         })
       );
     },
