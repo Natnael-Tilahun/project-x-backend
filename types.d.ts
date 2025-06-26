@@ -166,6 +166,7 @@ interface Permission {
   deletedDate?: string;
   grouping: string;
   code: string;
+  permissionCode?: string;
   entityName: string;
   actionName: string;
   description: string & {
@@ -503,7 +504,7 @@ interface PaymentIntegration {
   paymentErrorTemplateShort?: string | null;
   defaultPaymentReason?: string | null;
   integrationType?: PaymentIntegrationType | null;
-  visiblity?: Visibility | null;
+  visibility?: Visibility | null;
   confirmRecipientIdentity?: boolean | null;
   reEnquirePaymentDetailBeforePayment?: boolean | null;
   singleFormPayment?: boolean | null;
@@ -511,7 +512,7 @@ interface PaymentIntegration {
   dailyLimitPerAccount?: number | null;
   limitPerTransaction?: number | null;
   category?: PaymentCategory | null;
-  charge?: Charge | null;
+  chargeId?: string | null;
   maxTransactionsPerDay?: number | null;
 }
 
@@ -1029,7 +1030,7 @@ interface LocalizedUssdMenu {
 }
 
 interface Charge {
-  id?: string;
+  id?: string | null;
   chargeCode?: string;
   category?: string;
   type: ChargeType;

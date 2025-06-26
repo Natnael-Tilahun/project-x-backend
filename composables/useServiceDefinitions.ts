@@ -1,6 +1,6 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { ServiceDefinition } from "~/types";
+import type { Permission, ServiceDefinition } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
@@ -33,8 +33,7 @@ export const useServiceDefinitions = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinition[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -52,8 +51,25 @@ export const useServiceDefinitions = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinition) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
+    }
+  };
+
+  const getServiceDefinitionPermissions: (id: string) => ApiResult<Permission[]> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/service-definitions/${id}/permissions`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err
     }
   };
 
@@ -77,8 +93,57 @@ export const useServiceDefinitions = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinition) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
+    }
+  };
+
+  const createNewServiceDefinitionPermission: (
+    id:string,
+   permissionsData: any
+  ) => ApiResult<Permission[]> = async (id, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/service-definitions/${id}/permissions`,
+        {
+          method: "POST",
+          body: permissionsData
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  const deleteNewServiceDefinitionPermission: (
+    id:string,
+   permissionsData: any
+  ) => ApiResult<Permission[]> = async (id, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/service-definitions/${id}/permissions`,
+        {
+          method: "DELETE",
+          body: permissionsData
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err
     }
   };
 
@@ -103,8 +168,7 @@ export const useServiceDefinitions = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinition) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -123,8 +187,7 @@ export const useServiceDefinitions = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -135,6 +198,9 @@ export const useServiceDefinitions = () => {
     createNewServiceDefinition,
     deleteServiceDefinition,
     updateServiceDefinition,
+    getServiceDefinitionPermissions,
+    createNewServiceDefinitionPermission,
+    deleteNewServiceDefinitionPermission,
     isSubmitting,
   };
 };
