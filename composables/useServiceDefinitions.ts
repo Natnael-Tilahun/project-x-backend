@@ -33,8 +33,7 @@ export const useServiceDefinitions = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinition[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -52,8 +51,7 @@ export const useServiceDefinitions = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinition) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -71,8 +69,7 @@ export const useServiceDefinitions = () => {
 
       return data.value ? (data.value as unknown as Permission[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -96,8 +93,7 @@ export const useServiceDefinitions = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinition) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -122,8 +118,7 @@ export const useServiceDefinitions = () => {
 
       return data.value ? (data.value as unknown as Permission[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -148,8 +143,7 @@ export const useServiceDefinitions = () => {
 
       return data.value ? (data.value as unknown as Permission[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -174,8 +168,7 @@ export const useServiceDefinitions = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinition) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -194,8 +187,7 @@ export const useServiceDefinitions = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

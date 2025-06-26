@@ -90,7 +90,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
 onMounted(() => {
   fetchServiceDefinitions();
-  // fetchServiceDefinitionPermissions()
 });
 
 onBeforeUnmount(() => {
@@ -108,7 +107,6 @@ watch(
       openItems.value = newActiveTab as string; // Update the active tab when the query param
     if (newActiveTab == "serviceDefinitionDetails" || newActiveTab == "serviceDefinitionPermissions" || newActiveTab == "serviceDefinitionRoles" || newActiveTab == "serviceDefinitionRoleDetails" || newActiveTab == "newServiceDefinitionRole") {
       fetchServiceDefinitions();
-      // fetchServiceDefinitionPermissions()
     }
   }
   }

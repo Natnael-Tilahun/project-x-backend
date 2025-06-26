@@ -229,7 +229,6 @@ const updadateRoleStatus = async (status: boolean) => {
                 >
                   <ServiceDefinitionsRolesPermissions
                     :serviceDefinitionsProps="serviceDefinition"
-                    :permissionsData="permissionsData"
                     @refresh="refetch"
                   />
                 </UiSheetContent>
