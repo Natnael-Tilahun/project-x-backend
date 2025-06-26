@@ -32,7 +32,7 @@ contractId.value = getIdFromPath();
 const { getCoreAccountsByCustomerId, isLoading } = useCustomers();
 
 const loading = ref(isLoading.value);
-const submitting = ref(false)
+const submitting = ref(false);
 const isError = ref(false);
 const errorMessage = ref("");
 const accountsData = ref<any>();
@@ -40,13 +40,11 @@ const coreCustomerId = ref<string>();
 const contractCoreCustomerId = ref<any>();
 const selectedAccounts = ref<Account[]>([]);
 const selectedContractAccount = ref<ContractAccount[]>([]);
-const coreCustomerPermissions = ref<any>();
 const store = useAuthStore();
 
 const props = defineProps<{
   contractId?: string;
   contractCoreCustomerProps: any;
-  coreCustomerPermissions?: any;
 }>();
 const emit = defineEmits(["refresh"]);
 const refetch = async () => {
@@ -55,7 +53,6 @@ const refetch = async () => {
 
 coreCustomerId.value = props.contractCoreCustomerProps.coreCustomerId;
 contractCoreCustomerId.value = props.contractCoreCustomerProps.id;
-coreCustomerPermissions.value = props.coreCustomerPermissions || [];
 
 const displayApiDataOnLabel = (data: any) => {
   if (data == null || data == "") {
@@ -90,7 +87,8 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
   } catch (err: any) {
     isError.value = true;
     console.error("Error fetching accounts:", err);
-    errorMessage.value = err.message == "404 NOT_FOUND" ? "Account not found." : err.message;
+    errorMessage.value =
+      err.message == "404 NOT_FOUND" ? "Account not found." : err.message;
     toast({
       title: "Uh oh! Something went wrong.",
       description: `${
@@ -126,10 +124,10 @@ const fetchContractCoreCustomerAccounts = async () => {
     if (coreCustomerId.value) {
       // Get accounts from props instead of API
       const contractAccount = props.contractCoreCustomerProps.coreAccounts;
-      
+
       selectedContractAccount.value = contractAccount;
       selectedAccounts.value = contractAccount || [];
-      
+
       // Filter out already selected accounts from accountsData
       if (accountsData.value) {
         accountsData.value = accountsData.value.filter(
@@ -210,7 +208,7 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
     loading.value = true;
     if (id) {
       const value = status ? "enable" : "disable";
-      console.log("value: ", value);  
+      console.log("value: ", value);
       await updateContractCoreCustomerAccountStatus(id, value);
       await fetchContractCoreCustomerAccounts();
       emit("refresh");
@@ -231,7 +229,10 @@ const updatingContractAccountStatus = async (id: string, status: boolean) => {
 
 const selectAllAccounts = () => {
   // Combine both selectedContractAccount and accountsData
-  const allAccounts = [...selectedContractAccount.value, ...(accountsData.value || [])];
+  const allAccounts = [
+    ...selectedContractAccount.value,
+    ...(accountsData.value || []),
+  ];
   selectedAccounts.value = [...allAccounts];
 };
 
@@ -240,8 +241,14 @@ const deselectAllAccounts = () => {
 };
 
 const isAllSelected = computed(() => {
-  const allAccounts = [...selectedContractAccount.value, ...(accountsData.value || [])];
-  return allAccounts.length > 0 && selectedAccounts.value.length === allAccounts.length;
+  const allAccounts = [
+    ...selectedContractAccount.value,
+    ...(accountsData.value || []),
+  ];
+  return (
+    allAccounts.length > 0 &&
+    selectedAccounts.value.length === allAccounts.length
+  );
 });
 </script>
 
@@ -293,52 +300,68 @@ const isAllSelected = computed(() => {
       <UiSkeleton class="h-16 w-full" />
     </UiCard>
 
-    <UiCard
-
-      class="w-full flex flex-col border-none gap-4"
-    >
+    <UiCard class="w-full flex flex-col border-none gap-4">
       <!-- <div class="p-6"> -->
       <div class="flex justify-between items-center">
         <div class="flex items-center justify-between w-full gap-4">
           <h2 class="text-lg font-semibold">Add Core Customer Accounts</h2>
           <div class="flex items-center gap-4">
             <p class="text-sm text-muted-foreground">
-          {{ selectedAccounts.length }} selected
-        </p>          
-          <UiLabel name="selectAll" class="text-base flex gap-4 order-1 border px-4 py-2 rounded-md">
-            <UiCheckbox
-            :checked="isAllSelected"
-            id="selectAll"
-            name="selectAll"
-            @click="isAllSelected ? deselectAllAccounts() : selectAllAccounts()"
-            class="h-5 w-5"
-            :disabled="!store.permissions.includes('CREATE_CONTRACT_ACCOUNTS')"
-          />
-          {{ !isAllSelected ? "Select All" : "Deselect All" }}
-          </UiLabel>         
+              {{ selectedAccounts.length }} selected
+            </p>
+            <UiLabel
+              name="selectAll"
+              class="text-base flex gap-4 order-1 border px-4 py-2 rounded-md"
+            >
+              <UiCheckbox
+                :checked="isAllSelected"
+                id="selectAll"
+                name="selectAll"
+                @click="
+                  isAllSelected ? deselectAllAccounts() : selectAllAccounts()
+                "
+                class="h-5 w-5"
+                :disabled="
+                  !store.permissions.includes('CREATE_CONTRACT_ACCOUNTS')
+                "
+              />
+              {{ !isAllSelected ? "Select All" : "Deselect All" }}
+            </UiLabel>
+          </div>
         </div>
-      </div>
       </div>
 
       <UiAccordion
-      v-if="
-        ((accountsData && accountsData.length > 0)  ||
-        selectedContractAccount.length > 0) &&  !loading && !isError
-      "
-      type="single" collapsible v-model:value="openItems">
+        v-if="
+          ((accountsData && accountsData.length > 0) ||
+            selectedContractAccount.length > 0) &&
+          !loading &&
+          !isError
+        "
+        type="single"
+        collapsible
+        v-model:value="openItems"
+      >
         <UiAccordionItem
           v-for="(account, index) in selectedContractAccount"
           :key="account?.accountNumber"
           :value="`item-${index + 1}`"
           class="border rounded-lg mb-4 px-2 data-[state=open]:bg-muted/50"
         >
-          <div class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors">
+          <div
+            class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors"
+          >
             <div class="flex items-center gap-4 w-full">
               <UiCheckbox
                 :checked="isAccountSelected(account)"
                 @click.stop="handleAccountSelect(account)"
                 class="h-5 w-5"
-                :disabled="(isAccountSelected(account) && !store.permissions.includes('DELETE_CONTRACT_ACCOUNTS')) || (!isAccountSelected(account) && !store.permissions.includes('CREATE_CONTRACT_ACCOUNTS'))"
+                :disabled="
+                  (isAccountSelected(account) &&
+                    !store.permissions.includes('DELETE_CONTRACT_ACCOUNTS')) ||
+                  (!isAccountSelected(account) &&
+                    !store.permissions.includes('CREATE_CONTRACT_ACCOUNTS'))
+                "
               />
               <div class="flex-1 grid grid-cols-4 gap-4 py-2">
                 <div>
@@ -368,7 +391,10 @@ const isAllSelected = computed(() => {
                           @update:checked="
                             (checked) => {
                               handleChange;
-                              updatingContractAccountStatus(account.id, checked);
+                              updatingContractAccountStatus(
+                                account.id,
+                                checked
+                              );
                             }
                           "
                         />
@@ -378,7 +404,9 @@ const isAllSelected = computed(() => {
                   </FormField>
                 </UiPermissionGuard>
 
-                <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS_PERMISSIONS">
+                <UiPermissionGuard
+                  permission="VIEW_CONTRACT_ACCOUNTS_PERMISSIONS"
+                >
                   <div class="flex items-center">
                     <UiSheet>
                       <UiSheetTrigger>
@@ -394,11 +422,7 @@ const isAllSelected = computed(() => {
                         class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
                       >
                         <ContractsAccountsPermissions
-                          :contractAccountId="account.id"
-                          :coreCustomerPermissions="coreCustomerPermissions"
-                          :accountPermissions="account.permissions"
-                          :contractId="contractId"
-                          @refresh="refetch"
+                          :contractAccountIdProps="account.id"
                         />
                       </UiSheetContent>
                     </UiSheet>
@@ -410,10 +434,14 @@ const isAllSelected = computed(() => {
           </div>
 
           <UiAccordionContent class="px-4 pb-4">
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 px-8 py-4 border-t">
+            <div
+              class="grid grid-cols-2 md:grid-cols-4 gap-4 px-8 py-4 border-t"
+            >
               <div>
                 <p class="text-sm text-muted-foreground">Account Category</p>
-                <p class="font-medium">{{ account?.accountCategory?.shortName }}</p>
+                <p class="font-medium">
+                  {{ account?.accountCategory?.shortName }}
+                </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Currency</p>
@@ -448,7 +476,12 @@ const isAllSelected = computed(() => {
                 :checked="isAccountSelected(account)"
                 @click.stop="handleAccountSelect(account)"
                 class="h-5 w-5"
-                :disabled="(isAccountSelected(account) && !store.permissions.includes('DELETE_CONTRACT_ACCOUNTS')) || (!isAccountSelected(account) && !store.permissions.includes('CREATE_CONTRACT_ACCOUNTS'))"
+                :disabled="
+                  (isAccountSelected(account) &&
+                    !store.permissions.includes('DELETE_CONTRACT_ACCOUNTS')) ||
+                  (!isAccountSelected(account) &&
+                    !store.permissions.includes('CREATE_CONTRACT_ACCOUNTS'))
+                "
               />
               <!-- <UiAccordionTrigger class="ml-auto hover:no-underline"> -->
               <div class="flex-1 grid grid-cols-4 gap-4 py-2">
@@ -536,34 +569,40 @@ const isAllSelected = computed(() => {
           </UiAccordionContent>
         </UiAccordionItem>
 
-  <UiPermissionGuard permission="CREATE_CONTRACT_ACCOUNTS" >
-        <div class="flex justify-end pt-4">
-      <UiButton :disabled="submitting"  @click="addAccounts" type="submit" class="w-fit self-end px-8">
-        <Icon
+        <UiPermissionGuard permission="CREATE_CONTRACT_ACCOUNTS">
+          <div class="flex justify-end pt-4">
+            <UiButton
+              :disabled="submitting"
+              @click="addAccounts"
+              type="submit"
+              class="w-fit self-end px-8"
+            >
+              <Icon
                 name="svg-spinners:8-dots-rotate"
                 v-if="submitting"
                 class="mr-2 h-4 w-4 animate-spin"
               ></Icon>
 
-        Add Accounts</UiButton>
-      </div>
-      </UiPermissionGuard>
+              Add Accounts</UiButton
+            >
+          </div>
+        </UiPermissionGuard>
       </UiAccordion>
       <!-- </div> -->
       <UiCard
-      v-else-if="accountsData && accountsData.length === 0 && !loading && !isError"
-      class="w-full p-6 text-center"
-    >
-      <p class="text-muted-foreground py-8">No accounts found for this customer</p>
+        v-else-if="
+          accountsData && accountsData.length === 0 && !loading && !isError
+        "
+        class="w-full p-6 text-center"
+      >
+        <p class="text-muted-foreground py-8">
+          No accounts found for this customer
+        </p>
+      </UiCard>
+      <div class="w-full" v-else-if="isError">
+        <ErrorMessage :title="errorMessage || 'Something went wrong.'" />
+      </div>
     </UiCard>
-    <div class="w-full" v-else-if="isError">
-      <ErrorMessage :title="errorMessage || 'Something went wrong.'" />
-    </div>
-
-      
-    </UiCard>
-
-  
   </div>
 </template>
 

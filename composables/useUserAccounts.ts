@@ -33,8 +33,7 @@ export const useUserAccounts = () => {
 
       return data.value ? (data.value as unknown as ContractAccount[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -52,8 +51,7 @@ export const useUserAccounts = () => {
 
       return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -71,8 +69,7 @@ export const useUserAccounts = () => {
 
       return data.value ? (data.value as unknown as ContractAccount[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -96,8 +93,7 @@ export const useUserAccounts = () => {
 
       return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -122,8 +118,7 @@ export const useUserAccounts = () => {
 
       return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -147,8 +142,7 @@ export const useUserAccounts = () => {
 
       return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -195,6 +189,76 @@ export const useUserAccounts = () => {
     } catch (err) {
       handleApiError(err);
       return null;
+    }
+  };
+
+  const getContractUserPermissions: (
+    id: string
+  ) => ApiResult<Permission[]> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/contract-users/${id}/permissions`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const createContractCoreCustomerUserPermission: (
+    id: string,
+    permissionsData: any
+  ) => ApiResult<Permission[]> = async (id, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/contract-users/${id}/permissions`,
+        {
+          method: "POST",
+          body: permissionsData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const deleteContractCoreCustomerUserPermission: (
+    id: string,
+    permissionsData: any
+  ) => ApiResult<Permission[]> = async (id, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/contract-users/${id}/permissions`,
+        {
+          method: "DELETE",
+          body: permissionsData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err;
     }
   };
 
