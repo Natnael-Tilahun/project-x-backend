@@ -81,6 +81,7 @@ const columns = computed(() => tableColumns(refetch));
         <div class="flex items-center gap-4">
           <UiInput
             type="search"
+            @keyup.enter="searchHandler"
             placeholder="Search by customer id or account number"
             class="md:w-[200px] lg:w-[350px]"
             v-model="keyword"

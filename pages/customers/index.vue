@@ -63,8 +63,9 @@ const searchHandler = async () => {
           placeholder="Search by customer id, name or phone (start from 9)"
           class="md:w-[200px] lg:w-[400px] placeholder:text-sm"
           v-model="keyword"
+          @keyup.enter="searchHandler"
         />
-        <UiButton :disabled="keyword.length <= 4" @click="searchHandler">
+        <UiButton :disabled="keyword.length <= 4"  @click="searchHandler">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"

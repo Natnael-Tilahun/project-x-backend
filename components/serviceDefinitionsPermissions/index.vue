@@ -367,7 +367,7 @@ const unselectAllAssigned = () => {
       </div>
     </div>
     <div class="w-full p-6" v-else-if="permissionsData.length == 0">
-      <UiNoResultFound title="Sorry, No contract permission found." />
+      <UiNoResultFound title="Sorry, No customer permission found." />
     </div>
     <div v-if="isError" class="w-full">
       <ErrorMessage title="Something went wrong." :retry="refetch" />

@@ -29,8 +29,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as User[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -48,8 +47,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -67,8 +65,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -89,8 +86,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -111,8 +107,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -130,8 +125,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -149,8 +143,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -168,8 +161,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -190,8 +182,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as User[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -210,8 +201,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -233,8 +223,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -253,8 +242,7 @@ export const useUsers = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -272,8 +260,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as Device[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -291,8 +278,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -310,8 +296,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -329,8 +314,7 @@ export const useUsers = () => {
 
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

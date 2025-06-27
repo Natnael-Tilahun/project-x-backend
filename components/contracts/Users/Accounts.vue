@@ -644,7 +644,7 @@ const refetchPage = async () => {
                                         </UiButton>
                                       </UiSheetTrigger>
                                       <UiSheetContent
-                                        side="right"
+                                        side="left"
                                         class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
                                       >
                                         <ContractsUsersPermissions

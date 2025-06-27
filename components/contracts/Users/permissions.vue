@@ -11,12 +11,12 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Permission } from "~/types";
 
 const {
-  getContractUserPermissions,
-  createContractCoreCustomerUserPermission,
-  deleteContractCoreCustomerUserPermission,
+  getUserAccountPermissions,
+  createUserAccountPermission,
+  deleteUserAccountPermission,
   isLoading,
   isSubmitting,
-} = useContractsUsers();
+} = useUserAccounts();
 const { getContractCoreCustomerAccountPermissions } = useContractsCoreCustomersAccount();
 
 const contractAccountId = ref("");
@@ -71,7 +71,7 @@ const fetchContractUserPermissions = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    const response = await getContractUserPermissions(
+    const response = await getUserAccountPermissions(
       userAccountId.value
     );
     selectedPermissions.value = (
@@ -110,7 +110,7 @@ const addSelectedPermissions = async () => {
   try {
     addLoading.value = true;
     isSubmitting.value = true;
-    await createContractCoreCustomerUserPermission(contractAccountId.value, {
+    await createUserAccountPermission(userAccountId.value, {
       permissionCodes: selectedToAdd.value,
     });
     toast({
@@ -133,7 +133,7 @@ const deleteSelectedPermissions = async () => {
   try {
     deleteLoading.value = true;
     isSubmitting.value = true;
-    await deleteContractCoreCustomerUserPermission(contractAccountId.value, {
+    await deleteUserAccountPermission(userAccountId.value, {
       permissionCodes: selectedToDelete.value,
     });
     toast({
