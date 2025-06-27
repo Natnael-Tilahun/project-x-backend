@@ -18,7 +18,7 @@ import { ServiceType } from "~/global-types";
 import { getIdFromPath } from "~/lib/utils";
 
 const route = useRoute();
-const { getContractById, updateContract, isLoading, isSubmitting } =
+const { getContractById, updateContract, refreshContractCoreCustomers, isLoading, isSubmitting } =
   useContracts();
 const { getServiceDefinitions } = useServiceDefinitions();
 const fullPath = ref(route.fullPath);
@@ -51,6 +51,27 @@ const fetchContract = async () => {
     form.setValues(a);
   } catch (err) {
     console.error("Error fetching contract:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
+
+const fetchCoreCustomerFromCore = async () => {
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    data.value = await refreshContractCoreCustomers(contractId.value);
+    serviceDefinitionsData.value = await getServiceDefinitions();
+    let a = {
+      ...data.value,
+      serviceDefinition: data.value?.serviceDefinition?.id,
+    };
+    console.log("refreshed contract data from core: ", data.value);
+    form.setValues(a);
+  } catch (err) {
+    console.error("Error refetching contract from core:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
@@ -107,6 +128,11 @@ watch(
     }
   }
 );
+
+const refetch = async() =>{
+  isError.value = false
+  await fetchContract()
+}
 </script>
 
 <template>
@@ -227,6 +253,15 @@ watch(
             New Contract User
           </UiTabsTrigger>
         </UiPermissionGuard>
+
+        <UiButton class="justify-end ml-auto" @click="fetchCoreCustomerFromCore">
+        <Icon v-if="!loading" name="heroicons:arrow-path" class="h-5 w-5 mr-2"></Icon>
+        <Icon
+                        name="svg-spinners:8-dots-rotate"
+                        v-if="loading"
+                        class="mr-2 h-4 w-4 animate-spin"
+                      ></Icon>
+          Refetch contract from core</UiButton>
       </UiTabsList>
 
       <UiPermissionGuard permission="VIEW_CONTRACTS">
@@ -427,8 +462,8 @@ watch(
     <div v-else-if="data == null || data == undefined">
       <UiNoResultFound title="Sorry, No contract found." />
     </div>
-    <div v-else-if="isError">
-      <ErrorMessage title="Something went wrong." />
+    <div v-else-if="isError" class="w-full">
+      <ErrorMessage title="Something went wrong." :retry="refetch"/>
     </div>
   </div>
 </template>
