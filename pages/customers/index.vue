@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/customers/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Customer } from "~/types";
+import { columns as tableColumns } from "~/components/customers/columns"; // Renamed to avoid conflict
+
 const { getCustomers, searchCustomers, isLoading } = useCustomers();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -10,14 +11,14 @@ const data = ref<Customer[]>();
 const keyword = ref<string>("");
 
 const refetch = async () => {
-  await fetchData();
+  data.value = []
 };
 
 const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    const customers = await getCustomers(0, 10000000000); // Call your API function to fetch roles
+    const customers = await getCustomers(0, 10000000000) || []// Call your API function to fetch roles
     // Sort integrations by name alphabetically, handling null values
     data.value = customers.sort((a: Customer, b: Customer) => {
       // Handle cases where fullName might be null
@@ -51,6 +52,12 @@ const searchHandler = async () => {
     loading.value = false;
   }
 };
+
+// Provide the refetch function
+provide('refetchCustomers', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->

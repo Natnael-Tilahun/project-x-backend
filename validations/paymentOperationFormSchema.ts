@@ -23,8 +23,8 @@ export const paymentOperationFormSchema = toTypedSchema(
     apiOperation: z.string().optional().nullable(),
     paymentIntegration: z.string().optional().nullable(),
     form: z.any().optional().nullable(),
-    prevPaymentOperation: z.string().optional().nullable(),
-    nextPaymentOperation: z.string().optional().nullable(),
+    prevPaymentOperationId: z.string().optional().nullable(),
+    nextPaymentOperationId: z.string().optional().nullable(),
     apiRequestMappingsRegistry: z
       .array(
         z.object({
