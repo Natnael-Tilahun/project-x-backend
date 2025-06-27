@@ -18,9 +18,9 @@ interface DataTableRowActionsProps<TData> {
 }
 const props = defineProps<DataTableRowActionsProps<any>>();
 
-function viewContractCoreCustomerDetail(id: string) {
-  navigateTo(`/contracts/${id}?activeTab=contractCoreCustomer`);
-  navigator.clipboard.writeText(id);
+function viewContractCoreCustomerDetail(contractId: string, coreCustomerId:string) {
+  navigateTo(`/contracts/${contractId}?activeTab=contractCoreCustomerDetails&&coreCustomerId=${coreCustomerId}`);
+  navigator.clipboard.writeText(contractId);
 }
 
 async function deleteContractCoreCustomers(id: string) {
@@ -58,7 +58,7 @@ async function deleteContractCoreCustomers(id: string) {
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
   <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER" >
-      <UiDropdownMenuItem @click="viewContractCoreCustomerDetail(row.original.contractId)"
+      <UiDropdownMenuItem @click="viewContractCoreCustomerDetail(row.original.contract.id, row.original.id)"
         >View and Edit</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />

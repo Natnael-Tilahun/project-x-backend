@@ -15,28 +15,21 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Contract, ServiceDefinition } from "~/types";
 import { ServiceType } from "~/global-types";
+import { getIdFromPath } from "~/lib/utils";
 
 const route = useRoute();
-const { getContractById, updateContract, isLoading, isSubmitting } =
+const { getContractById, updateContract, refreshContractCoreCustomers, isLoading, isSubmitting } =
   useContracts();
 const { getServiceDefinitions } = useServiceDefinitions();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
-const contractId = ref<string>("");
+const contractId = ref<string>(getIdFromPath(route.path));
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
 const serviceDefinitionsData = ref<ServiceDefinition[]>([]);
 
 const isError = ref(false);
 const data = ref<Contract>();
-
-pathSegments.value = splitPath(fullPath.value);
-const pathLength = pathSegments.value.length;
-contractId.value = pathSegments.value[pathLength - 1];
-
-function splitPath(path: any) {
-  return path.split("/").filter(Boolean);
-}
 
 const form = useForm({
   validationSchema: updateContractFormSchema,
@@ -65,6 +58,27 @@ const fetchContract = async () => {
   }
 };
 
+const fetchCoreCustomerFromCore = async () => {
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    data.value = await refreshContractCoreCustomers(contractId.value);
+    serviceDefinitionsData.value = await getServiceDefinitions();
+    let a = {
+      ...data.value,
+      serviceDefinition: data.value?.serviceDefinition?.id,
+    };
+    console.log("refreshed contract data from core: ", data.value);
+    form.setValues(a);
+  } catch (err) {
+    console.error("Error refetching contract from core:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
+
 onMounted(() => {
   fetchContract();
   openItems.value = route.query.activeTab || "contractDetails" ;
@@ -76,7 +90,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     const newValues = {
       ...values,
-      permissions: data.value.permissions,
       serviceDefinition: serviceDefinitionsData.value.find(
         (service: ServiceDefinition) => service.id === values.serviceDefinition
       ),
@@ -115,6 +128,11 @@ watch(
     }
   }
 );
+
+const refetch = async() =>{
+  isError.value = false
+  await fetchContract()
+}
 </script>
 
 <template>
@@ -235,6 +253,15 @@ watch(
             New Contract User
           </UiTabsTrigger>
         </UiPermissionGuard>
+
+        <UiButton class="justify-end ml-auto" @click="fetchCoreCustomerFromCore">
+        <Icon v-if="!loading" name="heroicons:arrow-path" class="h-5 w-5 mr-2"></Icon>
+        <Icon
+                        name="svg-spinners:8-dots-rotate"
+                        v-if="loading"
+                        class="mr-2 h-4 w-4 animate-spin"
+                      ></Icon>
+          Refetch contract from core</UiButton>
       </UiTabsList>
 
       <UiPermissionGuard permission="VIEW_CONTRACTS">
@@ -353,7 +380,7 @@ watch(
                       >
                         <ContractPermissions
                           @refresh="fetchContract"
-                          :contractProps="data"
+                          :serviceDefinitionIdProps="data?.serviceDefinition?.id"
                         />
                       </UiSheetContent>
                     </UiSheet>
@@ -435,8 +462,8 @@ watch(
     <div v-else-if="data == null || data == undefined">
       <UiNoResultFound title="Sorry, No contract found." />
     </div>
-    <div v-else-if="isError">
-      <ErrorMessage title="Something went wrong." />
+    <div v-else-if="isError" class="w-full">
+      <ErrorMessage title="Something went wrong." :retry="refetch"/>
     </div>
   </div>
 </template>

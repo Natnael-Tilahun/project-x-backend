@@ -75,8 +75,7 @@ const searchHandler = async () => {
           })
         "
         class="w-fit self-end px-5"
-        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add
-        Contract User</UiButton
+        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add User</UiButton
       >
     </UiPermissionGuard>
     <!-- </NuxtLink> -->

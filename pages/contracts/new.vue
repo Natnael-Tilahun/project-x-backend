@@ -25,7 +25,7 @@ import type {
 import { NuxtLink } from "#components";
 
 const { createNewContract, isLoading } = useContracts();
-const { getServiceDefinitions, getServiceDefinitionById } =
+const { getServiceDefinitions,getServiceDefinitionPermissions, getServiceDefinitionById } =
   useServiceDefinitions();
 const { getPermissions } = usePermissions();
 const {
@@ -35,10 +35,9 @@ const {
 } = useCustomers();
 const {
   getContractCoreCustomerAccounts,
-  updateContractCoreCustomerAccountStatus,
   isLoading: isLoadingContractCoreCustomerAccount,
 } = useContractsCoreCustomersAccount();
-const {  getServiceDefinitionRoleById, getServiceDefinitionRolesByServiceDefinitionId } =
+const {getServiceDefinitionRolesByServiceDefinitionId } =
   useServiceDefinitionsRoles();
 
 const isError = ref(false);
@@ -62,7 +61,6 @@ const selectedContractAccount = ref<ContractAccount[]>([]);
 const contractCoreCustomerId = ref<any>();
 const haveExistingContract = ref<boolean>();
 const serviceDefinitionsRolesData = ref<ServiceDefinitionRole[]>([]);
-const serviceDefinitionRolePermissionsData = ref<Permission[]>([]);
 
 const contractId = ref<string>();
 const openEditModal = ref(false);
@@ -72,7 +70,7 @@ const setOpenEditModal = (value: boolean) => {
 const isPhoneConfirmed = ref<boolean>(false);
 const formValuesToSubmit = ref<any>(null);
 const isPhoneExist = ref<boolean>(false)
-const isWantToCreateWithoutCustomer = ref<boolean>(false)
+const isWantToCreateWithoutCustomer = ref<boolean>(true)
 
 
 const handleAccountSelect = (account: Account | undefined) => {
@@ -190,20 +188,16 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   }
 });
 
-const fetchServiceDefinitionRolePermissions = async (newType: string) => {
+const fetchServiceDefinitionPermissions = async (newType: string) => {
   try {
     console.log(
       "form.values?.serviceDefinition: ",
-      form.values?.serviceDefinitionRoleId
+      form.values?.serviceDefinitionId
     );
     if (newType) {
-      const serviceDefinition = await getServiceDefinitionRoleById(newType);
-      serviceDefinitionRolePermissionsData.value =
-        serviceDefinition?.permissions || [];
-      console.log(
-        "serviceDefinitionRolePermissionsData.value: ",
-        serviceDefinitionRolePermissionsData.value
-      );
+      const serviceDefinition = await getServiceDefinitionPermissions(newType);
+      serviceDefinitionPermissionsData.value =
+        serviceDefinition || [];
     }
   } catch (err) {
     console.error("Error fetching service definition permissions:", err);
@@ -227,12 +221,13 @@ const fetchServiceDefinitionRoles = async (newType: string) => {
 
 
 const fetchData = async () => {
+  isError.value = false
   try {
     const permissions = await getPermissions(0, 100000);
     permissionsData.value = permissions.sort((a: Permission, b: Permission) =>
       a?.code?.toLowerCase().localeCompare(b?.code?.toLowerCase())
     );
-    const serviceDefinitions = await getServiceDefinitions();
+    const serviceDefinitions = await getServiceDefinitions(0,100000) || [];
     serviceDefinitionsData.value = serviceDefinitions;
   } catch (err) {
     console.error("Error fetching permissions:", err);
@@ -385,15 +380,13 @@ onMounted(async () => {
   await fetchContractCoreCustomerAccounts();
 });
 
-
-
 // Watch for changes in service definition role
 watch(
-  () => form.values.serviceDefinitionRoleId,
+  () => form.values.serviceDefinitionId,
   async (newType) => {
     // If the service definition has changed, clear the permissions
     if (newType) {
-      const serviceDefinition = await fetchServiceDefinitionRolePermissions(
+      const serviceDefinition = await fetchServiceDefinitionPermissions(
         newType
       );
     }
@@ -459,7 +452,7 @@ const createNewContractWithoutCustomerHandler = async(value: boolean) => {
         ...formValuesToSubmit.value,
         withPrimaryContractUser: false
       }
-      console.log("Submitting values:", newValues);
+      console.log("Submitting values for contract without customer:", newValues);
         const response = await createNewContract(newValues);
         if(response){
           data.value = response
@@ -515,7 +508,7 @@ const isPhoneExistHandler = (value) => {
                 class="flex flex-row items-center gap-6 px-4 py-2 border rounded-md w-fit"
               >
                 <FormLabel class="text-base">
-                  Create without user
+                  Create user
                 </FormLabel>
                 <FormControl>
                   <UiSwitch :checked="value" @update:checked="() => {
@@ -1166,7 +1159,6 @@ const isPhoneExistHandler = (value) => {
               <FormItem>
                 <FormLabel> Service Definition Role</FormLabel>
                 <UiSelect
-                  @update:value="fetchServiceDefinitionRolePermissions"
                   v-bind="componentField"
                 >
                   <FormControl>
@@ -1198,7 +1190,7 @@ const isPhoneExistHandler = (value) => {
                 class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
               >
                 <FormLabel class="text-base">
-                  Inherit Parent Contract Permissions
+                  Inherit From Service Definition Permissions
                 </FormLabel>
                 <FormControl>
                   <UiSwitch :checked="value" @update:checked="handleChange" />
@@ -1229,7 +1221,7 @@ const isPhoneExistHandler = (value) => {
                           selectedPermissions?.length
                             ? selectedPermissions
                                 .map(
-                                  (permission: Permission) => permission.code
+                                  (permission: Permission) => permission.permissionCode
                                 )
                                 .join(", ")
                             : "Select permissions"
@@ -1257,21 +1249,21 @@ const isPhoneExistHandler = (value) => {
                         </UiCommandEmpty>
                         <UiCommandGroup>
                           <UiCommandItem
-                            v-for="permission in serviceDefinitionRolePermissionsData"
-                            :key="permission.code"
-                            :value="permission.code"
+                            v-for="permission in serviceDefinitionPermissionsData"
+                            :key="permission.id"
+                            :value="permission.id"
                             @select="
                               () => {
                                 const isSelected =
                                   selectedPermissions.some(
-                                    (selected: Permission) => selected.code === permission.code
+                                    (selected: Permission) => selected.permissionCode === permission.permissionCode
                                   );
 
                                 if (isSelected) {
                                   selectedPermissions =
                                       selectedPermissions.filter(
                                       (selected: Permission) =>
-                                        selected.code !== permission.code
+                                        selected.permissionCode !== permission.permissionCode
                                     );
                                 } else {
                                   selectedPermissions.push(permission);
@@ -1280,17 +1272,17 @@ const isPhoneExistHandler = (value) => {
                                 form.setFieldValue(
                                   'permissionCodes',
                                   selectedPermissions.map(
-                                    (permission: Permission) => permission.code
+                                    (permission: Permission) => permission.permissionCode
                                   )
                                 );
                               }
                             "
                           >
-                            {{ permission.code }}
+                            {{ permission.permissionCode }}
                             <UiCheckbox
                               :checked="
                                 selectedPermissions.some(
-                                  (selected: Permission) => selected.code === permission.code
+                                  (selected: Permission) => selected.permissionCode === permission.permissionCode
                                 )
                               "
                               class="ml-auto"

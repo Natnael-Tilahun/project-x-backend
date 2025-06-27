@@ -172,6 +172,7 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
             placeholder="Search by phone number or email"
             class="md:w-[100px] lg:w-[300px]"
             v-model="searchUser"
+            @keyup.enter="searchUserHandler"
           />
           <UiButton
             :disabled="searchUser == '' || loading"
@@ -324,24 +325,6 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
           </form>
         </UiAlertDialogContent>
       </UiAlertDialog>
-      <UiAlertDialog
-        v-if="data"
-        :open="openExistingUserModal"
-        :onOpenChange="setOpenExistingUserModal"
-      >
-        <UiAlertDialogTrigger class="self-end">
-          <UiButton class="w-full" @click="setOpenExistingUserModal(true)">
-            Create new contract user for this customer
-          </UiButton>
-        </UiAlertDialogTrigger>
-        <UiAlertDialogContent>
-          <ContractsUsersNewUserForExistingCustomer 
-            @close="setOpenExistingUserModal(false)"
-            :contractProps="contractData" 
-            :data="data" 
-          />
-        </UiAlertDialogContent>
-      </UiAlertDialog>
     </div>
     <div v-if="loading" class="py-10 flex justify-center w-full">
       <UiLoading />
@@ -428,12 +411,6 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
           </p>
         </div>
         <div class="space-y-0">
-          <h1 class="text-muted-foreground">Is Enrolled</h1>
-          <p class="border p-2 bg-muted rounded-md">
-            {{ data?.isEnrolled != null ? data.isEnrolled : "-" }}
-          </p>
-        </div>
-        <div class="space-y-0">
           <h1 class="text-muted-foreground">Email Verified</h1>
           <p class="border p-2 bg-muted rounded-md">
             {{ data?.emailVerified != null ? data?.emailVerified : "-" }}
@@ -491,12 +468,12 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
             {{ data?.deviceId != null ? data.deviceId : "-" }}
           </p>
         </div>
-        <div class="space-y-0">
+        <!-- <div class="space-y-0">
           <h1 class="text-muted-foreground">Image Url</h1>
           <p class="border p-2 bg-muted rounded-md">
             {{ data?.imageUrl != null ? data.imageUrl : "-" }}
           </p>
-        </div>
+        </div> -->
         <div class="space-y-0">
           <h1 class="text-muted-foreground">Language Key</h1>
           <p class="border p-2 bg-muted rounded-md">
@@ -513,12 +490,12 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
             }}
           </p>
         </div>
-        <div class="space-y-0">
+        <!-- <div class="space-y-0">
           <h1 class="text-muted-foreground">Last Modified By</h1>
           <p class="border p-2 bg-muted rounded-md">
             {{ data?.lastModifiedBy != null ? data.lastModifiedBy : "-" }}
           </p>
-        </div>
+        </div> -->
         <div class="space-y-0">
           <h1 class="text-muted-foreground">Last Modified Date</h1>
           <p class="border p-2 bg-muted rounded-md">
@@ -563,12 +540,12 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
             }}
           </p>
         </div>
-        <div class="space-y-0">
+        <!-- <div class="space-y-0">
           <h1 class="text-muted-foreground">Reset Key</h1>
           <p class="border p-2 bg-muted rounded-md">
             {{ data?.resetKey != null ? data.resetKey : "-" }}
           </p>
-        </div>
+        </div> -->
         <div class="space-y-0">
           <h1 class="text-muted-foreground">Unsuccessful Login Attempts</h1>
           <p class="border p-2 bg-muted rounded-md">
@@ -597,7 +574,28 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
             </li>
           </ul>
         </div>
+        <div class="w-full col-span-full flex justify-end pt-4">
+          <UiAlertDialog
+        v-if="data"
+        :open="openExistingUserModal"
+        :onOpenChange="setOpenExistingUserModal"
+      >
+        <UiAlertDialogTrigger class="self-end">
+          <UiButton class="w-full" @click="setOpenExistingUserModal(true)">
+            Create new contract user for this customer
+          </UiButton>
+        </UiAlertDialogTrigger>
+        <UiAlertDialogContent>
+          <ContractsUsersNewUserForExistingCustomer 
+            @close="setOpenExistingUserModal(false)"
+            :contractProps="contractData" 
+            :data="data" 
+          />
+        </UiAlertDialogContent>
+      </UiAlertDialog>
+        </div>
       </UiCard>
+      
     </div>
 
     <UiCard

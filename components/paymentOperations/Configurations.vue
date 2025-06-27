@@ -20,7 +20,7 @@ import {
   CreditAccountNumberVariableType,
   PaymentIntegrationType,
 } from "@/global-types";
-import type { ApiOperation } from "~/types";
+import type { ApiOperation, PaymentIntegration, PaymentOperation } from "~/types";
 
 const route = useRoute();
 const {
@@ -91,14 +91,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         typeof values.paymentIntegration === "string"
           ? { id: values.paymentIntegration }
           : values.paymentIntegration,
-      prevPaymentOperation:
-        typeof values.prevPaymentOperation === "string"
-          ? { id: values.prevPaymentOperation }
-          : values.prevPaymentOperation,
-      nextPaymentOperation:
-        typeof values.nextPaymentOperation === "string"
-          ? { id: values.nextPaymentOperation }
-          : values.nextPaymentOperation,
+      prevPaymentOperationId: values.prevPaymentOperationId,
+      nextPaymentOperationId: values.nextPaymentOperationId,
     };
     console.log("formData::", formData);
     const response = await updatePaymentOperation(operationId, formData);
@@ -303,12 +297,12 @@ watch(
   () => form.values.paymentOperationType,
   (newType) => {
     // If the next payment operation has the same type as the new selection, clear it
-    if (form.values.nextPaymentOperation) {
+    if (form.values.nextPaymentOperationId) {
       const nextOp = allPaymentOperations.value.find(
-        (op) => op.id === form.values.nextPaymentOperation
+        (op) => op.id === form.values.nextPaymentOperationId
       );
       if (nextOp?.paymentOperationType === newType) {
-        form.setFieldValue("nextPaymentOperation", null);
+        form.setFieldValue("nextPaymentOperationId", null);
       }
     }
   }
@@ -634,7 +628,7 @@ watch(
           <FormField
             :model-value="data?.prevPaymentOperationId"
             v-slot="{ componentField }"
-            name="prevPaymentOperation"
+            name="prevPaymentOperationId"
           >
             <FormItem>
               <FormLabel> Previous Payment Operation </FormLabel>
@@ -665,7 +659,7 @@ watch(
           <FormField
             :model-value="data?.nextPaymentOperationId"
             v-slot="{ componentField }"
-            name="nextPaymentOperation"
+            name="nextPaymentOperationId"
           >
             <FormItem>
               <FormLabel> Next Payment Operation </FormLabel>

@@ -912,6 +912,8 @@ interface ContractAccount {
   contract?: Contract;
   permissions?: Permission[];
   account?: Account;
+  accountCategory?:string
+  accountNumber?:number
 }
 
 interface ContractUser {

@@ -58,6 +58,7 @@ const props = defineProps<{
   userId?: string;
   contractUserId?: string;
   contract?: any;
+  serviceDefinitionRoleIdProps?: string;
 }>();
 
 const userAccountPermissions = ref<{ [userAccountId: string]: string[] }>({});
@@ -136,24 +137,27 @@ const fetchContractCoreCustomers = async () => {
     loading.value = true;
     const response = await getContractCoreCustomers(contractId.value);
     // Handle the Proxy object by accessing its target
-    const responseData = Array.isArray(response) ? response : response?.target || [];
+    const responseData = Array.isArray(response)
+      ? response
+      : response?.target || [];
 
     // Structure data as customer -> contract accounts
     contractAccountsData.value = responseData.map((item: any) => {
       return {
         coreCustomerId: item.id,
         customerId: item.coreCustomerId,
-        contractAccounts: item.coreAccounts?.map((coreAccount: any) => ({
-          id: coreAccount.id,
-          enable: coreAccount.enable,
-          permissions: coreAccount.permissions,
-          // Map the account properties directly from coreAccount
-          accountNumber: coreAccount.accountNumber,
-          accountHolder: coreAccount.accountHolder,
-          accountCategory: coreAccount.accountCategory,
-          // Keep the original coreAccount data
-          ...coreAccount
-        })) || [],
+        contractAccounts:
+          item.coreAccounts?.map((coreAccount: any) => ({
+            id: coreAccount.id,
+            enable: coreAccount.enable,
+            permissions: coreAccount.permissions,
+            // Map the account properties directly from coreAccount
+            accountNumber: coreAccount.accountNumber,
+            accountHolder: coreAccount.accountHolder,
+            accountCategory: coreAccount.accountCategory,
+            // Keep the original coreAccount data
+            ...coreAccount,
+          })) || [],
       };
     });
 
@@ -258,41 +262,26 @@ const getAvailablePermissions = (contractAccountId: string) => {
   return contractAccount?.permissions || [];
 };
 
-// Get the selected permissions for an account - handle both new and existing accounts
-const getSelectedPermissions = (id: string) => {
-  if (!id) return [];
-
-  // Ensure we have an entry for this ID
-  if (!userAccountPermissions.value[id]) {
-    userAccountPermissions.value[id] = [];
-  }
-
-  // Create a new array to ensure reactivity
-  return [...userAccountPermissions.value[id]];
-};
-
 const addAccounts = async () => {
   try {
     isSubmitting.value = true;
     loading.value = true;
 
     const newValues = {
-      accounts: selectedAccounts.value.map(
-        (account) =>  ({ 
-          inheritAccountPermissions: true,
-          permissionCodes: [],
-          accountId: account.contractAccountId
-        }
-      ),
-      )}
+      accounts: selectedAccounts.value.map((account) => ({
+        inheritAccountPermissions: true,
+        permissionCodes: [],
+        accountId: account.contractAccountId,
+      })),
+    };
 
     // Make your API call here to add the accounts with permissions
     const response = await addUserAccounts(
       props.contractUserId || "",
       newValues
     );
-    
-    refetch()
+
+    refetch();
     await fetchContractCoreCustomers();
     await getUserAccountByContractUserIdHandler();
 
@@ -448,7 +437,7 @@ const savePermissions = (data: { id?: string; permissions: string[] }) => {
 const refetchPage = async () => {
   await fetchContractCoreCustomers();
   await getUserAccountByContractUserIdHandler();
-}
+};
 </script>
 
 <template>
@@ -547,15 +536,15 @@ const refetchPage = async () => {
                         <div
                           class="bg-muted/30 px-6 py-3 flex justify-between items-center"
                         >
-                        <UiCheckbox
-                              :checked="true"
-                              @click="handleAccountSelect(contractAccount)"
-                              class="h-5 w-5 mr-8"
-                            />
+                          <UiCheckbox
+                            :checked="true"
+                            @click="handleAccountSelect(contractAccount)"
+                            class="h-5 w-5 mr-8"
+                          />
                           <div
                             class="grid grid-cols-1 md:grid-cols-5 gap-4 flex-1"
                           >
-                            <div class=" w-full">
+                            <div class="w-full">
                               <p class="text-sm text-muted-foreground">
                                 Account Number
                               </p>
@@ -563,126 +552,131 @@ const refetchPage = async () => {
                                 {{ contractAccount.accountNumber }}
                               </p>
                             </div>
-                            <div class=" w-full">
+                            <div class="w-full">
                               <p class="text-sm text-muted-foreground">
                                 Account Holder
                               </p>
                               <p class="font-medium">
-                                {{ displayApiDataOnLabel(contractAccount.accountHolder) }}
+                                {{
+                                  displayApiDataOnLabel(
+                                    contractAccount.accountHolder
+                                  )
+                                }}
                               </p>
                             </div>
-                            <div class=" w-full">
+                            <div class="w-full">
                               <p class="text-sm text-muted-foreground">
                                 Account Category
                               </p>
                               <p class="font-medium">
-                                {{ displayApiDataOnLabel(contractAccount.accountCategory?.description) }}
+                                {{
+                                  displayApiDataOnLabel(
+                                    contractAccount.accountCategory?.description
+                                  )
+                                }}
                               </p>
                             </div>
-                            <div class="flex w-full col-span-2 justify-between items-start gap-8">
-                            <div class="flex gap-0 justify-center w-full">
-                              <FormField
-                                :model-value="
-                                  selectedAccounts.find(
-                                    (a) =>
-                                      a.contractAccountId === contractAccount.id
-                                  )?.enable
-                                "
-                                v-slot="{ handleChange }"
-                                name="enable"
+                            <div
+                              class="flex w-full col-span-2 justify-between items-start gap-8"
+                            >
+                              <div class="flex gap-0 justify-center w-full">
+                                <FormField
+                                  :model-value="
+                                    selectedAccounts.find(
+                                      (a) =>
+                                        a.contractAccountId ===
+                                        contractAccount.id
+                                    )?.enable
+                                  "
+                                  v-slot="{ handleChange }"
+                                  name="enable"
+                                >
+                                  <FormItem>
+                                    <FormLabel> Enable </FormLabel>
+                                    <FormControl>
+                                      <UiSwitch
+                                        :checked="
+                                          selectedAccounts.find(
+                                            (a) =>
+                                              a.contractAccountId ===
+                                              contractAccount.id
+                                          )?.enable
+                                        "
+                                        @update:checked="
+                                          (checked) => {
+                                            handleChange;
+                                            updatingUserAccountStatus(
+                                              selectedAccounts.find(
+                                                (a) =>
+                                                  a.contractAccountId ===
+                                                  contractAccount.id
+                                              )?.userAccountId || '',
+                                              checked
+                                            );
+                                          }
+                                        "
+                                      />
+                                    </FormControl>
+                                    <FormMessage />
+                                  </FormItem>
+                                </FormField>
+                              </div>
+
+                              <div
+                                class="flex gap-2 self-center justify-end items-center w-full"
                               >
-                                <FormItem>
-                                  <FormLabel> Enable </FormLabel>
-                                  <FormControl>
-                                    <UiSwitch
-                                      :checked="
-                                        selectedAccounts.find(
-                                          (a) =>
-                                            a.contractAccountId ===
+                                <!-- Permissions button -->
+                                <UiPermissionGuard
+                                  permission="VIEW_USER_ACCOUNTS_PERMISSIONS"
+                                >
+                                  <div class="flex items-center">
+                                    <UiSheet>
+                                      <UiSheetTrigger>
+                                        <UiButton
+                                          size="sm"
+                                          class="font-medium cursor-pointer px-2 h-fit py-1 bg-[#8C2A7C]/15 text-primary hover:bg-[#8C2A7C]/20"
+                                        >
+                                          <Icon
+                                            name="lucide:shield"
+                                            class="h-4 w-4 mr-2"
+                                          />
+                                          Permissions
+                                        </UiButton>
+                                      </UiSheetTrigger>
+                                      <UiSheetContent
+                                        side="left"
+                                        class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
+                                      >
+                                        <ContractsUsersPermissions
+                                          :contractAccountIdProps="
                                             contractAccount.id
-                                        )?.enable
-                                      "
-                                      @update:checked="
-                                        (checked) => {
-                                          handleChange;
-                                          updatingUserAccountStatus(
+                                          "
+                                          :userAccountIdProps="
                                             selectedAccounts.find(
                                               (a) =>
                                                 a.contractAccountId ===
                                                 contractAccount.id
-                                            )?.userAccountId || '',
-                                            checked
-                                          );
-                                        }
-                                      "
-                                    />
-                                  </FormControl>
-                                  <FormMessage />
-                                </FormItem>
-                              </FormField>
-                            </div>
-                            <div class="flex gap-2 self-center justify-end items-center w-full">
-                              <!-- Permissions button -->
-                              <UiButton
-                                variant="outline"
-                                size="sm"
-                                class="bg-[#8C2A7C]/15 text-primary hover:bg-[#8C2A7C]/20"
-                                @click="
-                                  openPermissionsDialog({
-                                    contractAccountId: contractAccount.id,
-                                    userAccountId: selectedAccounts.find(
-                                      (a) =>
-                                        a.contractAccountId ===
-                                        contractAccount.id
-                                    )?.userAccountId,
-                                  })
-                                "
-                              >
-                                <Icon
-                                  name="lucide:shield"
-                                  class="h-4 w-4 mr-2"
-                                />
-                                Permissions
-                                <span
-                                  v-if="
-                                    getSelectedPermissions(
-                                      getPermissionId({
-                                        contractAccountId: contractAccount.id,
-                                        userAccountId: selectedAccounts.find(
-                                          (a) =>
-                                            a.contractAccountId ===
-                                            contractAccount.id
-                                        )?.userAccountId,
-                                      })
-                                    ).length > 0
-                                  "
-                                  class="ml-2 bg-primary text-primary-foreground rounded-full text-xs px-2"
-                                >
-                                  {{
-                                    getSelectedPermissions(
-                                      getPermissionId({
-                                        contractAccountId: contractAccount.id,
-                                        userAccountId: selectedAccounts.find(
-                                          (a) =>
-                                            a.contractAccountId ===
-                                            contractAccount.id
-                                        )?.userAccountId,
-                                      })
-                                    ).length
-                                  }}
-                                </span>
-                              </UiButton>
+                                            )?.userAccountId
+                                          "
+                                        />
+                                      </UiSheetContent>
+                                    </UiSheet>
+                                  </div>
+                                </UiPermissionGuard>
 
-                              <!-- Remove button -->
-                              <UiButton
-                                variant="ghost"
-                                size="icon"
-                                @click="handleAccountSelect(contractAccount)"
-                              >
-                                <Icon name="lucide:x" class="h-5 w-5 bg-red-500 text-white rounded-sm" />
-                              </UiButton>
+                                <!-- Remove button -->
+                                <UiButton
+                                  variant="ghost"
+                                  size="icon"
+                                  @click="handleAccountSelect(contractAccount)"
+                                >
+                                  <Icon
+                                    name="lucide:x"
+                                    class="h-5 w-5 bg-red-500 text-white rounded-sm"
+                                  />
+                                </UiButton>
+                              </div>
                             </div>
-                          </div>
                           </div>
                         </div>
                       </div>
@@ -698,21 +692,25 @@ const refetchPage = async () => {
                             @click="handleAccountSelect(contractAccount)"
                             class="h-5 w-5 mr-8"
                           />
-                        <div>
-                          <p class="text-sm text-muted-foreground text-left">
-                            Account Number
-                          </p>
-                          <p class="font-medium text-left">
-                            {{ contractAccount.accountNumber }}
-                          </p>
+                          <div>
+                            <p class="text-sm text-muted-foreground text-left">
+                              Account Number
+                            </p>
+                            <p class="font-medium text-left">
+                              {{ contractAccount.accountNumber }}
+                            </p>
+                          </div>
                         </div>
-                      </div>
                         <div>
                           <p class="text-sm text-muted-foreground text-left">
                             Account Holder
                           </p>
                           <p class="font-medium text-left">
-                            {{ displayApiDataOnLabel(contractAccount.accountHolder) }}
+                            {{
+                              displayApiDataOnLabel(
+                                contractAccount.accountHolder
+                              )
+                            }}
                           </p>
                         </div>
                         <div>
@@ -720,7 +718,11 @@ const refetchPage = async () => {
                             Account Category
                           </p>
                           <p class="font-medium text-left">
-                            {{ displayApiDataOnLabel(contractAccount.accountCategory?.description) }}
+                            {{
+                              displayApiDataOnLabel(
+                                contractAccount.accountCategory?.description
+                              )
+                            }}
                           </p>
                         </div>
                       </div>
@@ -760,26 +762,6 @@ const refetchPage = async () => {
       </UiSheetDescription>
     </UiSheetHeader>
   </UiSheet>
-
-  <!-- Add the permissions dialog component with updated props -->
-  <PermissionsDialog
-    v-if="currentEditingAccount.contractAccount"
-    v-model:open="permissionsDialogOpen"
-    :contract-account="currentEditingAccount.contractAccount"
-    :permission-id="currentEditingAccount.permissionId"
-    :selected-permissions="
-      getSelectedPermissions(currentEditingAccount.permissionId)
-    "
-    :available-permissions="
-      getAvailablePermissions(currentEditingAccount.contractAccount.id || '')
-    "
-    :is-user-account="
-      !!selectedAccounts.find(
-        (acc) => acc.userAccountId === currentEditingAccount.permissionId
-      )
-    "
-    @refetch="refetchPage"
-  />
 </template>
 
 <style lang="css" scoped></style>
