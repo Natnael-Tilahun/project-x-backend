@@ -6,8 +6,12 @@ import { Badge } from "../ui/badge";
 import CustomerDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { Customer } from "~/types";
+import { h, inject } from "vue"; // Import inject
 
-export const columns: ColumnDef<Customer>[] = [
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<Customer>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -71,36 +75,11 @@ export const columns: ColumnDef<Customer>[] = [
     },
   },
   {
-    accessorKey: "gender",
-    header: "Gender",
-    cell: ({ row }) => {
-      const coreCustomerId = row.getValue("gender");
-      return coreCustomerId ? h("p", coreCustomerId) : h("p", "-");
-    },
-  },
-  {
     accessorKey: "coreCustomerId",
     header: "Core Customer Id",
     cell: ({ row }) => {
       const coreCustomerId = row.getValue("coreCustomerId");
       return coreCustomerId ? h("p", coreCustomerId) : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "legacyCustomerId",
-    header: "Legacy Customer Id",
-    cell: ({ row }) => {
-      const legacyCustomerId = row.getValue("legacyCustomerId");
-      return legacyCustomerId
-        ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            row.getValue("legacyCustomerId")
-          )
-        : h("p", "-");
     },
   },
   {
@@ -120,14 +99,6 @@ export const columns: ColumnDef<Customer>[] = [
     },
   },
   {
-    accessorKey: "coreLinked",
-    header: "Core Linked",
-    cell: ({ row }) => {
-      const coreLinked = row.getValue("coreLinked");
-      return coreLinked != null ? h("p", coreLinked) : h("p", "-");
-    },
-  },
-  {
     accessorKey: "customerActivated",
     header: "Customer Activated",
     cell: ({ row }) => {
@@ -135,14 +106,6 @@ export const columns: ColumnDef<Customer>[] = [
       return customerActivated != null
         ? h("p", customerActivated)
         : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "olbAllowed",
-    header: "Olb Allowed",
-    cell: ({ row }) => {
-      const olbAllowed = row.getValue("olbAllowed");
-      return olbAllowed != null ? h("p", olbAllowed) : h("p", "-");
     },
   },
   {
@@ -185,6 +148,7 @@ export const columns: ColumnDef<Customer>[] = [
         { class: "relative" },
         h(CustomerDataTableRowActionsVue, {
           row,
+          refetch
         })
       );
     },
