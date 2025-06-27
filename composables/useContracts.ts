@@ -1,7 +1,7 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
-import type { Contract } from "~/types";
+import type { Contract, Permission } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
@@ -219,7 +219,7 @@ export const useContracts = () => {
   };
 
   const refreshContractCoreCustomers: (
-    contractId: string,
+    contractId: string
   ) => ApiResult<Contract> = async (contractId) => {
     try {
       const { data, pending, error, status } = await fetch<Contract>(
@@ -242,6 +242,76 @@ export const useContracts = () => {
     }
   };
 
+  const getContractPermissions: (
+    id: string
+  ) => ApiResult<Permission[]> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/contracts/${id}/permissions`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const createContractPermission: (
+    id: string,
+    permissionsData: any
+  ) => ApiResult<Permission[]> = async (id, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/contracts/${id}/permissions`,
+        {
+          method: "POST",
+          body: permissionsData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const deleteContractPermission: (
+    id: string,
+    permissionsData: any
+  ) => ApiResult<Permission[]> = async (id, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/contracts/${id}/permissions`,
+        {
+          method: "DELETE",
+          body: permissionsData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return {
     isLoading,
     getContracts,
@@ -254,6 +324,9 @@ export const useContracts = () => {
     getContractByCustomerId,
     searchContract,
     refreshContractCoreCustomers,
+    getContractPermissions,
+    createContractPermission,
+    deleteContractPermission,
     isSubmitting,
   };
 };

@@ -323,11 +323,7 @@ console.log(
                   <UiSheetContent
                     class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
                   >
-                    <ContractsCoreCustomersPermissions
-                      :contractCoreCustomerProps="data"
-                      :permissionsData="permissionsData"
-                      @refresh="refetch"
-                    />
+                    <ContractsCoreCustomersPermissions/>
                   </UiSheetContent>
                 </UiSheet>
               </div>

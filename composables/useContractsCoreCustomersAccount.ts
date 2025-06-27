@@ -1,7 +1,7 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
-import type { Contract, ContractAccount, ContractCoreCustomer } from "~/types";
+import type { Contract, ContractAccount, ContractCoreCustomer, Permission } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
@@ -131,32 +131,6 @@ export const useContractsCoreCustomersAccount = () => {
     }
   };
 
-  const updateContractCoreCustomerAccountPermissions: (
-    contractAccountId: string,
-    permissionsData: any
-  ) => ApiResult<ContractAccount> = async (contractAccountId, permissionsData) => {
-    try {
-      const { data, pending, error, status } = await fetch<ContractAccount>(
-        `/api/v1/internal/contract-core-customers/contract-accounts/${contractAccountId}/permissions`,
-        {
-          method: "PUT",
-          body: permissionsData
-        }
-      );
-
-      isSubmitting.value = pending.value;
-
-      if (status.value === "error") {
-        handleApiError(error);
-      }
-
-      return data.value ? (data.value as unknown as ContractAccount) : null;
-    } catch (err) {
-      handleApiError(err);
-      return null;
-    }
-  };
-
   const deleteContractCoreCustomerAccount: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
@@ -177,6 +151,76 @@ export const useContractsCoreCustomersAccount = () => {
     }
   };
 
+  const getContractCoreCustomerAccountPermissions: (
+    id: string
+  ) => ApiResult<Permission[]> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/contract-accounts/${id}/permissions`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const createContractCoreCustomerAccountPermission: (
+    id: string,
+    permissionsData: any
+  ) => ApiResult<Permission[]> = async (id, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/contract-accounts/${id}/permissions`,
+        {
+          method: "POST",
+          body: permissionsData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const deleteContractCoreCustomerAccountPermission: (
+    id: string,
+    permissionsData: any
+  ) => ApiResult<Permission[]> = async (id, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/contract-accounts/${id}/permissions`,
+        {
+          method: "DELETE",
+          body: permissionsData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return {
     isLoading,
     getContractCoreCustomerAccounts,
@@ -184,7 +228,9 @@ export const useContractsCoreCustomersAccount = () => {
     createNewContractCoreCustomerAccount,
     deleteContractCoreCustomerAccount,
     updateContractCoreCustomerAccountStatus,
-    updateContractCoreCustomerAccountPermissions,
+    getContractCoreCustomerAccountPermissions,
+    createContractCoreCustomerAccountPermission,
+    deleteContractCoreCustomerAccountPermission,
     isSubmitting,
   };
 };

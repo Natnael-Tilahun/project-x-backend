@@ -115,11 +115,11 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     data.value = await updateContractUser(contractUserId.value, newValues); // Call your API function to fetch profile
     // navigateTo(`/contracts/${data.value.id}`);
     toast({
-      title: "Contract Updated",
-      description: "Contract updated successfully",
+      title: "Contract User Updated",
+      description: "Contract user updated successfully",
     });
   } catch (err: any) {
-    console.error("Error updating contract:", err);
+    console.error("Error updating contract user:", err);
     isError.value = true;
   } finally {
     submitting.value = false;
@@ -208,8 +208,8 @@ const refetch = async() => {
                   <UiSelectContent>
                     <UiSelectGroup>
                       <UiSelectItem
-                                v-for="item in serviceDefinitionRolesData"
-                                :value="item.id"
+                        v-for="item in serviceDefinitionRolesData"
+                        :value="item.id"
                               >
                                 {{ item?.roleName }}
                               </UiSelectItem>
@@ -265,6 +265,7 @@ const refetch = async() => {
                       :userId = "data?.user?.id || '' "
                       :contractUserId= "contractUserId ||  '' "
                       :contract= "data?.contract || '' "
+                      :serviceDefinitionRoleIdProps = data.serviceDefinitionRole?.id
                       @refresh="refetch"
                     />
                   </UiSheetContent>

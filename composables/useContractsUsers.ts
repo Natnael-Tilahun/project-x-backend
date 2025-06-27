@@ -1,7 +1,7 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
-import type { Contract, ContractUser } from "~/types";
+import type { Contract, ContractUser, Permission } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
@@ -31,8 +31,7 @@ export const useContractsUsers = () => {
 
       return data.value ? (data.value as unknown as ContractUser[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -50,8 +49,7 @@ export const useContractsUsers = () => {
 
       return data.value ? (data.value as unknown as ContractUser) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -69,8 +67,7 @@ export const useContractsUsers = () => {
 
       return data.value ? (data.value as unknown as ContractUser[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -95,8 +92,7 @@ export const useContractsUsers = () => {
 
       return data.value ? (data.value as unknown as ContractUser) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -121,8 +117,7 @@ export const useContractsUsers = () => {
 
       return data.value ? (data.value as unknown as ContractUser) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -147,8 +142,7 @@ export const useContractsUsers = () => {
 
       return data.value ? (data.value as unknown as ContractUser) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -167,8 +161,7 @@ export const useContractsUsers = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -193,10 +186,10 @@ export const useContractsUsers = () => {
 
       return data.value ? (data.value as unknown as ContractUser) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
+
 
   return {
     isLoading,

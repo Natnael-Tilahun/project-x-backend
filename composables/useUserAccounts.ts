@@ -1,6 +1,6 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { Contract, ContractAccount, ContractCoreCustomer } from "~/types";
+import type { Contract, ContractAccount, ContractCoreCustomer, Permission } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
@@ -33,8 +33,7 @@ export const useUserAccounts = () => {
 
       return data.value ? (data.value as unknown as ContractAccount[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -52,8 +51,7 @@ export const useUserAccounts = () => {
 
       return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -71,8 +69,7 @@ export const useUserAccounts = () => {
 
       return data.value ? (data.value as unknown as ContractAccount[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -96,8 +93,7 @@ export const useUserAccounts = () => {
 
       return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -122,8 +118,7 @@ export const useUserAccounts = () => {
 
       return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -147,34 +142,7 @@ export const useUserAccounts = () => {
 
       return data.value ? (data.value as unknown as ContractAccount) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
-    }
-  };
-
-  const updateUserAccountPermissions: (
-    userAccountId: string,
-    permissionsData: any
-  ) => ApiResult<ContractAccount> = async (userAccountId, permissionsData) => {
-    try {
-      const { data, pending, error, status } = await fetch<ContractAccount>(
-        `/api/v1/internal/user-accounts/${userAccountId}/permissions`,
-        {
-          method: "PUT",
-          body: permissionsData
-        }
-      );
-
-      isSubmitting.value = pending.value;
-
-      if (status.value === "error") {
-        handleApiError(error);
-      }
-
-      return data.value ? (data.value as unknown as ContractAccount) : null;
-    } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -198,6 +166,76 @@ export const useUserAccounts = () => {
     }
   };
 
+  const getUserAccountPermissions: (
+    id: string
+  ) => ApiResult<Permission[]> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/user-accounts/${id}/permissions`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const createUserAccountPermission: (
+    id: string,
+    permissionsData: any
+  ) => ApiResult<Permission[]> = async (id, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/user-accounts/${id}/permissions`,
+        {
+          method: "POST",
+          body: permissionsData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const deleteUserAccountPermission: (
+    id: string,
+    permissionsData: any
+  ) => ApiResult<Permission[]> = async (id, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Permission[]>(
+        `/api/v1/internal/user-accounts/${id}/permissions`,
+        {
+          method: "DELETE",
+          body: permissionsData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Permission[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return {
     isLoading,
     getUserAccounts,
@@ -206,8 +244,10 @@ export const useUserAccounts = () => {
     updateUserAccount,
     deleteUserAccount,
     updateUserAccountStatus,
-    updateUserAccountPermissions,
     getUserAccountByContractUserId,
+    getUserAccountPermissions,
+    createUserAccountPermission,
+    deleteUserAccountPermission,
     isSubmitting,
   };
 };

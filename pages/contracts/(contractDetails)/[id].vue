@@ -15,6 +15,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Contract, ServiceDefinition } from "~/types";
 import { ServiceType } from "~/global-types";
+import { getIdFromPath } from "~/lib/utils";
 
 const route = useRoute();
 const { getContractById, updateContract, isLoading, isSubmitting } =
@@ -22,21 +23,13 @@ const { getContractById, updateContract, isLoading, isSubmitting } =
 const { getServiceDefinitions } = useServiceDefinitions();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
-const contractId = ref<string>("");
+const contractId = ref<string>(getIdFromPath(route.path));
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
 const serviceDefinitionsData = ref<ServiceDefinition[]>([]);
 
 const isError = ref(false);
 const data = ref<Contract>();
-
-pathSegments.value = splitPath(fullPath.value);
-const pathLength = pathSegments.value.length;
-contractId.value = pathSegments.value[pathLength - 1];
-
-function splitPath(path: any) {
-  return path.split("/").filter(Boolean);
-}
 
 const form = useForm({
   validationSchema: updateContractFormSchema,
@@ -76,7 +69,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     const newValues = {
       ...values,
-      permissions: data.value.permissions,
       serviceDefinition: serviceDefinitionsData.value.find(
         (service: ServiceDefinition) => service.id === values.serviceDefinition
       ),
@@ -353,7 +345,7 @@ watch(
                       >
                         <ContractPermissions
                           @refresh="fetchContract"
-                          :contractProps="data"
+                          :serviceDefinitionIdProps="data?.serviceDefinition?.id"
                         />
                       </UiSheetContent>
                     </UiSheet>
