@@ -225,7 +225,7 @@ export const useContracts = () => {
       const { data, pending, error, status } = await fetch<Contract>(
         `/api/v1/internal/contracts/${contractId}/refresh-core-customers`,
         {
-          method: "POST",
+          method: "PATCH",
         }
       );
 
@@ -237,8 +237,7 @@ export const useContracts = () => {
 
       return data.value ? (data.value as unknown as Contract) : null;
     } catch (err) {
-      // handleApiError(err);
-      return null;
+      throw err
     }
   };
 
