@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { ServiceDefinition } from "~/types";
 import { columns as tableColumns } from "~/components/serviceDefinitions/columns"; // Renamed to avoid conflict
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getServiceDefinitions, getServiceDefinitionById } = useServiceDefinitions();
 const isLoading = ref(false);
@@ -59,7 +60,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-  <UiPermissionGuard permission="CREATE_SERVICE_DEFINITIONS" >
+  <UiPermissionGuard :permission=PermissionConstants.CREATE_SERVICE_DEFINITIONS >
     <NuxtLink to="/serviceDefinitions/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create

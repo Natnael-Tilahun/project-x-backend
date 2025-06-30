@@ -12,6 +12,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { RoleScope } from "~/global-types";
 import type { Role, Permission } from "~/types";
 import { systemRolesFormSchema } from "~/validations/systemRolesFormSchema";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { toast } = useToast();
 
@@ -290,7 +291,26 @@ const updadateRoleStatus = async (status: boolean) => {
               >
 
               <div class="flex items-center gap-4">
-                <UiPermissionGuard permission="UPDATE_ROLE" >
+                <UiPermissionGuard :permission=PermissionConstants.DISABLE_ROLE >
+                <UiBadge
+                  class="font-bold px-2 py-1"
+                  >{{data.enabled ? "Enabled":"Disabled"}}</UiBadge
+                >
+                <FormField v-slot="{ value, handleChange }" name="enabled">
+                  <FormItem>
+                    <FormControl>
+                      <UiSwitch
+                      class="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
+                        :checked="value"
+                        @update:checked="handleChange"
+                        @click="updadateRoleStatus(value)"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                </UiPermissionGuard>
+                <UiPermissionGuard :permission=PermissionConstants.ENABLE_ROLE >
                 <UiBadge
                   class="font-bold px-2 py-1"
                   >{{data.enabled ? "Enabled":"Disabled"}}</UiBadge
@@ -478,7 +498,7 @@ const updadateRoleStatus = async (status: boolean) => {
                     </UiAccordionItem>
                   </template>
                 </UiAccordion>
-                <UiPermissionGuard permission="UPDATE_ROLE" >
+                <UiPermissionGuard :permission=PermissionConstants.UPDATE_ROLE_PERMISSION>
             <div class="w-full flex justify-end">
               <UiButton :disabled="isUpdating" type="submit">
                 <Icon

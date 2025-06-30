@@ -25,6 +25,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { useDocuments } from "~/composables/useDocuments";
 import type { PaymentIntegration, ApiOperation, Charge } from "~/types";
 import ChargeSelect from "~/components/charges/ChargeSelect.vue";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -287,7 +288,7 @@ onMounted(() => {
       <UiTabsList
         class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
-        <UiPermissionGuard permission="VIEW_PAYMENT_INTEGRATIONS">
+        <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_INTEGRATION>
           <UiTabsTrigger
             value="IntegrationDetails"
             @click="
@@ -303,7 +304,7 @@ onMounted(() => {
             Payment Integration Details
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_PAYMENT_OPERATIONS">
+        <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_OPERATION>
           <UiTabsTrigger
             value="paymentOperations"
             @click="
@@ -318,8 +319,6 @@ onMounted(() => {
           >
             Payment Operations
           </UiTabsTrigger>
-        </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_PAYMENT_OPERATIONS">
           <UiTabsTrigger
             value="configurePaymentOperations"
             @click="
@@ -337,7 +336,7 @@ onMounted(() => {
             {{ operationName }}
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="CREATE_PAYMENT_OPERATIONS">
+        <UiPermissionGuard :permission=PermissionConstants.CREATE_PAYMENT_OPERATIONS>
           <UiTabsTrigger
             value="newPaymentOperation"
             @click="
@@ -357,7 +356,7 @@ onMounted(() => {
         </UiPermissionGuard>
       </UiTabsList>
 
-      <UiPermissionGuard permission="VIEW_PAYMENT_INTEGRATIONS">
+      <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_INTEGRATION>
         <UiTabsContent
           value="IntegrationDetails"
           class="text-base bg-background p-6 rounded-lg"
@@ -1274,15 +1273,13 @@ onMounted(() => {
           </div>
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard permission="VIEW_PAYMENT_OPERATIONS">
+      <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_OPERATION>
         <UiTabsContent
           value="paymentOperations"
           class="text-base bg-background p-6 rounded-lg"
         >
           <PaymentIntegrationsPaymentOperations />
         </UiTabsContent>
-      </UiPermissionGuard>
-      <UiPermissionGuard permission="VIEW_PAYMENT_OPERATIONS">
         <UiTabsContent
           value="configurePaymentOperations"
           class="text-base bg-background py-0 rounded-lg"
@@ -1290,7 +1287,7 @@ onMounted(() => {
           <PaymentOperationsConfigurations :integrationDataProps="data" />
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard permission="CREATE_PAYMENT_OPERATIONS">
+      <UiPermissionGuard :permission=PermissionConstants.CREATE_PAYMENT_OPERATIONS>
         <UiTabsContent
           value="newPaymentOperation"
           class="text-base bg-background py-6 rounded-lg"

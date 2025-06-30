@@ -13,6 +13,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { StaffAssignment, Staff, Office, Role } from "~/types";
 import { dateFormatter } from "~/lib/utils";
+import { PermissionConstants } from "~/constants/permissions";
 const route = useRoute();
 const { getStaffAssignmentById, updateStaffAssignment, isLoading, isSubmitting } =
   useStaffAssignments();
@@ -223,7 +224,7 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-          <UiPermissionGuard permission="UPDATE_STAFF_ASSIGNMENTS" >
+          <UiPermissionGuard :permission=PermissionConstants.UPDATE_STAFF_ASSIGNMENTS >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"

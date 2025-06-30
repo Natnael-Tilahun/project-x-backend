@@ -99,6 +99,8 @@
 import { useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth"; // Add your auth store import
 import type { MenuItem } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
+// import { PermissionConstants } from './constants/permissions';
 
 const authStore = useAuthStore();
 
@@ -125,17 +127,17 @@ const mainLinks: MenuItem[] = [
     size: "22",
     showDropdown: true,
     dropdown: [
-      { title: "System Roles", link: "/userRoles", permission: "VIEW_ROLES_LIST" },
-      { title: "Staff Roles", link: "/staffRoles", permission: "VIEW_ROLES_LIST" },
+      { title: "System Roles", link: "/userRoles", permission: PermissionConstants.READ_ROLE },
+      { title: "Staff Roles", link: "/staffRoles", permission: PermissionConstants.READ_STAFF_ROLE },
       {
         title: "Permissions",
         link: "/userPermissions",
-        permission: "VIEW_PERMISSIONS",
+        permission: PermissionConstants.READ_PERMISSION,
       },
       {
         title: "Permission Groups",
         link: "/permissionGroups",
-        permission: "VIEW_PERMISSION_GROUPS",
+        permission: PermissionConstants.READ_PERMISSION_GROUP,
       },
     ],
   },
@@ -146,7 +148,7 @@ const mainLinks: MenuItem[] = [
     showDropdown: false,
     dropdown: [
       // { title: "Customers Roles", link: "/customerRoles" },
-      { title: "Customers", link: "/customers", permission: "VIEW_CUSTOMERS" },
+      { title: "Customers", link: "/customers", permission: PermissionConstants.READ_CUSTOMER },
       // { title: "Permissions", link: "/permissions" },
     ],
   },
@@ -157,7 +159,7 @@ const mainLinks: MenuItem[] = [
     showDropdown: false,
     dropdown: [
       // { title: "Customers Roles", link: "/customerRoles" },
-      { title: "System Users", link: "/users", permission: "VIEW_USERS" },
+      { title: "System Users", link: "/users", permission: PermissionConstants.READ_USER },
       // { title: "Permissions", link: "/permissions" },
     ],
   },
@@ -167,8 +169,8 @@ const mainLinks: MenuItem[] = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Staffs", link: "/staffs", permission: "VIEW_STAFF" },
-      { title: "Offices", link: "/offices", permission: "VIEW_OFFICES" },
+      { title: "Staffs", link: "/staffs", permission: PermissionConstants.READ_STAFF },
+      { title: "Offices", link: "/offices", permission: PermissionConstants.READ_OFFICE },
       // {
       //   title: "Staff Assignments",
       //   link: "/staffAssignments",
@@ -192,7 +194,7 @@ const mainLinks: MenuItem[] = [
     icon: "material-symbols:partner-exchange-outline-rounded",
     link: "/merchants",
     size: "22",
-    permission: "VIEW_MERCHANTS",
+    permission: PermissionConstants.READ_MERCHANT,
     showDropdown: true,
   },
   // {
@@ -225,17 +227,17 @@ const mainLinks: MenuItem[] = [
       {
         title: "Api Integrations",
         link: "/integrations",
-        permission: "VIEW_API_INTEGRATIONS",
+        permission: PermissionConstants.READ_API_INTEGRATION,
       },
       {
         title: "Payment Integrations",
         link: "/paymentIntegrations",
-        permission: "VIEW_PAYMENT_INTEGRATIONS",
+        permission: PermissionConstants.READ_PAYMENT_INTEGRATION,
       },
       {
         title: "Menu Categories",
         link: "/menuCategories",
-        permission: "VIEW_INTEGRATION_MENUS",
+        permission: PermissionConstants.READ_INTEGRATION_MENU,
       },
       // { title: "Auth Configurations", link: "/authConfigurations" },
     ],
@@ -249,7 +251,7 @@ const mainLinks: MenuItem[] = [
       {
         title: "Applications",
         link: "/applications",
-        permission: "VIEW_APPLICATIONS",
+        permission: PermissionConstants.READ_APPLICATION,
       },
     ],
   },
@@ -259,7 +261,7 @@ const mainLinks: MenuItem[] = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Contracts", link: "/contracts", permission: "VIEW_CONTRACTS" },
+      { title: "Contracts", link: "/contracts", permission: PermissionConstants.READ_CONTRACT },
     ],
   },
   {
@@ -267,7 +269,7 @@ const mainLinks: MenuItem[] = [
     icon: "material-symbols:money-off",
     link: "/charges",
     size: "22",
-    permission: "VIEW_CHARGES",
+    permission: PermissionConstants.READ_CHARGE,
     showDropdown: true,
   },
   {
@@ -279,12 +281,12 @@ const mainLinks: MenuItem[] = [
       {
         title: "Banking Services",
         link: "/bankingServices",
-        permission: "VIEW_BANKING_SERVICES",
+        permission: PermissionConstants.READ_BANKING_SERVICE,
       },
       {
         title: "Service Definitions",
         link: "/serviceDefinitions",
-        permission: "VIEW_SERVICE_DEFINITIONS",
+        permission: PermissionConstants.READ_SERVICE_DEFINITION,
       },
     ],
   },
@@ -297,32 +299,32 @@ const mainLinks: MenuItem[] = [
       {
         title: "USSD Languages",
         link: "/ussdLanguages",
-        permission: "VIEW_USSD_LANGUAGES",
+        permission: PermissionConstants.READ_USSD_LANGUAGE,
       },
       {
         title: "USSD Default Messages",
         link: "/ussdDefaultMessages",
-        permission: "VIEW_USSD_DEFAULT_MESSAGES",
+        permission: PermissionConstants.READ_USSD_DEFAULT_MESSAGE,
       },
       {
         title: "USSD Localized Default Messages",
         link: "/ussdLocalizedMessages",
-        permission: "VIEW_USSD_LOCALIZED_DEFAULT_MESSAGES",
+        permission: PermissionConstants.READ_USSD_LOCALIZED_DEFAULT_MESSAGE,
       },
       {
         title: "USSD Menus",
         link: "/ussdMenus",
-        permission: "VIEW_USSD_MENUS",
+        permission: PermissionConstants.READ_USSD_MENU,
       },
       {
         title: "USSD Localized Menus",
         link: "/ussdLocalizedMenus",
-        permission: "VIEW_USSD_LOCALIZED_MENUS",
+        permission: PermissionConstants.READ_USSD_LOCALIZED_MENU,
       },
       {
         title: "Ussd Menus Cache Management",
         link: "/ussdMenusCacheManagement",
-        permission: "VIEW_USSD_MENU_CACHE_MANAGEMENT",
+        permission: PermissionConstants.READ_USSD_MENU_CACHE_MANAGEMENT,
       },
     ],
   },
@@ -362,7 +364,7 @@ const mainLinks: MenuItem[] = [
     size: "22",
     showDropdown: false,
     dropdown: [
-      { title: "Logs", link: "/logs", permission: "VIEW_AUDIT_LOGS" },
+      { title: "Logs", link: "/logs", permission: PermissionConstants.READ_ADMIN_CONSOLE_LOG },
       // { title: "Reports", link: "/reports" },
     ],
   },

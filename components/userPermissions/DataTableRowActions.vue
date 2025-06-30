@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { computed } from "vue";
+import { PermissionConstants } from "~/constants/permissions";
 // import { taskSchema } from "../data/schema";
 // import { type Task } from "../data/schema";
 
@@ -31,7 +32,7 @@ function viewPermissionsDetails(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_PERMISSIONS" >
+      <UiPermissionGuard :permission=PermissionConstants.READ_PERMISSION >
       <UiDropdownMenuItem @click="viewPermissionsDetails(row.original.code)">View & Edit</UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteUserById, isLoading } = useUsers();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -58,13 +59,13 @@ async function deleteUser(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_USERS" >
+      <UiPermissionGuard :permission=PermissionConstants.READ_USER >
       <UiDropdownMenuItem @click="viewUserDetail(row.original.id)"
         >View and Edit</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
     </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_USERS" >
+      <UiPermissionGuard :permission=PermissionConstants.DELETE_USER >
       <UiDropdownMenuItem @click="setOpenDeleteModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
