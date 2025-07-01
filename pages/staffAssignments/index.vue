@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { StaffAssignment } from "~/types";
 import { columns as tableColumns } from "~/components/staffAssignments/columns"; // Renamed to avoid conflict
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getStaffAssignments, getStaffAssignmentById } = useStaffAssignments();
 const isLoading = ref(false);
@@ -67,7 +68,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard permission="CREATE_STAFF_ASSIGNMENTS" >
+    <UiPermissionGuard :permission=PermissionConstants.CREATE_STAFF_ASSIGNMENTS >
     <NuxtLink to="/staffAssignments/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create

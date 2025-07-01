@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Staff } from "~/types";
 import { columns as tableColumns } from "~/components/staffs/columns"; // Renamed to avoid conflict
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getStaffs, getStaffById } = useStaffs();
 const isLoading = ref();
@@ -68,7 +69,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard permission="CREATE_STAFF" >
+    <UiPermissionGuard :permission=PermissionConstants.CREATE_STAFF >
     <NuxtLink to="/staffs/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create

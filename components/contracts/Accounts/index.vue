@@ -14,6 +14,7 @@ import {
   FormControl,
   FormMessage,
 } from "~/components/ui/form";
+import { PermissionConstants } from "~/constants/permissions";
 
 const {
   getContractCoreCustomerAccounts,
@@ -377,7 +378,7 @@ const isAllSelected = computed(() => {
                   </p>
                 </div>
 
-                <UiPermissionGuard permission="UPDATE_CONTRACT_ACCOUNTS">
+                <UiPermissionGuard :permission="PermissionConstants.UPDATE_CONTRACT_ACCOUNTS">
                   <FormField
                     :model-value="account.enable"
                     v-slot="{ handleChange }"
@@ -404,9 +405,9 @@ const isAllSelected = computed(() => {
                   </FormField>
                 </UiPermissionGuard>
 
-                <UiPermissionGuard
-                  permission="VIEW_CONTRACT_ACCOUNTS_PERMISSIONS"
-                >
+                <!-- <UiPermissionGuard
+                  :permission="PermissionConstants.READ_CONTRACT_ACCOUNT_PERMISSIONS"
+                > -->
                   <div class="flex items-center">
                     <UiSheet>
                       <UiSheetTrigger>
@@ -427,7 +428,7 @@ const isAllSelected = computed(() => {
                       </UiSheetContent>
                     </UiSheet>
                   </div>
-                </UiPermissionGuard>
+                <!-- </UiPermissionGuard> -->
               </div>
               <UiAccordionTrigger />
             </div>
@@ -569,7 +570,7 @@ const isAllSelected = computed(() => {
           </UiAccordionContent>
         </UiAccordionItem>
 
-        <UiPermissionGuard permission="CREATE_CONTRACT_ACCOUNTS">
+        <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_ACCOUNTS">
           <div class="flex justify-end pt-4">
             <UiButton
               :disabled="submitting"

@@ -679,7 +679,7 @@ const isPhoneExistHandler = (value) => {
                                   ? selectedPermissions
                                       .map(
                                         (permission: Permission) =>
-                                          permission.code
+                                          permission.permissionCode
                                       )
                                       .join(", ")
                                   : "Select permissions"
@@ -703,20 +703,20 @@ const isPhoneExistHandler = (value) => {
                               <UiCommandGroup>
                                 <UiCommandItem
                                   v-for="permission in selectedPermissions"
-                                  :key="permission.code"
-                                  :value="permission.code"
+                                  :key="permission.id"
+                                  :value="permission.id"
                                   @select="
                                     () => {
                                       const isSelected =
                                       selectedCoreCustomerPermissions.some(
-                                          (selected: Permission) => selected.code === permission.code
+                                          (selected: Permission) => selected.permissionCode === permission.permissionCode
                                         );
 
                                       if (isSelected) {
                                         selectedCoreCustomerPermissions =
                                             selectedPermissions.filter(
                                             (selected: Permission) =>
-                                              selected.code !== permission.code
+                                              selected.permissionCode !== permission.permissionCode
                                           );
                                       } else {
                                         selectedCoreCustomerPermissions.push(permission);
@@ -725,17 +725,17 @@ const isPhoneExistHandler = (value) => {
                                       form.setFieldValue(
                                         'coreCustomers[0].permissionCodes',
                                         selectedCoreCustomerPermissions.map(
-                                          (permission: Permission) => permission.code
+                                          (permission: Permission) => permission.permissionCode
                                         )
                                       );
                                     }
                                   "
                                 >
-                                  {{ permission.code }}
+                                  {{ permission.permissionCode }}
                                   <UiCheckbox
                                     :checked="
                                       selectedCoreCustomerPermissions.some(
-                                        (selected: Permission) => selected.code === permission.code
+                                        (selected: Permission) => selected.permissionCode === permission.permissionCode
                                       )
                                     "
                                     class="ml-auto"
@@ -886,7 +886,7 @@ const isPhoneExistHandler = (value) => {
                                           ? selectedAccountPermissions
                                               .map(
                                                 (permission: Permission) =>
-                                                  permission.code
+                                                  permission.permissionCode
                                               )
                                               .join(", ")
                                           : "Select permissions"
@@ -910,20 +910,20 @@ const isPhoneExistHandler = (value) => {
                                       <UiCommandGroup>
                                         <UiCommandItem
                                           v-for="permission in selectedCoreCustomerPermissions"
-                                          :key="permission.code"
-                                          :value="permission.code"
+                                          :key="permission.id"
+                                          :value="permission.id"
                                           @select="
                                             () => {
                                               const isSelected =
                                                 selectedAccountPermissions.some(
-                                                  (selected: Permission) => selected.code === permission.code
+                                                  (selected: Permission) => selected.permissionCode === permission.permissionCode
                                                 );
 
                                               if (isSelected) {
                                                 selectedAccountPermissions =
                                                     selectedAccountPermissions.filter(
                                                     (selected: Permission) =>
-                                                      selected.code !== permission.code
+                                                      selected.permissionCode !== permission.permissionCode
                                                   );
                                               } else {
                                                 selectedAccountPermissions.push(permission);
@@ -932,17 +932,17 @@ const isPhoneExistHandler = (value) => {
                                               form.setFieldValue(
                                                 `coreCustomers[0].coreAccounts[${account.accountNumber}].permissionCodes`,
                                                 selectedAccountPermissions.map(
-                                                  (permission: Permission) => permission.code
+                                                  (permission: Permission) => permission.permissionCode
                                                 )
                                               );
                                             }
                                           "
                                         >
-                                          {{ permission.code }}
+                                          {{ permission.permissionCode }}
                                           <UiCheckbox
                                             :checked="
                                               selectedAccountPermissions.some(
-                                                (selected: Permission) => selected.code === permission.code
+                                                (selected: Permission) => selected.permissionCode === permission.permissionCode
                                               )
                                             "
                                             class="ml-auto"

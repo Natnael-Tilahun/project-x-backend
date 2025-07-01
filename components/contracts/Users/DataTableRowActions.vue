@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteContractUser } = useContractsUsers();
 
 const loading = ref(false);
@@ -50,7 +51,7 @@ async function deletingContractsUser(id: string) {
     <UiDropdownMenuContent align="end" class="w-[160px]">
       <!-- <UiDropdownMenuItem @click="viewContractDetail(row.original.contractId)" -->
         <!-- > -->
-        <UiPermissionGuard permission="VIEW_CONTRACT_USERS" >
+        <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT_USER" >
         <UiAlertDialog>
           <UiAlertDialogTrigger class="px-2 text-sm">
             View & Edit
@@ -60,7 +61,7 @@ async function deletingContractsUser(id: string) {
           </UiAlertDialogContent>
         </UiAlertDialog>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="DELETE_CONTRACT_USERS" >
+        <UiPermissionGuard :permission="PermissionConstants.DELETE_CONTRACT_USERS" >
       <UiDropdownMenuSeparator />
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete

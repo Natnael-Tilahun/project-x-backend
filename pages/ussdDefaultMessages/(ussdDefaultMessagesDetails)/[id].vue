@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { DefaultMessage } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -132,7 +133,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
             </FormItem>
           </FormField>
 
-          <UiPermissionGuard permission="UPDATE_USSD_DEFAULT_MESSAGES">
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_DEFAULT_MESSAGES">
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="submitting"

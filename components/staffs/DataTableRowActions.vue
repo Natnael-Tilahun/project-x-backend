@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteStaff, isLoading } = useStaffs();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -60,13 +61,13 @@ async function deleteStaffs(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_STAFF" >
+      <UiPermissionGuard :permission="PermissionConstants.READ_STAFF" >
       <UiDropdownMenuItem @click="viewCustomerDetail(row.original.id)"
         >View and Edit</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_STAFF" >
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_STAFF" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

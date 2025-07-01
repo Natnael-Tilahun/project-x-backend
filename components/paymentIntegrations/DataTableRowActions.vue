@@ -2,6 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { usePaymentIntegrations } from "~/composables/usePaymentIntegrations";
+import { PermissionConstants } from "~/constants/permissions";
 const { deletePaymentIntegration, exportPaymentIntegration, isLoading } = usePaymentIntegrations();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -98,19 +99,19 @@ async function exportIntegrationHandler(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-  <UiPermissionGuard permission="VIEW_PAYMENT_INTEGRATIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.READ_PAYMENT_INTEGRATION" >
       <UiDropdownMenuItem @click="viewPaymentIntegrationDetail(row.original.id)"
         >View and Edit</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-           <!-- <UiPermissionGuard permission="EXPORT_API_INTEGRATIONS" > -->
+           <UiPermissionGuard :permission="PermissionConstants.EXPORT_PAYMENT_INTEGRATION" >
             <UiDropdownMenuItem  @click="setOpenExportModal(true)"
         >Export Payment Integration</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
-    <!-- </UiPermissionGuard> -->
-  <UiPermissionGuard permission="DELETE_PAYMENT_INTEGRATION" >
+    </UiPermissionGuard>
+  <UiPermissionGuard :permission="PermissionConstants.DELETE_PAYMENT_INTEGRATION" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

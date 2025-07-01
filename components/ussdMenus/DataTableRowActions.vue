@@ -2,6 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { useUssdMenus } from "~/composables/useUssdMenus";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteUssdMenu, isLoading } = useUssdMenus();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -60,12 +61,12 @@ async function deleteUssdMenuHandler(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_USSD_MENUS">
+      <UiPermissionGuard :permission="PermissionConstants.READ_USSD_MENU">
         <UiDropdownMenuItem @click="viewUssdMenuDetail(row.original.id)"
           >View and Edit</UiDropdownMenuItem
         >
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_USSD_MENUS">
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_USSD_MENUS">
         <UiDropdownMenuSeparator />
         <UiDropdownMenuItem
           @click="setOpenEditModal(true)"

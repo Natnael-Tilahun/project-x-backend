@@ -3,6 +3,7 @@ const openItems = ref(["item-1"]);
 
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 import { getIdFromPath } from "~/lib/utils";
 import type { User } from "~/types";
 
@@ -130,7 +131,7 @@ const handleUnlinkCoreBankCustomer = async () => {
         <UiTabsList
           class="w-full bg-backgroung flex justify-start py- px-0 border-[1px]"
         >
-          <UiPermissionGuard permission="VIEW_USER_PROFILE" >
+          <UiPermissionGuard :permission=PermissionConstants.VIEW_USER_PROFILE >
           <UiTabsTrigger
             value="profile"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
@@ -138,7 +139,7 @@ const handleUnlinkCoreBankCustomer = async () => {
             Profile
           </UiTabsTrigger>
           </UiPermissionGuard>
-          <UiPermissionGuard permission="RESET_USER_PIN" >
+          <UiPermissionGuard :permission=PermissionConstants.RESET_USER_PIN >
           <UiTabsTrigger
             value="pinReset"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
@@ -149,7 +150,7 @@ const handleUnlinkCoreBankCustomer = async () => {
    
         </UiTabsList>
 
-        <UiPermissionGuard permission="VIEW_USER_PROFILE" >
+        <UiPermissionGuard :permission=PermissionConstants.VIEW_USER_PROFILE >
         <UiTabsContent value="profile" class="space-y-4 pt-4 text-sm border-0">
           <UiCard class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full p-6">
             <div class="space-y-1">
@@ -451,7 +452,7 @@ const handleUnlinkCoreBankCustomer = async () => {
 
 
 
-        <UiPermissionGuard permission="RESET_USER_PIN" >
+        <UiPermissionGuard :permission=PermissionConstants.RESET_USER_PIN >
         <UiTabsContent value="pinReset" class="space-y-4 py-8">
           <UsersPinReset />
         </UiTabsContent>

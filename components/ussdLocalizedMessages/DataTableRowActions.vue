@@ -2,6 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { useUssdLocalizedDefaultMessage } from "~/composables/useUssdLocalizedDefaultMessage";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteUssdLocalizedDefaultMessage, isLoading } =
   useUssdLocalizedDefaultMessage();
 const loading = ref(isLoading.value);
@@ -61,13 +62,13 @@ async function deleteUssdLocalizedDefaultMessageHandler(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_USSD_LOCALIZED_DEFAULT_MESSAGES">
+      <UiPermissionGuard :permission="PermissionConstants.READ_USSD_LOCALIZED_DEFAULT_MESSAGE">
         <UiDropdownMenuItem
           @click="viewUssdLocalizedDefaultMessageDetail(row.original.id)"
           >View and Edit</UiDropdownMenuItem
         >
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_USSD_LOCALIZED_DEFAULT_MESSAGES">
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_USSD_LOCALIZED_DEFAULT_MESSAGES">
         <UiDropdownMenuSeparator />
         <UiDropdownMenuItem
           @click="setOpenEditModal(true)"

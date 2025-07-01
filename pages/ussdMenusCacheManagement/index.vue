@@ -11,6 +11,7 @@ import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 import { newUssdMenuNamesFormSchema } from "~/validations/newUssdMenuNamesFormSchema";
 import type { UssdMenuList } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { storeUssdMenusToCache, changeUssdMenusToCacheStatus, isLoading } =
   useUssdMenus();
@@ -117,7 +118,7 @@ const stopRedisCache = async () => {
             <FormControl>
               <UiSwitch
                 :disabled="
-                  !useHasPermissions('UPDATE_USSD_MENU_CACHE_MANAGEMENT')
+                  !useHasPermissions(PermissionConstants.UPDATE_USSD_MENU_CACHE_MANAGEMENT)
                 "
                 :checked="storeAllUssdMenu"
                 @update:checked="
@@ -139,7 +140,7 @@ const stopRedisCache = async () => {
             <FormControl>
               <UiSwitch
                 :disabled="
-                  !useHasPermissions('UPDATE_USSD_MENU_CACHE_MANAGEMENT')
+                  !useHasPermissions(PermissionConstants.UPDATE_USSD_MENU_CACHE_MANAGEMENT)
                 "
                 class="data-[state=checked]:bg-green-500"
                 :checked="value"
@@ -162,7 +163,7 @@ const stopRedisCache = async () => {
             <FormControl>
               <UiSwitch
                 :disabled="
-                  !useHasPermissions('UPDATE_USSD_MENU_CACHE_MANAGEMENT')
+                  !useHasPermissions(PermissionConstants.UPDATE_USSD_MENU_CACHE_MANAGEMENT)
                 "
                 class="data-[state=checked]:bg-red-500"
                 :checked="value"

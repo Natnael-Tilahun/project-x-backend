@@ -1,49 +1,37 @@
-import { jwtDecode } from "jwt-decode";
-import axios from "axios";
+import { isTokenExpired } from "~/utils/auth";
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
   const authStore = useAuthStore();
-  const { getRefreshToken } = await useAuth();
-  const runtimeConfig = useRuntimeConfig();
+  const api = useApi();
 
-  // Allow access to login page
-  if (to.path === "/login" || to.path === "/a" || to.path === "/forgotPassword" || to.path === "/activateNewUser") {
+  const publicRoutes = ["/login", "/a", "/forgotPassword", "/activateNewUser"];
+  if (publicRoutes.includes(to.path)) {
     return;
   }
 
-  // If not authenticated or no access token, redirect to login
   if (!authStore.isAuthenticated || !authStore.accessToken) {
-    console.log("No auth or token, redirecting to login");
     authStore.$reset();
-    return navigateTo('/login', { replace: true });
+    return navigateTo("/login", { replace: true });
   }
 
-  // Check if access token is expired
-  try {
-    const isExpired = isTokenExpired(authStore.accessToken);
-    console.log("Token expired status:", isExpired);
-
-    if (isExpired && authStore.refreshToken) {
+  if (isTokenExpired(authStore.accessToken)) {
+    if (authStore.refreshToken) {
       try {
-        const { data, error, status } = await useFetch(
-          `${runtimeConfig.public.API_BASE_URL}/api/v1/auth/refresh-token`,
+        const { data, error } = await api.fetch(
+          "/api/v1/auth/refresh-token",
           {
             method: "POST",
             body: {
               refreshToken: authStore.refreshToken,
             },
-            headers: {
-              'X-App-ID': '0a010fa1-96e8-18fd-8196-ed9cb22d0009',
-              'X-App-Version': '0a010fa1-96e8-18fd-8196-ed9d14d0000a'
-            }
+            includeAuth: false, // No need to send expired access token
           }
         );
 
-        if (status.value === "error" || !data.value) {
+        if (error.value || !data.value) {
           throw new Error("Error refreshing token");
         }
 
-        // Update tokens in store
         authStore.$patch({
           refreshToken: data.value.refreshToken,
           accessToken: data.value.accessToken,
@@ -54,26 +42,9 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         authStore.$reset();
         return navigateTo("/login");
       }
-    } else if (isExpired) {
-      // No refresh token available
+    } else {
       authStore.$reset();
       return navigateTo("/login");
-    }
-  } catch (error) {
-    console.error("Token validation error:", error);
-    authStore.$reset();
-    return navigateTo("/login");
-  }
-
-  // Function to check if the token is expired
-  function isTokenExpired(token: string) {
-    if (!token) return true;
-    try {
-      const decodedToken = jwtDecode(token);
-      return decodedToken.exp * 1000 < Date.now();
-    } catch (error) {
-      console.error("Error decoding token:", error);
-      return true;
     }
   }
 });

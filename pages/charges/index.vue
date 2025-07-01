@@ -4,6 +4,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { toast } from "~/components/ui/toast";
 import type { Charge } from "~/types";
 import { columns as tableColumns } from "~/components/charges/columns"; // Renamed to avoid conflict
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getCharges, refreshCoreCharges } = useCharges();
 const isLoading = ref(false);
@@ -69,7 +70,7 @@ const columns = computed(() => tableColumns(refetch));
     class="py-4 flex flex-col space-y-10 mx-auto"
   >
     <div class="flex space-x-4 self-end">
-      <UiPermissionGuard permission="CREATE_CHARGE">
+      <UiPermissionGuard :permission="PermissionConstants.CREATE_CHARGE">
         <NuxtLink to="/charges/new" class="w-fit self-end"
           ><UiButton
             ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon

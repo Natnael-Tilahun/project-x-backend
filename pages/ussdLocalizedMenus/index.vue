@@ -3,6 +3,7 @@ import { ref, onMounted, provide, computed } from "vue"; // Added provide, useAs
 import { columns as tableColumns } from "~/components/ussdLocalizedMenus/columns"; // Renamed to avoid conflict
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { LocalizedUssdMenu } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getUssdLocalizedMenus } = useUssdLocalizedMenus();
 const keyword = ref<string>("");
@@ -56,7 +57,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError && !isLoading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard permission="CREATE_USSD_LOCALIZED_MENUS">
+    <UiPermissionGuard :permission="PermissionConstants.CREATE_USSD_LOCALIZED_MENUS">
       <NuxtLink to="/ussdLocalizedMenus/new" class="w-fit self-end">
         <UiButton class="w-fit self-end px-5"
           ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon

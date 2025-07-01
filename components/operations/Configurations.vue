@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/resizable";
 import JSONTree from "@/components/JSONTree.vue";
 import type { ApiOperation } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const openItems = ref("configuration");
 const jsonData = {
@@ -450,6 +451,9 @@ const testingOperation = async () => {
             ></Icon>
             Test
           </UiButton>
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_API_OPERATION" >
+        <div class="col-span-full w-full py-4 flex justify-end gap-4">
+
           <UiButton
             :disabled="loading"
             variant="outline"
@@ -468,6 +472,8 @@ const testingOperation = async () => {
 
             Update
           </UiButton>
+          </div>
+          </UiPermissionGuard>
         </div>
       </div>
       <UiTabs defaultValue="requestInputs" class="w-full">

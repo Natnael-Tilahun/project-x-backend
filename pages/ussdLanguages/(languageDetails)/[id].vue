@@ -13,6 +13,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { UssdLanguage } from "~/types";
 import { LanguageRelatedStatus } from "~/global-types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -161,7 +162,7 @@ onMounted(async () => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <UiPermissionGuard permission="UPDATE_USSD_LANGUAGES">
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_LANGUAGES">
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="submitting"

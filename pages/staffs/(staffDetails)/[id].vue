@@ -16,6 +16,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Staff } from "~/types";
 import { dateFormatter } from "~/lib/utils";
 import ResetPassword from "~/components/staffs/ResetPassword.vue";
+import { PermissionConstants } from "~/constants/permissions";
 const route = useRoute();
 const {
   getStaffById,
@@ -153,6 +154,8 @@ watch(
       class="w-full space-y-0"
     >
       <div class="w-full flex justify-end mb-4 gap-4 px-6">
+        <UiPermissionGuard :permission="data?.active ? PermissionConstants.DISABLE_STAFF : PermissionConstants.ENABLE_STAFF">
+
         <UiButton
           size="sm"
           @click="handleStaffActivation"
@@ -166,12 +169,13 @@ watch(
           ></Icon>
           {{ data?.active ? "Deactivate" : "Activate" }}
         </UiButton>
+        </UiPermissionGuard>
         <!-- <UiButton class="bg-red-600">Deactivate</UiButton> -->
       </div>
       <UiTabsList
         class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
-        <UiPermissionGuard permission="VIEW_STAFF">
+        <UiPermissionGuard :permission=PermissionConstants.READ_STAFF>
           <UiTabsTrigger
             value="staffDetails"
             @click="
@@ -187,7 +191,7 @@ watch(
             Detail Info
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_STAFF_ASSIGNMENTS">
+        <UiPermissionGuard :permission=PermissionConstants.READ_STAFF_ASSIGNMENT>
           <UiTabsTrigger
             value="staffAssignments"
             @click="
@@ -203,7 +207,7 @@ watch(
             Assignments
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <!-- <UiPermissionGuard permission="RESET_STAFF_PASSWORD" > -->
+        <UiPermissionGuard :permission=PermissionConstants.RESET_STAFF_PIN >
         <UiTabsTrigger
           value="resetPassword"
           @click="
@@ -218,9 +222,9 @@ watch(
         >
           Reset Password
         </UiTabsTrigger>
-        <!-- </UiPermissionGuard> -->
+        </UiPermissionGuard>
       </UiTabsList>
-      <UiPermissionGuard permission="VIEW_STAFF">
+      <UiPermissionGuard :permission=PermissionConstants.READ_STAFF>
         <UiTabsContent
           value="staffDetails"
           class="text-base bg-background rounded-lg"
@@ -310,7 +314,7 @@ watch(
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <UiPermissionGuard permission="UPDATE_STAFF">
+                <UiPermissionGuard :permission="PermissionConstants.UPDATE_STAFF">
                   <div class="col-span-full w-full py-4 flex justify-between">
                     <UiButton
                       :disabled="submitting"
@@ -336,7 +340,7 @@ watch(
           </UiCard>
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard permission="VIEW_STAFF_ASSIGNMENTS">
+      <UiPermissionGuard :permission=PermissionConstants.READ_STAFF_ASSIGNMENT>
         <UiTabsContent
           value="staffAssignments"
           class="text-base bg-background rounded-lg p-6"
@@ -347,14 +351,14 @@ watch(
           <StaffsAssignments />
         </UiTabsContent>
       </UiPermissionGuard>
-      <!-- <UiPermissionGuard permission="RESET_STAFF_PASSWORD" > -->
+      <UiPermissionGuard :permission=PermissionConstants.RESET_STAFF_PIN >
       <UiTabsContent
         value="resetPassword"
         class="text-base bg-background rounded-lg p-6"
       >
         <ResetPassword :email="data?.emailAddress || ''" :staffId="staffId" />
       </UiTabsContent>
-      <!-- </UiPermissionGuard> -->
+      </UiPermissionGuard>
     </UiTabs>
     <div v-else-if="data == null || data == undefined">
       <UiNoResultFound title="Sorry, No staff found." />

@@ -4,6 +4,7 @@ import { columns as tableColumns } from "~/components/ussdLanguages/columns"; //
 import { useUssdLanguages } from "~/composables/useUssdLanguages";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { UssdLanguage } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getUssdLanguages, isLoading: composableIsLoading } = useUssdLanguages(); // Renamed
 const keyword = ref<string>("");
@@ -54,7 +55,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && data.length > 0 && !isError && !pageIsLoading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard permission="CREATE_USSD_LANGUAGES">
+    <UiPermissionGuard :permission="PermissionConstants.CREATE_USSD_LANGUAGES">
       <NuxtLink to="/ussdLanguages/new" class="w-fit self-end">
         <UiButton class="w-fit self-end px-5"
           ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon

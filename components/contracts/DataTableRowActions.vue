@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteContract, isLoading } = useContracts();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -58,12 +59,12 @@ async function deleteContracts(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_CONTRACTS" >
+      <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT" >
       <UiDropdownMenuItem @click="viewContractDetail(row.original.id)"
         >View and Edit </UiDropdownMenuItem
       >
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_CONTRACTS" >
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_CONTRACTS" >
       <UiDropdownMenuSeparator />
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete

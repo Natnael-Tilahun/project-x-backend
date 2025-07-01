@@ -15,6 +15,7 @@ import {
   PermissionType,
 } from "~/global-types";
 import type { Permission } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { toast } = useToast();
 
@@ -94,24 +95,40 @@ const fetchPermissionData = async () => {
   }
 };
 
-const updadateRoleStatus = async (status: boolean) => {
+const enablePermissionsStatus = async () => {
   try {
     updating.value = true;
     if (data.value?.code) {
-      if (status) {
         await enablePermission(data.value?.code); // Call your API function to fetch roles
         toast({
-          title: "Permissoin status updated successfully.",
+          title: "Permissoin status enabled successfully.",
         });
-      } else {
-        await disablePermission(data.value?.code); // Call your API function to fetch roles
-        toast({
-          title: "Permissoin status updated successfully.",
-        });
-      }
     }
   } catch (err: any) {
-    console.error("Error updating permisson status:", err);
+    console.error("Error enabling permisson status:", err);
+    toast({
+      title: "Uh oh! Something went wrong.",
+      description: `There was a problem with your request: ${err}`,
+      variant: "destructive",
+    });
+    isError.value = true;
+  } finally {
+    updating.value = false;
+  }
+};
+
+const disablePermissionsStatus = async () => {
+  try {
+    updating.value = true;
+    if (data.value?.code) {
+
+        await disablePermission(data.value?.code); // Call your API function to fetch roles
+        toast({
+          title: "Permissoin disabled successfully.",
+        });
+    }
+  } catch (err: any) {
+    console.error("Error disabling permisson status:", err);
     toast({
       title: "Uh oh! Something went wrong.",
       description: `There was a problem with your request: ${err}`,
@@ -137,7 +154,7 @@ onMounted(async () => {
       <UiCard class="w-full p-6 rounded-xl space-y-4">
         <div class="flex justify-end items-center">
           <div class="flex items-center gap-4">
-            <UiPermissionGuard permission="UPDATE_PERMISSION">
+            <UiPermissionGuard :permission=PermissionConstants.ENABLE_PERMISSION>
               <UiBadge class="font-bold px-2 py-1">Enabled</UiBadge>
               <FormField v-slot="{ value, handleChange }" name="enabled">
                 <FormItem>
@@ -145,7 +162,22 @@ onMounted(async () => {
                     <UiSwitch
                       :checked="value"
                       @update:checked="handleChange"
-                      @click="updadateRoleStatus(!value)"
+                      @click="disablePermissionsStatus()"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+            </UiPermissionGuard>
+            <UiPermissionGuard :permission=PermissionConstants.DISABLE_PERMISSION>
+              <UiBadge class="font-bold px-2 py-1">Disabled</UiBadge>
+              <FormField v-slot="{ value, handleChange }" name="enabled">
+                <FormItem>
+                  <FormControl>
+                    <UiSwitch
+                      :checked="value"
+                      @update:checked="handleChange"
+                      @click="enablePermissionsStatus()"
                     />
                   </FormControl>
                   <FormMessage />

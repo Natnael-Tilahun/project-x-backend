@@ -2,6 +2,7 @@
 import { ref, onMounted } from "vue";
 import { columns } from "~/components/contracts/Users/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import { PermissionConstants } from "~/constants/permissions";
 import { getIdFromPath } from "~/lib/utils";
 import type { ContractCoreCustomer, Contract, ContractUser } from "~/types";
 
@@ -64,7 +65,7 @@ const searchHandler = async () => {
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
     <!-- <NuxtLink to="/contracts/newCoreCustomer" class="w-fit self-end"> -->
-    <UiPermissionGuard permission="CREATE_CONTRACT_USERS">
+    <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_USERS">
       <UiButton
         @click="
           navigateTo({

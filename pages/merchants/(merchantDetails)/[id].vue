@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Merchant } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 const route = useRoute();
 const { getMerchantById, updateMerchant, isLoading, isSubmitting } =
   useMerchants();
@@ -301,7 +302,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <UiPermissionGuard permission="UPDATE_MERCHANT_INFO" >
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_MERCHANT_INFO" >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"

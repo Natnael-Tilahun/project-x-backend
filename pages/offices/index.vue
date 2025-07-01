@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Office } from "~/types";
 import { columns as tableColumns } from "~/components/offices/columns"; // Renamed to avoid conflict
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getOffices, getOfficeById } = useOffice();
 const isLoading = ref(false);
@@ -66,7 +67,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard permission="CREATE_OFFICE" >
+    <UiPermissionGuard :permission=PermissionConstants.CREATE_OFFICE >
     <NuxtLink to="/offices/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create

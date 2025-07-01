@@ -21,6 +21,7 @@ import {
   PaymentIntegrationType,
 } from "@/global-types";
 import type { ApiOperation, PaymentIntegration, PaymentOperation } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -713,7 +714,7 @@ watch(
                 <FormMessage />
               </FormItem>
             </FormPropsField> -->
-            <UiPermissionGuard permission="UPDATE_PAYMENT_OPERATIONS" >
+            <UiPermissionGuard :permission="PermissionConstants.UPDATE_PAYMENT_OPERATIONS" >
           <div class="col-span-full w-full py-4 flex justify-end gap-4">
             <UiButton
               :disabled="loading"

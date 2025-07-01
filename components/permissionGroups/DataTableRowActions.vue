@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 const { deletePermissionGroupById, isLoading } = usePermissionGroups();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -54,17 +55,17 @@ async function deletePermissionGroup(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_PERMISSION_GROUPS" >
+      <UiPermissionGuard :permission="PermissionConstants.READ_PERMISSION_GROUP" >
       <UiDropdownMenuItem @click="viewPermissionGroupDetail(row.original.groupCode)"
         >View</UiDropdownMenuItem
       >
       </UiPermissionGuard>
-      <UiPermissionGuard permission="UPDATE_PERMISSION_GROUPS" >
+      <UiPermissionGuard :permission="PermissionConstants.UPDATE_PERMISSION_GROUPS" >
       <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
       </UiPermissionGuard>
       <UiDropdownMenuSeparator />
       <UiDropdownMenuSeparator />
-      <UiPermissionGuard permission="DELETE_PERMISSION_GROUPS" >
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_PERMISSION_GROUPS" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

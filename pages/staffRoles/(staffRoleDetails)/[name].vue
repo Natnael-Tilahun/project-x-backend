@@ -12,6 +12,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { RoleScope } from "~/global-types";
 import type { Role, Permission } from "~/types";
 import { rolesFormSchema } from "~/validations/rolesFormSchema";
+import { PermissionConstants } from "~/constants/permissions";
 
 
 const { toast } = useToast();
@@ -294,7 +295,7 @@ const updadateRoleStatus = async (status: boolean) => {
               >
 
               <div class="flex items-center gap-4 border pb-1 pt-2 px-3 rounded-md">
-                <UiPermissionGuard permission="UPDATE_ROLE" >
+                <UiPermissionGuard :permission= "data.enabled ? PermissionConstants.DISABLE_STAFF_ROLE : PermissionConstants.ENABLE_STAFF_ROLE"  >
                 <UiBadge
                   class="font-bold px-2 py-1 mb-1"
                   >{{data.enabled ? "Enabled":"Disabled"}}</UiBadge
@@ -458,7 +459,7 @@ const updadateRoleStatus = async (status: boolean) => {
                     </UiAccordionItem>
                   </template>
                 </UiAccordion>
-                <UiPermissionGuard permission="UPDATE_ROLE" >
+                <UiPermissionGuard :permission=PermissionConstants.UPDATE_STAFF_ROLE_PERMISSION >
             <div class="w-full flex justify-end">
               <UiButton :disabled="isUpdating" type="submit">
                 <Icon

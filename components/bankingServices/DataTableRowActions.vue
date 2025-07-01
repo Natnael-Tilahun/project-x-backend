@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteBankingService, isLoading } = useBankingServices();
 
 const props = defineProps<{
@@ -64,12 +65,12 @@ async function deleteBankingServices(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_BANKING_SERVICES">
+      <UiPermissionGuard :permission="PermissionConstants.READ_BANKING_SERVICE">
         <UiDropdownMenuItem @click="viewBankingServiceDetail(row.original.id)"
           >View and Edit</UiDropdownMenuItem
         >
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_BANKING_SERVICES">
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_BANKING_SERVICES">
         <UiDropdownMenuSeparator />
         <UiDropdownMenuItem
           @click="setOpenEditModal(true)"

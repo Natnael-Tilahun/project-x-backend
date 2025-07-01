@@ -13,6 +13,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Office } from "~/types";
 import { dateFormatter } from "~/lib/utils";
+import { PermissionConstants } from "~/constants/permissions";
 const route = useRoute();
 const { getOfficeById, updateOffice, isLoading, isSubmitting, getOffices } =
   useOffice();
@@ -236,7 +237,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <UiPermissionGuard permission="UPDATE_OFFICE" >
+          <UiPermissionGuard :permission=PermissionConstants.UPDATE_OFFICE >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"

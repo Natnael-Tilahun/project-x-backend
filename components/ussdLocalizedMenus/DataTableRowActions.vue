@@ -2,6 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { useUssdLocalizedMenus } from "~/composables/useUssdLocalizedMenus";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteUssdLocalizedMenu, isLoading } = useUssdLocalizedMenus();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -65,13 +66,13 @@ async function deleteUssdLocalizedMenuHandler(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_USSD_LOCALIZED_MENUS">
+      <UiPermissionGuard :permission="PermissionConstants.READ_USSD_LOCALIZED_MENU">
         <UiDropdownMenuItem
           @click="viewUssdLocalizedDefaultMessageDetail(row.original.id)"
           >View and Edit</UiDropdownMenuItem
         >
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_USSD_LOCALIZED_MENUS">
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_USSD_LOCALIZED_MENUS">
         <UiDropdownMenuSeparator />
         <UiDropdownMenuItem
           @click="setOpenDeleteConfirmModal(true)"

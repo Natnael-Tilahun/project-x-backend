@@ -13,6 +13,7 @@ import { toast } from "~/components/ui/toast";
 import { RuleType } from "@/global-types";
 import { getIdFromPath } from "~/lib/utils";
 import type { ChargeRule } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getChargeRuleById, updateChargeRule } = await useCharges();
 
@@ -225,7 +226,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <UiPermissionGuard permission="UPDATE_CHARGE_RULES">
+            <UiPermissionGuard :permission="PermissionConstants.UPDATE_CHARGE_RULES">
               <div class="col-span-full w-full py-4 flex justify-between">
                 <UiButton
                   :disabled="isSubmitting"

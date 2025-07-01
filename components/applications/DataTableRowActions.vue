@@ -2,6 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { computed } from "vue";
 import { toast } from "../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteApplicationById, getApplications, isLoading } = useApplications();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -60,13 +61,13 @@ async function deleteApplication(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-  <UiPermissionGuard permission="VIEW_APPLICATIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.READ_APPLICATION" >
       <UiDropdownMenuItem @click="viewApplicationDetails(row.original.id)"
         >View and Edit</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-  <UiPermissionGuard permission="DELETE_APPLICATIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.DELETE_APPLICATIONS" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-500">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

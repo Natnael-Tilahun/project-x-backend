@@ -17,6 +17,7 @@ import { MenuLayoutType, PaginationType, SystemMenuType } from "@/global-types";
 import { useDocuments } from "~/composables/useDocuments";
 import IconPicker from "~/components/IconPicker.vue";
 import type { Menu, PaymentIntegration } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -1032,6 +1033,7 @@ watch(
               </div>
             </div>
 
+    <UiPermissionGuard :permission=PermissionConstants.UPDATE_INTEGRATION_MENUS >
             <div class="flex justify-end mt-10">
               <UiButton
                 type="button"
@@ -1046,6 +1048,7 @@ watch(
                 Save Changes
               </UiButton>
             </div>
+            </UiPermissionGuard>
           </div>
         </UiCard>
       </UiTabsContent>
