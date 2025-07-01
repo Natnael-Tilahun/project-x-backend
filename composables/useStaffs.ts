@@ -1,5 +1,3 @@
-import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
 import type { Contract, Staff } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
@@ -33,8 +31,7 @@ export const useStaffs = () => {
 
       return data.value ? (data.value as unknown as Staff[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -52,8 +49,7 @@ export const useStaffs = () => {
 
       return data.value ? (data.value as unknown as Staff) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -77,8 +73,7 @@ export const useStaffs = () => {
 
       return data.value ? (data.value as unknown as Staff) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -103,8 +98,7 @@ export const useStaffs = () => {
 
       return data.value ? (data.value as unknown as Staff) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -129,8 +123,7 @@ export const useStaffs = () => {
 
       return data.value ? (data.value as unknown as Contract) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -149,8 +142,7 @@ export const useStaffs = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

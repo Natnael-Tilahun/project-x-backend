@@ -6,7 +6,7 @@ import { Badge } from "../ui/badge";
 import ContractsDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { Contract } from "~/types";
-import { h, inject } from "vue"; // Import inject
+import { h } from "vue"; // Import inject
 
 // Type for the refetch function
 type RefetchFunction = () => Promise<void>;

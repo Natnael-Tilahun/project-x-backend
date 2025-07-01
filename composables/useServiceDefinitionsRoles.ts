@@ -1,7 +1,4 @@
-import { toast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
 import type { Permission, ServiceDefinitionRole } from "~/types";
-import { ServiceDefinitionStatus } from "~/global-types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
@@ -34,8 +31,7 @@ export const useServiceDefinitionsRoles = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinitionRole[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -53,8 +49,7 @@ export const useServiceDefinitionsRoles = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinitionRole) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -82,8 +77,7 @@ export const useServiceDefinitionsRoles = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinitionRole[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -107,8 +101,7 @@ export const useServiceDefinitionsRoles = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinitionRole) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -133,8 +126,7 @@ export const useServiceDefinitionsRoles = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinitionRole) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -159,8 +151,7 @@ export const useServiceDefinitionsRoles = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinitionRole) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -185,8 +176,7 @@ export const useServiceDefinitionsRoles = () => {
 
       return data.value ? (data.value as unknown as ServiceDefinitionRole) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -210,8 +200,7 @@ export const useServiceDefinitionsRoles = () => {
 
       return data.value ? (data.value as unknown as any) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -230,8 +219,7 @@ export const useServiceDefinitionsRoles = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

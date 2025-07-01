@@ -27,8 +27,7 @@ export const useDocuments = () => {
 
       return data.value ? (data.value as unknown as Document[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -73,8 +72,7 @@ export const useDocuments = () => {
 
       return data.value ? (data.value as unknown as Document) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -96,8 +94,7 @@ export const useDocuments = () => {
 
       return data.value ? (data.value as unknown as Document) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -122,8 +119,7 @@ export const useDocuments = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -145,8 +141,7 @@ export const useDocuments = () => {
 
       return data.value ? (data.value as unknown as Document) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -165,8 +160,7 @@ export const useDocuments = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

@@ -1,23 +1,16 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
-import { computed } from "vue";
 import { PermissionConstants } from "~/constants/permissions";
-// import { taskSchema } from "../data/schema";
-// import { type Task } from "../data/schema";
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 const props = defineProps<DataTableRowActionsProps<any>>();
 
 function viewPermissionsDetails(id: string) {
-  // alert(id);
   navigateTo(`/userPermissions/${id}`);
   navigator.clipboard.writeText(id);
 }
-
-// const task = computed(() => taskSchema.parse(props.row.original));
 </script>
 
 <template>

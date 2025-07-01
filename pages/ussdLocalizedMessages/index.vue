@@ -7,11 +7,9 @@ import { PermissionConstants } from "~/constants/permissions";
 
 const { getUssdLocalizedDefaultMessages } =
   useUssdLocalizedDefaultMessage();
-const keyword = ref<string>("");
 const data = ref<LocalizedDefaultMessage[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
-const router = useRouter(); // {{ edit_2 }}
 
 const getUssdLocalizedDefaultMessagesData = async () => {
   try {
@@ -57,7 +55,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError && !isLoading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard :permission="PermissionConstants.CREATE_USSD_LOCALIZED_DEFAULT_MESSAGES">
+    <UiPermissionGuard :permission="PermissionConstants.CREATE_USSD_LOCALIZED_DEFAULT_MESSAGE">
       <NuxtLink to="/ussdLocalizedMessages/new" class="w-fit self-end">
         <UiButton class="w-fit self-end px-5"
           ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon

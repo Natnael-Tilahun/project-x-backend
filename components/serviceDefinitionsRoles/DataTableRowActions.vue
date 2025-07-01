@@ -67,7 +67,7 @@ async function deleteServiceDefinitionRoles(id: string) {
         >View and Edit</UiDropdownMenuItem
       >
       </UiPermissionGuard>
-      <UiPermissionGuard :permission="PermissionConstants.DELETE_SERVICE_DEFINITION_ROLES" >
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_SERVICE_DEFINITION_ROLE" >
         <UiDropdownMenuSeparator />
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete

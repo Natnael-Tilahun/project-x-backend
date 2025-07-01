@@ -304,9 +304,9 @@ console.log(
               </FormItem>
             </FormField>
 
-            <!-- <UiPermissionGuard
-              :permission="PermissionConstants.READ_CONTRACT_CORE_CUSTOMER_PERMISSIONS"
-            > -->
+            <UiPermissionGuard
+              :permission="PermissionConstants.READ_CONTRACT_CORE_CUSTOMER_PERMISSION"
+            >
               <div class="w-full space-y-2">
                 <UiLabel for="enable">Permissions</UiLabel>
                 <UiSheet class="w-full">
@@ -328,7 +328,7 @@ console.log(
                   </UiSheetContent>
                 </UiSheet>
               </div>
-            <!-- </UiPermissionGuard> -->
+            </UiPermissionGuard>
           </div>
         </form>
       </UiCard>

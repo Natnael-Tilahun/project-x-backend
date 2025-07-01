@@ -6,7 +6,7 @@ import type { ChargeRule } from "~/types";
 import { columns as tableColumns } from "~/components/chargeRules/columns"; // Renamed to avoid conflict
 import { PermissionConstants } from "~/constants/permissions";
 
-const { getChargeById, getChargeRulesByChargeId } = useCharges();
+const {  getChargeRulesByChargeId } = useCharges();
 const { pageNumber } = usePagesInfoStore();
 
 const loading = ref(false);

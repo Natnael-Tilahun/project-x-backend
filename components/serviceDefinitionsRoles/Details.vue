@@ -210,7 +210,7 @@ const updadateRoleStatus = async (status: boolean) => {
             </FormItem>
           </FormField>
 
-          <!-- <UiPermissionGuard :permission="PermissionConstants.UPDATE_SERVICE_DEFINITION_PERMISSIONS"> -->
+          <UiPermissionGuard :permission="PermissionConstants.READ_SERVICE_DEFINITION_PERMISSION">
             <div class="w-full space-y-2">
               <UiLabel for="enable">Permissions</UiLabel>
               <UiSheet class="w-full">
@@ -235,9 +235,9 @@ const updadateRoleStatus = async (status: boolean) => {
                 </UiSheetContent>
               </UiSheet>
             </div>
-          <!-- </UiPermissionGuard> -->
+          </UiPermissionGuard>
 
-          <UiPermissionGuard :permission="PermissionConstants.UPDATE_SERVICE_DEFINITION_ROLES">
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_SERVICE_DEFINITION_ROLE">
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="submitting"

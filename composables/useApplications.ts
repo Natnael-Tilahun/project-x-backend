@@ -65,7 +65,6 @@ export const useApplications = () => {
 
       return data.value ? (data.value as unknown as Application) : null;
     } catch (err) {
-      // handleApiError(err);
       throw err
     }
   };
@@ -84,7 +83,6 @@ export const useApplications = () => {
 
       return data.value ? (data.value as unknown as AppVersion) : null;
     } catch (err) {
-      // handleApiError(err);
       throw err
     }
   };
@@ -104,7 +102,6 @@ export const useApplications = () => {
 
       return data.value;
     } catch (err) {
-      // handleApiError(err);
       throw err
     }
   };
@@ -124,7 +121,6 @@ export const useApplications = () => {
 
       return data.value;
     } catch (err) {
-      // handleApiError(err);
       throw err
     }
   };
@@ -147,7 +143,6 @@ export const useApplications = () => {
 
       return data.value ? (data.value as unknown as Application) : null;
     } catch (err) {
-      // handleApiError(err);
       throw err
     }
   };
@@ -170,7 +165,6 @@ export const useApplications = () => {
 
       return data.value ? (data.value as unknown as AppVersion) : null;
     } catch (err) {
-      // handleApiError(err);
       throw err
     }
   };
@@ -193,7 +187,6 @@ export const useApplications = () => {
 
       return data.value ? (data.value as unknown as Application) : null;
     } catch (err) {
-      // handleApiError(err);
       throw err
     }
   };
@@ -216,7 +209,6 @@ export const useApplications = () => {
 
       return data.value ? (data.value as unknown as AppVersion) : null;
     } catch (err) {
-      // handleApiError(err);
       throw err
     }
   };

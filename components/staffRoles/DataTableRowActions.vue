@@ -2,6 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { computed } from "vue";
 import { toast } from "../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteStaffRoleById, isLoading } = useStaffRoles();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -11,7 +12,6 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
   refetch: () => Promise<void>; // Accept refetch as a prop

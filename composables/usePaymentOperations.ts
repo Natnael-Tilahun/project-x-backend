@@ -1,5 +1,3 @@
-import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
 import type { PaymentOperation } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
@@ -9,7 +7,6 @@ export const usePaymentOperations = () => {
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
-  const { toast } = useToast();
 
   const getPaymentOperations: (
     page?: number,
@@ -31,8 +28,7 @@ export const usePaymentOperations = () => {
 
       return data.value ? (data.value as unknown as PaymentOperation[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -52,8 +48,7 @@ export const usePaymentOperations = () => {
 
       return data.value ? (data.value as unknown as PaymentOperation) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -77,8 +72,7 @@ export const usePaymentOperations = () => {
 
       return data.value ? (data.value as unknown as PaymentOperation) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -103,8 +97,7 @@ export const usePaymentOperations = () => {
 
       return data.value ? (data.value as unknown as PaymentOperation) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -123,8 +116,7 @@ export const usePaymentOperations = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

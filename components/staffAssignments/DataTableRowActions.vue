@@ -17,7 +17,6 @@ const setOpenEditTerminationModal = (value: boolean) => {
   openEditTeminationModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
@@ -99,7 +98,7 @@ async function terminateStaffAssignments(id: string) {
       >
       <UiDropdownMenuSeparator />
       <!-- </UiPermissionGuard> -->
-      <UiPermissionGuard :permission="PermissionConstants.DELETE_STAFF_ASSIGNMENTS">
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_STAFF_ASSIGNMENT">
         <UiDropdownMenuItem
           @click="setOpenEditModal(true)"
           class="text-red-600"

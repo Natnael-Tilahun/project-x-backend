@@ -5,7 +5,7 @@ import { columns as tableColumns } from "~/components/serviceDefinitionsRoles/co
 import { PermissionConstants } from "~/constants/permissions";
 
 
-const { getServiceDefinitionsRoles, getServiceDefinitionRoleById, updateServiceDefinitionRole, getServiceDefinitionRolesByServiceDefinitionId } =
+const { getServiceDefinitionRolesByServiceDefinitionId } =
   useServiceDefinitionsRoles();
 
 const route = useRoute();
@@ -63,7 +63,7 @@ const columns = computed(() => tableColumns(refetch));
   >
   
   <UiPermissionGuard
-              :permission="PermissionConstants.CREATE_SERVICE_DEFINITION_ROLES"
+              :permission="PermissionConstants.CREATE_SERVICE_DEFINITION_ROLE"
             >
     <UiButton
       @click="

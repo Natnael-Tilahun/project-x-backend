@@ -13,11 +13,16 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
+  refetch: () => Promise<void>; // Accept refetch as a prop
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['contractCoreCustomerDeleted']); // Added 'languageDeleted'
 
 function viewContractCoreCustomerDetail(contractId: string, coreCustomerId:string) {
   navigateTo(`/contracts/${contractId}?activeTab=contractCoreCustomerDetails&&coreCustomerId=${coreCustomerId}`);
@@ -34,7 +39,7 @@ async function deleteContractCoreCustomers(id: string) {
       title: "Contract Core Customer deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch()
   } catch (err) {
     console.error("Error deleting contract core customer:", err);
     isError.value = true;

@@ -28,8 +28,7 @@ export const useRoles = () => {
 
       return data.value ? (data.value as unknown as Role[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -48,8 +47,7 @@ export const useRoles = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -73,8 +71,7 @@ export const useRoles = () => {
 
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -96,8 +93,7 @@ export const useRoles = () => {
 
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -120,8 +116,7 @@ export const useRoles = () => {
       await getAuthorities();
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -146,8 +141,7 @@ export const useRoles = () => {
       await getAuthorities();
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

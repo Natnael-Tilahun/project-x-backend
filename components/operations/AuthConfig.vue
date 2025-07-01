@@ -14,6 +14,8 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { AuthType } from "@/global-types";
+import type { ApiIntegration, ApiOperation, AuthConfiguration } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const { getAuthConfigById, isLoading } = useAuthConfigs();
@@ -739,6 +741,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                   </FormItem>
                 </FormField> -->
 
+   <UiPermissionGuard :permission=PermissionConstants.UPDATE_API_INTEGRATION_AUTH_CONFIG >
                 <div class="col-span-full w-full py-4 flex justify-between">
                   <UiButton
                     :disabled="submitting"
@@ -758,6 +761,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                     Update
                   </UiButton>
                 </div>
+                </UiPermissionGuard>
               </div>
             </form>
           </UiCard>

@@ -20,7 +20,6 @@ const {
   updateUssdDefaultMessage,
   isLoading,
   isSubmitting,
-  getUssdDefaultMessages,
 } = useUssdDefaultMessage();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
@@ -46,7 +45,6 @@ try {
   isLoading.value = true;
   loading.value = true;
   data.value = await getUssdDefaultMessageById(ussdDefaultMessageId.value);
-  console.log("ussdDefaultMessage.value data: ", data.value);
   form.setValues({
     id: data.value?.id,
     ...data.value,
@@ -66,7 +64,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     const newValues = {
       ...values,
     };
-    console.log("newValues: ", newValues);
     data.value = await updateUssdDefaultMessage(values.id, newValues); // Call your API function to fetch profile
     navigateTo(`/ussdDefaultMessages/${data.value.id}`);
     console.log("New ussd default message data; ", data.value);
@@ -133,7 +130,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
             </FormItem>
           </FormField>
 
-          <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_DEFAULT_MESSAGES">
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_DEFAULT_MESSAGE">
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="submitting"

@@ -28,8 +28,7 @@ export const useCharges = () => {
 
       return data.value ? (data.value as unknown as Charge[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -47,8 +46,7 @@ export const useCharges = () => {
 
       return data.value ? (data.value as unknown as number) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -66,8 +64,7 @@ export const useCharges = () => {
 
       return data.value ? (data.value as unknown as Charge) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -85,8 +82,7 @@ export const useCharges = () => {
 
       return data.value ? (data.value as unknown as ChargeRule[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -105,8 +101,7 @@ export const useCharges = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -128,8 +123,7 @@ export const useCharges = () => {
 
       return data.value ? (data.value as unknown as Charge) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -151,8 +145,7 @@ export const useCharges = () => {
 
       return data.value ? (data.value as unknown as Charge) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -174,8 +167,7 @@ export const useCharges = () => {
 
       return data.value ? (data.value as unknown as ChargeRule) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -193,8 +185,7 @@ export const useCharges = () => {
 
       return data.value ? (data.value as unknown as ChargeRule) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -216,8 +207,7 @@ export const useCharges = () => {
 
       return data.value ? (data.value as unknown as ChargeRule) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -236,8 +226,7 @@ export const useCharges = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -256,8 +245,7 @@ export const useCharges = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -276,8 +264,7 @@ export const useCharges = () => {
 
       return data.value ? (data.value as unknown as Charge[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

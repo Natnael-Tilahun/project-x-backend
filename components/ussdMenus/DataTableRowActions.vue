@@ -3,6 +3,7 @@ import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { useUssdMenus } from "~/composables/useUssdMenus";
 import { PermissionConstants } from "~/constants/permissions";
+
 const { deleteUssdMenu, isLoading } = useUssdMenus();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -11,7 +12,6 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
@@ -22,7 +22,6 @@ const props = defineProps<{
 }>();
 
 function viewUssdMenuDetail(id: string) {
-  console.log("id: ", id);
   navigateTo(`/ussdMenus/${id}`);
   navigator.clipboard.writeText(id);
 }
@@ -66,7 +65,7 @@ async function deleteUssdMenuHandler(id: string) {
           >View and Edit</UiDropdownMenuItem
         >
       </UiPermissionGuard>
-      <UiPermissionGuard :permission="PermissionConstants.DELETE_USSD_MENUS">
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_USSD_MENU">
         <UiDropdownMenuSeparator />
         <UiDropdownMenuItem
           @click="setOpenEditModal(true)"

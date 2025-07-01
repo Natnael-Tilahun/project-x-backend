@@ -61,7 +61,7 @@ const closeImportDialog = async () => {
     v-else-if="data && !isError && !isLoading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-  <UiPermissionGuard :permission=PermissionConstants.CREATE_INTEGRATION_MENUS >
+  <UiPermissionGuard :permission=PermissionConstants.CREATE_INTEGRATION_MENU >
     <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-4">
       <NuxtLink to="/menuCategories/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"

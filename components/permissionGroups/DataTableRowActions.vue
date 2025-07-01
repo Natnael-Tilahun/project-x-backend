@@ -10,11 +10,11 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
-interface DataTableRowActionsProps<TData> {
-  row: Row<TData>;
-}
-const props = defineProps<DataTableRowActionsProps<any>>();
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['permissionGroupDeleted']); // Added 'languageDeleted'
 
 function viewPermissionGroupDetail(id: string) {
   navigateTo(`/permissionGroups/${id}`);
@@ -31,7 +31,7 @@ async function deletePermissionGroup(id: string) {
       title: "Permission group deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch()
   } catch (err) {
     console.error("Error deleting permission group:", err);
     isError.value = true;
@@ -60,12 +60,12 @@ async function deletePermissionGroup(id: string) {
         >View</UiDropdownMenuItem
       >
       </UiPermissionGuard>
-      <UiPermissionGuard :permission="PermissionConstants.UPDATE_PERMISSION_GROUPS" >
+      <UiPermissionGuard :permission="PermissionConstants.UPDATE_PERMISSION_GROUP" >
       <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
       </UiPermissionGuard>
       <UiDropdownMenuSeparator />
       <UiDropdownMenuSeparator />
-      <UiPermissionGuard :permission="PermissionConstants.DELETE_PERMISSION_GROUPS" >
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_PERMISSION_GROUP" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

@@ -1,5 +1,3 @@
-import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
 import type { Customer, Device, User, UserInput } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";

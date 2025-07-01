@@ -4,13 +4,13 @@ import { columns } from "~/components/integrations/columns";
 import { useIntegrations } from "~/composables/useIntegrations";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { PermissionConstants } from "~/constants/permissions";
+import type { ApiIntegration } from "~/types";
 
 const { getIntegrations } = useIntegrations();
 const keyword = ref<string>("");
 const data = ref<ApiIntegration[]>([]);
 const isLoading = ref(true);
 const isError = ref(false);
-const router = useRouter(); // {{ edit_2 }}
 
 try {
   isError.value = false;

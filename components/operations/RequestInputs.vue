@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/form";
 import { DataType, LogicalOperators, Operators } from "@/global-types";
 import type { RequestInput } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -488,6 +489,8 @@ watch(
               </FormItem>
             </FormField>
           </div>
+   <UiPermissionGuard :permission=PermissionConstants.CREATE_REQUEST_INPUT >
+
           <div
             class="col-span-full w-full pt-4 border-t flex justify-end gap-4"
           >
@@ -503,6 +506,7 @@ watch(
                 <OperationsValidationRules :requestInput="item" />
               </UiSheetContent>
             </UiSheet> -->
+            
             <UiButton
               :disabled="loading"
               variant="outline"
@@ -521,6 +525,7 @@ watch(
               Save
             </UiButton>
           </div>
+          </UiPermissionGuard>
         </form>
       </UiAccordionContent>
     </UiAccordionItem>
@@ -541,6 +546,7 @@ watch(
             }})
           </span>
         </UiTabsTrigger>
+   <UiPermissionGuard :permission=PermissionConstants.CREATE_REQUEST_INPUT >
         <div class="w-full flex justify-end">
           <UiButton
             :disabled="loading"
@@ -554,6 +560,7 @@ watch(
             Add Parameter
           </UiButton>
         </div>
+        </UiPermissionGuard>
       </UiTabsList>
 
       <!-- Tab content for each input type -->
@@ -893,6 +900,7 @@ watch(
                   </UiButton>
 
                   <UiAlertDialog>
+   <UiPermissionGuard :permission=PermissionConstants.DELETE_REQUEST_INPUT >
                     <UiAlertDialogTrigger asChild>
                       <UiButton
                         :disabled="isDeleting"
@@ -909,6 +917,7 @@ watch(
                         Delete
                       </UiButton>
                     </UiAlertDialogTrigger>
+                    </UiPermissionGuard>
                     <UiAlertDialogContent>
                       <UiAlertDialogHeader>
                         <UiAlertDialogTitle
@@ -930,6 +939,7 @@ watch(
                     </UiAlertDialogContent>
                   </UiAlertDialog>
 
+   <UiPermissionGuard :permission=PermissionConstants.UPDATE_REQUEST_INPUT >
                   <UiButton :disabled="loading" size="sm" type="submit">
                     <Icon
                       name="svg-spinners:8-dots-rotate"
@@ -939,6 +949,7 @@ watch(
 
                     Update
                   </UiButton>
+                  </UiPermissionGuard>
                 </div>
               </form>
             </UiAccordionContent>

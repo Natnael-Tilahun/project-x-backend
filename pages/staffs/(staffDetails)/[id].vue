@@ -57,7 +57,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     };
     data.value = await updateStaff(values.id, newValues); // Call your API function to fetch profile
     navigateTo(`/staffs/${data.value.id}`);
-    console.log("New staff data; ", data.value);
     toast({
       title: "Staff Created",
       description: "Staff created successfully",
@@ -154,7 +153,7 @@ watch(
       class="w-full space-y-0"
     >
       <div class="w-full flex justify-end mb-4 gap-4 px-6">
-        <UiPermissionGuard :permission="data?.active ? PermissionConstants.DISABLE_STAFF : PermissionConstants.ENABLE_STAFF">
+        <UiPermissionGuard :permission="data?.active ? PermissionConstants.DEACTIVATE_STAFF : PermissionConstants.ACTIVATE_STAFF">
 
         <UiButton
           size="sm"
@@ -207,7 +206,7 @@ watch(
             Assignments
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard :permission=PermissionConstants.RESET_STAFF_PIN >
+        <UiPermissionGuard :permission=PermissionConstants.RESET_STAFF >
         <UiTabsTrigger
           value="resetPassword"
           @click="
@@ -351,7 +350,7 @@ watch(
           <StaffsAssignments />
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard :permission=PermissionConstants.RESET_STAFF_PIN >
+      <UiPermissionGuard :permission=PermissionConstants.RESET_STAFF >
       <UiTabsContent
         value="resetPassword"
         class="text-base bg-background rounded-lg p-6"

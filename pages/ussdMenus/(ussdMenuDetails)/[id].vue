@@ -71,7 +71,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       id: data.value?.id,
       ...values,
     };
-    console.log("newValues", newValues);
     data.value = await updateUssdMenuName(newValues); // Call your API function to fetch profile
     await getUssdMenuByIdData();
     // navigateTo(`/ussdMenus/${data.value.id}`);
@@ -115,7 +114,7 @@ const updatingUssdMenuVisible = async (menuId: string, visible: boolean) => {
     </div>
     <UiCard v-else-if="data && !isError" class="w-full p-6">
       <form @submit.prevent="onSubmit" class="space-y-6 flex flex-col">
-        <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_MENUS">
+        <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_MENU">
           <FormField v-slot="{ value, handleChange }" name="visible">
             <FormItem
               class="flex flex-row items-end justify-between rounded-lg border pb-2 px-4 w-fit gap-10 self-end"
@@ -237,7 +236,7 @@ const updatingUssdMenuVisible = async (menuId: string, visible: boolean) => {
             </FormItem>
           </FormField>
 
-          <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_MENUS">
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_MENU">
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="submitting"

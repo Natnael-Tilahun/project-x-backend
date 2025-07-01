@@ -10,7 +10,6 @@ const keyword = ref<string>("");
 const data = ref<LocalizedUssdMenu[]>([]);
 const isLoading = ref(false);
 const isError = ref(false);
-const router = useRouter(); // {{ edit_2 }}
 
 const getUssdLocalizedMenusData = async () => {
   try {
@@ -23,7 +22,6 @@ const getUssdLocalizedMenusData = async () => {
     ) ?? [];
     // Force reactivity update by creating a new array
     data.value = [...sortedData];
-    console.log("Data updated:", data.value.length, "items"); // Debug log
   } catch (error) {
     console.error("Error fetching ussd localized menus:", error);
     isError.value = true;
@@ -57,7 +55,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError && !isLoading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard :permission="PermissionConstants.CREATE_USSD_LOCALIZED_MENUS">
+    <UiPermissionGuard :permission="PermissionConstants.CREATE_USSD_LOCALIZED_MENU">
       <NuxtLink to="/ussdLocalizedMenus/new" class="w-fit self-end">
         <UiButton class="w-fit self-end px-5"
           ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon

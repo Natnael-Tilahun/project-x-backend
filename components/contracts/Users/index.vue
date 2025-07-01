@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/contracts/Users/columns";
+import { columns as tableColumns } from "~/components/contracts/Users/columns"; // Renamed to avoid conflict
+
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { PermissionConstants } from "~/constants/permissions";
 import { getIdFromPath } from "~/lib/utils";
-import type { ContractCoreCustomer, Contract, ContractUser } from "~/types";
+import type { ContractUser } from "~/types";
 
 const { getContractUserById, getContractUserByContractId, isLoading } =
   useContractsUsers();
@@ -32,14 +33,6 @@ const fetchData = async () => {
   }
 };
 
-const refetch = async () => {
-  await fetchData();
-};
-
-await useAsyncData("contractUsersData", async () => {
-  await fetchData();
-});
-
 const searchHandler = async () => {
   try {
     isLoading.value = true;
@@ -53,6 +46,21 @@ const searchHandler = async () => {
     loading.value = false;
   }
 };
+
+
+onMounted(() => {
+  fetchData();
+});
+
+const refetch = async () => {
+  await fetchData();
+};
+
+// Provide the refetch function
+provide('refetchContracts', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->
@@ -65,7 +73,7 @@ const searchHandler = async () => {
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
     <!-- <NuxtLink to="/contracts/newCoreCustomer" class="w-fit self-end"> -->
-    <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_USERS">
+    <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_USER">
       <UiButton
         @click="
           navigateTo({

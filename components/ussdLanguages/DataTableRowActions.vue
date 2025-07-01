@@ -23,12 +23,9 @@ const setOpenDeleteConfirmModal = (value: boolean) => {
   openDeleteConfirmModal.value = value;
 };
 
-// const route = useRoute(); // Not used in this snippet, can be removed if not needed elsewhere
 
 function viewUssdLanguageDetail(id: string) {
-  console.log("id: ", id);
   navigateTo(`/ussdLanguages/${id}`);
-  // navigator.clipboard.writeText(id); // Optional
 }
 
 async function deleteUssdLanguageHandler(id: string) {
@@ -74,7 +71,7 @@ async function deleteUssdLanguageHandler(id: string) {
           >View and Edit</UiDropdownMenuItem
         >
       </UiPermissionGuard>
-      <UiPermissionGuard :permission="PermissionConstants.DELETE_USSD_LANGUAGES">
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_USSD_LANGUAGE">
         <UiDropdownMenuSeparator />
         <UiDropdownMenuItem
           @click="setOpenDeleteConfirmModal(true)"

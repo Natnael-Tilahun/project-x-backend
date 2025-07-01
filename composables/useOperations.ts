@@ -1,5 +1,3 @@
-import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
 import type { ApiOperation } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
@@ -9,7 +7,6 @@ export const useOperations = () => {
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
-  const { toast } = useToast();
 
   const getOperations: (page?: number, size?: number) => ApiResult<ApiOperation[]> = async (page, size) => {
     try {
@@ -28,8 +25,7 @@ export const useOperations = () => {
 
       return data.value ? (data.value as unknown as ApiOperation[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -47,8 +43,7 @@ export const useOperations = () => {
 
       return data.value ? (data.value as unknown as ApiOperation) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -70,8 +65,7 @@ export const useOperations = () => {
 
       return data.value ? (data.value as unknown as ApiOperation) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -93,8 +87,7 @@ export const useOperations = () => {
 
       return data.value ? (data.value as unknown as ApiOperation) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -115,8 +108,7 @@ export const useOperations = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -137,8 +129,7 @@ export const useOperations = () => {
 
       return data.value ? (data.value as unknown as ApiOperation) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

@@ -59,7 +59,6 @@ const fetchPermissionData = async () => {
   try {
     loading.value = true;
     const fetchedData = await getPermissionById(code); // Call your API function to fetch roles
-    console.log("fetchedData: ", fetchedData);
     if (fetchedData) {
       data.value = fetchedData;
       const formValues: any = {
@@ -78,7 +77,6 @@ const fetchPermissionData = async () => {
       form.setValues(formValues);
     }
   } catch (err) {
-    console.error("Error fetching permission", err);
     console.log(
       "Error fetching permission (stringified)",
       JSON.stringify(err, null, 2)

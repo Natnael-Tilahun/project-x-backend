@@ -235,7 +235,7 @@ const refetch = async() =>{
             Contract Users
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_USERS">
+        <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_USER">
           <UiTabsTrigger
             value="newUser"
             @click="
@@ -387,7 +387,7 @@ const refetch = async() =>{
                     </UiSheet>
                   </div>
                 <!-- </UiPermissionGuard> -->
-                <UiPermissionGuard :permission="PermissionConstants.UPDATE_CONTRACTS">
+                <UiPermissionGuard :permission="PermissionConstants.UPDATE_CONTRACT">
                   <div class="col-span-full w-full py-4 flex justify-between">
                     <UiButton
                       :disabled="submitting"
@@ -448,7 +448,7 @@ const refetch = async() =>{
           <ContractsUsers :contractProps="data" :contractId="contractId" />
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_USERS">
+      <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_USER">
         <UiTabsContent
           value="newUser"
           class="text-base bg-background rounded-lg p-6"

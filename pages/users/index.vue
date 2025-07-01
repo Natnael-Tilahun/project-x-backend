@@ -82,7 +82,7 @@ const columns = computed(() => tableColumns(refetch));
       >
     </NuxtLink>
     </UiPermissionGuard>
-    <UiDataTable :columns="columns" :data="data">http://localhost:3000/userRoles/ROLE_ADMIN
+    <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <!-- <CustomersDataTableSearchbar :table="table" /> -->
         <div class="flex items-center gap-4">

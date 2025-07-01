@@ -21,7 +21,6 @@ const {
   updateUssdLanguageStatus,
   isLoading,
   isSubmitting,
-  getUssdLanguages,
 } = useUssdLanguages();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
@@ -162,7 +161,7 @@ onMounted(async () => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_LANGUAGES">
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_LANGUAGE">
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="submitting"

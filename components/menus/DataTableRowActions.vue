@@ -68,7 +68,7 @@ async function deleteMenuHandler(id: string) {
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-  <UiPermissionGuard :permission="PermissionConstants.DELETE_INTEGRATION_MENUS" >
+  <UiPermissionGuard :permission="PermissionConstants.DELETE_INTEGRATION_MENU" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

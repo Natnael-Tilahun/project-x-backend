@@ -42,12 +42,7 @@ try {
   isLoading.value = true;
   loading.value = true;
   data.value = await getOfficeById(merchantId.value);
-  console.log(
-    "office.value data: ",
-  data.value
-  );
   offices.value = await getOffices();
-  console.log("Offices: ", offices.value);
   form.setValues(
     {...data.value,
   openingDate: data.value.openingDate
@@ -71,10 +66,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       openingDate: new Date().toISOString(),
       parent: values.parent
     }
-    console.log("newValues: ", newValues);
     data.value = await updateOffice(values.id, newValues); // Call your API function to fetch profile
     navigateTo(`/offices/${data.value.id}`);
-    console.log("New office data; ", data.value);
     toast({
       title: "Office Updated",
       description: "Office updated successfully",

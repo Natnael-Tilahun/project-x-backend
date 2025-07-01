@@ -2,14 +2,16 @@ import type { ColumnDef } from "@tanstack/vue-table";
 
 import { Checkbox } from "../../ui/checkbox";
 import ContractsUsersDataTableRowAction from "./DataTableRowActions.vue";
-import { ContractsUsersAccounts, ContractsUsersDetails, NuxtLink } from "#components";
+import {  ContractsUsersDetails, NuxtLink } from "#components";
 import type { ContractUser } from "~/types";
 import { AlertDialog, AlertDialogContent, AlertDialogTrigger, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from "../../ui/alert-dialog";
-import Sheet from "~/components/ui/sheet/Sheet.vue";
-import SheetTrigger from "~/components/ui/sheet/SheetTrigger.vue";
-import SheetContent from "~/components/ui/sheet/SheetContent.vue";
 
-export const columns: ColumnDef<ContractUser>[] = [
+import { h } from "vue"; // Import inject
+
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<ContractUser>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -179,6 +181,7 @@ export const columns: ColumnDef<ContractUser>[] = [
         { class: "relative" },
         h(ContractsUsersDataTableRowAction, {
           row,
+          refetch
         })
       );
     },

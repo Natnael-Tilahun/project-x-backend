@@ -22,6 +22,11 @@ export const handleApiError = (error: any): never => {
     if(errorData?.type == "TFA_INVALID_TOKEN" || errorData?.type == "TFA_TOKEN_NOT_FOUND" ){
         navigateTo("/invalid-2fa")
     }
+
+    if(errorData?.detail	 == "Access Denied" ){
+      console.log("error deatil: ", errorData.detail)
+      navigateTo("/unauthorized")
+  }
   
   throw new Error(errorMessage);
 }; 

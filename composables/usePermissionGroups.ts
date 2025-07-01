@@ -1,4 +1,3 @@
-import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { PermissionGroup } from "~/types";
 import { useApi } from "./useApi";
@@ -6,13 +5,10 @@ import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
 export const usePermissionGroups = () => {
-  const authUser = useAuthUser();
-  const userAdmin = useState<boolean>("userAdmin", () => false);
   const isLoading = ref<boolean>(false);
   const isUpdating = ref<boolean>(false);
   const { getRefreshToken } = useAuth();
   const { fetch } = useApi();
-  const { toast } = useToast();
 
   const getPermissionGroups: () => ApiResult<PermissionGroup[]> = async () => {
     try {
@@ -28,8 +24,7 @@ export const usePermissionGroups = () => {
 
       return data.value ? (data.value as unknown as PermissionGroup[]) : null;
     } catch (err) {
-      // handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -48,8 +43,7 @@ export const usePermissionGroups = () => {
 
       return data.value;
     } catch (err) {
-      // handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -73,8 +67,7 @@ export const usePermissionGroups = () => {
 
       return data.value ? (data.value as unknown as PermissionGroup) : null;
     } catch (err) {
-      // handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -96,8 +89,7 @@ export const usePermissionGroups = () => {
 
       return data.value ? (data.value as unknown as PermissionGroup) : null;
     } catch (err) {
-      // handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -119,8 +111,7 @@ export const usePermissionGroups = () => {
 
       return data.value ? (data.value as unknown as PermissionGroup) : null;
     } catch (err) {
-      // handleApiError(err);
-      return null;
+      throw err
     }
   };
 

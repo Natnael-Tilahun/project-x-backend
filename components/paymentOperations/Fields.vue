@@ -18,6 +18,7 @@ import {
   InterfaceType,
   Display,
 } from "@/global-types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -226,6 +227,7 @@ watch(
 </script>
 
 <template>
+          <UiPermissionGuard :permission="PermissionConstants.CREATE_FIELD" >
   <div class="w-full flex justify-end">
     <UiButton
       :disabled="loading || !formId"
@@ -237,6 +239,7 @@ watch(
       Add Field
     </UiButton>
   </div>
+  </UiPermissionGuard>
   <div v-if="loading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
@@ -1210,6 +1213,7 @@ watch(
               Cancel
             </UiButton>
 
+          <UiPermissionGuard :permission="PermissionConstants.DELETE_FIELD" >
             <UiAlertDialog>
               <UiAlertDialogTrigger asChild>
                 <UiButton
@@ -1245,7 +1249,8 @@ watch(
                 </UiAlertDialogFooter>
               </UiAlertDialogContent>
             </UiAlertDialog>
-
+</UiPermissionGuard>
+<UiPermissionGuard :permission="PermissionConstants.UPDATE_FIELD" >
             <UiButton :disabled="loading" size="sm" type="submit">
               <Icon
                 name="svg-spinners:8-dots-rotate"
@@ -1255,6 +1260,7 @@ watch(
 
               Update
             </UiButton>
+            </UiPermissionGuard>
           </div>
         </form>
       </UiAccordionContent>
