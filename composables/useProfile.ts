@@ -1,5 +1,3 @@
-import { Toast, ToastAction, useToast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { Profile, StaffAssignment } from "~/types";
 import type { ApiResult } from "~/types/api";
@@ -7,7 +5,6 @@ import { handleApiError } from "~/types/api";
 
 export const useProfile = () => {
   const isLoading = ref<boolean>(false);
-  const { toast } = useToast();
   const { fetch } = useApi();
 
   const getProfile: () => ApiResult<Profile> = async () => {
@@ -24,8 +21,7 @@ export const useProfile = () => {
 
       return data.value ? (data.value as unknown as Profile) : null;
     } catch (err) {
-      // handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -43,8 +39,7 @@ export const useProfile = () => {
 
       return data.value ? (data.value as unknown as StaffAssignment[]) : null;
     } catch (err) {
-      // handleApiError(err);
-      return null;
+      throw err
     }
   };
 

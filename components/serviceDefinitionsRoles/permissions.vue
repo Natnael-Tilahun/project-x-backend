@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Permission } from "~/types";
-import { PermissionCategory } from "~/global-types";
 import { getIdFromPath } from "~/lib/utils";
 import { PermissionConstants } from "~/constants/permissions";
 
@@ -26,7 +25,6 @@ const { getServiceDefinitionPermissions } = useServiceDefinitions();
 const serviceDefinitionId = ref(getIdFromPath(route.path));
 const serviceDefinitionRoleId = ref<string>("");
 serviceDefinitionRoleId.value = route.query.serviceDefinitionRoleId as string;
-console.log("serviceDefinitionRoleId: ", serviceDefinitionRoleId.value)
 
 const selectedPermissions = ref<string[]>([]);
 const permissionsData = ref<Permission[]>([]);
@@ -40,9 +38,7 @@ const fetchServiceDefinitionPermissionsData = async () => {
     isLoading.value = true;
     loading.value = true;
     const response = await getServiceDefinitionPermissions(serviceDefinitionId.value) || []
-    console.log("response: ", response)
     permissionsData.value = response.sort((a, b) => a?.permissionCode.toLowerCase().localeCompare(b?.permissionCode.toLowerCase()));
-      console.log("permissionsData: ", permissionsData.value)
   } catch (err) {
     console.error("Error fetching service definition permissions:", err);
     isError.value = true;
@@ -192,7 +188,7 @@ const unselectAllAssigned = () => {
             >
               Unselect All
             </UiButton>
-            <UiPermissionGuard :permission="PermissionConstants.ADD_SERVICE_DEFINITION_ROLE_PERMISSION">
+            <UiPermissionGuard :permission="PermissionConstants.CREATE_SERVICE_DEFINITION_ROLE_PERMISSION">
             <UiButton
               class="ml-auto w-fit bg-green-600"
               :disabled="selectedToAdd.length === 0 || addLoading"
@@ -249,7 +245,7 @@ const unselectAllAssigned = () => {
               </FormItem>
             </FormField>
           </UiCard>
-          <UiPermissionGuard :permission="PermissionConstants.ADD_SERVICE_DEFINITION_ROLE_PERMISSION">
+          <UiPermissionGuard :permission="PermissionConstants.CREATE_SERVICE_DEFINITION_ROLE_PERMISSION">
           <UiButton
             class="mt-4 w-full bg-green-600"
             :disabled="selectedToAdd.length === 0 || addLoading"
@@ -307,7 +303,7 @@ const unselectAllAssigned = () => {
             >
               Unselect All
             </UiButton>
-            <UiPermissionGuard :permission="PermissionConstants.REMOVE_SERVICE_DEFINITION_ROLE_PERMISSION">
+            <UiPermissionGuard :permission="PermissionConstants.DELETE_SERVICE_DEFINITION_ROLE_PERMISSION">
             <UiButton
               size="sm"
               class="w-fit ml-auto bg-red-600 text-white"
@@ -362,7 +358,7 @@ const unselectAllAssigned = () => {
               </div>
             </template>
           </UiCard>
-          <UiPermissionGuard :permission="PermissionConstants.REMOVE_SERVICE_DEFINITION_ROLE_PERMISSION">
+          <UiPermissionGuard :permission="PermissionConstants.DELETE_SERVICE_DEFINITION_ROLE_PERMISSION">
           <UiButton
             class="mt-4 w-full bg-red-600 text-white"
             :disabled="selectedToDelete.length === 0 || deleteLoading"

@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { LocalizedUssdMenu, UssdLanguage, UssdMenuList } from "~/types";
-import { LanguageRelatedStatus } from "~/global-types";
 import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
@@ -110,11 +109,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       ...values,
       status: values.status ? "Visible" : "Disable",
     };
-    console.log("newValues", newValues);
     const response = await updateUssdLocalizedMenu(values.id, newValues); // Call your API function to fetch profile
     await getUssdLocalizedMenuByIdData();
     // navigateTo(`/ussdLocalizedMenus/${data.value.id}`);
-    console.log("New ussd localized menu data; ", response);
     toast({
       title: "Ussd Localized Menu Updated",
       description: "Ussd Localized Menu updated successfully",
@@ -133,11 +130,8 @@ const updatingUssdLocalizedMenuStatus = async (
   status: boolean
 ) => {
   try {
-    console.log("menuId", menuId);
-    console.log("status", status);
     const statusValue = status ? "Visible" : "Disable";
     const response = await updateUssdLocalizedMenuStatus(menuId, statusValue);
-    console.log("response", response);
     toast({
       title: "Ussd localized menu status updated",
       description: "Ussd localized menu status updated successfully",
@@ -258,7 +252,7 @@ const updatingUssdLocalizedMenuStatus = async (
             </FormItem>
           </FormField>
 
-          <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_LOCALIZED_MENUS">
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_LOCALIZED_MENU">
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="submitting"

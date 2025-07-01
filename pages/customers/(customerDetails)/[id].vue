@@ -12,8 +12,6 @@ const {
   getCoreCustomerByAccountNumber,
   activateCustomerById,
   deActivateCustomerById,
-  linkCoreBankCustomer,
-  unLinkCoreBankCustomer,
   getCoreAccountsByCustomerId,
   isLoading,
 } = useCustomers();
@@ -266,7 +264,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
         </UiTabsList>
         
 
-        <UiPermissionGuard :permission=PermissionConstants.VIEW_CUSTOMER_PROFILE >
+        <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER >
         <UiTabsContent
           value="profile"
           class="space-y-4 pt-4 text-base border-0"

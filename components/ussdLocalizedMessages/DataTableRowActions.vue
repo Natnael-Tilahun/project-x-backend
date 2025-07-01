@@ -3,6 +3,7 @@ import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { useUssdLocalizedDefaultMessage } from "~/composables/useUssdLocalizedDefaultMessage";
 import { PermissionConstants } from "~/constants/permissions";
+
 const { deleteUssdLocalizedDefaultMessage, isLoading } =
   useUssdLocalizedDefaultMessage();
 const loading = ref(isLoading.value);
@@ -12,7 +13,6 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
@@ -23,7 +23,6 @@ const props = defineProps<{
 }>();
 
 function viewUssdLocalizedDefaultMessageDetail(id: string) {
-  console.log("id: ", id);
   navigateTo(`/ussdLocalizedMessages/${id}`);
   navigator.clipboard.writeText(id);
 }
@@ -68,7 +67,7 @@ async function deleteUssdLocalizedDefaultMessageHandler(id: string) {
           >View and Edit</UiDropdownMenuItem
         >
       </UiPermissionGuard>
-      <UiPermissionGuard :permission="PermissionConstants.DELETE_USSD_LOCALIZED_DEFAULT_MESSAGES">
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_USSD_LOCALIZED_DEFAULT_MESSAGE">
         <UiDropdownMenuSeparator />
         <UiDropdownMenuItem
           @click="setOpenEditModal(true)"

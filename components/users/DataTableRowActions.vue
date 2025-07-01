@@ -2,6 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { PermissionConstants } from "~/constants/permissions";
+
 const { deleteUserById, isLoading } = useUsers();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -10,7 +11,6 @@ const setOpenDeleteModal = (value: boolean) => {
   openDeleteModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }

@@ -149,7 +149,7 @@ watch(
           Application Versions
         </UiTabsTrigger>
         </UiPermissionGuard>
-  <UiPermissionGuard :permission="PermissionConstants.CREATE_APPLICATION_VERSIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.CREATE_APPLICATION_VERSION" >
         <UiTabsTrigger
           value="newApplicationVersion"
           @click="
@@ -416,7 +416,7 @@ watch(
         <ApplicationVersion :applicationId="applicationId" />
       </UiTabsContent>
       </UiPermissionGuard>
-  <UiPermissionGuard :permission="PermissionConstants.CREATE_APPLICATION_VERSIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.CREATE_APPLICATION_VERSION" >
       <UiTabsContent
         value="newApplicationVersion"
         class="text-base bg-background p-6 rounded-lg"

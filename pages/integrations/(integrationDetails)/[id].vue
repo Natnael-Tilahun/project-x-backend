@@ -519,6 +519,7 @@ const refetch = async () => {
                       <FormMessage />
                     </FormItem>
                   </FormField>
+   <UiPermissionGuard :permission=PermissionConstants.READ_API_INTEGRATION_AUTH_CONFIG >
                   <UiSheet>
                     <div class="flex flex-col gap-2">
                       <UiLabel>Auth Config</UiLabel>
@@ -543,6 +544,7 @@ const refetch = async () => {
                       />
                     </UiSheetContent>
                   </UiSheet>
+                  </UiPermissionGuard>
                   <UiPermissionGuard :permission="PermissionConstants.UPDATE_API_INTEGRATION">
                     <div class="col-span-full w-full py-4 flex justify-between">
                       <UiButton

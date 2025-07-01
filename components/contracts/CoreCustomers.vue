@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/contracts/CoreCustomers/columns";
+// import { columns } from "~/components/contracts/CoreCustomers/columns";
+import { columns as tableColumns } from "~/components/contracts/CoreCustomers/columns"; // Renamed to avoid conflict
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { PermissionConstants } from "~/constants/permissions";
 import { getIdFromPath } from "~/lib/utils";
-import type { ContractCoreCustomer, Contract } from "~/types";
+import type { ContractCoreCustomer } from "~/types";
 
 const { getContractCoreCustomers, getContractCoreCustomerById, isLoading } = useContractsCoreCustomers();
 const loading = ref(isLoading.value);
@@ -30,14 +31,6 @@ const fetchData = async () => {
   }
 };
 
-const refetch = async () => {
-  await fetchData();
-};
-
-await useAsyncData("contractCoreCustomersData", async () => {
-  await fetchData();
-});
-
 const searchHandler = async () => {
   try {
     isLoading.value = true;
@@ -51,6 +44,21 @@ const searchHandler = async () => {
     loading.value = false;
   }
 };
+
+
+onMounted(() => {
+  fetchData();
+});
+
+const refetch = async () => {
+  await fetchData();
+};
+
+// Provide the refetch function
+provide('refetchContractsCoreCustomers', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->

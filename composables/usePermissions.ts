@@ -1,15 +1,10 @@
-import { Toast, ToastAction, useToast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
 import type { Permission } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
 export const usePermissions = () => {
-  const authUser = useAuthUser();
-  const userAdmin = useState<boolean>("userAdmin", () => false);
   const isLoading = ref<boolean>(false);
-  const { toast } = useToast();
   const { pageNumber, pageSize } = usePagesInfoStore();
   const pageNumbers = ref<number>(pageNumber);
   const pageSizes = ref<number>(pageSize);
@@ -36,8 +31,7 @@ export const usePermissions = () => {
 
       return data.value;
     } catch (err) {
-      // handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -55,8 +49,7 @@ export const usePermissions = () => {
 
       return data.value ? (data.value as unknown as Permission) : null;
     } catch (err) {
-      // handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -75,8 +68,7 @@ export const usePermissions = () => {
 
       return data.value ? (data.value as unknown as Permission) : null;
     } catch (err) {
-      // handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -95,8 +87,7 @@ export const usePermissions = () => {
 
       return data.value ? (data.value as unknown as Permission) : null;
     } catch (err) {
-      // handleApiError(err);
-      return null;
+      throw err
     }
   };
 

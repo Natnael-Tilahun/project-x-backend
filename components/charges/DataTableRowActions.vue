@@ -14,7 +14,6 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
   refetch: () => Promise<void>; // Accept refetch as a prop
@@ -69,7 +68,7 @@ async function deleteCharge(id: string) {
         >
         <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-      <UiPermissionGuard :permission="PermissionConstants.DELETE_CHARGES">
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_CHARGE">
         <UiDropdownMenuItem
           @click="setOpenEditModal(true)"
           class="text-red-500"

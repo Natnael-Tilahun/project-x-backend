@@ -28,8 +28,7 @@ export const useBankingServices = () => {
 
       return data.value ? (data.value as unknown as BankingService[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -47,8 +46,7 @@ export const useBankingServices = () => {
 
       return data.value ? (data.value as unknown as BankingService) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -70,8 +68,7 @@ export const useBankingServices = () => {
 
       return data.value ? (data.value as unknown as BankingService) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -93,8 +90,7 @@ export const useBankingServices = () => {
 
       return data.value ? (data.value as unknown as BankingService) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -113,8 +109,7 @@ export const useBankingServices = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

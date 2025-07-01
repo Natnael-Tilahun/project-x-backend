@@ -7,7 +7,6 @@ import { columns as tableColumns } from "~/components/integrations/columns"; // 
 import { PermissionConstants } from "~/constants/permissions";
 
 const { getIntegrations } = useIntegrations();
-const keyword = ref<string>("");
 const data = ref<ApiIntegration[]>([]);
 const isLoading = ref(false);
 const isDownloading = ref(false);

@@ -50,11 +50,6 @@ try {
     ).toDateString(),
   };
   form.setValues(a);
-  console.log(
-    "merchantId.value data: ",
-    new Date(data.value.tradeLicenseIssueDate),
-    a
-  );
 } catch (err) {
   console.error("Error fetching merchant:", err);
   isError.value = true;
@@ -69,7 +64,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     data.value = await updateMerchant(values.merchantId, values); // Call your API function to fetch profile
     navigateTo(`/merchants/${data.value.merchantId}`);
-    console.log("New Merchant data; ", data.value);
     toast({
       title: "Merchant Created",
       description: "Merchant created successfully",
@@ -302,7 +296,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <UiPermissionGuard :permission="PermissionConstants.UPDATE_MERCHANT_INFO" >
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_MERCHANT" >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"

@@ -10,7 +10,6 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
@@ -64,7 +63,7 @@ async function deleteServiceDefinitions(id: string) {
         >View and Edit</UiDropdownMenuItem
       >
       </UiPermissionGuard>
-      <UiPermissionGuard :permission="PermissionConstants.DELETE_SERVICE_DEFINITIONS" >
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_SERVICE_DEFINITION" >
       <UiDropdownMenuSeparator />
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete

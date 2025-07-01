@@ -77,7 +77,6 @@ const form = useForm<PaymentIntegration>({
 });
 
 const onSubmit = form.handleSubmit(async (values: any) => {
-  console.log("values: ", values);
   try {
     loading.value = true;
     const data = {
@@ -93,7 +92,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           ? values?.minimumAmount
           : null,
     };
-    console.log("values: ", data);
     data.value = await updatePaymentIntegration(values.id, data); // Call your API function to fetch profile
     // form.setValues(data.value);
     openItems.value = "paymentOperations";
@@ -132,7 +130,6 @@ const getPaymentIntegrationData = async () => {
     loading.value = true;
     data.value = await getPaymentIntegrationById(integrationId.value);
     form.setValues(data.value);
-    console.log("data.value: ", data.value);
     if (data.value?.iconPath && data.value.isImage) {
       await getUploadedImage(data.value?.iconPath);
     }
@@ -183,7 +180,6 @@ const handleUpload = async () => {
       integrationId.value,
       "PAYMENT_INTEGRATION"
     );
-    console.log("response: ", response);
     // Update the form's iconPath with the uploaded file's ID/path
     form.setFieldValue("iconPath", response.id); // Adjust according to your API response structure
     toast({
@@ -206,7 +202,6 @@ const handleUpload = async () => {
 };
 
 const getUploadedImage = async (iconPath) => {
-  console.log("iconPathaa: ", iconPath);
   try {
     const response = await getFile(iconPath, "PAYMENT_INTEGRATION");
 
@@ -336,7 +331,7 @@ onMounted(() => {
             {{ operationName }}
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard :permission=PermissionConstants.CREATE_PAYMENT_OPERATIONS>
+        <UiPermissionGuard :permission=PermissionConstants.CREATE_PAYMENT_OPERATION>
           <UiTabsTrigger
             value="newPaymentOperation"
             @click="
@@ -1287,7 +1282,7 @@ onMounted(() => {
           <PaymentOperationsConfigurations :integrationDataProps="data" />
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard :permission=PermissionConstants.CREATE_PAYMENT_OPERATIONS>
+      <UiPermissionGuard :permission=PermissionConstants.CREATE_PAYMENT_OPERATION>
         <UiTabsContent
           value="newPaymentOperation"
           class="text-base bg-background py-6 rounded-lg"

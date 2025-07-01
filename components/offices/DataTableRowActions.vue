@@ -16,7 +16,6 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(['officeDeleted', 'editOffice']); // Added 'languageDeleted'
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }

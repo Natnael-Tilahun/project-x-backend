@@ -34,7 +34,8 @@ async function deleteContractCoreCustomers(id: string) {
       title: "Contract Core Customer deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    // await props.refetch(); // Call refetch after successful deletion
+    // window.location.reload();
   } catch (err) {
     console.error("Error deleting contract core customer:", err);
     isError.value = true;
@@ -63,7 +64,7 @@ async function deleteContractCoreCustomers(id: string) {
         >View and Edit </UiDropdownMenuItem
       >
       </UiPermissionGuard>
-      <UiPermissionGuard :permission="PermissionConstants.DELETE_CONTRACT_ACCOUNTS" >
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_CONTRACT_ACCOUNT" >
       <UiDropdownMenuSeparator />
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete

@@ -1114,4 +1114,5 @@ export interface SearchResult {
   icon: string;
   isMainMenu: boolean;
   parentMenu?: string;
+  permission?: string
 }

@@ -1,5 +1,4 @@
-import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
+import {  useToast } from "~/components/ui/toast";
 import { useApi } from "./useApi";
 import type { Field } from "~/types";
 import type { ApiResult } from "~/types/api";
@@ -9,7 +8,6 @@ export const useFields = () => {
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
-  const { toast } = useToast();
 
   const getFields: () => ApiResult<Field[]> = async () => {
     try {
@@ -25,8 +23,7 @@ export const useFields = () => {
 
       return data.value ? (data.value as unknown as Field[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -44,8 +41,7 @@ export const useFields = () => {
 
       return data.value ? (data.value as unknown as Field) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -67,8 +63,7 @@ export const useFields = () => {
 
       return data.value ? (data.value as unknown as Field) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -90,8 +85,7 @@ export const useFields = () => {
 
       return data.value ? (data.value as unknown as Field) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -110,8 +104,7 @@ export const useFields = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

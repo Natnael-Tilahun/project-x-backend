@@ -72,7 +72,7 @@ async function deletePaymentOperationHandler(id: string) {
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-<UiPermissionGuard :permission="PermissionConstants.DELETE_PAYMENT_OPERATIONS" >
+<UiPermissionGuard :permission="PermissionConstants.DELETE_PAYMENT_OPERATION" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

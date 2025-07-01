@@ -150,7 +150,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
-  <UiPermissionGuard :permission="PermissionConstants.UPDATE_BANKING_SERVICES" >
+  <UiPermissionGuard :permission="PermissionConstants.UPDATE_BANKING_SERVICE" >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"

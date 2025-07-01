@@ -125,10 +125,6 @@ const refetch = async () => {
     }
   } catch (err) {
     console.error("Error fetching roles::-", err);
-    console.log(
-      "Error fetching roles (stringified)",
-      JSON.stringify(err, null, 2)
-    );
 
     toast({
       title: "Uh oh! Something went wrong.",

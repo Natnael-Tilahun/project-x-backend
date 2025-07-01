@@ -2,6 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../../ui/toast";
 import { PermissionConstants } from "~/constants/permissions";
+
 const { deleteContract, isLoading } = useContracts();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -10,11 +11,11 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
-interface DataTableRowActionsProps<TData> {
-  row: Row<TData>;
-}
-const props = defineProps<DataTableRowActionsProps<any>>();
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['contractDeleted', 'editContract']); // Added 'languageDeleted'
 
 function viewContractDetail(id: string) {
   navigateTo(`/contracts/${id}`);
@@ -31,6 +32,7 @@ async function deleteContracts(id: string) {
       title: "Contract deleted successfully",
     });
     // Reload the window after deleting the role
+    await props.refetch()
     window.location.reload();
   } catch (err) {
     console.error("Error deleting contract:", err);
@@ -60,7 +62,7 @@ async function deleteContracts(id: string) {
         >View and Edit </UiDropdownMenuItem
       >
       </UiPermissionGuard>
-      <UiPermissionGuard :permission="PermissionConstants.DELETE_CONTRACTS" >
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_CONTRACT" >
       <UiDropdownMenuSeparator />
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete

@@ -182,7 +182,7 @@ const unselectAllAssigned = () => {
             >
               Unselect All
             </UiButton>
-            <UiPermissionGuard :permission="PermissionConstants.ADD_SERVICE_DEFINITION_PERMISSION">
+            <UiPermissionGuard :permission="PermissionConstants.CREATE_SERVICE_DEFINITION_PERMISSION">
             <UiButton
               class="ml-auto w-fit bg-green-600"
               :disabled="selectedToAdd.length === 0 || addLoading"
@@ -239,7 +239,7 @@ const unselectAllAssigned = () => {
               </FormItem>
             </FormField>
           </UiCard>
-          <UiPermissionGuard :permission="PermissionConstants.ADD_SERVICE_DEFINITION_PERMISSION">
+          <UiPermissionGuard :permission="PermissionConstants.CREATE_SERVICE_DEFINITION_PERMISSION">
             <UiButton
               class="mt-4 w-full bg-green-600"
               :disabled="selectedToAdd.length === 0 || addLoading"
@@ -297,7 +297,7 @@ const unselectAllAssigned = () => {
             >
               Unselect All
             </UiButton>
-            <UiPermissionGuard :permission="PermissionConstants.REMOVE_SERVICE_DEFINITION_PERMISSION">
+            <UiPermissionGuard :permission="PermissionConstants.DELETE_SERVICE_DEFINITION_PERMISSION">
             <UiButton
               size="sm"
               class="w-fit ml-auto bg-red-600 text-white"
@@ -352,7 +352,7 @@ const unselectAllAssigned = () => {
               </div>
             </template>
           </UiCard>
-          <UiPermissionGuard :permission="PermissionConstants.REMOVE_SERVICE_DEFINITION_PERMISSION">
+          <UiPermissionGuard :permission="PermissionConstants.DELETE_SERVICE_DEFINITION_PERMISSION">
           <UiButton
             class="mt-4 w-full bg-red-600 text-white"
             :disabled="selectedToDelete.length === 0 || deleteLoading"

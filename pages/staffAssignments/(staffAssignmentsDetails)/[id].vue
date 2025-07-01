@@ -56,7 +56,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     };
     data.value = await updateStaffAssignment(values.id, newValues); // Call your API function to fetch profile
     navigateTo(`/staffAssignments/${data.value.id}`);
-    console.log("New staff assignment data; ", data.value);
     toast({
       title: "Staff assignment Created",
       description: "Staff assignment created successfully",
@@ -224,7 +223,7 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-          <UiPermissionGuard :permission=PermissionConstants.UPDATE_STAFF_ASSIGNMENTS >
+          <UiPermissionGuard :permission=PermissionConstants.UPDATE_STAFF_ASSIGNMENT >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"

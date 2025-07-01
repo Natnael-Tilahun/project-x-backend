@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 const openItems = ref("");
 import { ref } from "vue";
-// import { columns } from "~/components/operations/columns";
 import type { ApiOperation, Local } from "~/types";
 import { columns as tableColumns } from "~/components/operations/columns"; // Renamed to avoid conflict
 import { PermissionConstants } from "~/constants/permissions";

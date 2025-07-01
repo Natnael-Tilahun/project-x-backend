@@ -1,5 +1,3 @@
-import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { Merchant } from "~/types";
 import type { ApiResult } from "~/types/api";
@@ -9,7 +7,6 @@ export const useMerchants = () => {
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
-  const { toast } = useToast();
 
   const getMerchants: (page?: number, size?: number) => ApiResult<Merchant[]> = async (page, size) => {
     try {
@@ -28,8 +25,7 @@ export const useMerchants = () => {
 
       return data.value ? (data.value as unknown as Merchant[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -47,8 +43,7 @@ export const useMerchants = () => {
 
       return data.value ? (data.value as unknown as Merchant) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -70,8 +65,7 @@ export const useMerchants = () => {
 
       return data.value ? (data.value as unknown as Merchant) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -93,8 +87,7 @@ export const useMerchants = () => {
 
       return data.value ? (data.value as unknown as Merchant) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -113,8 +106,7 @@ export const useMerchants = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

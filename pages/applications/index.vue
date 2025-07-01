@@ -47,7 +47,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError"
     class="py-4 flex flex-col space-y-10 mx-auto"
   >
-  <UiPermissionGuard :permission="PermissionConstants.CREATE_APPLICATIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.CREATE_APPLICATION" >
     <NuxtLink to="/applications/new" class="w-fit self-end"
       ><UiButton
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add New

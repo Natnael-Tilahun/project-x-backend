@@ -3,7 +3,9 @@ import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { useIntegrations } from "~/composables/useIntegrations";
 import { PermissionConstants } from "~/constants/permissions";
+
 const { deleteIntegration,exportIntegration, isLoading } = useIntegrations();
+
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const openEditModal = ref(false);
@@ -23,7 +25,6 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(['apiIntegrationDeleted', 'editApiIntegrtion']); // Added 'languageDeleted'
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }

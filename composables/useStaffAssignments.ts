@@ -1,6 +1,4 @@
-import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
-import type { Contract, Staff, StaffAssignment } from "~/types";
+import type { StaffAssignment } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
@@ -33,8 +31,7 @@ export const useStaffAssignments = () => {
 
       return data.value ? (data.value as unknown as StaffAssignment[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -52,8 +49,7 @@ export const useStaffAssignments = () => {
 
       return data.value ? (data.value as unknown as StaffAssignment) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -71,8 +67,7 @@ export const useStaffAssignments = () => {
 
       return data.value ? (data.value as unknown as StaffAssignment) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -96,8 +91,7 @@ export const useStaffAssignments = () => {
 
       return data.value ? (data.value as unknown as StaffAssignment) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -122,8 +116,7 @@ export const useStaffAssignments = () => {
 
       return data.value ? (data.value as unknown as StaffAssignment) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -147,8 +140,7 @@ export const useStaffAssignments = () => {
 
       return data.value ? (data.value as unknown as StaffAssignment) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -175,8 +167,7 @@ export const useStaffAssignments = () => {
 
       return data.value ? (data.value as unknown as any) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -203,8 +194,7 @@ export const useStaffAssignments = () => {
 
       return data.value ? (data.value as unknown as any) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -223,8 +213,7 @@ export const useStaffAssignments = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

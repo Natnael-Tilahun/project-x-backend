@@ -104,7 +104,6 @@ watch(
   () => route.query.activeTab,
   (newActiveTab) => {
     if (newActiveTab) {
-      console.log("newActiveTab: ", newActiveTab);
       openItems.value = newActiveTab as string; // Update the active tab when the query param
     if (newActiveTab == "serviceDefinitionDetails" || newActiveTab == "serviceDefinitionPermissions" || newActiveTab == "serviceDefinitionRoles" || newActiveTab == "serviceDefinitionRoleDetails" || newActiveTab == "newServiceDefinitionRole") {
       fetchServiceDefinitions();
@@ -192,7 +191,7 @@ watch(
           Service Definition Role Details
         </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard :permission=PermissionConstants.CREATE_SERVICE_DEFINITION_ROLES >
+        <UiPermissionGuard :permission=PermissionConstants.CREATE_SERVICE_DEFINITION_ROLE >
         <UiTabsTrigger
           value="newServiceDefinitionRole"
           @click="
@@ -399,7 +398,7 @@ watch(
             </FormItem>
           </FormField>
       
-            <UiPermissionGuard :permission="PermissionConstants.UPDATE_SERVICE_DEFINITIONS" >
+            <UiPermissionGuard :permission="PermissionConstants.UPDATE_SERVICE_DEFINITION" >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"
@@ -447,7 +446,7 @@ watch(
     <ServiceDefinitionsRolesDetails :serviceDefinitionProps="data" />
     </UiTabsContent>
     </UiPermissionGuard>
-    <UiPermissionGuard :permission=PermissionConstants.CREATE_SERVICE_DEFINITION_ROLES >
+    <UiPermissionGuard :permission=PermissionConstants.CREATE_SERVICE_DEFINITION_ROLE >
     <UiTabsContent
     value="newServiceDefinitionRole"
     class="text-base bg-background rounded-lg"
