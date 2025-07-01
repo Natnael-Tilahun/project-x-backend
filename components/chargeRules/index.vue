@@ -4,6 +4,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { getIdFromPath, splitPath } from "~/lib/utils";
 import type { ChargeRule } from "~/types";
 import { columns as tableColumns } from "~/components/chargeRules/columns"; // Renamed to avoid conflict
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getChargeById, getChargeRulesByChargeId } = useCharges();
 const { pageNumber } = usePagesInfoStore();
@@ -57,7 +58,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError"
     class="py-4 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard permission="CREATE_CHARGE_RULE">
+    <UiPermissionGuard :permission="PermissionConstants.CREATE_CHARGE_RULE">
       <NuxtLink
         class="w-fit self-end"
         @click="

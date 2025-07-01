@@ -5,6 +5,7 @@ import { PaymentOperationType } from "@/global-types";
 import { columns as tableColumns } from "~/components/paymentOperations/columns"; // Renamed to avoid conflict
 
 import type { PaymentOperation } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const {
   getPaymentIntegrations,
@@ -65,7 +66,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError && !loading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-<UiPermissionGuard permission="CREATE_PAYMENT_OPERATIONS" >
+<UiPermissionGuard :permission="PermissionConstants.CREATE_PAYMENT_OPERATIONS" >
   
     <UiButton
       @click="

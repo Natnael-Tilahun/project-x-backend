@@ -11,6 +11,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Permission } from "~/types";
 import { PermissionCategory } from "~/global-types";
 import { getIdFromPath } from "~/lib/utils";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -191,6 +192,7 @@ const unselectAllAssigned = () => {
             >
               Unselect All
             </UiButton>
+            <UiPermissionGuard :permission="PermissionConstants.ADD_SERVICE_DEFINITION_ROLE_PERMISSION">
             <UiButton
               class="ml-auto w-fit bg-green-600"
               :disabled="selectedToAdd.length === 0 || addLoading"
@@ -214,6 +216,7 @@ const unselectAllAssigned = () => {
               ></Icon>
               Add {{ selectedToAdd.length ? `(${selectedToAdd.length})` : '' }}
             </UiButton>
+            </UiPermissionGuard>
           </div>
           <UiCard class="px-4 py-2 flex-1 flex flex-col overflow-y-auto">
             <FormField
@@ -246,6 +249,7 @@ const unselectAllAssigned = () => {
               </FormItem>
             </FormField>
           </UiCard>
+          <UiPermissionGuard :permission="PermissionConstants.ADD_SERVICE_DEFINITION_ROLE_PERMISSION">
           <UiButton
             class="mt-4 w-full bg-green-600"
             :disabled="selectedToAdd.length === 0 || addLoading"
@@ -269,7 +273,8 @@ const unselectAllAssigned = () => {
             ></Icon>
             Add {{ selectedToAdd.length ? `(${selectedToAdd.length})` : '' }}
           </UiButton>
-        </div>
+          </UiPermissionGuard>
+          </div>
 
         <!-- Middle: Bi-directional Arrow -->
         <div class="flex flex-col items-center justify-center gap-2 w-1/2 h-full self-center">
@@ -302,6 +307,7 @@ const unselectAllAssigned = () => {
             >
               Unselect All
             </UiButton>
+            <UiPermissionGuard :permission="PermissionConstants.REMOVE_SERVICE_DEFINITION_ROLE_PERMISSION">
             <UiButton
               size="sm"
               class="w-fit ml-auto bg-red-600 text-white"
@@ -321,6 +327,7 @@ const unselectAllAssigned = () => {
               ></Icon>
               Delete {{ selectedToDelete.length ? `(${selectedToDelete.length})` : '' }}
             </UiButton>
+            </UiPermissionGuard>
           </div>
           <UiCard class="px-4 py-2 flex-1 flex flex-col overflow-y-auto ">
             <template v-if="selectedPermissions.length > 0">
@@ -355,6 +362,7 @@ const unselectAllAssigned = () => {
               </div>
             </template>
           </UiCard>
+          <UiPermissionGuard :permission="PermissionConstants.REMOVE_SERVICE_DEFINITION_ROLE_PERMISSION">
           <UiButton
             class="mt-4 w-full bg-red-600 text-white"
             :disabled="selectedToDelete.length === 0 || deleteLoading"
@@ -373,6 +381,7 @@ const unselectAllAssigned = () => {
             ></Icon>
             Delete {{ selectedToDelete.length ? `(${selectedToDelete.length})` : '' }}
           </UiButton>
+          </UiPermissionGuard>
         </div>
       </div>
     </div>

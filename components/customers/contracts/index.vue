@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { columns } from "~/components/customers/contracts/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { toast } from "~/components/ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 import type { Contract } from "~/types";
 
 const { getContractById, getContractByCoreCustomerId, isLoading } =
@@ -72,7 +73,7 @@ await useAsyncData("contractsData", async () => {
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard permission="CREATE_CONTRACTS">
+    <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACTS">
       <NuxtLink v-if="data.length > 0" 
       @click="
           navigateTo({

@@ -543,7 +543,7 @@ const refetch = async () => {
                       />
                     </UiSheetContent>
                   </UiSheet>
-                  <UiPermissionGuard permission="UPDATE_API_INTEGRATION">
+                  <UiPermissionGuard :permission="PermissionConstants.UPDATE_API_INTEGRATION">
                     <div class="col-span-full w-full py-4 flex justify-between">
                       <UiButton
                         :disabled="loading"

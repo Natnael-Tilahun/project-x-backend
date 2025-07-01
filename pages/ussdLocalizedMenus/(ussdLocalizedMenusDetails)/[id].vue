@@ -13,6 +13,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { LocalizedUssdMenu, UssdLanguage, UssdMenuList } from "~/types";
 import { LanguageRelatedStatus } from "~/global-types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -257,7 +258,7 @@ const updatingUssdLocalizedMenuStatus = async (
             </FormItem>
           </FormField>
 
-          <UiPermissionGuard permission="UPDATE_USSD_LOCALIZED_MENUS">
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_LOCALIZED_MENUS">
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="submitting"

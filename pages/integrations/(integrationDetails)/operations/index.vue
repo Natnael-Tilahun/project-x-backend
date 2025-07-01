@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { columns } from "~/components/integrations/columns";
 import { useIntegrations } from "~/composables/useIntegrations";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getIntegrations } = useIntegrations();
 const keyword = ref<string>("");
@@ -59,12 +60,14 @@ const refetch = async () => {
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
+  <UiPermissionGuard :permission="PermissionConstants.CREATE_API_OPERATION">
     <NuxtLink to="/integrations/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
         >Configure New</UiButton
       >
     </NuxtLink>
+    </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <!-- <CustomersDataTableSearchbar :table="table" /> -->

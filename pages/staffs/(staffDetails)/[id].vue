@@ -314,7 +314,7 @@ watch(
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <UiPermissionGuard permission="UPDATE_STAFF">
+                <UiPermissionGuard :permission="PermissionConstants.UPDATE_STAFF">
                   <div class="col-span-full w-full py-4 flex justify-between">
                     <UiButton
                       :disabled="submitting"

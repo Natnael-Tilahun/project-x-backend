@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Application } from "~/types";
 import { columns as tableColumns } from "~/components/applications/columns"; // Renamed to avoid conflict
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getApplications } = useApplications();
 const isLoading = ref(false);
@@ -46,7 +47,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError"
     class="py-4 flex flex-col space-y-10 mx-auto"
   >
-  <UiPermissionGuard permission="CREATE_APPLICATIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.CREATE_APPLICATIONS" >
     <NuxtLink to="/applications/new" class="w-fit self-end"
       ><UiButton
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add New

@@ -59,7 +59,7 @@ async function deleteCustomer(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMERS >
+      <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER >
       <UiDropdownMenuItem @click="viewCustomerDetail(row.original.id)"
         >View and Edit</UiDropdownMenuItem
       >

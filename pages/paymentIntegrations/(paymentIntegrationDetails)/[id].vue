@@ -1243,7 +1243,7 @@ onMounted(() => {
                   </FormItem>
                 </FormField>
                 
-                <UiPermissionGuard permission="UPDATE_PAYMENT_INTEGRATION">
+                <UiPermissionGuard :permission="PermissionConstants.UPDATE_PAYMENT_INTEGRATION">
                   <div class="col-span-full w-full py-4 flex justify-between">
                     <UiButton
                       :disabled="loading"

@@ -17,6 +17,7 @@ import type {
   UssdLanguage,
 } from "~/types";
 import { LanguageRelatedStatus } from "~/global-types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -301,7 +302,7 @@ const updatingUssdLocalizedDefaultMessageStatus = async (
             </FormField> -->
 
           <UiPermissionGuard
-            permission="UPDATE_USSD_LOCALIZED_DEFAULT_MESSAGES"
+            :permission="PermissionConstants.UPDATE_USSD_LOCALIZED_DEFAULT_MESSAGES"
           >
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton

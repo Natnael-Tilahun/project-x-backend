@@ -399,7 +399,7 @@ watch(
             </FormItem>
           </FormField>
       
-            <UiPermissionGuard permission="UPDATE_SERVICE_DEFINITIONS" >
+            <UiPermissionGuard :permission="PermissionConstants.UPDATE_SERVICE_DEFINITIONS" >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"

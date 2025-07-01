@@ -4,6 +4,7 @@ import { ref } from "vue";
 // import { columns } from "~/components/operations/columns";
 import type { ApiOperation, Local } from "~/types";
 import { columns as tableColumns } from "~/components/operations/columns"; // Renamed to avoid conflict
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const { getIntegrationOperations } = useIntegrations();
@@ -74,6 +75,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
+    <UiPermissionGuard :permission="PermissionConstants.CREATE_API_OPERATION" >
     <UiButton
       @click="
         navigateTo({
@@ -87,6 +89,7 @@ const columns = computed(() => tableColumns(refetch));
       ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Configure
       New</UiButton
     >
+    </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data || []">
       <template v-slot:toolbar="{ table }"> </template>
     </UiDataTable>
