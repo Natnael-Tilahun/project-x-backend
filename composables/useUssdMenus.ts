@@ -34,8 +34,7 @@ export const useUssdMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -62,8 +61,7 @@ export const useUssdMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -87,8 +85,7 @@ export const useUssdMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -113,8 +110,7 @@ export const useUssdMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -141,8 +137,7 @@ export const useUssdMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -169,8 +164,7 @@ export const useUssdMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -194,8 +188,7 @@ export const useUssdMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -219,8 +212,7 @@ export const useUssdMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -245,8 +237,7 @@ export const useUssdMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

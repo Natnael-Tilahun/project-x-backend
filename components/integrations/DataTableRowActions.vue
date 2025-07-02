@@ -2,7 +2,10 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { useIntegrations } from "~/composables/useIntegrations";
+import { PermissionConstants } from "~/constants/permissions";
+
 const { deleteIntegration,exportIntegration, isLoading } = useIntegrations();
+
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const openEditModal = ref(false);
@@ -22,7 +25,6 @@ const props = defineProps<{
 }>();
 const emit = defineEmits(['apiIntegrationDeleted', 'editApiIntegrtion']); // Added 'languageDeleted'
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
@@ -100,21 +102,21 @@ async function exportIntegrationHandler(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-   <UiPermissionGuard permission="VIEW_API_INTEGRATIONS" >
+   <UiPermissionGuard :permission=PermissionConstants.READ_API_INTEGRATION >
       <UiDropdownMenuItem @click="viewIntegrationDetail(row.original.id)"
         >View and Edit</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
     </UiPermissionGuard>
 
-      <!-- <UiPermissionGuard permission="EXPORT_API_INTEGRATIONS" > -->
+      <UiPermissionGuard :permission=PermissionConstants.EXPORT_API_INTEGRATION >
       <UiDropdownMenuItem  @click="setOpenExportModal(true)"
         >Export Integration</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
-    <!-- </UiPermissionGuard> -->
+    </UiPermissionGuard>
 
-      <UiPermissionGuard permission="DELETE_API_INTEGRATION" >
+      <UiPermissionGuard :permission=PermissionConstants.DELETE_API_INTEGRATION >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

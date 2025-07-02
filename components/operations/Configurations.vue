@@ -31,17 +31,9 @@ import {
 } from "@/components/ui/resizable";
 import JSONTree from "@/components/JSONTree.vue";
 import type { ApiOperation } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const openItems = ref("configuration");
-const jsonData = {
-  name: "John Doe",
-  age: 30,
-  skills: ["Vue.js", "Node.js", "MongoDB"],
-  address: {
-    city: "New York",
-    zip: 10001,
-  },
-};
 
 const route = useRoute();
 const { getOperationById, updateOperation, testOperation } = useOperations();
@@ -52,12 +44,8 @@ const integrationId = ref<string>("");
 const loading = ref(false);
 const isError = ref(false);
 const data = ref<ApiOperation>();
-const tooltipText = ref<string>("Copy to clipboard");
-const tooltipOpen = ref<boolean>(true);
 pathSegments.value = splitPath(fullPath.value);
-const pathLength = pathSegments.value.length;
 integrationId.value = route.params.id;
-const activeTab = route.query.activeTab as string;
 const operationId = (route.query.operationId as string) || "";
 const isPreview = ref<boolean>(false);
 const isShowResponse = ref<boolean>(false);
@@ -195,7 +183,6 @@ const formattedOperationRequest = ref(null);
 watch(
   () => testResponse.value,
   async (newResponse) => {
-    console.log("newRequest", newResponse);
     if (!newResponse) {
       formattedRawRequest.value = null;
       formattedRawResponse.value = null;
@@ -435,7 +422,8 @@ const testingOperation = async () => {
                 </pre>
           </div>
         </div>
-        <div class="col-span-full w-full py-4 flex justify-end gap-4">
+        <div class="col-span-full w-full py-4 flex items-center justify-end gap-4">
+          <UiPermissionGuard :permission="PermissionConstants.TEST_API_OPERATION" >
           <UiButton
             type="button"
             :disabled="loading"
@@ -450,6 +438,10 @@ const testingOperation = async () => {
             ></Icon>
             Test
           </UiButton>
+          </UiPermissionGuard>
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_API_OPERATION" >
+        <div class="col-span-full  py-4 flex justify-end gap-4">
+
           <UiButton
             :disabled="loading"
             variant="outline"
@@ -468,12 +460,15 @@ const testingOperation = async () => {
 
             Update
           </UiButton>
+          </div>
+          </UiPermissionGuard>
         </div>
       </div>
       <UiTabs defaultValue="requestInputs" class="w-full">
         <UiTabsList
           class="w-full flex bg-slate- overflow-x-scroll justify-start px-6 py-0 pt-2 h-fit gap-2 border-b rounded-b-none border-primary bg-background"
         >
+        <UiPermissionGuard :permission="PermissionConstants.READ_REQUEST_INPUT" >
           <UiTabsTrigger
             :disabled="
               operationId == '' ||
@@ -484,11 +479,15 @@ const testingOperation = async () => {
             value="requestInputs"
             >Request Inputs</UiTabsTrigger
           >
+          </UiPermissionGuard>
+          <UiPermissionGuard :permission="PermissionConstants.READ_RESPONSE_OUTPUT" >
           <UiTabsTrigger
             class="text-lg font-normal data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-0 data-[state=inactive]:border rounded-t-lg rounded-b-none data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted"
             value="responseOutputs"
             >Response Outputs</UiTabsTrigger
           >
+          </UiPermissionGuard>
+          <UiPermissionGuard :permission="PermissionConstants.TEST_API_OPERATION" >
           <div class="flex items-center gap-2 ml-auto">
             <UiLabel>Show Test Response</UiLabel>
             <UiSwitch
@@ -496,6 +495,7 @@ const testingOperation = async () => {
               @update:checked="isShowResponse = !isShowResponse"
             ></UiSwitch>
           </div>
+          </UiPermissionGuard>
         </UiTabsList>
 
         <UiTabsContent

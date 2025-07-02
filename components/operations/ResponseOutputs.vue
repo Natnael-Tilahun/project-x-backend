@@ -12,6 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import type { ResponseOutput } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 
@@ -301,6 +302,7 @@ watch(
               </FormItem>
             </FormField>
           </div>
+   <UiPermissionGuard :permission=PermissionConstants.CREATE_RESPONSE_OUTPUT >
           <div
             class="col-span-full w-full flex justify-end gap-4 pt-4 border-t"
           >
@@ -322,6 +324,7 @@ watch(
               Save
             </UiButton>
           </div>
+          </UiPermissionGuard>
         </form>
       </UiAccordionContent>
     </UiAccordionItem>
@@ -343,6 +346,7 @@ watch(
             }})
           </span>
         </UiTabsTrigger>
+   <UiPermissionGuard :permission=PermissionConstants.CREATE_RESPONSE_OUTPUT >
         <div class="w-full flex justify-end">
           <UiButton
             :disabled="loading"
@@ -356,6 +360,7 @@ watch(
             Add Parameter
           </UiButton>
         </div>
+   </UiPermissionGuard>
       </UiTabsList>
 
       <!-- Tab content for each response scope -->
@@ -546,6 +551,7 @@ watch(
                   </UiButton>
 
                   <UiAlertDialog>
+   <UiPermissionGuard :permission=PermissionConstants.DELETE_RESPONSE_OUTPUT >
                     <UiAlertDialogTrigger asChild>
                       <UiButton
                         :disabled="isDeleting"
@@ -562,6 +568,7 @@ watch(
                         Delete
                       </UiButton>
                     </UiAlertDialogTrigger>
+   </UiPermissionGuard>
                     <UiAlertDialogContent>
                       <UiAlertDialogHeader>
                         <UiAlertDialogTitle
@@ -582,7 +589,7 @@ watch(
                       </UiAlertDialogFooter>
                     </UiAlertDialogContent>
                   </UiAlertDialog>
-
+                  <UiPermissionGuard :permission=PermissionConstants.UPDATE_RESPONSE_OUTPUT >
                   <UiButton :disabled="loading" size="sm" type="submit">
                     <Icon
                       name="svg-spinners:8-dots-rotate"
@@ -592,6 +599,7 @@ watch(
 
                     Update
                   </UiButton>
+                  </UiPermissionGuard>
                 </div>
               </form>
             </UiAccordionContent>

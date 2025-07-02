@@ -2,6 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { useMenus } from "~/composables/useMenus";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteMenu, isLoading } = useMenus();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -61,13 +62,13 @@ async function deleteMenuHandler(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-  <UiPermissionGuard permission="VIEW_INTEGRATION_MENUS" >
+  <UiPermissionGuard :permission="PermissionConstants.READ_INTEGRATION_MENU" >
       <UiDropdownMenuItem @click="viewMenuDetail(row.original.id)"
         >View and Edit</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-  <UiPermissionGuard permission="DELETE_INTEGRATION_MENUS" >
+  <UiPermissionGuard :permission="PermissionConstants.DELETE_INTEGRATION_MENU" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

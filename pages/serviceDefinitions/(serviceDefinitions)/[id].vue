@@ -15,6 +15,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { ServiceDefinition, Permission, BankingService } from "~/types";
 import { ServiceType, ServiceDefinitionStatus, PermissionCategory } from "@/global-types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const { getServiceDefinitionById, updateServiceDefinition, getServiceDefinitionPermissions,createNewServiceDefinitionPermission, isLoading, isSubmitting } =
@@ -103,7 +104,6 @@ watch(
   () => route.query.activeTab,
   (newActiveTab) => {
     if (newActiveTab) {
-      console.log("newActiveTab: ", newActiveTab);
       openItems.value = newActiveTab as string; // Update the active tab when the query param
     if (newActiveTab == "serviceDefinitionDetails" || newActiveTab == "serviceDefinitionPermissions" || newActiveTab == "serviceDefinitionRoles" || newActiveTab == "serviceDefinitionRoleDetails" || newActiveTab == "newServiceDefinitionRole") {
       fetchServiceDefinitions();
@@ -126,7 +126,7 @@ watch(
       <UiTabsList
         class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
-  <UiPermissionGuard permission="VIEW_SERVICE_DEFINITIONS" >
+  <UiPermissionGuard :permission=PermissionConstants.READ_SERVICE_DEFINITION >
         <UiTabsTrigger
           value="serviceDefinitionDetails"
           @click="
@@ -142,7 +142,7 @@ watch(
           Service Definition Details
         </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_SERVICE_DEFINITION_PERMISSIONS" >
+        <UiPermissionGuard :permission=PermissionConstants.READ_SERVICE_DEFINITION_PERMISSION >
         <UiTabsTrigger
           value="serviceDefinitionPermissions"
           @click="
@@ -158,7 +158,7 @@ watch(
           Service Definition Permissions
         </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_SERVICE_DEFINITION_ROLES" >
+        <UiPermissionGuard :permission=PermissionConstants.READ_SERVICE_DEFINITION_ROLE >
         <UiTabsTrigger
           value="serviceDefinitionRoles"
           @click="
@@ -173,8 +173,6 @@ watch(
         >
           Service Definition Roles
         </UiTabsTrigger>
-        </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_SERVICE_DEFINITION_ROLES" >
         <UiTabsTrigger
           value="serviceDefinitionRoleDetails"
           @click="
@@ -193,7 +191,7 @@ watch(
           Service Definition Role Details
         </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="CREATE_SERVICE_DEFINITION_ROLES" >
+        <UiPermissionGuard :permission=PermissionConstants.CREATE_SERVICE_DEFINITION_ROLE >
         <UiTabsTrigger
           value="newServiceDefinitionRole"
           @click="
@@ -400,7 +398,7 @@ watch(
             </FormItem>
           </FormField>
       
-            <UiPermissionGuard permission="UPDATE_SERVICE_DEFINITIONS" >
+            <UiPermissionGuard :permission="PermissionConstants.UPDATE_SERVICE_DEFINITION" >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"
@@ -426,7 +424,7 @@ watch(
     </UiCard>
 
     </UiTabsContent>
-    <UiPermissionGuard permission="VIEW_SERVICE_DEFINITION_PERMISSIONS" >
+    <UiPermissionGuard :permission=PermissionConstants.READ_SERVICE_DEFINITION_PERMISSION >
     <UiTabsContent
     value="serviceDefinitionPermissions"
     class="text-base bg-background rounded-lg"
@@ -434,15 +432,13 @@ watch(
     <ServiceDefinitionsPermissions />
     </UiTabsContent>
     </UiPermissionGuard>
-    <UiPermissionGuard permission="VIEW_SERVICE_DEFINITION_ROLES" >
+    <UiPermissionGuard :permission=PermissionConstants.READ_SERVICE_DEFINITION_ROLE >
     <UiTabsContent
     value="serviceDefinitionRoles"
     class="text-base bg-background rounded-lg"
     >
     <ServiceDefinitionsRoles :serviceDefinitionProps="data" />
     </UiTabsContent>
-    </UiPermissionGuard>  
-    <UiPermissionGuard permission="VIEW_SERVICE_DEFINITION_ROLES" >
     <UiTabsContent
     value="serviceDefinitionRoleDetails"
     class="text-base bg-background rounded-lg"
@@ -450,7 +446,7 @@ watch(
     <ServiceDefinitionsRolesDetails :serviceDefinitionProps="data" />
     </UiTabsContent>
     </UiPermissionGuard>
-    <UiPermissionGuard permission="CREATE_SERVICE_DEFINITION_ROLES" >
+    <UiPermissionGuard :permission=PermissionConstants.CREATE_SERVICE_DEFINITION_ROLE >
     <UiTabsContent
     value="newServiceDefinitionRole"
     class="text-base bg-background rounded-lg"

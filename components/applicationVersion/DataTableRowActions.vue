@@ -2,21 +2,25 @@
 import type { Row } from "@tanstack/vue-table";
 import { computed } from "vue";
 import { toast } from "../ui/toast";
-const { deleteApplicationVersionById, getApplicationVersions, isLoading } =
+import { PermissionConstants } from "~/constants/permissions";
+
+const { deleteApplicationVersionById, isLoading } =
   useApplications();
+  const { setIsUpdated } = usePagesInfoStore();
+
 const loading = ref(isLoading.value);
 const isError = ref(false);
-const { setIsUpdated } = usePagesInfoStore();
 const openEditModal = ref(false);
+const applicationId = ref<string>("");
+
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
-
-const applicationId = ref<string>("");
-
 const route = useRoute();
+
 applicationId.value = route.params.id as string;
 const applicationVersionId = ref<string>("");
+
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
   refetch: () => Promise<void>; // Accept refetch as a prop
@@ -68,13 +72,13 @@ async function deleteApplicationVersion(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-  <UiPermissionGuard permission="VIEW_APPLICATION_VERSIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.READ_APPLICATION_VERSION" >
       <UiDropdownMenuItem @click="viewApplicationDetails(row.original.id)"
         >View and Edit</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-  <UiPermissionGuard permission="DELETE_APPLICATION_VERSIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.DELETE_APPLICATION_VERSION" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-500">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

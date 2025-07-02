@@ -9,8 +9,8 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Permission } from "~/types";
-import { PermissionCategory } from "~/global-types";
 import { getIdFromPath } from "~/lib/utils";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -43,9 +43,7 @@ const fetchServiceDefinitionPermissionsData = async () => {
     isLoading.value = true;
     loading.value = true;
     const response = await getServiceDefinitionPermissions(serviceDefinitionId.value) || []
-    console.log("response: ", response)
     permissionsData.value = response.sort((a, b) => a?.permissionCode.toLowerCase().localeCompare(b?.permissionCode.toLowerCase()));
-      console.log("permissionsData: ", permissionsData.value)
   } catch (err) {
     console.error("Error fetching service definition permissions:", err);
     isError.value = true;
@@ -137,7 +135,7 @@ const deleteSelectedPermissions = async () => {
 // Function to select/unselect all available permissions
 const selectAllAvailable = () => {
   selectedToAdd.value = permissionsData.value
-    .filter(p => !selectedPermissions.value.includes(p.permissionCode))
+    .filter(p => !selectedPermissions.value.includes(p?.permissionCode))
     .map(p => p.permissionCode);
 };
 const unselectAllAvailable = () => {
@@ -195,6 +193,7 @@ const unselectAllAssigned = () => {
             >
               Unselect All
             </UiButton>
+            <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_PERMISSION" >
             <UiButton
               class="ml-auto w-fit bg-green-600"
               :disabled="selectedToAdd.length === 0 || addLoading"
@@ -218,6 +217,7 @@ const unselectAllAssigned = () => {
               ></Icon>
               Add {{ selectedToAdd.length ? `(${selectedToAdd.length})` : '' }}
             </UiButton>
+            </UiPermissionGuard>
           </div>
           <UiCard class="px-4 py-2 flex-1 flex flex-col overflow-y-auto">
             <FormField
@@ -250,6 +250,7 @@ const unselectAllAssigned = () => {
               </FormItem>
             </FormField>
           </UiCard>
+          <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_PERMISSION" >
           <UiButton
             class="mt-4 w-full bg-green-600"
             :disabled="selectedToAdd.length === 0 || addLoading"
@@ -273,6 +274,7 @@ const unselectAllAssigned = () => {
             ></Icon>
             Add {{ selectedToAdd.length ? `(${selectedToAdd.length})` : '' }}
           </UiButton>
+          </UiPermissionGuard>
         </div>
 
         <!-- Middle: Bi-directional Arrow -->
@@ -306,6 +308,7 @@ const unselectAllAssigned = () => {
             >
               Unselect All
             </UiButton>
+            <UiPermissionGuard :permission="PermissionConstants.DELETE_CONTRACT_PERMISSION" >
             <UiButton
               size="sm"
               class="w-fit ml-auto bg-red-600 text-white"
@@ -325,6 +328,7 @@ const unselectAllAssigned = () => {
               ></Icon>
               Delete {{ selectedToDelete.length ? `(${selectedToDelete.length})` : '' }}
             </UiButton>
+            </UiPermissionGuard>
           </div>
           <UiCard class="px-4 py-2 flex-1 flex flex-col overflow-y-auto ">
             <template v-if="selectedPermissions.length > 0">
@@ -359,6 +363,7 @@ const unselectAllAssigned = () => {
               </div>
             </template>
           </UiCard>
+          <UiPermissionGuard :permission="PermissionConstants.DELETE_CONTRACT_PERMISSION" >
           <UiButton
             class="mt-4 w-full bg-red-600 text-white"
             :disabled="selectedToDelete.length === 0 || deleteLoading"
@@ -377,6 +382,7 @@ const unselectAllAssigned = () => {
             ></Icon>
             Delete {{ selectedToDelete.length ? `(${selectedToDelete.length})` : '' }}
           </UiButton>
+          </UiPermissionGuard>
         </div>
       </div>
     </div>

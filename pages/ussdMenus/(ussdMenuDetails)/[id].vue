@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { UssdMenuList } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -70,7 +71,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       id: data.value?.id,
       ...values,
     };
-    console.log("newValues", newValues);
     data.value = await updateUssdMenuName(newValues); // Call your API function to fetch profile
     await getUssdMenuByIdData();
     // navigateTo(`/ussdMenus/${data.value.id}`);
@@ -114,7 +114,7 @@ const updatingUssdMenuVisible = async (menuId: string, visible: boolean) => {
     </div>
     <UiCard v-else-if="data && !isError" class="w-full p-6">
       <form @submit.prevent="onSubmit" class="space-y-6 flex flex-col">
-        <UiPermissionGuard permission="UPDATE_USSD_MENUS">
+        <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_MENU">
           <FormField v-slot="{ value, handleChange }" name="visible">
             <FormItem
               class="flex flex-row items-end justify-between rounded-lg border pb-2 px-4 w-fit gap-10 self-end"
@@ -236,7 +236,7 @@ const updatingUssdMenuVisible = async (menuId: string, visible: boolean) => {
             </FormItem>
           </FormField>
 
-          <UiPermissionGuard permission="UPDATE_USSD_MENUS">
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_MENU">
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="submitting"
@@ -259,10 +259,10 @@ const updatingUssdMenuVisible = async (menuId: string, visible: boolean) => {
         </div>
       </form>
     </UiCard>
-    <div v-else-if="data == null || data == undefined">
+    <div v-else-if="data == null || data == undefined" class="w-full">
       <UiNoResultFound title="Sorry, No ussd language found." />
     </div>
-    <div v-else-if="isError">
+    <div v-else-if="isError" class="w-full">
       <ErrorMessage title="Something went wrong." />
     </div>
   </div>

@@ -4,6 +4,7 @@ import { usePaymentIntegrations } from "~/composables/usePaymentIntegrations";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { columns as tableColumns } from "~/components/paymentIntegrations/columns"; // Renamed to avoid conflict
 import type { PaymentIntegration } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getPaymentIntegrations } = usePaymentIntegrations();
 const keyword = ref<string>("");
@@ -64,7 +65,7 @@ const closeImportDialog = async () => {
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard permission="CREATE_PAYMENT_INTEGRATION">
+    <UiPermissionGuard :permission=PermissionConstants.CREATE_PAYMENT_INTEGRATION>
       <div class="flex flex-col md:flex-row w-full md:items-center md:justify-end gap-4">
 
       <NuxtLink to="/paymentIntegrations/new" class="w-fit">

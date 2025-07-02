@@ -12,6 +12,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { RoleScope } from "~/global-types";
 import type { Role, Permission } from "~/types";
 import { rolesFormSchema } from "~/validations/rolesFormSchema";
+import { PermissionConstants } from "~/constants/permissions";
 
 
 const { toast } = useToast();
@@ -124,10 +125,6 @@ const refetch = async () => {
     }
   } catch (err) {
     console.error("Error fetching roles::-", err);
-    console.log(
-      "Error fetching roles (stringified)",
-      JSON.stringify(err, null, 2)
-    );
 
     toast({
       title: "Uh oh! Something went wrong.",
@@ -294,9 +291,10 @@ const updadateRoleStatus = async (status: boolean) => {
               >
 
               <div class="flex items-center gap-4 border pb-1 pt-2 px-3 rounded-md">
-                <UiPermissionGuard permission="UPDATE_ROLE" >
+                <UiPermissionGuard :permission= "data.enabled ? PermissionConstants.DISABLE_STAFF_ROLE : PermissionConstants.ENABLE_STAFF_ROLE"  >
                 <UiBadge
                   class="font-bold px-2 py-1 mb-1"
+                  :class="data.enabled ? 'bg-green-500':'bg-red-500'"
                   >{{data.enabled ? "Enabled":"Disabled"}}</UiBadge
                 >
                 <FormField v-slot="{ value, handleChange }" name="enabled">
@@ -458,7 +456,7 @@ const updadateRoleStatus = async (status: boolean) => {
                     </UiAccordionItem>
                   </template>
                 </UiAccordion>
-                <UiPermissionGuard permission="UPDATE_ROLE" >
+                <UiPermissionGuard :permission=PermissionConstants.UPDATE_STAFF_ROLE_PERMISSION >
             <div class="w-full flex justify-end">
               <UiButton :disabled="isUpdating" type="submit">
                 <Icon

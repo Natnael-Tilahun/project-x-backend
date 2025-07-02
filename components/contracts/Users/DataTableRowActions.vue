@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteContractUser } = useContractsUsers();
 
 const loading = ref(false);
@@ -10,11 +11,11 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
-interface DataTableRowActionsProps<TData> {
-  row: Row<TData>;
-}
-const props = defineProps<DataTableRowActionsProps<any>>();
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(["contractUserDeleted"]);
 
 async function deletingContractsUser(id: string) {
   try {
@@ -25,7 +26,7 @@ async function deletingContractsUser(id: string) {
       title: "Contract user deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch()
   } catch (err) {
     console.error("Error deleting contract user:", err);
     isError.value = true;
@@ -50,7 +51,7 @@ async function deletingContractsUser(id: string) {
     <UiDropdownMenuContent align="end" class="w-[160px]">
       <!-- <UiDropdownMenuItem @click="viewContractDetail(row.original.contractId)" -->
         <!-- > -->
-        <UiPermissionGuard permission="VIEW_CONTRACT_USERS" >
+        <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT_USER" >
         <UiAlertDialog>
           <UiAlertDialogTrigger class="px-2 text-sm">
             View & Edit
@@ -60,7 +61,7 @@ async function deletingContractsUser(id: string) {
           </UiAlertDialogContent>
         </UiAlertDialog>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="DELETE_CONTRACT_USERS" >
+        <UiPermissionGuard :permission="PermissionConstants.DELETE_CONTRACT_USER" >
       <UiDropdownMenuSeparator />
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete

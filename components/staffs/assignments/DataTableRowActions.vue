@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "~/components/ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteStaffAssignment, terminateStaffAssignment, isLoading } =
   useStaffAssignments();
 const loading = ref(isLoading.value);
@@ -16,7 +17,6 @@ const setOpenEditTerminationModal = (value: boolean) => {
   openEditTeminationModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
@@ -87,19 +87,19 @@ async function terminateStaffAssignments(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_STAFF_ASSIGNMENTS">
+      <UiPermissionGuard :permission="PermissionConstants.READ_STAFF_ASSIGNMENT">
         <UiDropdownMenuItem @click="viewStaffAssignmentDetail(row.original.id)"
           >View and Edit</UiDropdownMenuItem
         >
         <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-      <!-- <UiPermissionGuard permission="VIEW_STAFF_ASSIGNMENTS" > -->
+      <UiPermissionGuard :permission="PermissionConstants.TERMINATE_STAFF_ASSIGNMENT" >
       <UiDropdownMenuItem @click="setOpenEditTerminationModal(true)"
         >Terminate Staff Assignment</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
-      <!-- </UiPermissionGuard> -->
-      <UiPermissionGuard permission="DELETE_STAFF_ASSIGNMENTS">
+      </UiPermissionGuard>
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_STAFF_ASSIGNMENT">
         <UiDropdownMenuItem
           @click="setOpenEditModal(true)"
           class="text-red-600"

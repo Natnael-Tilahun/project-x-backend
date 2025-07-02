@@ -16,7 +16,7 @@ import type {
   LocalizedDefaultMessage,
   UssdLanguage,
 } from "~/types";
-import { LanguageRelatedStatus } from "~/global-types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -24,7 +24,6 @@ const {
   updateUssdLocalizedDefaultMessage,
   isLoading,
   isSubmitting,
-  getUssdLocalizedDefaultMessages,
   updateUssdLocalizedDefaultMessageStatus,
 } = useUssdLocalizedDefaultMessage();
 const { getUssdDefaultMessages, isLoading: isLoadingUssdDefaultMessages } =
@@ -80,7 +79,6 @@ const getUssdDefaultMessagesData = async () => {
   try {
     isLoading.value = true;
     ussdDefaultMessages.value = await getUssdDefaultMessages();
-    console.log("ussdDefaultMessages: ", ussdDefaultMessages.value);
   } catch (err: any) {
     console.error("Error fetching ussd default messages:", err.message);
     isError.value = true;
@@ -93,7 +91,6 @@ const getUssdLanguagesData = async () => {
   try {
     isLoadingUssdLanguages.value = true;
     ussdLanguages.value = await getUssdLanguages();
-    console.log("ussdLanguages: ", ussdLanguages.value);
   } catch (err: any) {
     console.error("Error fetching ussd languages:", err.message);
     isError.value = true;
@@ -116,13 +113,11 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       ...values,
       status: values.status ? "Visible" : "Disable",
     };
-    console.log("newValues: ", newValues);
     data.value = await updateUssdLocalizedDefaultMessage(values.id, newValues); // Call your API function to fetch profile
     // navigateTo(`/ussdLocalizedMessages/${data.value.id}`);
     await getUssdLocalizedDefaultMessageByIdData();
     await getUssdDefaultMessagesData();
     await getUssdLanguagesData();
-    console.log("New ussd localized default message data; ", data.value);
     toast({
       title: "Ussd Localized Default Message Updated",
       description: "Ussd Localized Default Message updated successfully",
@@ -141,14 +136,11 @@ const updatingUssdLocalizedDefaultMessageStatus = async (
   status: boolean
 ) => {
   try {
-    console.log("menuId", menuId);
-    console.log("status", status);
     const statusValue = status ? "Visible" : "Disable";
     const response = await updateUssdLocalizedDefaultMessageStatus(
       menuId,
       statusValue
     );
-    console.log("response", response);
     toast({
       title: "Ussd localized menu status updated",
       description: "Ussd localized menu status updated successfully",
@@ -165,6 +157,13 @@ const updatingUssdLocalizedDefaultMessageStatus = async (
     isError.value = true;
   }
 };
+
+const refetch = async () => {
+  isError.value = false
+  await getUssdDefaultMessagesData();
+  await getUssdLanguagesData();
+  await getUssdLocalizedDefaultMessageByIdData();
+}
 </script>
 
 <template>
@@ -301,7 +300,7 @@ const updatingUssdLocalizedDefaultMessageStatus = async (
             </FormField> -->
 
           <UiPermissionGuard
-            permission="UPDATE_USSD_LOCALIZED_DEFAULT_MESSAGES"
+            :permission="PermissionConstants.UPDATE_USSD_LOCALIZED_DEFAULT_MESSAGE"
           >
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
@@ -326,11 +325,11 @@ const updatingUssdLocalizedDefaultMessageStatus = async (
         </div>
       </form>
     </UiCard>
-    <div v-else-if="!loading && (data == null || data == undefined)">
+    <div v-else-if="!loading && (data == null || data == undefined)" class="w-full">
       <UiNoResultFound title="Sorry, No localized message found." />
     </div>
-    <div v-else-if="isError">
-      <ErrorMessage title="Something went wrong." />
+    <div v-else-if="isError" class="w-full">
+      <ErrorMessage :retry="refetch"  title="Something went wrong." />
     </div>
   </div>
 </template>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 const { deletePermissionGroupById, isLoading } = usePermissionGroups();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -9,11 +10,11 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
-interface DataTableRowActionsProps<TData> {
-  row: Row<TData>;
-}
-const props = defineProps<DataTableRowActionsProps<any>>();
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['permissionGroupDeleted']); // Added 'languageDeleted'
 
 function viewPermissionGroupDetail(id: string) {
   navigateTo(`/permissionGroups/${id}`);
@@ -30,7 +31,7 @@ async function deletePermissionGroup(id: string) {
       title: "Permission group deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch()
   } catch (err) {
     console.error("Error deleting permission group:", err);
     isError.value = true;
@@ -54,17 +55,17 @@ async function deletePermissionGroup(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_PERMISSION_GROUPS" >
+      <UiPermissionGuard :permission="PermissionConstants.READ_PERMISSION_GROUP" >
       <UiDropdownMenuItem @click="viewPermissionGroupDetail(row.original.groupCode)"
         >View</UiDropdownMenuItem
       >
       </UiPermissionGuard>
-      <UiPermissionGuard permission="UPDATE_PERMISSION_GROUPS" >
+      <UiPermissionGuard :permission="PermissionConstants.UPDATE_PERMISSION_GROUP" >
       <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
       </UiPermissionGuard>
       <UiDropdownMenuSeparator />
       <UiDropdownMenuSeparator />
-      <UiPermissionGuard permission="DELETE_PERMISSION_GROUPS" >
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_PERMISSION_GROUP" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

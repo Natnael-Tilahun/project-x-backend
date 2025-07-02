@@ -12,7 +12,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { FormType } from "@/global-types";
-import type { Form } from "~/types";
+import type { Form, Local } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -407,6 +408,7 @@ const handleDeleteForm = async () => {
         >
           Cancel
         </UiButton>
+        <UiPermissionGuard :permission="PermissionConstants.DELETE_FORM" >
         <UiAlertDialog>
           <UiAlertDialogTrigger asChild>
             <UiButton
@@ -440,7 +442,8 @@ const handleDeleteForm = async () => {
             </UiAlertDialogFooter>
           </UiAlertDialogContent>
         </UiAlertDialog>
-
+</UiPermissionGuard>
+<UiPermissionGuard :permission="isNewForm ? PermissionConstants.CREATE_FORM : PermissionConstants.UPDATE_FORM" >
         <UiButton :disabled="loading" size="sm" type="submit">
           <Icon
             name="svg-spinners:8-dots-rotate"
@@ -450,6 +453,7 @@ const handleDeleteForm = async () => {
 
           {{ isNewForm ? "Create" : "Update" }}
         </UiButton>
+        </UiPermissionGuard>
       </div>
     </div>
   </form>

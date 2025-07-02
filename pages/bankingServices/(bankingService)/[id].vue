@@ -15,6 +15,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { BankingService } from "~/types";
 import { ServiceType } from "@/global-types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const { getBankingServiceById, updateBankingService, isLoading, isSubmitting } =
@@ -149,7 +150,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
-  <UiPermissionGuard permission="UPDATE_BANKING_SERVICES" >
+  <UiPermissionGuard :permission="PermissionConstants.UPDATE_BANKING_SERVICE" >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"

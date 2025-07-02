@@ -23,6 +23,7 @@ import type {
   ServiceDefinitionRole,
 } from "~/types";
 import { NuxtLink } from "#components";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { createNewContract, isLoading } = useContracts();
 const { getServiceDefinitions,getServiceDefinitionPermissions, getServiceDefinitionById } =
@@ -679,7 +680,7 @@ const isPhoneExistHandler = (value) => {
                                   ? selectedPermissions
                                       .map(
                                         (permission: Permission) =>
-                                          permission.code
+                                          permission.permissionCode
                                       )
                                       .join(", ")
                                   : "Select permissions"
@@ -703,20 +704,20 @@ const isPhoneExistHandler = (value) => {
                               <UiCommandGroup>
                                 <UiCommandItem
                                   v-for="permission in selectedPermissions"
-                                  :key="permission.code"
-                                  :value="permission.code"
+                                  :key="permission.id"
+                                  :value="permission.id"
                                   @select="
                                     () => {
                                       const isSelected =
                                       selectedCoreCustomerPermissions.some(
-                                          (selected: Permission) => selected.code === permission.code
+                                          (selected: Permission) => selected.permissionCode === permission.permissionCode
                                         );
 
                                       if (isSelected) {
                                         selectedCoreCustomerPermissions =
                                             selectedPermissions.filter(
                                             (selected: Permission) =>
-                                              selected.code !== permission.code
+                                              selected.permissionCode !== permission.permissionCode
                                           );
                                       } else {
                                         selectedCoreCustomerPermissions.push(permission);
@@ -725,17 +726,17 @@ const isPhoneExistHandler = (value) => {
                                       form.setFieldValue(
                                         'coreCustomers[0].permissionCodes',
                                         selectedCoreCustomerPermissions.map(
-                                          (permission: Permission) => permission.code
+                                          (permission: Permission) => permission.permissionCode
                                         )
                                       );
                                     }
                                   "
                                 >
-                                  {{ permission.code }}
+                                  {{ permission.permissionCode }}
                                   <UiCheckbox
                                     :checked="
                                       selectedCoreCustomerPermissions.some(
-                                        (selected: Permission) => selected.code === permission.code
+                                        (selected: Permission) => selected.permissionCode === permission.permissionCode
                                       )
                                     "
                                     class="ml-auto"
@@ -778,12 +779,10 @@ const isPhoneExistHandler = (value) => {
                           class="h-5 w-5"
                           :disabled="
                             (isAccountSelected(account) &&
-                              !store.permissions.includes(
-                                'DELETE_CONTRACT_ACCOUNTS'
+                              !store.permissions.includes(PermissionConstants.DELETE_CONTRACT_ACCOUNT
                               )) ||
                             (!isAccountSelected(account) &&
-                              !store.permissions.includes(
-                                'CREATE_CONTRACT_ACCOUNTS'
+                              !store.permissions.includes(PermissionConstants.CREATE_CONTRACT_ACCOUNT
                               ))
                           "
                         />
@@ -886,7 +885,7 @@ const isPhoneExistHandler = (value) => {
                                           ? selectedAccountPermissions
                                               .map(
                                                 (permission: Permission) =>
-                                                  permission.code
+                                                  permission.permissionCode
                                               )
                                               .join(", ")
                                           : "Select permissions"
@@ -910,20 +909,20 @@ const isPhoneExistHandler = (value) => {
                                       <UiCommandGroup>
                                         <UiCommandItem
                                           v-for="permission in selectedCoreCustomerPermissions"
-                                          :key="permission.code"
-                                          :value="permission.code"
+                                          :key="permission.id"
+                                          :value="permission.id"
                                           @select="
                                             () => {
                                               const isSelected =
                                                 selectedAccountPermissions.some(
-                                                  (selected: Permission) => selected.code === permission.code
+                                                  (selected: Permission) => selected.permissionCode === permission.permissionCode
                                                 );
 
                                               if (isSelected) {
                                                 selectedAccountPermissions =
                                                     selectedAccountPermissions.filter(
                                                     (selected: Permission) =>
-                                                      selected.code !== permission.code
+                                                      selected.permissionCode !== permission.permissionCode
                                                   );
                                               } else {
                                                 selectedAccountPermissions.push(permission);
@@ -932,17 +931,17 @@ const isPhoneExistHandler = (value) => {
                                               form.setFieldValue(
                                                 `coreCustomers[0].coreAccounts[${account.accountNumber}].permissionCodes`,
                                                 selectedAccountPermissions.map(
-                                                  (permission: Permission) => permission.code
+                                                  (permission: Permission) => permission.permissionCode
                                                 )
                                               );
                                             }
                                           "
                                         >
-                                          {{ permission.code }}
+                                          {{ permission.permissionCode }}
                                           <UiCheckbox
                                             :checked="
                                               selectedAccountPermissions.some(
-                                                (selected: Permission) => selected.code === permission.code
+                                                (selected: Permission) => selected.permissionCode === permission.permissionCode
                                               )
                                             "
                                             class="ml-auto"

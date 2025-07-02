@@ -6,8 +6,12 @@ import PermissionGroupsDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { PermissionGroup } from "~/types";
 import { PermissionGroupStatus } from "@/global-types";
+import { h } from "vue"; // Import inject
 
-export const columns: ColumnDef<PermissionGroup>[] = [
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<PermissionGroup>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -117,6 +121,7 @@ export const columns: ColumnDef<PermissionGroup>[] = [
         { class: "relative" },
         h(PermissionGroupsDataTableRowActionsVue, {
           row,
+          refetch
         })
       );
     },

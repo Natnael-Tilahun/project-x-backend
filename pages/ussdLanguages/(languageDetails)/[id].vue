@@ -13,6 +13,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { UssdLanguage } from "~/types";
 import { LanguageRelatedStatus } from "~/global-types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -20,7 +21,6 @@ const {
   updateUssdLanguageStatus,
   isLoading,
   isSubmitting,
-  getUssdLanguages,
 } = useUssdLanguages();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
@@ -161,7 +161,7 @@ onMounted(async () => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <UiPermissionGuard permission="UPDATE_USSD_LANGUAGES">
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_LANGUAGE">
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="submitting"
@@ -185,10 +185,10 @@ onMounted(async () => {
         </div>
       </form>
     </UiCard>
-    <div v-else-if="data == null || data == undefined">
+    <div v-else-if="data == null || data == undefined" class="w-full">
       <UiNoResultFound title="Sorry, No ussd language found." />
     </div>
-    <div v-else-if="isError">
+    <div v-else-if="isError" class="w-full">
       <ErrorMessage title="Something went wrong." />
     </div>
   </div>

@@ -1,5 +1,3 @@
-import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { ApiIntegration, ApiOperation } from "~/types";
 import type { ApiResult } from "~/types/api";
@@ -9,7 +7,6 @@ import axios from "axios";
 export const useIntegrations = () => {
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
-  const runtimeConfig = useRuntimeConfig();
   const { fetch } = useApi();
 
   const getIntegrations: (page?: number, size?: number) => ApiResult<ApiIntegration[]> = async (page, size) => {

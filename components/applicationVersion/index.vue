@@ -4,6 +4,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { splitPath } from "~/lib/utils";
 import { columns as tableColumns } from "~/components/applicationVersion/columns"; // Renamed to avoid conflict
 import type { AppVersion } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getApplicationVersions } = useApplications();
 const loading = ref(false);
@@ -58,7 +59,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError"
     class="py-4 flex flex-col space-y-10 mx-auto"
   >
-  <UiPermissionGuard permission="CREATE_APPLICATION_VERSIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.CREATE_APPLICATION_VERSION" >
     <NuxtLink
       class="w-fit self-end"
       @click="

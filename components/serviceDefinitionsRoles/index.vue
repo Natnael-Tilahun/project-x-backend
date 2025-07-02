@@ -2,9 +2,10 @@
 import { ref } from "vue";
 import type { ServiceDefinitionRole, ServiceDefinition } from "~/types";
 import { columns as tableColumns } from "~/components/serviceDefinitionsRoles/columns"; // Renamed to avoid conflict
+import { PermissionConstants } from "~/constants/permissions";
 
 
-const { getServiceDefinitionsRoles, getServiceDefinitionRoleById, updateServiceDefinitionRole, getServiceDefinitionRolesByServiceDefinitionId } =
+const { getServiceDefinitionRolesByServiceDefinitionId } =
   useServiceDefinitionsRoles();
 
 const route = useRoute();
@@ -62,7 +63,7 @@ const columns = computed(() => tableColumns(refetch));
   >
   
   <UiPermissionGuard
-              permission="CREATE_SERVICE_DEFINITION_ROLES"
+              :permission="PermissionConstants.CREATE_SERVICE_DEFINITION_ROLE"
             >
     <UiButton
       @click="

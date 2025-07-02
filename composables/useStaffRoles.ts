@@ -1,4 +1,3 @@
-import { Toast, ToastAction, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import type { Role } from "~/types";
 import { useApi } from "./useApi";
@@ -6,12 +5,9 @@ import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
 export const useStaffRoles = () => {
-  const authUser = useAuthUser();
-  const userAdmin = useState<boolean>("userAdmin", () => false);
   const isLoading = ref<boolean>(false);
   const isUpdating = ref<boolean>(false);
   const { getRefreshToken, getAuthorities } = useAuth();
-  const { toast } = useToast();
   const { fetch } = useApi();
 
   const getStaffRoles: () => ApiResult<Role[]> = async () => {
@@ -28,8 +24,7 @@ export const useStaffRoles = () => {
 
       return data.value ? (data.value as unknown as Role[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -48,8 +43,7 @@ export const useStaffRoles = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -73,8 +67,7 @@ export const useStaffRoles = () => {
 
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -96,8 +89,7 @@ export const useStaffRoles = () => {
 
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -120,20 +112,16 @@ export const useStaffRoles = () => {
       await getAuthorities();
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
   const updateStaffRoleStatus: (roleName: string, roleStatus: boolean) => ApiResult<Role> = async (roleName, roleStatus) => {
     try {
       const { data, pending, error, status } = await fetch<Role>(
-        `/api/v1/internal/staff-roles/${roleName}`,
+        `/api/v1/internal/staff-roles/${roleName}/${roleStatus ?'disable': 'enable'}`,
         {
           method: "POST",
-          params: {
-            action: roleStatus ? "disable" : "enable"
-          }
         }
       );
 
@@ -146,8 +134,7 @@ export const useStaffRoles = () => {
       await getAuthorities();
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

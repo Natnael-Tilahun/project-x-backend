@@ -25,6 +25,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { useDocuments } from "~/composables/useDocuments";
 import type { PaymentIntegration, ApiOperation, Charge } from "~/types";
 import ChargeSelect from "~/components/charges/ChargeSelect.vue";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -76,7 +77,6 @@ const form = useForm<PaymentIntegration>({
 });
 
 const onSubmit = form.handleSubmit(async (values: any) => {
-  console.log("values: ", values);
   try {
     loading.value = true;
     const data = {
@@ -92,7 +92,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           ? values?.minimumAmount
           : null,
     };
-    console.log("values: ", data);
     data.value = await updatePaymentIntegration(values.id, data); // Call your API function to fetch profile
     // form.setValues(data.value);
     openItems.value = "paymentOperations";
@@ -131,7 +130,6 @@ const getPaymentIntegrationData = async () => {
     loading.value = true;
     data.value = await getPaymentIntegrationById(integrationId.value);
     form.setValues(data.value);
-    console.log("data.value: ", data.value);
     if (data.value?.iconPath && data.value.isImage) {
       await getUploadedImage(data.value?.iconPath);
     }
@@ -182,7 +180,6 @@ const handleUpload = async () => {
       integrationId.value,
       "PAYMENT_INTEGRATION"
     );
-    console.log("response: ", response);
     // Update the form's iconPath with the uploaded file's ID/path
     form.setFieldValue("iconPath", response.id); // Adjust according to your API response structure
     toast({
@@ -205,7 +202,6 @@ const handleUpload = async () => {
 };
 
 const getUploadedImage = async (iconPath) => {
-  console.log("iconPathaa: ", iconPath);
   try {
     const response = await getFile(iconPath, "PAYMENT_INTEGRATION");
 
@@ -287,7 +283,7 @@ onMounted(() => {
       <UiTabsList
         class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
-        <UiPermissionGuard permission="VIEW_PAYMENT_INTEGRATIONS">
+        <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_INTEGRATION>
           <UiTabsTrigger
             value="IntegrationDetails"
             @click="
@@ -303,7 +299,7 @@ onMounted(() => {
             Payment Integration Details
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_PAYMENT_OPERATIONS">
+        <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_OPERATION>
           <UiTabsTrigger
             value="paymentOperations"
             @click="
@@ -318,8 +314,6 @@ onMounted(() => {
           >
             Payment Operations
           </UiTabsTrigger>
-        </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_PAYMENT_OPERATIONS">
           <UiTabsTrigger
             value="configurePaymentOperations"
             @click="
@@ -337,7 +331,7 @@ onMounted(() => {
             {{ operationName }}
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="CREATE_PAYMENT_OPERATIONS">
+        <UiPermissionGuard :permission=PermissionConstants.CREATE_PAYMENT_OPERATION>
           <UiTabsTrigger
             value="newPaymentOperation"
             @click="
@@ -357,7 +351,7 @@ onMounted(() => {
         </UiPermissionGuard>
       </UiTabsList>
 
-      <UiPermissionGuard permission="VIEW_PAYMENT_INTEGRATIONS">
+      <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_INTEGRATION>
         <UiTabsContent
           value="IntegrationDetails"
           class="text-base bg-background p-6 rounded-lg"
@@ -1244,7 +1238,7 @@ onMounted(() => {
                   </FormItem>
                 </FormField>
                 
-                <UiPermissionGuard permission="UPDATE_PAYMENT_INTEGRATION">
+                <UiPermissionGuard :permission="PermissionConstants.UPDATE_PAYMENT_INTEGRATION">
                   <div class="col-span-full w-full py-4 flex justify-between">
                     <UiButton
                       :disabled="loading"
@@ -1274,15 +1268,13 @@ onMounted(() => {
           </div>
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard permission="VIEW_PAYMENT_OPERATIONS">
+      <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_OPERATION>
         <UiTabsContent
           value="paymentOperations"
           class="text-base bg-background p-6 rounded-lg"
         >
           <PaymentIntegrationsPaymentOperations />
         </UiTabsContent>
-      </UiPermissionGuard>
-      <UiPermissionGuard permission="VIEW_PAYMENT_OPERATIONS">
         <UiTabsContent
           value="configurePaymentOperations"
           class="text-base bg-background py-0 rounded-lg"
@@ -1290,7 +1282,7 @@ onMounted(() => {
           <PaymentOperationsConfigurations :integrationDataProps="data" />
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard permission="CREATE_PAYMENT_OPERATIONS">
+      <UiPermissionGuard :permission=PermissionConstants.CREATE_PAYMENT_OPERATION>
         <UiTabsContent
           value="newPaymentOperation"
           class="text-base bg-background py-6 rounded-lg"

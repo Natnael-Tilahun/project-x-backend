@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
+
 const { deleteBankingService, isLoading } = useBankingServices();
 
 const props = defineProps<{
   row: Row<any>;
   refetch: () => Promise<void>;
 }>();
-const emit = defineEmits(["languageDeleted", "editLanguage"]); // Added 'languageDeleted'
+const emit = defineEmits(["bankingServiceDeleted"]);
 
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -16,7 +18,6 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
@@ -64,12 +65,12 @@ async function deleteBankingServices(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_BANKING_SERVICES">
+      <UiPermissionGuard :permission="PermissionConstants.READ_BANKING_SERVICE">
         <UiDropdownMenuItem @click="viewBankingServiceDetail(row.original.id)"
           >View and Edit</UiDropdownMenuItem
         >
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_BANKING_SERVICES">
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_BANKING_SERVICE">
         <UiDropdownMenuSeparator />
         <UiDropdownMenuItem
           @click="setOpenEditModal(true)"

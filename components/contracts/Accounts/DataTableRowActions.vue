@@ -2,6 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "@/components/ui/toast";
 import { getIdFromPath } from "~/lib/utils";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { deleteContractCoreCustomer, isLoading } = useContractsCoreCustomers();
 const loading = ref(isLoading.value);
@@ -33,7 +34,8 @@ async function deleteContractCoreCustomers(id: string) {
       title: "Contract Core Customer deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    // await props.refetch(); // Call refetch after successful deletion
+    // window.location.reload();
   } catch (err) {
     console.error("Error deleting contract core customer:", err);
     isError.value = true;
@@ -57,12 +59,12 @@ async function deleteContractCoreCustomers(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-  <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS" >
+  <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT_ACCOUNT" >
       <UiDropdownMenuItem @click="viewContractCoreCustomerDetail(row.original.contractId)"
         >View and Edit </UiDropdownMenuItem
       >
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_CONTRACT_ACCOUNTS" >
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_CONTRACT_ACCOUNT" >
       <UiDropdownMenuSeparator />
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete

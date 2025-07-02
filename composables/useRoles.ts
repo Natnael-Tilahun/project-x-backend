@@ -28,8 +28,7 @@ export const useRoles = () => {
 
       return data.value ? (data.value as unknown as Role[]) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -48,8 +47,7 @@ export const useRoles = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -73,8 +71,7 @@ export const useRoles = () => {
 
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -96,8 +93,7 @@ export const useRoles = () => {
 
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -120,20 +116,19 @@ export const useRoles = () => {
       await getAuthorities();
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
   const updateRoleStatus: (roleName: string, roleStatus: boolean) => ApiResult<Role> = async (roleName, roleStatus) => {
     try {
       const { data, pending, error, status } = await fetch<Role>(
-        `/api/v1/internal/roles/${roleName}`,
+        `/api/v1/internal/roles/${roleName}/${roleStatus ?'disable': 'enable'}`,
         {
           method: "POST",
-          params: {
-            action: roleStatus ? "disable" : "enable"
-          }
+          // params: {
+          //   action: roleStatus ? "disable" : "enable"
+          // }
         }
       );
 
@@ -146,8 +141,7 @@ export const useRoles = () => {
       await getAuthorities();
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

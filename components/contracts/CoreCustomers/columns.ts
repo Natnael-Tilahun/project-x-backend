@@ -6,8 +6,12 @@ import { Badge } from "@/components/ui/badge";
 import ContractsCoreCustomersDataTableRowActions from "@/components/contracts/CoreCustomers/DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { ContractCoreCustomer } from "~/types";
+import { h, inject } from "vue"; // Import inject
 
-export const columns: ColumnDef<ContractCoreCustomer>[] = [
+// Type for the refetch function
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<ContractCoreCustomer>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -89,6 +93,7 @@ export const columns: ColumnDef<ContractCoreCustomer>[] = [
         { class: "relative" },
         h(ContractsCoreCustomersDataTableRowActions, {
           row,
+          refetch
         })
       );
     },

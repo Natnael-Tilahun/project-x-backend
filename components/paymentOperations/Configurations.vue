@@ -21,17 +21,17 @@ import {
   PaymentIntegrationType,
 } from "@/global-types";
 import type { ApiOperation, PaymentIntegration, PaymentOperation } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
-  getPaymentOperations,
   getPaymentOperationById,
   updatePaymentOperation,
   isSubmitting,
   isLoading,
 } = usePaymentOperations();
 const { getOperations } = useOperations();
-const { getPaymentIntegrations, getPaymentIntegrationPaymentOperations } =
+const { getPaymentIntegrationPaymentOperations } =
   usePaymentIntegrations();
 const { getIntegrations } = useIntegrations();
 
@@ -252,16 +252,6 @@ const refetch = async () => {
   // await getPaymentOperationData();
   // await getAllPaymentOperations();
   // await getAllPaymentIntegrations();
-};
-
-const copyToClipboard = (data: any) => {
-  navigator.clipboard.writeText(data);
-  tooltipText.value = "Copied to clipboard";
-  tooltipOpen.value = true;
-  setTimeout(() => {
-    tooltipOpen.value = false;
-    tooltipText.value = "Copy to clipboard";
-  }, 2000); // Reset the tooltip text after 2 seconds
 };
 
 watch(
@@ -713,7 +703,7 @@ watch(
                 <FormMessage />
               </FormItem>
             </FormPropsField> -->
-            <UiPermissionGuard permission="UPDATE_PAYMENT_OPERATIONS" >
+            <UiPermissionGuard :permission="PermissionConstants.UPDATE_PAYMENT_OPERATION" >
           <div class="col-span-full w-full py-4 flex justify-end gap-4">
             <UiButton
               :disabled="loading"
@@ -746,6 +736,7 @@ watch(
             value="info"
             >Info</UiTabsTrigger
           > -->
+<UiPermissionGuard :permission="PermissionConstants.READ_FORM" >
           <UiTabsTrigger
             :disabled="
               operationId == '' ||
@@ -756,6 +747,8 @@ watch(
             value="form"
             >Form</UiTabsTrigger
           >
+          </UiPermissionGuard>
+<UiPermissionGuard :permission="PermissionConstants.READ_FIELD" >
           <UiTabsTrigger
             :disabled="
               operationId == '' ||
@@ -766,6 +759,7 @@ watch(
             value="fields"
             >Fields</UiTabsTrigger
           >
+          </UiPermissionGuard>
           <UiTabsTrigger
             class="text-lg font-normal min-w-[100px] data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-0 data-[state=inactive]:border rounded-t-lg rounded-b-none data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted"
             value="mapping"
@@ -782,12 +776,15 @@ watch(
             "
           />
         </UiTabsContent>
+<UiPermissionGuard :permission="PermissionConstants.READ_FORM" >
         <UiTabsContent class="p-6" value="form">
           <PaymentOperationsForms
             @refresh="refetch"
             :operationIdProps="operationId"
           />
         </UiTabsContent>
+        </UiPermissionGuard>
+<UiPermissionGuard :permission="PermissionConstants.READ_FIELD" >
         <UiTabsContent
           class="text-base h-full px-6 py-4 space-y-2"
           value="fields"
@@ -797,6 +794,7 @@ watch(
             :formIdProps="formId"
           />
         </UiTabsContent>
+        </UiPermissionGuard>
       </UiTabs>
     </form>
     <div v-if="isError">

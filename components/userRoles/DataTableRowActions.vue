@@ -2,6 +2,8 @@
 import type { Row } from "@tanstack/vue-table";
 import { computed } from "vue";
 import { toast } from "../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
+
 const { deleteRoleById, getRoles, isLoading } = useRoles();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -10,8 +12,6 @@ const openEditModal = ref(false);
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
-
-const route = useRoute();
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
@@ -63,13 +63,13 @@ async function deleteRole(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_ROLES_LIST" >
+      <UiPermissionGuard :permission="PermissionConstants.READ_ROLE" >
       <UiDropdownMenuItem @click="viewRollDetails(row.original.name)"
         >View and Edit</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_ROLES" >
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_ROLE" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-500">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

@@ -15,6 +15,7 @@ import {
   PermissionType,
 } from "~/global-types";
 import type { Permission } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { toast } = useToast();
 
@@ -58,7 +59,6 @@ const fetchPermissionData = async () => {
   try {
     loading.value = true;
     const fetchedData = await getPermissionById(code); // Call your API function to fetch roles
-    console.log("fetchedData: ", fetchedData);
     if (fetchedData) {
       data.value = fetchedData;
       const formValues: any = {
@@ -77,7 +77,6 @@ const fetchPermissionData = async () => {
       form.setValues(formValues);
     }
   } catch (err) {
-    console.error("Error fetching permission", err);
     console.log(
       "Error fetching permission (stringified)",
       JSON.stringify(err, null, 2)
@@ -94,24 +93,44 @@ const fetchPermissionData = async () => {
   }
 };
 
-const updadateRoleStatus = async (status: boolean) => {
+const enablePermissionsStatus = async () => {
   try {
     updating.value = true;
     if (data.value?.code) {
-      if (status) {
         await enablePermission(data.value?.code); // Call your API function to fetch roles
         toast({
-          title: "Permissoin status updated successfully.",
+          title: "Permissoin status enabled successfully.",
         });
-      } else {
-        await disablePermission(data.value?.code); // Call your API function to fetch roles
-        toast({
-          title: "Permissoin status updated successfully.",
-        });
-      }
+    await refetch();
+
     }
   } catch (err: any) {
-    console.error("Error updating permisson status:", err);
+    console.error("Error enabling permisson status:", err);
+    toast({
+      title: "Uh oh! Something went wrong.",
+      description: `There was a problem with your request: ${err}`,
+      variant: "destructive",
+    });
+    isError.value = true;
+  } finally {
+    updating.value = false;
+  }
+};
+
+const disablePermissionsStatus = async () => {
+  try {
+    updating.value = true;
+    if (data.value?.code) {
+
+        await disablePermission(data.value?.code); // Call your API function to fetch roles
+        toast({
+          title: "Permissoin disabled successfully.",
+        });
+    await refetch();
+
+    }
+  } catch (err: any) {
+    console.error("Error disabling permisson status:", err);
     toast({
       title: "Uh oh! Something went wrong.",
       description: `There was a problem with your request: ${err}`,
@@ -137,21 +156,41 @@ onMounted(async () => {
       <UiCard class="w-full p-6 rounded-xl space-y-4">
         <div class="flex justify-end items-center">
           <div class="flex items-center gap-4">
-            <UiPermissionGuard permission="UPDATE_PERMISSION">
-              <UiBadge class="font-bold px-2 py-1">Enabled</UiBadge>
+            <UiPermissionGuard :permission="data.enabled ? PermissionConstants.DISABLE_PERMISSION: PermissionConstants.ENABLE_PERMISSION">
+              <!-- <UiBadge class="font-bold px-2 py-1">Enabled</UiBadge> -->
+              <UiBadge
+                  class="font-bold px-2 py-1"
+                  :class="data.enabled ? 'bg-green-500':'bg-red-500'"
+                  >{{data.enabled ? "Enabled":"Disabled"}}</UiBadge>
               <FormField v-slot="{ value, handleChange }" name="enabled">
                 <FormItem>
                   <FormControl>
                     <UiSwitch
                       :checked="value"
+                      class="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
                       @update:checked="handleChange"
-                      @click="updadateRoleStatus(!value)"
+                      @click="data.enabled ? disablePermissionsStatus() : enablePermissionsStatus()"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               </FormField>
             </UiPermissionGuard>
+            <!-- <UiPermissionGuard :permission=PermissionConstants.DISABLE_PERMISSION>
+              <UiBadge class="font-bold px-2 py-1">Disabled</UiBadge>
+              <FormField v-slot="{ value, handleChange }" name="enabled">
+                <FormItem>
+                  <FormControl>
+                    <UiSwitch
+                      :checked="value"
+                      @update:checked="handleChange"
+                      @click="enablePermissionsStatus()"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+            </UiPermissionGuard> -->
           </div>
         </div>
 

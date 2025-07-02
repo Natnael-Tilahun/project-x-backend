@@ -3,37 +3,23 @@ const openItems = ref(["item-1"]);
 
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 import { getIdFromPath } from "~/lib/utils";
 import type { User } from "~/types";
 
 const route = useRoute();
 const {
   getUserById,
-  getCoreAccountsByCustomerId,
   isLoading,
 } = useUsers();
 const customerId = ref<string>("");
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<User>();
-const coreData = ref<any>();
-const accountsData = ref<any>();
-const accountNumber = ref<string>();
-const accountCustomerId = ref<string>();
-const coreCustomerId = ref<string>();
 const tooltipText = ref<string>("Copy to clipboard");
 const tooltipOpen = ref<boolean>(true);
-const openEditModal = ref(false);
-const openLinkModal = ref(false);
-const setOpenEditModal = (value: boolean) => {
-  openEditModal.value = value;
-};
-const setOpenLinkModal = (value: boolean) => {
-  openLinkModal.value = value;
-};
 
 customerId.value = getIdFromPath(route.fullPath);
-
 
 const copyToClipboard = (data: any) => {
   navigator.clipboard.writeText(data);
@@ -52,7 +38,6 @@ try {
   isLoading.value = true;
   loading.value = true;
   data.value = await getUserById(customerId.value); // Call your API function to fetch roles
-  console.log("customerId.value data: ", data.value);
 } catch (err) {
   console.error("Error fetching users:", err);
   isError.value = true;
@@ -60,67 +45,6 @@ try {
   isLoading.value = false;
   loading.value = false;
 }
-
-
-const handleLinkCoreBankCustomer = async () => {
-  if (accountCustomerId.value) {
-    try {
-      isLoading.value = true;
-      loading.value = true;
-      data.value = await linkCoreBankCustomer(
-        customerId.value,
-        accountCustomerId.value
-      );
-      toast({
-        title: "Customer linked with core bank successfully. ",
-      });
-    } catch (err: any) {
-      console.error("Error linking customer with core bank:", err);
-      toast({
-        title: "Uh oh! Something went wrong.",
-        description: `${err.message}`,
-        variant: "destructive",
-      });
-
-      isError.value = true;
-    } finally {
-      isLoading.value = false;
-      loading.value = false;
-      setOpenLinkModal(false);
-    }
-  } else {
-    return true;
-  }
-};
-
-const handleUnlinkCoreBankCustomer = async () => {
-  if (customerId.value) {
-    try {
-      isLoading.value = true;
-      loading.value = true;
-      data.value = await unLinkCoreBankCustomer(customerId.value);
-      toast({
-        title: "Customer unlinked with core bank successfully. ",
-      });
-    } catch (err: any) {
-      console.error("Error unlinking customer with core bank:", err);
-      toast({
-        title: "Uh oh! Something went wrong.",
-        description: `${err.message}`,
-        variant: "destructive",
-      });
-
-      isError.value = true;
-    } finally {
-      isLoading.value = false;
-      loading.value = false;
-      openEditModal.value = false;
-    }
-  } else {
-    return true;
-  }
-};
-
 </script>
 
 <template>
@@ -130,7 +54,7 @@ const handleUnlinkCoreBankCustomer = async () => {
         <UiTabsList
           class="w-full bg-backgroung flex justify-start py- px-0 border-[1px]"
         >
-          <UiPermissionGuard permission="VIEW_USER_PROFILE" >
+          <UiPermissionGuard :permission=PermissionConstants.READ_USER >
           <UiTabsTrigger
             value="profile"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
@@ -138,7 +62,7 @@ const handleUnlinkCoreBankCustomer = async () => {
             Profile
           </UiTabsTrigger>
           </UiPermissionGuard>
-          <UiPermissionGuard permission="RESET_USER_PIN" >
+          <UiPermissionGuard :permission=PermissionConstants.RESET_USER_PIN >
           <UiTabsTrigger
             value="pinReset"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
@@ -149,7 +73,7 @@ const handleUnlinkCoreBankCustomer = async () => {
    
         </UiTabsList>
 
-        <UiPermissionGuard permission="VIEW_USER_PROFILE" >
+        <UiPermissionGuard :permission=PermissionConstants.READ_USER >
         <UiTabsContent value="profile" class="space-y-4 pt-4 text-sm border-0">
           <UiCard class="grid lg:grid-cols-3 gap-4 md:gap-8 w-full p-6">
             <div class="space-y-1">
@@ -451,7 +375,7 @@ const handleUnlinkCoreBankCustomer = async () => {
 
 
 
-        <UiPermissionGuard permission="RESET_USER_PIN" >
+        <UiPermissionGuard :permission=PermissionConstants.RESET_USER_PIN >
         <UiTabsContent value="pinReset" class="space-y-4 py-8">
           <UsersPinReset />
         </UiTabsContent>
@@ -460,56 +384,6 @@ const handleUnlinkCoreBankCustomer = async () => {
     </UiCard>
   </div>
 
-  <UiAlertDialog :open="openLinkModal" :onOpenChange="setOpenLinkModal">
-    <UiAlertDialogContent>
-      <UiAlertDialogHeader>
-        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
-        <UiAlertDialogDescription>
-          This will permanently link the customer with core bank.
-        </UiAlertDialogDescription>
-      </UiAlertDialogHeader>
-      <UiAlertDialogFooter>
-        <UiAlertDialogCancel @click="setOpenLinkModal(false)">
-          Cancel
-        </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="handleLinkCoreBankCustomer">
-          <Icon
-            name="svg-spinners:8-dots-rotate"
-            v-if="loading"
-            :disabled="loading"
-            class="mr-2 h-4 w-4 animate-spin"
-          ></Icon>
-          Continue
-        </UiAlertDialogAction>
-      </UiAlertDialogFooter>
-    </UiAlertDialogContent>
-  </UiAlertDialog>
-
-  <UiAlertDialog :open="openEditModal" :onOpenChange="setOpenEditModal">
-    <UiAlertDialogContent>
-      <UiAlertDialogHeader>
-        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
-        <UiAlertDialogDescription>
-          This action cannot be undone. This will permanently unlink the
-          customer from core bank.
-        </UiAlertDialogDescription>
-      </UiAlertDialogHeader>
-      <UiAlertDialogFooter>
-        <UiAlertDialogCancel @click="setOpenEditModal(false)">
-          Cancel
-        </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="handleUnlinkCoreBankCustomer">
-          <Icon
-            name="svg-spinners:8-dots-rotate"
-            v-if="loading"
-            :disabled="loading"
-            class="mr-2 h-4 w-4 animate-spin"
-          ></Icon>
-          Continue
-        </UiAlertDialogAction>
-      </UiAlertDialogFooter>
-    </UiAlertDialogContent>
-  </UiAlertDialog>
 </template>
 
 <style lang="css" scoped></style>

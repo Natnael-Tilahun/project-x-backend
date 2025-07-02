@@ -17,6 +17,7 @@ import { MenuLayoutType, PaginationType, SystemMenuType } from "@/global-types";
 import { useDocuments } from "~/composables/useDocuments";
 import IconPicker from "~/components/IconPicker.vue";
 import type { Menu, PaymentIntegration } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -71,7 +72,6 @@ const getMenuDetails = async () => {
     isLoading.value = true;
     loading.value = true;
     data.value = await getMenuById(menuId.value);
-    console.log("muenu data.value: ", data.value);
     if (data.value?.iconPath && data.value.isImage) {
       await getUploadedImage(data.value?.iconPath);
     }
@@ -107,7 +107,6 @@ const getMenuChildrensData = async () => {
   try {
     if(menuId.value){
       selectedChildren.value = await getChildrensByParentId(menuId.value);
-      console.log("allMenuChildrens: ", selectedChildren.value)
     }
   } catch (err) {
     console.error("Error fetching menu childrens:", err);
@@ -1032,6 +1031,7 @@ watch(
               </div>
             </div>
 
+    <UiPermissionGuard :permission=PermissionConstants.UPDATE_INTEGRATION_MENU >
             <div class="flex justify-end mt-10">
               <UiButton
                 type="button"
@@ -1046,6 +1046,7 @@ watch(
                 Save Changes
               </UiButton>
             </div>
+            </UiPermissionGuard>
           </div>
         </UiCard>
       </UiTabsContent>

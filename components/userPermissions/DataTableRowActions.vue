@@ -1,22 +1,16 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
-import { computed } from "vue";
-// import { taskSchema } from "../data/schema";
-// import { type Task } from "../data/schema";
+import { PermissionConstants } from "~/constants/permissions";
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 const props = defineProps<DataTableRowActionsProps<any>>();
 
 function viewPermissionsDetails(id: string) {
-  // alert(id);
   navigateTo(`/userPermissions/${id}`);
   navigator.clipboard.writeText(id);
 }
-
-// const task = computed(() => taskSchema.parse(props.row.original));
 </script>
 
 <template>
@@ -31,7 +25,7 @@ function viewPermissionsDetails(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_PERMISSIONS" >
+      <UiPermissionGuard :permission=PermissionConstants.READ_PERMISSION >
       <UiDropdownMenuItem @click="viewPermissionsDetails(row.original.code)">View & Edit</UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>

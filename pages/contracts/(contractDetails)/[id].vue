@@ -16,6 +16,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Contract, ServiceDefinition } from "~/types";
 import { ServiceType } from "~/global-types";
 import { getIdFromPath } from "~/lib/utils";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const { getContractById, updateContract, refreshContractCoreCustomers, isLoading, isSubmitting } =
@@ -148,7 +149,7 @@ const refetch = async() =>{
       <UiTabsList
         class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
-        <UiPermissionGuard permission="VIEW_CONTRACTS">
+        <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT">
           <UiTabsTrigger
             value="contractDetails"
             @click="
@@ -164,7 +165,7 @@ const refetch = async() =>{
             Contract Details
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER">
+        <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT_CORE_CUSTOMER">
           <UiTabsTrigger
             value="contractCoreCustomers"
             @click="
@@ -180,7 +181,7 @@ const refetch = async() =>{
             Contract Core Customers
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="CREATE_CONTRACT_CORE_CUSTOMER">
+        <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_CORE_CUSTOMER">
           <UiTabsTrigger
             value="newCoreCustomer"
             @click="
@@ -199,7 +200,7 @@ const refetch = async() =>{
             New Contract Core Customer
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER">
+        <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT_CORE_CUSTOMER">
           <UiTabsTrigger
             value="contractCoreCustomerDetails"
             @click="
@@ -218,7 +219,7 @@ const refetch = async() =>{
             Contract Core Customer Details
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_CONTRACT_USERS">
+        <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT_USER">
           <UiTabsTrigger
             value="contractUsers"
             @click="
@@ -234,7 +235,7 @@ const refetch = async() =>{
             Contract Users
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="CREATE_CONTRACT_USERS">
+        <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_USER">
           <UiTabsTrigger
             value="newUser"
             @click="
@@ -264,7 +265,7 @@ const refetch = async() =>{
           Refetch contract from core</UiButton>
       </UiTabsList>
 
-      <UiPermissionGuard permission="VIEW_CONTRACTS">
+      <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT">
         <UiTabsContent
           value="contractDetails"
           class="text-base bg-background rounded-lg"
@@ -360,7 +361,7 @@ const refetch = async() =>{
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <UiPermissionGuard permission="VIEW_CONTRACT_PERMISSIONS">
+                <!-- <UiPermissionGuard :permission="PermissionConstants.UPDATE_CONTRACT_PERMISSIONS"> -->
                   <div class="w-full space-y-2">
                     <UiLabel for="enable">Permissions</UiLabel>
                     <UiSheet class="w-full">
@@ -385,8 +386,8 @@ const refetch = async() =>{
                       </UiSheetContent>
                     </UiSheet>
                   </div>
-                </UiPermissionGuard>
-                <UiPermissionGuard permission="UPDATE_CONTRACTS">
+                <!-- </UiPermissionGuard> -->
+                <UiPermissionGuard :permission="PermissionConstants.UPDATE_CONTRACT">
                   <div class="col-span-full w-full py-4 flex justify-between">
                     <UiButton
                       :disabled="submitting"
@@ -412,7 +413,7 @@ const refetch = async() =>{
           </UiCard>
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER">
+      <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT_CORE_CUSTOMER">
         <UiTabsContent
           value="contractCoreCustomers"
           class="text-base bg-background rounded-lg p-6"
@@ -420,7 +421,7 @@ const refetch = async() =>{
           <ContractsCoreCustomers :contractProps="data" />
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard permission="CREATE_CONTRACT_CORE_CUSTOMER">
+      <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_CORE_CUSTOMER">
         <UiTabsContent
           value="newCoreCustomer"
           class="text-base bg-background rounded-lg p-6"
@@ -428,7 +429,7 @@ const refetch = async() =>{
           <ContractsNewCoreCustomers :contractProps="data" />
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER">
+      <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT_CORE_CUSTOMER">
         <UiTabsContent
           value="contractCoreCustomerDetails"
           class="text-base bg-background rounded-lg p-6"
@@ -439,7 +440,7 @@ const refetch = async() =>{
           />
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard permission="VIEW_CONTRACT_USERS">
+      <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT_USER">
         <UiTabsContent
           value="contractUsers"
           class="text-base bg-background rounded-lg p-6"
@@ -447,7 +448,7 @@ const refetch = async() =>{
           <ContractsUsers :contractProps="data" :contractId="contractId" />
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard permission="CREATE_CONTRACT_USERS">
+      <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_USER">
         <UiTabsContent
           value="newUser"
           class="text-base bg-background rounded-lg p-6"

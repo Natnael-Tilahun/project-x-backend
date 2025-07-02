@@ -1,18 +1,14 @@
 <script lang="ts" setup>
 import { ref } from "vue";
-import { toast } from "~/components/ui/toast";
-import { PaymentOperationType } from "@/global-types";
 import { columns as tableColumns } from "~/components/paymentOperations/columns"; // Renamed to avoid conflict
 
 import type { PaymentOperation } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const {
-  getPaymentIntegrations,
-  getPaymentIntegrationById,
   getPaymentIntegrationPaymentOperations,
 } = usePaymentIntegrations();
 
-const openItems = ref("configuration");
 const route = useRoute();
 
 const integrationId = ref<string>("");
@@ -20,8 +16,6 @@ const loading = ref(false);
 const isError = ref(false);
 const data = ref<PaymentOperation[]>([]);
 integrationId.value = route.params.id as string;
-const activeTab = route.query.activeTab as string;
-console.log("integrationId: ", integrationId.value);
 
 const getAllPaymentOperations = async () => {
   try {
@@ -30,7 +24,6 @@ const getAllPaymentOperations = async () => {
       integrationId.value
     );
     data.value = response;
-    console.log("data: ", data.value);
   } catch (err) {
     console.error("Error fetching payment integration operations:", err);
     isError.value = true;
@@ -65,7 +58,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError && !loading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-<UiPermissionGuard permission="CREATE_PAYMENT_OPERATIONS" >
+<UiPermissionGuard :permission="PermissionConstants.CREATE_PAYMENT_OPERATION" >
   
     <UiButton
       @click="

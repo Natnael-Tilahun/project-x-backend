@@ -3,6 +3,7 @@ const openItems = ref(["item-1"]);
 
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 import type { Customer } from "~/types";
 
 const route = useRoute();
@@ -11,8 +12,6 @@ const {
   getCoreCustomerByAccountNumber,
   activateCustomerById,
   deActivateCustomerById,
-  linkCoreBankCustomer,
-  unLinkCoreBankCustomer,
   getCoreAccountsByCustomerId,
   isLoading,
 } = useCustomers();
@@ -123,65 +122,6 @@ const handleCustomerActivation = async () => {
   }
 };
 
-const handleLinkCoreBankCustomer = async () => {
-  if (accountCustomerId.value) {
-    try {
-      isLoading.value = true;
-      loading.value = true;
-      data.value = await linkCoreBankCustomer(
-        customerId.value,
-        accountCustomerId.value
-      );
-      toast({
-        title: "Customer linked with core bank successfully. ",
-      });
-    } catch (err: any) {
-      console.error("Error linking customer with core bank:", err);
-      toast({
-        title: "Uh oh! Something went wrong.",
-        description: `${err.message}`,
-        variant: "destructive",
-      });
-
-      isError.value = true;
-    } finally {
-      isLoading.value = false;
-      loading.value = false;
-      setOpenLinkModal(false);
-    }
-  } else {
-    return true;
-  }
-};
-
-const handleUnlinkCoreBankCustomer = async () => {
-  if (customerId.value) {
-    try {
-      isLoading.value = true;
-      loading.value = true;
-      data.value = await unLinkCoreBankCustomer(customerId.value);
-      toast({
-        title: "Customer unlinked with core bank successfully. ",
-      });
-    } catch (err: any) {
-      console.error("Error unlinking customer with core bank:", err);
-      toast({
-        title: "Uh oh! Something went wrong.",
-        description: `${err.message}`,
-        variant: "destructive",
-      });
-
-      isError.value = true;
-    } finally {
-      isLoading.value = false;
-      loading.value = false;
-      openEditModal.value = false;
-    }
-  } else {
-    return true;
-  }
-};
-
 const searchCoreAccountHandler = async () => {
   try {
     isLoading.value = true;
@@ -257,7 +197,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
         </h1>
       </div>
 
-        <UiPermissionGuard :permission="data?.customerActivated ? 'DEACTIVATE_CUSTOMER' : 'ACTIVATE_CUSTOMER'">
+        <UiPermissionGuard :permission="data?.customerActivated ? PermissionConstants.DEACTIVATE_CUSTOMER : PermissionConstants.ACTIVATE_CUSTOMER">
       <div class="flex flex-col gap-2">
         <UiButton
           size="sm"
@@ -281,7 +221,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
         <UiTabsList
           class="w-full bg-backgroung flex justify-start py- px-0 border-[1px]"
         >
-        <UiPermissionGuard permission="VIEW_CUSTOMER_PROFILE" >
+        <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER >
           <UiTabsTrigger
             value="profile"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
@@ -297,7 +237,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
             Link with core bank
           </UiTabsTrigger>
         </UiPermissionGuard> -->
-        <UiPermissionGuard permission="RESET_CUSTOMER_PIN" >
+        <UiPermissionGuard :permission=PermissionConstants.RESET_CUSTOMER_PIN >
           <UiTabsTrigger
             value="pinReset"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
@@ -305,7 +245,7 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
             PIN Reset
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_CUSTOMER_DEVICES" >
+        <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_DEVICE >
         <UiTabsTrigger
             value="devices"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
@@ -313,18 +253,18 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
             Devices
           </UiTabsTrigger>
           </UiPermissionGuard>
-               <!-- <UiPermissionGuard permission="VIEW_CUSTOMER_CONTRACTS" > -->
+               <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_CONTRACT >
                 <UiTabsTrigger
             value="contracts"
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Contracts
           </UiTabsTrigger>
-          <!-- </UiPermissionGuard> -->
+          </UiPermissionGuard>
         </UiTabsList>
         
 
-        <UiPermissionGuard permission="VIEW_CUSTOMER_PROFILE" >
+        <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER >
         <UiTabsContent
           value="profile"
           class="space-y-4 pt-4 text-base border-0"
@@ -538,20 +478,20 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
           <CustomersPinReset :phone="data?.phone" :customerId="customerId" :coreCustomerId="data?.coreCustomerId" />
         </UiTabsContent>
 
-           <UiPermissionGuard permission="VIEW_CUSTOMER_DEVICES" >
+           <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_DEVICE >
             <UiTabsContent value="devices" class="space-y-4 py-8">
           <CustomersDevices />
         </UiTabsContent>
         </UiPermissionGuard>
 
-        <!-- <UiPermissionGuard permission="VIEW_CUSTOMER_CONTRACTS" > -->
+        <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_CONTRACT >
           <UiTabsContent value="contracts" class="space-y-4 py-8">
           <!-- <UiCard class="flex justify-center items-center w-full p-6">
        Customer Contracts
           </UiCard> -->
           <CustomersContracts :coreCustomerId="data?.coreCustomerId || ''" :customerId="customerId"  />
         </UiTabsContent>
-        <!-- </UiPermissionGuard> -->
+        </UiPermissionGuard>
       </UiTabs>
     </UiCard>
   </div>

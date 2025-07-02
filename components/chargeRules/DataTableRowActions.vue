@@ -2,6 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { computed } from "vue";
 import { toast } from "../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { deleteChargeRuleById, isLoading } = useCharges();
 const { setIsUpdated } = usePagesInfoStore();
@@ -70,13 +71,13 @@ async function deleteChargeRule(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_CHARGE_RULES">
+      <UiPermissionGuard :permission="PermissionConstants.READ_CHARGE_RULE">
         <UiDropdownMenuItem @click="viewApplicationDetails(row.original.id)"
           >View and Edit</UiDropdownMenuItem
         >
         <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_CHARGE_RULES">
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_CHARGE_RULE">
         <UiDropdownMenuItem
           @click="setOpenEditModal(true)"
           class="text-red-500"

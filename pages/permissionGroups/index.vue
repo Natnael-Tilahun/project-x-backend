@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import { columns } from "~/components/permissionGroups/columns";
+import { columns as tableColumns } from "~/components/permissionGroups/columns"; // Renamed to avoid conflict
+import { PermissionConstants } from "~/constants/permissions";
 import type { PermissionGroup } from "~/types";
 
-const { getPermissionGroups, getPermissionGroupById, isLoading } = usePermissionGroups();
+const { getPermissionGroups, isLoading } = usePermissionGroups();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<PermissionGroup[]>([]);
@@ -24,13 +25,20 @@ const fetchData = async () => {
   }
 };
 
+
+onMounted(() => {
+  fetchData();
+});
+
 const refetch = async () => {
   await fetchData();
 };
 
-await useAsyncData("permissionGroupsData", async () => {
-  await fetchData();
-});
+// Provide the refetch function
+provide('refetchPermissionGroups', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 
 </script>
 
@@ -43,7 +51,7 @@ await useAsyncData("permissionGroupsData", async () => {
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-  <UiPermissionGuard permission="CREATE_PERMISSION_GROUPS" >
+  <UiPermissionGuard :permission=PermissionConstants.CREATE_PERMISSION_GROUP >
     <NuxtLink to="/permissionGroups/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create

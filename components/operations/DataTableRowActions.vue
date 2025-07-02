@@ -2,6 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { useOperations } from "~/composables/useOperations";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteOperation, isLoading } = useOperations();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -68,16 +69,18 @@ async function deleteOperationHandler(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
+      <UiPermissionGuard :permission="PermissionConstants.READ_API_OPERATION" > 
       <UiDropdownMenuItem @click="viewIntegrationDetail(row.original.id)"
-        >View</UiDropdownMenuItem
+        >View and Edit</UiDropdownMenuItem
       >
-      <UiDropdownMenuItem>Edit</UiDropdownMenuItem>
       <UiDropdownMenuSeparator />
-      <UiDropdownMenuSeparator />
+      </UiPermissionGuard>
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_API_OPERATION" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>
+      </UiPermissionGuard>
     </UiDropdownMenuContent>
   </UiDropdownMenu>
 

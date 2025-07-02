@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/customers/contracts/columns";
+import { columns as tableColumns } from "~/components/customers/contracts/columns"; // Renamed to avoid conflict
+
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { toast } from "~/components/ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 import type { Contract } from "~/types";
 
-const { getContractById, getContractByCoreCustomerId, isLoading } =
+const { getContractByCoreCustomerId, isLoading } =
   useContracts();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<Partial<Contract>[]>([]);
-const keyword = ref<string>("");
 const coreCustomerId = ref<string>("");
 const customerId = ref<string>("");
 
@@ -43,7 +44,6 @@ const fetchData = async () => {
       toast({
         title: "No Contract found for this customer.",
       });
-      console.log("data.vaue: ", data.value);
       return;
     }
 
@@ -54,13 +54,19 @@ const fetchData = async () => {
   }
 };
 
+onMounted(() => {
+  fetchData();
+});
+
 const refetch = async () => {
   await fetchData();
 };
 
-await useAsyncData("contractsData", async () => {
-  await fetchData();
-});
+// Provide the refetch function
+provide('refetchContracts', refetch);
+
+// Generate columns by passing the refetch function
+const columns = computed(() => tableColumns(refetch));
 </script>
 
 <!-- Render DataTable only if data is available -->
@@ -72,7 +78,7 @@ await useAsyncData("contractsData", async () => {
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard permission="CREATE_CONTRACTS">
+    <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT">
       <NuxtLink v-if="data.length > 0" 
       @click="
           navigateTo({

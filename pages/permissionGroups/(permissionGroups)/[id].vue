@@ -14,6 +14,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { PermissionGroup } from "~/types";
 import { RoleScope, PermissionGroupStatus } from "@/global-types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const { getPermissionGroupById, updatePermissionGroup, isLoading, isUpdating } =
@@ -169,7 +170,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <UiPermissionGuard permission="UPDATE_PERMISSION_GROUPS" >
+            <UiPermissionGuard :permission=PermissionConstants.UPDATE_PERMISSION_GROUP >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"

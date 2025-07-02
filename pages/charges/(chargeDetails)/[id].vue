@@ -16,6 +16,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { ChargeType } from "@/global-types";
 import type { Charge } from "~/types";
 import { getIdFromPath } from "~/lib/utils";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const { getChargeById, updateCharge } = useCharges();
@@ -97,7 +98,7 @@ watch(
       <UiTabsList
         class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
-        <UiPermissionGuard permission="VIEW_CHARGES">
+        <UiPermissionGuard :permission="PermissionConstants.READ_CHARGE">
           <UiTabsTrigger
             value="chargeDetails"
             @click="
@@ -113,7 +114,7 @@ watch(
             Charge Details
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_CHARGE_RULES">
+        <UiPermissionGuard :permission="PermissionConstants.READ_CHARGE_RULE">
           <UiTabsTrigger
             value="chargeRules"
             @click="
@@ -129,7 +130,7 @@ watch(
             Charge Rules
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="CREATE_CHARGE_RULE">
+        <UiPermissionGuard :permission="PermissionConstants.CREATE_CHARGE_RULE">
           <UiTabsTrigger
             value="newChargeRule"
             @click="
@@ -147,7 +148,7 @@ watch(
             New Charge Rule
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiPermissionGuard permission="VIEW_CHARGE_RULES">
+        <UiPermissionGuard :permission="PermissionConstants.READ_CHARGE_RULE">
           <UiTabsTrigger
             value="chargeRuleDetails"
             @click="
@@ -167,7 +168,7 @@ watch(
         </UiPermissionGuard>
       </UiTabsList>
 
-      <UiPermissionGuard permission="VIEW_CHARGES">
+      <UiPermissionGuard :permission="PermissionConstants.READ_CHARGE">
         <UiTabsContent
           value="chargeDetails"
           class="text-base bg-background p-6 rounded-lg"
@@ -313,7 +314,7 @@ watch(
         </UiTabsContent>
       </UiPermissionGuard>
 
-      <UiPermissionGuard permission="VIEW_CHARGE_RULES">
+      <UiPermissionGuard :permission="PermissionConstants.READ_CHARGE_RULE">
         <UiTabsContent
           value="chargeRules"
           class="text-base bg-background p-6 rounded-lg"
@@ -321,7 +322,7 @@ watch(
           <ChargeRules :chargeId="chargeId" />
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard permission="CREATE_CHARGE_RULE">
+      <UiPermissionGuard :permission="PermissionConstants.CREATE_CHARGE_RULE">
         <UiTabsContent
           value="newChargeRule"
           class="text-base bg-background p-6 rounded-lg"
@@ -329,7 +330,7 @@ watch(
           <ChargeRulesNewChargeRule :applicationId="chargeId" />
         </UiTabsContent>
       </UiPermissionGuard>
-      <UiPermissionGuard permission="VIEW_CHARGE_RULES">
+      <UiPermissionGuard :permission="PermissionConstants.READ_CHARGE_RULE">
         <UiTabsContent
           value="chargeRuleDetails"
           class="text-base bg-background p-6 rounded-lg"

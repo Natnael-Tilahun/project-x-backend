@@ -13,6 +13,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { StaffAssignment, Staff, Office, Role } from "~/types";
 import { dateFormatter } from "~/lib/utils";
+import { PermissionConstants } from "~/constants/permissions";
 const route = useRoute();
 const { getStaffAssignmentById, updateStaffAssignment, isLoading, isSubmitting } =
   useStaffAssignments();
@@ -55,7 +56,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     };
     data.value = await updateStaffAssignment(values.id, newValues); // Call your API function to fetch profile
     navigateTo(`/staffAssignments/${data.value.id}`);
-    console.log("New staff assignment data; ", data.value);
     toast({
       title: "Staff assignment Created",
       description: "Staff assignment created successfully",
@@ -80,8 +80,8 @@ const fetchStaffAssignmentData = async () => {
   let a = {
     ...data.value,
     staffId: data.value?.staff?.id,
-    newRoleId: data.value?.role?.name,
-    newOfficeId: data.value?.office?.id,
+    roleId: data.value?.role?.name,
+    officeId: data.value?.office?.id,
     supervisorStaffId: data.value?.supervisor?.id,
     assignmentDate : data.value.startDate
         ? dateFormatter(data.value.startDate)
@@ -149,7 +149,7 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="newOfficeId">
+            <FormField v-slot="{ componentField }" name="officeId">
               <FormItem class="w-full">
                 <FormLabel> Office </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -170,7 +170,7 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="newRoleId">
+            <FormField v-slot="{ componentField }" name="roleId">
               <FormItem class="w-full">
                 <FormLabel> Role </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -223,7 +223,7 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-          <UiPermissionGuard permission="UPDATE_STAFF_ASSIGNMENTS" >
+          <UiPermissionGuard :permission=PermissionConstants.UPDATE_STAFF_ASSIGNMENT >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"

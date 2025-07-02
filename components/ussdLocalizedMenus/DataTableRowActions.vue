@@ -2,6 +2,8 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { useUssdLocalizedMenus } from "~/composables/useUssdLocalizedMenus";
+import { PermissionConstants } from "~/constants/permissions";
+
 const { deleteUssdLocalizedMenu, isLoading } = useUssdLocalizedMenus();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -15,13 +17,11 @@ const props = defineProps<{
   refetch: () => Promise<void>;
 }>();
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
 
 function viewUssdLocalizedDefaultMessageDetail(id: string) {
-  console.log("id: ", id);
   navigateTo(`/ussdLocalizedMessages/${id}`);
   navigator.clipboard.writeText(id);
 }
@@ -65,13 +65,13 @@ async function deleteUssdLocalizedMenuHandler(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_USSD_LOCALIZED_MENUS">
+      <UiPermissionGuard :permission="PermissionConstants.READ_USSD_LOCALIZED_MENU">
         <UiDropdownMenuItem
           @click="viewUssdLocalizedDefaultMessageDetail(row.original.id)"
           >View and Edit</UiDropdownMenuItem
         >
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_USSD_LOCALIZED_MENUS">
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_USSD_LOCALIZED_MENU">
         <UiDropdownMenuSeparator />
         <UiDropdownMenuItem
           @click="setOpenDeleteConfirmModal(true)"

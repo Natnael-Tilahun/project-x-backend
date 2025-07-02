@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { DefaultMessage } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -19,7 +20,6 @@ const {
   updateUssdDefaultMessage,
   isLoading,
   isSubmitting,
-  getUssdDefaultMessages,
 } = useUssdDefaultMessage();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
@@ -41,11 +41,15 @@ const form = useForm({
   validationSchema: newUssdDefaultMessagesFormSchema,
 });
 
+onMounted(() => {
+  fetchData();
+});
+
+const fetchData = async () => {
 try {
   isLoading.value = true;
   loading.value = true;
   data.value = await getUssdDefaultMessageById(ussdDefaultMessageId.value);
-  console.log("ussdDefaultMessage.value data: ", data.value);
   form.setValues({
     id: data.value?.id,
     ...data.value,
@@ -57,6 +61,7 @@ try {
   isLoading.value = false;
   loading.value = false;
 }
+}
 
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
@@ -65,7 +70,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     const newValues = {
       ...values,
     };
-    console.log("newValues: ", newValues);
     data.value = await updateUssdDefaultMessage(values.id, newValues); // Call your API function to fetch profile
     navigateTo(`/ussdDefaultMessages/${data.value.id}`);
     console.log("New ussd default message data; ", data.value);
@@ -81,6 +85,12 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = false;
   }
 });
+
+const refetch = async () => {
+  isError.value = false
+  await fetchData();
+};
+
 </script>
 
 <template>
@@ -132,7 +142,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
             </FormItem>
           </FormField>
 
-          <UiPermissionGuard permission="UPDATE_USSD_DEFAULT_MESSAGES">
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_USSD_DEFAULT_MESSAGE">
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="submitting"
@@ -156,11 +166,11 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         </div>
       </form>
     </UiCard>
-    <div v-else-if="data == null || data == undefined">
+    <div v-else-if="data == null || data == undefined" class="w-full">
       <UiNoResultFound title="Sorry, No ussd language found." />
     </div>
-    <div v-else-if="isError">
-      <ErrorMessage title="Something went wrong." />
+    <div v-else-if="isError" class="w-full">
+      <ErrorMessage  :retry="refetch"  title="Something went wrong." />
     </div>
   </div>
 </template>

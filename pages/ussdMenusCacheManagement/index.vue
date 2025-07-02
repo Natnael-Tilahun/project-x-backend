@@ -11,12 +11,12 @@ import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 import { newUssdMenuNamesFormSchema } from "~/validations/newUssdMenuNamesFormSchema";
 import type { UssdMenuList } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { storeUssdMenusToCache, changeUssdMenusToCacheStatus, isLoading } =
   useUssdMenus();
 const isError = ref(false);
 const data = ref<UssdMenuList>();
-const isSubmitting = ref(false);
 const storeAllUssdMenu = ref(false);
 
 const form = useForm({
@@ -24,7 +24,6 @@ const form = useForm({
 });
 
 const storeUssdMenu = async () => {
-  console.log("storeUssdMenu", storeAllUssdMenu.value);
   try {
     isLoading.value = true;
     data.value = await storeUssdMenusToCache();
@@ -52,7 +51,6 @@ const startRedisCache = async () => {
       command: "START",
     };
     const response = await changeUssdMenusToCacheStatus(status);
-    console.log("response", response);
     toast({
       title: "Redis Scheduler Started",
       description: "Redis scheduler started successfully",
@@ -77,7 +75,6 @@ const stopRedisCache = async () => {
       command: "STOP",
     };
     const response = await changeUssdMenusToCacheStatus(status);
-    console.log("response", response);
     toast({
       title: "Redis Scheduler Stopped",
       description: "Redis scheduler stopped successfully",
@@ -117,7 +114,7 @@ const stopRedisCache = async () => {
             <FormControl>
               <UiSwitch
                 :disabled="
-                  !useHasPermissions('UPDATE_USSD_MENU_CACHE_MANAGEMENT')
+                  !useHasPermissions(PermissionConstants.UPDATE_USSD_MENU_CACHE_MANAGEMENT)
                 "
                 :checked="storeAllUssdMenu"
                 @update:checked="
@@ -139,7 +136,7 @@ const stopRedisCache = async () => {
             <FormControl>
               <UiSwitch
                 :disabled="
-                  !useHasPermissions('UPDATE_USSD_MENU_CACHE_MANAGEMENT')
+                  !useHasPermissions(PermissionConstants.UPDATE_USSD_MENU_CACHE_MANAGEMENT)
                 "
                 class="data-[state=checked]:bg-green-500"
                 :checked="value"
@@ -162,7 +159,7 @@ const stopRedisCache = async () => {
             <FormControl>
               <UiSwitch
                 :disabled="
-                  !useHasPermissions('UPDATE_USSD_MENU_CACHE_MANAGEMENT')
+                  !useHasPermissions(PermissionConstants.UPDATE_USSD_MENU_CACHE_MANAGEMENT)
                 "
                 class="data-[state=checked]:bg-red-500"
                 :checked="value"

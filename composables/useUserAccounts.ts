@@ -1,6 +1,4 @@
-import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
-import type { Contract, ContractAccount, ContractCoreCustomer, Permission } from "~/types";
+import type {  ContractAccount, Permission } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
@@ -161,8 +159,7 @@ export const useUserAccounts = () => {
 
       return data.value;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

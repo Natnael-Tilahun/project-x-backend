@@ -2,6 +2,8 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { useUssdDefaultMessage } from "~/composables/useUssdDefaultMessage";
+import { PermissionConstants } from "~/constants/permissions";
+
 const { deleteUssdDefaultMessage, isLoading } = useUssdDefaultMessage();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -10,7 +12,6 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
@@ -59,13 +60,13 @@ async function deleteUssdDefaultMessageHandler(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_USSD_DEFAULT_MESSAGES">
+      <UiPermissionGuard :permission="PermissionConstants.READ_USSD_DEFAULT_MESSAGE">
         <UiDropdownMenuItem
           @click="viewUssdDefaultMessageDetail(row.original.id)"
           >View and Edit</UiDropdownMenuItem
         >
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_USSD_DEFAULT_MESSAGES">
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_USSD_DEFAULT_MESSAGE">
         <UiDropdownMenuSeparator />
         <UiDropdownMenuItem
           @click="setOpenEditModal(true)"

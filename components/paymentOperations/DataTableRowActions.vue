@@ -2,6 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { usePaymentOperations } from "~/composables/usePaymentOperations";
+import { PermissionConstants } from "~/constants/permissions";
 const { deletePaymentOperation, isLoading } = usePaymentOperations();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -65,13 +66,13 @@ async function deletePaymentOperationHandler(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-<UiPermissionGuard permission="VIEW_PAYMENT_OPERATIONS" >
+<UiPermissionGuard :permission="PermissionConstants.READ_PAYMENT_OPERATION" >
       <UiDropdownMenuItem @click="viewIntegrationDetail(row.original.id)"
         >View and Edit</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-<UiPermissionGuard permission="DELETE_PAYMENT_OPERATIONS" >
+<UiPermissionGuard :permission="PermissionConstants.DELETE_PAYMENT_OPERATION" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

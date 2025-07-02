@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
 const { deleteServiceDefinition, isLoading } = useServiceDefinitions();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -9,7 +10,6 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
@@ -58,12 +58,12 @@ async function deleteServiceDefinitions(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-  <UiPermissionGuard permission="VIEW_SERVICE_DEFINITIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.READ_SERVICE_DEFINITION" >
       <UiDropdownMenuItem @click="viewServiceDefinitionDetail(row.original.id)"
         >View and Edit</UiDropdownMenuItem
       >
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_SERVICE_DEFINITIONS" >
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_SERVICE_DEFINITION" >
       <UiDropdownMenuSeparator />
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete

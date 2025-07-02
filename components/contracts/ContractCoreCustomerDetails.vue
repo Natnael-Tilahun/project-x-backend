@@ -15,6 +15,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { ContractCoreCustomer, Contract, Permission } from "~/types";
 import { getIdFromPath } from "~/lib/utils";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {
@@ -304,7 +305,7 @@ console.log(
             </FormField>
 
             <UiPermissionGuard
-              permission="VIEW_CONTRACT_CORE_CUSTOMER_PERMISSIONS"
+              :permission="PermissionConstants.READ_CONTRACT_CORE_CUSTOMER_PERMISSION"
             >
               <div class="w-full space-y-2">
                 <UiLabel for="enable">Permissions</UiLabel>
@@ -331,7 +332,7 @@ console.log(
           </div>
         </form>
       </UiCard>
-      <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS">
+      <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT_ACCOUNT">
         <UiTabs
           v-model="openItems"
           class="w-full space-y-0 border rounded-lg p-"
@@ -387,7 +388,7 @@ console.log(
           />
           
         </UiTabsContent> -->
-          <UiPermissionGuard permission="VIEW_CONTRACT_ACCOUNTS">
+          <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT_ACCOUNT">
             <UiTabsContent
               value="accounts"
               class="text-base bg-background rounded-lg p-4"

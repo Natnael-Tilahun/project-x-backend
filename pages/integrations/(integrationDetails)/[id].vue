@@ -16,6 +16,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { IntegrationType, Protocol, RetryStrategy } from "@/global-types";
 import AuthConfig from "~/components/operations/AuthConfig.vue";
 import type { ApiIntegration, AuthConfiguration } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const { getIntegrationById, updateIntegration, isSubmitting, isLoading } =
@@ -132,321 +133,340 @@ const refetch = async () => {
         {{ data?.name }}
       </h1>
     </div>
-    <UiPermissionGuard permission="VIEW_API_INTEGRATIONS" >
-    <UiTabs v-model="openItems" class="w-full space-y-0">
-      <UiTabsList
-        class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
-      >
-        <UiTabsTrigger
-          value="serviceDefinition"
-          @click="
-            navigateTo({
-              path: route.path,
-              query: {
-                activeTab: 'serviceDefinition',
-              },
-            })
-          "
-          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+    <UiPermissionGuard :permission="PermissionConstants.READ_API_INTEGRATION">
+      <UiTabs v-model="openItems" class="w-full space-y-0">
+        <UiTabsList
+          class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
         >
-          Service Definition
-        </UiTabsTrigger>
-        <UiTabsTrigger
-          value="operations"
-          @click="
-            navigateTo({
-              path: route.path,
-              query: {
-                activeTab: 'operations',
-              },
-            })
-          "
-          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-        >
-          Operations
-        </UiTabsTrigger>
-        <UiTabsTrigger
-          value="configureOperations"
-          @click="
-            navigateTo({
-              path: route.path,
-              query: {
-                activeTab: 'configureOperations',
-              },
-            })
-          "
-          :disabled="openItems != 'configureOperations'"
-          :class="openItems == 'configureOperations' ? '' : 'hidden'"
-          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-        >
-          {{ operationName }}
-        </UiTabsTrigger>
-        <UiTabsTrigger
-          value="newOperation"
-          @click="
-            navigateTo({
-              path: route.path,
-              query: {
-                activeTab: 'newOperation',
-              },
-            })
-          "
-          :disabled="openItems != 'newOperation'"
-          :class="openItems == 'newOperation' ? '' : 'hidden'"
-          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-        >
-          New Operation
-        </UiTabsTrigger>
-      </UiTabsList>
+          <UiPermissionGuard
+            :permission="PermissionConstants.READ_API_INTEGRATION"
+          >
+            <UiTabsTrigger
+              value="serviceDefinition"
+              @click="
+                navigateTo({
+                  path: route.path,
+                  query: {
+                    activeTab: 'serviceDefinition',
+                  },
+                })
+              "
+              class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+            >
+              Service Definition
+            </UiTabsTrigger>
+          </UiPermissionGuard>
+          <UiPermissionGuard
+            :permission="PermissionConstants.READ_API_OPERATION"
+          >
+            <UiTabsTrigger
+              value="operations"
+              @click="
+                navigateTo({
+                  path: route.path,
+                  query: {
+                    activeTab: 'operations',
+                  },
+                })
+              "
+              class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+            >
+              Operations
+            </UiTabsTrigger>
+            <UiTabsTrigger
+              value="configureOperations"
+              @click="
+                navigateTo({
+                  path: route.path,
+                  query: {
+                    activeTab: 'configureOperations',
+                  },
+                })
+              "
+              :disabled="openItems != 'configureOperations'"
+              :class="openItems == 'configureOperations' ? '' : 'hidden'"
+              class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+            >
+              {{ operationName }}
+            </UiTabsTrigger>
+          </UiPermissionGuard>
+          <UiPermissionGuard
+            :permission="PermissionConstants.CREATE_API_OPERATION"
+          >
+            <UiTabsTrigger
+              value="newOperation"
+              @click="
+                navigateTo({
+                  path: route.path,
+                  query: {
+                    activeTab: 'newOperation',
+                  },
+                })
+              "
+              :disabled="openItems != 'newOperation'"
+              :class="openItems == 'newOperation' ? '' : 'hidden'"
+              class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+            >
+              New Operation
+            </UiTabsTrigger>
+          </UiPermissionGuard>
+        </UiTabsList>
 
-      <UiTabsContent
-        value="serviceDefinition"
-        class="text-base bg-background p-6 rounded-lg"
-      >
-        <div v-if="loading" class="py-10 flex justify-center w-full">
-          <UiLoading />
-        </div>
-        <div v-else-if="data && !isError">
-          <form @submit="onSubmit">
-            <div class="grid grid-cols-2 gap-6">
-              <FormField
-                :model-value="data?.id"
-                v-slot="{ componentField }"
-                name="id"
-              >
-                <FormItem>
-                  <FormLabel> ID </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="text"
-                      disabled
-                      placeholder="CBE050202"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.name"
-                v-slot="{ componentField }"
-                name="name"
-              >
-                <FormItem>
-                  <FormLabel> Name </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="text"
-                      placeholder="Enter name"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.url"
-                v-slot="{ componentField }"
-                name="url"
-              >
-                <FormItem>
-                  <FormLabel> URL </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="text"
-                      placeholder="Enter URL"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.apiIntegrationPath"
-                v-slot="{ componentField }"
-                name="apiIntegrationPath"
-              >
-                <FormItem>
-                  <FormLabel> API Integration Path </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="text"
-                      placeholder="Enter API Integration Path"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.host"
-                v-slot="{ componentField }"
-                name="host"
-              >
-                <FormItem>
-                  <FormLabel> Host </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="text"
-                      placeholder="Enter Host"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.protocol"
-                v-slot="{ componentField }"
-                name="protocol"
-              >
-                <FormItem>
-                  <FormLabel> Protocol </FormLabel>
-                  <UiSelect v-bind="componentField">
-                    <FormControl>
-                      <UiSelectTrigger>
-                        <UiSelectValue placeholder="Select a protocol" />
-                      </UiSelectTrigger>
-                    </FormControl>
-                    <UiSelectContent>
-                      <UiSelectGroup>
-                        <UiSelectItem
-                          v-for="item in Object.values(Protocol)"
-                          :key="item"
-                          :value="item"
-                        >
-                          {{ item }}
-                        </UiSelectItem>
-                      </UiSelectGroup>
-                    </UiSelectContent>
-                  </UiSelect>
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.type"
-                v-slot="{ componentField }"
-                name="type"
-              >
-                <FormItem>
-                  <FormLabel> Type </FormLabel>
-                  <UiSelect v-bind="componentField">
-                    <FormControl>
-                      <UiSelectTrigger>
-                        <UiSelectValue placeholder="Select a service type" />
-                      </UiSelectTrigger>
-                    </FormControl>
-                    <UiSelectContent>
-                      <UiSelectGroup>
-                        <UiSelectItem
-                          v-for="item in Object.values(IntegrationType)"
-                          :key="item"
-                          :value="item"
-                        >
-                          {{ item }}
-                        </UiSelectItem>
-                      </UiSelectGroup>
-                    </UiSelectContent>
-                  </UiSelect>
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.retryStrategy"
-                v-slot="{ componentField }"
-                name="retryStrategy"
-              >
-                <FormItem>
-                  <FormLabel> Retry Strategy </FormLabel>
-                  <UiSelect v-bind="componentField">
-                    <FormControl>
-                      <UiSelectTrigger>
-                        <UiSelectValue placeholder="Select a retry strategy" />
-                      </UiSelectTrigger>
-                    </FormControl>
-                    <UiSelectContent>
-                      <UiSelectGroup>
-                        <UiSelectItem
-                          v-for="item in Object.values(RetryStrategy)"
-                          :key="item"
-                          :value="item"
-                        >
-                          {{ item }}
-                        </UiSelectItem>
-                      </UiSelectGroup>
-                    </UiSelectContent>
-                  </UiSelect>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.version"
-                v-slot="{ componentField }"
-                name="version"
-              >
-                <FormItem>
-                  <FormLabel> Version </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="text"
-                      placeholder="Enter version"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.timeout"
-                v-slot="{ componentField }"
-                name="timeout"
-              >
-                <FormItem>
-                  <FormLabel> Timeout </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="number"
-                      placeholder="Enter timeout"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.retryRetries"
-                v-slot="{ componentField }"
-                name="retryRetries"
-              >
-                <FormItem>
-                  <FormLabel> Retry Retries </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="number"
-                      placeholder="Enter retry retries"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.retryDelay"
-                v-slot="{ componentField }"
-                name="retryDelay"
-              >
-                <FormItem>
-                  <FormLabel> Retry Delay </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="number"
-                      placeholder="Enter retry delay"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
+        <UiPermissionGuard
+          :permission="PermissionConstants.READ_API_INTEGRATION"
+        >
+          <UiTabsContent
+            value="serviceDefinition"
+            class="text-base bg-background p-6 rounded-lg"
+          >
+            <div v-if="loading" class="py-10 flex justify-center w-full">
+              <UiLoading />
+            </div>
+            <div v-else-if="data && !isError">
+              <form @submit="onSubmit">
+                <div class="grid grid-cols-2 gap-6">
+                  <FormField
+                    :model-value="data?.id"
+                    v-slot="{ componentField }"
+                    name="id"
+                  >
+                    <FormItem>
+                      <FormLabel> ID </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          disabled
+                          placeholder="CBE050202"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.name"
+                    v-slot="{ componentField }"
+                    name="name"
+                  >
+                    <FormItem>
+                      <FormLabel> Name </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter name"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.url"
+                    v-slot="{ componentField }"
+                    name="url"
+                  >
+                    <FormItem>
+                      <FormLabel> URL </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter URL"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.apiIntegrationPath"
+                    v-slot="{ componentField }"
+                    name="apiIntegrationPath"
+                  >
+                    <FormItem>
+                      <FormLabel> API Integration Path </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter API Integration Path"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.host"
+                    v-slot="{ componentField }"
+                    name="host"
+                  >
+                    <FormItem>
+                      <FormLabel> Host </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter Host"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.protocol"
+                    v-slot="{ componentField }"
+                    name="protocol"
+                  >
+                    <FormItem>
+                      <FormLabel> Protocol </FormLabel>
+                      <UiSelect v-bind="componentField">
+                        <FormControl>
+                          <UiSelectTrigger>
+                            <UiSelectValue placeholder="Select a protocol" />
+                          </UiSelectTrigger>
+                        </FormControl>
+                        <UiSelectContent>
+                          <UiSelectGroup>
+                            <UiSelectItem
+                              v-for="item in Object.values(Protocol)"
+                              :key="item"
+                              :value="item"
+                            >
+                              {{ item }}
+                            </UiSelectItem>
+                          </UiSelectGroup>
+                        </UiSelectContent>
+                      </UiSelect>
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.type"
+                    v-slot="{ componentField }"
+                    name="type"
+                  >
+                    <FormItem>
+                      <FormLabel> Type </FormLabel>
+                      <UiSelect v-bind="componentField">
+                        <FormControl>
+                          <UiSelectTrigger>
+                            <UiSelectValue
+                              placeholder="Select a service type"
+                            />
+                          </UiSelectTrigger>
+                        </FormControl>
+                        <UiSelectContent>
+                          <UiSelectGroup>
+                            <UiSelectItem
+                              v-for="item in Object.values(IntegrationType)"
+                              :key="item"
+                              :value="item"
+                            >
+                              {{ item }}
+                            </UiSelectItem>
+                          </UiSelectGroup>
+                        </UiSelectContent>
+                      </UiSelect>
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.retryStrategy"
+                    v-slot="{ componentField }"
+                    name="retryStrategy"
+                  >
+                    <FormItem>
+                      <FormLabel> Retry Strategy </FormLabel>
+                      <UiSelect v-bind="componentField">
+                        <FormControl>
+                          <UiSelectTrigger>
+                            <UiSelectValue
+                              placeholder="Select a retry strategy"
+                            />
+                          </UiSelectTrigger>
+                        </FormControl>
+                        <UiSelectContent>
+                          <UiSelectGroup>
+                            <UiSelectItem
+                              v-for="item in Object.values(RetryStrategy)"
+                              :key="item"
+                              :value="item"
+                            >
+                              {{ item }}
+                            </UiSelectItem>
+                          </UiSelectGroup>
+                        </UiSelectContent>
+                      </UiSelect>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.version"
+                    v-slot="{ componentField }"
+                    name="version"
+                  >
+                    <FormItem>
+                      <FormLabel> Version </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="text"
+                          placeholder="Enter version"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.timeout"
+                    v-slot="{ componentField }"
+                    name="timeout"
+                  >
+                    <FormItem>
+                      <FormLabel> Timeout </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="number"
+                          placeholder="Enter timeout"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.retryRetries"
+                    v-slot="{ componentField }"
+                    name="retryRetries"
+                  >
+                    <FormItem>
+                      <FormLabel> Retry Retries </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="number"
+                          placeholder="Enter retry retries"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField
+                    :model-value="data?.retryDelay"
+                    v-slot="{ componentField }"
+                    name="retryDelay"
+                  >
+                    <FormItem>
+                      <FormLabel> Retry Delay </FormLabel>
+                      <FormControl>
+                        <UiInput
+                          type="number"
+                          placeholder="Enter retry delay"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
 
-              <!-- <FormField
+                  <!-- <FormField
                 :model-value="data?.authConfig?.id"
                 v-slot="{ componentField }"
                 name="authConfig"
@@ -481,99 +501,106 @@ const refetch = async () => {
                   </UiSelect>
                 </FormItem>
               </FormField> -->
-              <FormField
-                :model-value="data?.description"
-                v-slot="{ componentField }"
-                name="description"
-              >
-                <FormItem>
-                  <FormLabel> Description </FormLabel>
-                  <FormControl>
-                    <UiTextarea
-                      placeholder="Enter Description"
-                      class="resize-y"
-                      rows="0"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <UiSheet>
-                <div class="flex flex-col gap-2">
-                  <UiLabel>Auth Config</UiLabel>
-                  <UiSheetTrigger>
-                    <UiButton
-                      class="w-full"
-                      variant="outline"
-                      type="button"
-                      size="sm"
+                  <FormField
+                    :model-value="data?.description"
+                    v-slot="{ componentField }"
+                    name="description"
+                  >
+                    <FormItem>
+                      <FormLabel> Description </FormLabel>
+                      <FormControl>
+                        <UiTextarea
+                          placeholder="Enter Description"
+                          class="resize-y"
+                          rows="0"
+                          v-bind="componentField"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+   <UiPermissionGuard :permission=PermissionConstants.READ_API_INTEGRATION_AUTH_CONFIG >
+                  <UiSheet>
+                    <div class="flex flex-col gap-2">
+                      <UiLabel>Auth Config</UiLabel>
+                      <UiSheetTrigger>
+                        <UiButton
+                          class="w-full"
+                          variant="outline"
+                          type="button"
+                          size="sm"
+                        >
+                          Auth Config
+                        </UiButton>
+                      </UiSheetTrigger>
+                    </div>
+
+                    <UiSheetContent
+                      class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
                     >
-                      Auth Config
-                    </UiButton>
-                  </UiSheetTrigger>
+                      <AuthConfig
+                        :apiIntegrationProps="data"
+                        @refresh="getIntegrationData"
+                      />
+                    </UiSheetContent>
+                  </UiSheet>
+                  </UiPermissionGuard>
+                  <UiPermissionGuard :permission="PermissionConstants.UPDATE_API_INTEGRATION">
+                    <div class="col-span-full w-full py-4 flex justify-between">
+                      <UiButton
+                        :disabled="loading"
+                        variant="outline"
+                        type="button"
+                        size="lg"
+                        @click="$router.go(-1)"
+                      >
+                        Cancel
+                      </UiButton>
+                      <UiButton :disabled="loading" size="lg" type="submit">
+                        <Icon
+                          name="svg-spinners:8-dots-rotate"
+                          v-if="loading"
+                          class="mr-2 h-4 w-4 animate-spin"
+                        ></Icon>
+
+                        Update
+                      </UiButton>
+                    </div>
+                  </UiPermissionGuard>
                 </div>
-
-                <UiSheetContent
-                  class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
-                >
-                  <AuthConfig
-                    :apiIntegrationProps="data"
-                    @refresh="getIntegrationData"
-                  />
-                </UiSheetContent>
-              </UiSheet>
-              <UiPermissionGuard permission="UPDATE_API_INTEGRATION" >
-              <div class="col-span-full w-full py-4 flex justify-between">
-                <UiButton
-                  :disabled="loading"
-                  variant="outline"
-                  type="button"
-                  size="lg"
-                  @click="$router.go(-1)"
-                >
-                  Cancel
-                </UiButton>
-                <UiButton :disabled="loading" size="lg" type="submit">
-                  <Icon
-                    name="svg-spinners:8-dots-rotate"
-                    v-if="loading"
-                    class="mr-2 h-4 w-4 animate-spin"
-                  ></Icon>
-
-                  Update
-                </UiButton>
-              </div>
-              </UiPermissionGuard>
+              </form>
             </div>
-          </form>
-        </div>
-        <div v-if="isError">
-          <ErrorMessage :retry="refetch" title="Something went wrong." />
-        </div>
-      </UiTabsContent>
+            <div v-if="isError">
+              <ErrorMessage :retry="refetch" title="Something went wrong." />
+            </div>
+          </UiTabsContent>
+        </UiPermissionGuard>
+        <UiPermissionGuard :permission="PermissionConstants.READ_API_OPERATION">
+          <UiTabsContent
+            value="operations"
+            class="text-base bg-background p-6 rounded-lg"
+          >
+            <Operations :apiIntegrationIdProps="integrationId" />
+          </UiTabsContent>
 
-      <UiTabsContent
-        value="operations"
-        class="text-base bg-background p-6 rounded-lg"
-      >
-        <Operations :apiIntegrationIdProps="integrationId" />
-      </UiTabsContent>
-
-      <UiTabsContent
-        value="configureOperations"
-        class="text-base bg-background py-0 rounded-lg"
-      >
-        <OperationsConfigurations />
-      </UiTabsContent>
-
-      <UiTabsContent
-        value="newOperation"
-        class="text-base bg-background py-2 rounded-lg"
-      >
-        <OperationsNewOperation :integrationId="integrationId" />
-      </UiTabsContent>
-    </UiTabs>
+          <UiTabsContent
+            value="configureOperations"
+            class="text-base bg-background py-0 rounded-lg"
+          >
+            <OperationsConfigurations />
+          </UiTabsContent>
+        </UiPermissionGuard>
+        <UiPermissionGuard
+          :permission="PermissionConstants.CREATE_API_OPERATION"
+        >
+          <UiTabsContent
+            value="newOperation"
+            class="text-base bg-background py-2 rounded-lg"
+          >
+            <OperationsNewOperation :integrationId="integrationId" />
+          </UiTabsContent>
+        </UiPermissionGuard>
+      </UiTabs>
     </UiPermissionGuard>
   </div>
 </template>

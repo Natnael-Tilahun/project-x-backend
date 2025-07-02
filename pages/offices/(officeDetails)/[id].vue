@@ -13,6 +13,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Office } from "~/types";
 import { dateFormatter } from "~/lib/utils";
+import { PermissionConstants } from "~/constants/permissions";
 const route = useRoute();
 const { getOfficeById, updateOffice, isLoading, isSubmitting, getOffices } =
   useOffice();
@@ -41,12 +42,7 @@ try {
   isLoading.value = true;
   loading.value = true;
   data.value = await getOfficeById(merchantId.value);
-  console.log(
-    "office.value data: ",
-  data.value
-  );
   offices.value = await getOffices();
-  console.log("Offices: ", offices.value);
   form.setValues(
     {...data.value,
   openingDate: data.value.openingDate
@@ -70,10 +66,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       openingDate: new Date().toISOString(),
       parent: values.parent
     }
-    console.log("newValues: ", newValues);
     data.value = await updateOffice(values.id, newValues); // Call your API function to fetch profile
     navigateTo(`/offices/${data.value.id}`);
-    console.log("New office data; ", data.value);
     toast({
       title: "Office Updated",
       description: "Office updated successfully",
@@ -236,7 +230,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <UiPermissionGuard permission="UPDATE_OFFICE" >
+          <UiPermissionGuard :permission=PermissionConstants.UPDATE_OFFICE >
           <div class="col-span-full w-full py-4 flex justify-between">
             <UiButton
               :disabled="submitting"

@@ -15,6 +15,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { Platform } from "@/global-types";
 import type { Application } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const { getApplicationById, updateApplication } = useApplications();
@@ -116,7 +117,7 @@ watch(
       <UiTabsList
         class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
-  <UiPermissionGuard permission="VIEW_APPLICATIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.READ_APPLICATION" >
         <UiTabsTrigger
           value="applicationDetails"
           @click="
@@ -132,7 +133,7 @@ watch(
           Application Details
         </UiTabsTrigger>
         </UiPermissionGuard>
-  <UiPermissionGuard permission="VIEW_APPLICATION_VERSIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.READ_APPLICATION_VERSION" >
         <UiTabsTrigger
           value="applicationVersions"
           @click="
@@ -148,7 +149,7 @@ watch(
           Application Versions
         </UiTabsTrigger>
         </UiPermissionGuard>
-  <UiPermissionGuard permission="CREATE_APPLICATION_VERSIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.CREATE_APPLICATION_VERSION" >
         <UiTabsTrigger
           value="newApplicationVersion"
           @click="
@@ -166,7 +167,7 @@ watch(
           New Application Version
         </UiTabsTrigger>
         </UiPermissionGuard>
-  <UiPermissionGuard permission="VIEW_APPLICATION_VERSIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.READ_APPLICATION_VERSION" >
         <UiTabsTrigger
           value="applicationVersionDetails"
           @click="
@@ -186,7 +187,7 @@ watch(
         </UiPermissionGuard>
       </UiTabsList>
 
-  <UiPermissionGuard permission="VIEW_APPLICATIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.READ_APPLICATION" >
       <UiTabsContent
         value="applicationDetails"
         class="text-base bg-background p-6 rounded-lg"
@@ -407,7 +408,7 @@ watch(
       </UiTabsContent>
       </UiPermissionGuard>
 
-  <UiPermissionGuard permission="VIEW_APPLICATION_VERSIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.READ_APPLICATION_VERSION" >
       <UiTabsContent
         value="applicationVersions"
         class="text-base bg-background p-6 rounded-lg"
@@ -415,7 +416,7 @@ watch(
         <ApplicationVersion :applicationId="applicationId" />
       </UiTabsContent>
       </UiPermissionGuard>
-  <UiPermissionGuard permission="CREATE_APPLICATION_VERSIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.CREATE_APPLICATION_VERSION" >
       <UiTabsContent
         value="newApplicationVersion"
         class="text-base bg-background p-6 rounded-lg"
@@ -425,7 +426,7 @@ watch(
         />
       </UiTabsContent>
       </UiPermissionGuard>
-  <UiPermissionGuard permission="VIEW_APPLICATION_VERSIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.READ_APPLICATION_VERSION" >
       <UiTabsContent
         value="applicationVersionDetails"
         class="text-base bg-background p-6 rounded-lg"

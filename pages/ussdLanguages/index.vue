@@ -1,16 +1,15 @@
 <script setup lang="ts">
-import { ref, onMounted, provide, computed } from "vue"; // Added provide, useAsyncData, computed
+import { ref, provide, computed } from "vue"; // Added provide, useAsyncData, computed
 import { columns as tableColumns } from "~/components/ussdLanguages/columns"; // Renamed to avoid conflict
 import { useUssdLanguages } from "~/composables/useUssdLanguages";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { UssdLanguage } from "~/types";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getUssdLanguages, isLoading: composableIsLoading } = useUssdLanguages(); // Renamed
-const keyword = ref<string>("");
 const data = ref<UssdLanguage[]>([]);
 const pageIsLoading = ref(true); // For overall page loading, distinct from composable's
 const isError = ref(false);
-// const router = useRouter(); // Not used here
 
 const getUssdLanguageData = async () => {
   try {
@@ -54,7 +53,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && data.length > 0 && !isError && !pageIsLoading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard permission="CREATE_USSD_LANGUAGES">
+    <UiPermissionGuard :permission="PermissionConstants.CREATE_USSD_LANGUAGE">
       <NuxtLink to="/ussdLanguages/new" class="w-fit self-end">
         <UiButton class="w-fit self-end px-5"
           ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
@@ -79,7 +78,7 @@ const columns = computed(() => tableColumns(refetch));
       </template>
     </UiDataTable>
   </div>
-  <div v-else-if="data && data.length === 0 && !isError && !pageIsLoading" class="py-10 text-center">
+  <div v-else-if="data && data.length === 0 && !isError && !pageIsLoading" class="py-10 text-center w-full">
     <p class="text-lg text-gray-600">No USSD languages found.</p>
     <UiPermissionGuard permission="CREATE_USSD_LANGUAGES">
         <NuxtLink to="/ussdLanguages/new" class="mt-4 inline-block">
@@ -90,7 +89,7 @@ const columns = computed(() => tableColumns(refetch));
         </NuxtLink>
     </UiPermissionGuard>
   </div>
-  <div v-if="isError && !pageIsLoading">
+  <div v-if="isError && !pageIsLoading" class="w-full">
     <ErrorMessage :retry="refetch" title="Something went wrong." />
   </div>
 </template>

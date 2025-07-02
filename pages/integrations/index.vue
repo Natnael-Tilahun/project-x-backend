@@ -4,15 +4,15 @@ import { useIntegrations } from "~/composables/useIntegrations";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { ApiIntegration } from "~/types";
 import { columns as tableColumns } from "~/components/integrations/columns"; // Renamed to avoid conflict
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getIntegrations } = useIntegrations();
-const keyword = ref<string>("");
 const data = ref<ApiIntegration[]>([]);
 const isLoading = ref(false);
 const isDownloading = ref(false);
 const isError = ref(false);
 const router = useRouter(); // {{ edit_2 }}
-const openImportDialog = ref(false)
+const openImportDialog = ref(false);
 
 const getApiIntegrationData = async () => {
   try {
@@ -40,7 +40,7 @@ const refetch = async () => {
 };
 
 const closeImportDialog = async () => {
-  openImportDialog.value = false
+  openImportDialog.value = false;
 };
 
 // const searchHandler = async () => {
@@ -74,15 +74,20 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard permission="CREATE_API_INTEGRATION">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-4">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-end gap-4">
+      <UiPermissionGuard
+        :permission="PermissionConstants.CREATE_API_INTEGRATION"
+      >
         <NuxtLink to="/integrations/new" class="w-fit">
           <UiButton class="w-fit px-5"
             ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
             >Configure New</UiButton
           >
         </NuxtLink>
-
+      </UiPermissionGuard>
+      <UiPermissionGuard
+        :permission="PermissionConstants.IMPORT_API_INTEGRATION"
+      >
         <UiSheet v-model:open="openImportDialog">
           <UiSheetTrigger>
             <UiButton :disabled="isDownloading" type="submit">
@@ -99,12 +104,19 @@ const columns = computed(() => tableColumns(refetch));
           <UiSheetContent
             class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
           >
-            <IntegrationsImportIntegration @closeImportDialog="closeImportDialog"  @refresh="refetch" />
+            <IntegrationsImportIntegration
+              @closeImportDialog="closeImportDialog"
+              @refresh="refetch"
+            />
           </UiSheetContent>
         </UiSheet>
+      </UiPermissionGuard>
+      <UiPermissionGuard
+        :permission="PermissionConstants.EXPORT_API_INTEGRATION"
+      >
         <IntegrationsExportAllIntegrations />
-      </div>
-    </UiPermissionGuard>
+      </UiPermissionGuard>
+    </div>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <div class="flex items-center justify-between">

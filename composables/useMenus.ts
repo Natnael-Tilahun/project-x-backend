@@ -1,5 +1,3 @@
-import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
 import type { Menu } from "~/types";
 import type { ApiResult } from "~/types/api";
@@ -10,7 +8,6 @@ export const useMenus = () => {
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
-  const { toast } = useToast();
 
   const getMenus: (page?: number, size?: number) => ApiResult<Menu[]> = async (page, size) => {
     try {

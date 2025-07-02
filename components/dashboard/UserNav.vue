@@ -6,7 +6,7 @@ const logoutHandler = async () => {
   logout().then((data) => {
     console.log("User logged out successfully!");
     // Trigger the storage event
-    //  localStorage.setItem('auth-event', `logout-${Date.now()}`);
+     localStorage.setItem('auth-event', `logout-${Date.now()}`);
   });
 };
 </script>

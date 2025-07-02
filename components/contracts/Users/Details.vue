@@ -15,6 +15,7 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type {  ContractUser, ServiceDefinitionRole } from "~/types";
 import { getIdFromPath } from "~/lib/utils";
+import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
 const {  getServiceDefinitionRolesByServiceDefinitionId } = useServiceDefinitionsRoles();
@@ -242,7 +243,7 @@ const refetch = async() => {
             </FormField>
 
             <UiPermissionGuard
-              permission="VIEW_CONTRACT_CORE_CUSTOMER_PERMISSIONS"
+              :permission="PermissionConstants.READ_CONTRACT_CORE_CUSTOMER_PERMISSION"
             >
               <div class="w-full space-y-2">
                 <UiLabel for="enable">User Accounts</UiLabel>
@@ -277,7 +278,7 @@ const refetch = async() => {
             <UiAlertDialogCancel  @click="setOpenNewUserModal(false)">
                 Cancel
           </UiAlertDialogCancel>
-          <UiPermissionGuard permission="UPDATE_CONTRACT_USERS" >
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_CONTRACT_USER" >
 
           <!-- <UiAlertDialogCancel  class="w-fit p-0"> -->
             <UiButton :disabled="submitting" class="w-fit" type="submit">

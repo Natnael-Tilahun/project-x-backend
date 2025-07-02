@@ -11,13 +11,15 @@ import { applicationVersionFormSchema } from "~/validations/applicationVersionFo
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 import { UpdatePolicy, AppVersionStatus } from "@/global-types";
-import { ApplicationVersion } from "@/types/applicationVersion";
 import { splitPath } from "~/lib/utils";
+import { PermissionConstants } from "~/constants/permissions";
+import type { AppVersion } from "~/types";
+
 const { getApplicationVersionById, updateApplicationVersion } =
   await useApplications();
 const isError = ref(false);
 const loading = ref(false);
-const data = ref<ApplicationVersion>();
+const data = ref<AppVersion>();
 const applicationId = ref<string>("");
 const applicationVersionId = ref<string>("");
 const route = useRoute();
@@ -114,6 +116,20 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       <div class="text-sm md:text-base p-6 basis-full">
         <form @submit="onSubmit">
           <div class="grid grid-cols-2 gap-6">
+            <FormField v-slot="{ componentField }" name="id">
+                <FormItem>
+                  <FormLabel>Application Version Id </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="text"
+                      disabled
+                      placeholder="Enter application Id"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
             <FormField v-slot="{ componentField }" name="versionName">
               <FormItem class="w-full">
                 <FormLabel> Version Name </FormLabel>
@@ -296,7 +312,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               </FormItem>
             </FormField>
 
-            <UiPermissionGuard permission="UPDATE_APPLICATION_VERSIONS" >
+            <UiPermissionGuard :permission="PermissionConstants.UPDATE_APPLICATION_VERSION" >
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="isSubmitting"

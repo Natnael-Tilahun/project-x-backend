@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Customer } from "~/types";
 import { columns as tableColumns } from "~/components/customers/columns"; // Renamed to avoid conflict
+import { PermissionConstants } from "~/constants/permissions";
 
 const { getCustomers, searchCustomers, isLoading } = useCustomers();
 const loading = ref(isLoading.value);
@@ -81,7 +82,7 @@ const columns = computed(() => tableColumns(refetch));
           Search</UiButton
         >
       </div>
-      <UiPermissionGuard permission="REGISTER_CUSTOMERS">
+      <UiPermissionGuard :permission=PermissionConstants.CREATE_CUSTOMER>
         <NuxtLink to="/customers/new" class="w-fit self-end">
           <UiButton class="w-fit self-end px-5"
             ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon

@@ -2,6 +2,7 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "@/components/ui/toast";
 import { getIdFromPath } from "~/lib/utils";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { deleteContractCoreCustomer, isLoading } = useContractsCoreCustomers();
 const loading = ref(isLoading.value);
@@ -12,11 +13,16 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
+  refetch: () => Promise<void>; // Accept refetch as a prop
 }
-const props = defineProps<DataTableRowActionsProps<any>>();
+
+const props = defineProps<{
+  row: Row<any>;
+  refetch: () => Promise<void>;
+}>();
+const emit = defineEmits(['contractCoreCustomerDeleted']); // Added 'languageDeleted'
 
 function viewContractCoreCustomerDetail(contractId: string, coreCustomerId:string) {
   navigateTo(`/contracts/${contractId}?activeTab=contractCoreCustomerDetails&&coreCustomerId=${coreCustomerId}`);
@@ -33,7 +39,7 @@ async function deleteContractCoreCustomers(id: string) {
       title: "Contract Core Customer deleted successfully",
     });
     // Reload the window after deleting the role
-    window.location.reload();
+    await props.refetch()
   } catch (err) {
     console.error("Error deleting contract core customer:", err);
     isError.value = true;
@@ -57,13 +63,13 @@ async function deleteContractCoreCustomers(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-  <UiPermissionGuard permission="VIEW_CONTRACT_CORE_CUSTOMER" >
+  <UiPermissionGuard :permission="PermissionConstants.READ_CONTRACT_CORE_CUSTOMER" >
       <UiDropdownMenuItem @click="viewContractCoreCustomerDetail(row.original.contract.id, row.original.id)"
         >View and Edit</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-  <UiPermissionGuard permission="DELETE_CONTRACT_CORE_CUSTOMER" >
+  <UiPermissionGuard :permission="PermissionConstants.DELETE_CONTRACT_CORE_CUSTOMER" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

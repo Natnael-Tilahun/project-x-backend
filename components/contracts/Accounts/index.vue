@@ -14,9 +14,9 @@ import {
   FormControl,
   FormMessage,
 } from "~/components/ui/form";
+import { PermissionConstants } from "~/constants/permissions";
 
 const {
-  getContractCoreCustomerAccounts,
   updateContractCoreCustomerAccountStatus,
   isLoading: isLoadingContractCoreCustomerAccount,
 } = useContractsCoreCustomersAccount();
@@ -25,11 +25,11 @@ const {
   isLoading: isLoadingCreateNewContractAccount,
   isSubmitting,
 } = useContractsCoreCustomers();
-const route = useRoute();
+const { getCoreAccountsByCustomerId, isLoading } = useCustomers();
+
 const contractId = ref<string>("");
 contractId.value = getIdFromPath();
 
-const { getCoreAccountsByCustomerId, isLoading } = useCustomers();
 
 const loading = ref(isLoading.value);
 const submitting = ref(false);
@@ -47,6 +47,7 @@ const props = defineProps<{
   contractCoreCustomerProps: any;
 }>();
 const emit = defineEmits(["refresh"]);
+
 const refetch = async () => {
   await emit("refresh");
 };
@@ -377,7 +378,7 @@ const isAllSelected = computed(() => {
                   </p>
                 </div>
 
-                <UiPermissionGuard permission="UPDATE_CONTRACT_ACCOUNTS">
+                <!-- <UiPermissionGuard :permission="PermissionConstants.UPDATE_CONTRACT_USER"> -->
                   <FormField
                     :model-value="account.enable"
                     v-slot="{ handleChange }"
@@ -402,10 +403,10 @@ const isAllSelected = computed(() => {
                       <FormMessage />
                     </FormItem>
                   </FormField>
-                </UiPermissionGuard>
+                <!-- </UiPermissionGuard> -->
 
                 <UiPermissionGuard
-                  permission="VIEW_CONTRACT_ACCOUNTS_PERMISSIONS"
+                  :permission="PermissionConstants.READ_CONTRACT_ACCOUNT_PERMISSION"
                 >
                   <div class="flex items-center">
                     <UiSheet>
@@ -569,7 +570,7 @@ const isAllSelected = computed(() => {
           </UiAccordionContent>
         </UiAccordionItem>
 
-        <UiPermissionGuard permission="CREATE_CONTRACT_ACCOUNTS">
+        <UiPermissionGuard :permission="PermissionConstants.CREATE_CONTRACT_ACCOUNT">
           <div class="flex justify-end pt-4">
             <UiButton
               :disabled="submitting"

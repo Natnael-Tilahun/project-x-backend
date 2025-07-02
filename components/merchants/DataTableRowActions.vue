@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
+import { PermissionConstants } from "~/constants/permissions";
+
 const { deleteMerchant, isLoading } = useMerchants();
+
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const openEditModal = ref(false);
@@ -9,7 +12,6 @@ const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
 }
@@ -58,13 +60,13 @@ async function deleteMerchants(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard permission="VIEW_MERCHANTS" >
+      <UiPermissionGuard :permission="PermissionConstants.READ_MERCHANT" >
       <UiDropdownMenuItem @click="viewCustomerDetail(row.original.merchantId)"
         >View and Edit</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-      <UiPermissionGuard permission="DELETE_MERCHANTS" >
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_MERCHANT" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>

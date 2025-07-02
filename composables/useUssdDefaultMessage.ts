@@ -1,5 +1,3 @@
-import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
-import { useAuthUser } from "./useAuthUser";
 import type { DefaultMessage, Menu } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
@@ -8,8 +6,6 @@ export const useUssdDefaultMessage = () => {
   const runtimeConfig = useRuntimeConfig();
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
-
-  const store = useAuthStore();
 
   const getUssdDefaultMessages: (page?: number, size?: number) => ApiResult<DefaultMessage[]> = async (
     page,
@@ -34,8 +30,7 @@ export const useUssdDefaultMessage = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -59,8 +54,7 @@ export const useUssdDefaultMessage = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -85,8 +79,7 @@ export const useUssdDefaultMessage = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -114,8 +107,7 @@ export const useUssdDefaultMessage = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -139,8 +131,7 @@ export const useUssdDefaultMessage = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 

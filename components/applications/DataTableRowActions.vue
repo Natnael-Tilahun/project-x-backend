@@ -2,16 +2,19 @@
 import type { Row } from "@tanstack/vue-table";
 import { computed } from "vue";
 import { toast } from "../ui/toast";
-const { deleteApplicationById, getApplications, isLoading } = useApplications();
+import { PermissionConstants } from "~/constants/permissions";
+
+const { deleteApplicationById, isLoading } = useApplications();
+const { setIsUpdated } = usePagesInfoStore();
+
 const loading = ref(isLoading.value);
 const isError = ref(false);
-const { setIsUpdated } = usePagesInfoStore();
 const openEditModal = ref(false);
+
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const route = useRoute();
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
   refetch: () => Promise<void>; // Accept refetch as a prop
@@ -60,13 +63,13 @@ async function deleteApplication(id: string) {
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-  <UiPermissionGuard permission="VIEW_APPLICATIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.READ_APPLICATION" >
       <UiDropdownMenuItem @click="viewApplicationDetails(row.original.id)"
         >View and Edit</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-  <UiPermissionGuard permission="DELETE_APPLICATIONS" >
+  <UiPermissionGuard :permission="PermissionConstants.DELETE_APPLICATION" >
       <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-500">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
