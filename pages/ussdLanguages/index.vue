@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, provide, computed } from "vue"; // Added provide, useAsyncData, computed
+import { ref, provide, computed } from "vue"; // Added provide, useAsyncData, computed
 import { columns as tableColumns } from "~/components/ussdLanguages/columns"; // Renamed to avoid conflict
 import { useUssdLanguages } from "~/composables/useUssdLanguages";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
@@ -78,7 +78,7 @@ const columns = computed(() => tableColumns(refetch));
       </template>
     </UiDataTable>
   </div>
-  <div v-else-if="data && data.length === 0 && !isError && !pageIsLoading" class="py-10 text-center">
+  <div v-else-if="data && data.length === 0 && !isError && !pageIsLoading" class="py-10 text-center w-full">
     <p class="text-lg text-gray-600">No USSD languages found.</p>
     <UiPermissionGuard permission="CREATE_USSD_LANGUAGES">
         <NuxtLink to="/ussdLanguages/new" class="mt-4 inline-block">
@@ -89,7 +89,7 @@ const columns = computed(() => tableColumns(refetch));
         </NuxtLink>
     </UiPermissionGuard>
   </div>
-  <div v-if="isError && !pageIsLoading">
+  <div v-if="isError && !pageIsLoading" class="w-full">
     <ErrorMessage :retry="refetch" title="Something went wrong." />
   </div>
 </template>

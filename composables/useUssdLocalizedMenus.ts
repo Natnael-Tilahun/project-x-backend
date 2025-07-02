@@ -40,8 +40,7 @@ export const useUssdLocalizedMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -68,8 +67,7 @@ export const useUssdLocalizedMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -97,8 +95,7 @@ export const useUssdLocalizedMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -130,8 +127,7 @@ export const useUssdLocalizedMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -163,8 +159,7 @@ export const useUssdLocalizedMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
@@ -191,8 +186,7 @@ export const useUssdLocalizedMenus = () => {
 
       return data.value ? data.value : null;
     } catch (err) {
-      handleApiError(err);
-      return null;
+      throw err
     }
   };
 
