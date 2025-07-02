@@ -294,6 +294,7 @@ const updadateRoleStatus = async (status: boolean) => {
                 <UiPermissionGuard :permission= "data.enabled ? PermissionConstants.DISABLE_STAFF_ROLE : PermissionConstants.ENABLE_STAFF_ROLE"  >
                 <UiBadge
                   class="font-bold px-2 py-1 mb-1"
+                  :class="data.enabled ? 'bg-green-500':'bg-red-500'"
                   >{{data.enabled ? "Enabled":"Disabled"}}</UiBadge
                 >
                 <FormField v-slot="{ value, handleChange }" name="enabled">

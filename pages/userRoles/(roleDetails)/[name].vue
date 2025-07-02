@@ -289,8 +289,28 @@ const updadateRoleStatus = async (status: boolean) => {
                 <p class="mr-auto">{{ data?.name }}</p></UiAccordionTrigger
               >
 
-              <div class="flex items-center gap-4">
-                <UiPermissionGuard :permission=PermissionConstants.DISABLE_ROLE >
+              <div class="flex items-center gap-4 border pb-1 pt-2 px-3 rounded-md">
+                <UiPermissionGuard :permission="data.enabled ? PermissionConstants.DISABLE_ROLE : PermissionConstants.ENABLE_ROLE" >
+                <UiBadge
+                  class="font-bold px-2 py-1"
+                  :class="data.enabled ? 'bg-green-500':'bg-red-500'"
+                  >{{data.enabled ? "Enabled":"Disabled"}}</UiBadge
+                >
+                <FormField v-slot="{ value, handleChange }" name="enabled">
+                  <FormItem>
+                    <FormControl>
+                      <UiSwitch
+                      class="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
+                        :checked="value"
+                        @update:checked="handleChange"
+                        @click="updadateRoleStatus(value)"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                </UiPermissionGuard>
+                <!-- <UiPermissionGuard :permission=PermissionConstants.ENABLE_ROLE >
                 <UiBadge
                   class="font-bold px-2 py-1"
                   >{{data.enabled ? "Enabled":"Disabled"}}</UiBadge
@@ -308,26 +328,7 @@ const updadateRoleStatus = async (status: boolean) => {
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                </UiPermissionGuard>
-                <UiPermissionGuard :permission=PermissionConstants.ENABLE_ROLE >
-                <UiBadge
-                  class="font-bold px-2 py-1"
-                  >{{data.enabled ? "Enabled":"Disabled"}}</UiBadge
-                >
-                <FormField v-slot="{ value, handleChange }" name="enabled">
-                  <FormItem>
-                    <FormControl>
-                      <UiSwitch
-                      class="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
-                        :checked="value"
-                        @update:checked="handleChange"
-                        @click="updadateRoleStatus(value)"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-                </UiPermissionGuard>
+                </UiPermissionGuard> -->
               </div>
             </div>
 
