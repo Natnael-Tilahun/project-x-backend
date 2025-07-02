@@ -8,8 +8,8 @@ export const newStaffAssignmentsFormSchema = toTypedSchema(
     // endDate: z.union([z.string(), z.date()]).optional().nullable(),
     staffId: z.string(),
     supervisorStaffId: z.string().optional().nullable(),
-    newOfficeId: z.string(),
-    newRoleId: z.string(),
+    officeId: z.string(),
+    roleId: z.string(),
     remarks: z.string().optional(),
   })
 );

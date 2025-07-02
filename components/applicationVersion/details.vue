@@ -116,6 +116,20 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       <div class="text-sm md:text-base p-6 basis-full">
         <form @submit="onSubmit">
           <div class="grid grid-cols-2 gap-6">
+            <FormField v-slot="{ componentField }" name="id">
+                <FormItem>
+                  <FormLabel>Application Version Id </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="text"
+                      disabled
+                      placeholder="Enter application Id"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
             <FormField v-slot="{ componentField }" name="versionName">
               <FormItem class="w-full">
                 <FormLabel> Version Name </FormLabel>

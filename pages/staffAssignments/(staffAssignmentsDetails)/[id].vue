@@ -80,8 +80,8 @@ const fetchStaffAssignmentData = async () => {
   let a = {
     ...data.value,
     staffId: data.value?.staff?.id,
-    newRoleId: data.value?.role?.name,
-    newOfficeId: data.value?.office?.id,
+    roleId: data.value?.role?.name,
+    officeId: data.value?.office?.id,
     supervisorStaffId: data.value?.supervisor?.id,
     assignmentDate : data.value.startDate
         ? dateFormatter(data.value.startDate)
@@ -149,7 +149,7 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="newOfficeId">
+            <FormField v-slot="{ componentField }" name="officeId">
               <FormItem class="w-full">
                 <FormLabel> Office </FormLabel>
                 <UiSelect v-bind="componentField">
@@ -170,7 +170,7 @@ onMounted(() => {
               </FormItem>
             </FormField>
 
-            <FormField v-slot="{ componentField }" name="newRoleId">
+            <FormField v-slot="{ componentField }" name="roleId">
               <FormItem class="w-full">
                 <FormLabel> Role </FormLabel>
                 <UiSelect v-bind="componentField">

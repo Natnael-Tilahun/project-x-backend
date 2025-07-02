@@ -101,6 +101,8 @@ const enablePermissionsStatus = async () => {
         toast({
           title: "Permissoin status enabled successfully.",
         });
+    await refetch();
+
     }
   } catch (err: any) {
     console.error("Error enabling permisson status:", err);
@@ -124,6 +126,8 @@ const disablePermissionsStatus = async () => {
         toast({
           title: "Permissoin disabled successfully.",
         });
+    await refetch();
+
     }
   } catch (err: any) {
     console.error("Error disabling permisson status:", err);
@@ -152,22 +156,27 @@ onMounted(async () => {
       <UiCard class="w-full p-6 rounded-xl space-y-4">
         <div class="flex justify-end items-center">
           <div class="flex items-center gap-4">
-            <UiPermissionGuard :permission=PermissionConstants.ENABLE_PERMISSION>
-              <UiBadge class="font-bold px-2 py-1">Enabled</UiBadge>
+            <UiPermissionGuard :permission="data.enabled ? PermissionConstants.DISABLE_PERMISSION: PermissionConstants.ENABLE_PERMISSION">
+              <!-- <UiBadge class="font-bold px-2 py-1">Enabled</UiBadge> -->
+              <UiBadge
+                  class="font-bold px-2 py-1"
+                  :class="data.enabled ? 'bg-green-500':'bg-red-500'"
+                  >{{data.enabled ? "Enabled":"Disabled"}}</UiBadge>
               <FormField v-slot="{ value, handleChange }" name="enabled">
                 <FormItem>
                   <FormControl>
                     <UiSwitch
                       :checked="value"
+                      class="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
                       @update:checked="handleChange"
-                      @click="disablePermissionsStatus()"
+                      @click="data.enabled ? disablePermissionsStatus() : enablePermissionsStatus()"
                     />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               </FormField>
             </UiPermissionGuard>
-            <UiPermissionGuard :permission=PermissionConstants.DISABLE_PERMISSION>
+            <!-- <UiPermissionGuard :permission=PermissionConstants.DISABLE_PERMISSION>
               <UiBadge class="font-bold px-2 py-1">Disabled</UiBadge>
               <FormField v-slot="{ value, handleChange }" name="enabled">
                 <FormItem>
@@ -181,7 +190,7 @@ onMounted(async () => {
                   <FormMessage />
                 </FormItem>
               </FormField>
-            </UiPermissionGuard>
+            </UiPermissionGuard> -->
           </div>
         </div>
 
