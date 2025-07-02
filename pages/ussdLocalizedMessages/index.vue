@@ -37,6 +37,7 @@ onMounted(() => {
 
 
 const refetch = async () => {
+  isError.value= false
   await getUssdLocalizedDefaultMessagesData();
 };
 
@@ -80,7 +81,7 @@ const columns = computed(() => tableColumns(refetch));
       </template>
     </UiDataTable>
   </div>
-  <div v-if="isError && !isLoading">
+  <div v-if="isError && !isLoading" class="w-full">
     <ErrorMessage :retry="refetch" title="Something went wrong." />
   </div>
 </template>

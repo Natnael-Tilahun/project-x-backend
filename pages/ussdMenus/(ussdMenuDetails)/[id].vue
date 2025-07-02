@@ -259,10 +259,10 @@ const updatingUssdMenuVisible = async (menuId: string, visible: boolean) => {
         </div>
       </form>
     </UiCard>
-    <div v-else-if="data == null || data == undefined">
+    <div v-else-if="data == null || data == undefined" class="w-full">
       <UiNoResultFound title="Sorry, No ussd language found." />
     </div>
-    <div v-else-if="isError">
+    <div v-else-if="isError" class="w-full">
       <ErrorMessage title="Something went wrong." />
     </div>
   </div>

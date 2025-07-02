@@ -157,6 +157,13 @@ const updatingUssdLocalizedDefaultMessageStatus = async (
     isError.value = true;
   }
 };
+
+const refetch = async () => {
+  isError.value = false
+  await getUssdDefaultMessagesData();
+  await getUssdLanguagesData();
+  await getUssdLocalizedDefaultMessageByIdData();
+}
 </script>
 
 <template>
@@ -318,11 +325,11 @@ const updatingUssdLocalizedDefaultMessageStatus = async (
         </div>
       </form>
     </UiCard>
-    <div v-else-if="!loading && (data == null || data == undefined)">
+    <div v-else-if="!loading && (data == null || data == undefined)" class="w-full">
       <UiNoResultFound title="Sorry, No localized message found." />
     </div>
-    <div v-else-if="isError">
-      <ErrorMessage title="Something went wrong." />
+    <div v-else-if="isError" class="w-full">
+      <ErrorMessage :retry="refetch"  title="Something went wrong." />
     </div>
   </div>
 </template>

@@ -41,6 +41,11 @@ const form = useForm({
   validationSchema: newUssdDefaultMessagesFormSchema,
 });
 
+onMounted(() => {
+  fetchData();
+});
+
+const fetchData = async () => {
 try {
   isLoading.value = true;
   loading.value = true;
@@ -55,6 +60,7 @@ try {
 } finally {
   isLoading.value = false;
   loading.value = false;
+}
 }
 
 const onSubmit = form.handleSubmit(async (values: any) => {
@@ -79,6 +85,12 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = false;
   }
 });
+
+const refetch = async () => {
+  isError.value = false
+  await fetchData();
+};
+
 </script>
 
 <template>
@@ -154,11 +166,11 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         </div>
       </form>
     </UiCard>
-    <div v-else-if="data == null || data == undefined">
+    <div v-else-if="data == null || data == undefined" class="w-full">
       <UiNoResultFound title="Sorry, No ussd language found." />
     </div>
-    <div v-else-if="isError">
-      <ErrorMessage title="Something went wrong." />
+    <div v-else-if="isError" class="w-full">
+      <ErrorMessage  :retry="refetch"  title="Something went wrong." />
     </div>
   </div>
 </template>

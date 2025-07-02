@@ -123,12 +123,12 @@ export const useRoles = () => {
   const updateRoleStatus: (roleName: string, roleStatus: boolean) => ApiResult<Role> = async (roleName, roleStatus) => {
     try {
       const { data, pending, error, status } = await fetch<Role>(
-        `/api/v1/internal/roles/${roleName}`,
+        `/api/v1/internal/roles/${roleName}/${roleStatus ?'disable': 'enable'}`,
         {
           method: "POST",
-          params: {
-            action: roleStatus ? "disable" : "enable"
-          }
+          // params: {
+          //   action: roleStatus ? "disable" : "enable"
+          // }
         }
       );
 

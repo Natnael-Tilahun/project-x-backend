@@ -23,6 +23,7 @@ import type {
   ServiceDefinitionRole,
 } from "~/types";
 import { NuxtLink } from "#components";
+import { PermissionConstants } from "~/constants/permissions";
 
 const { createNewContract, isLoading } = useContracts();
 const { getServiceDefinitions,getServiceDefinitionPermissions, getServiceDefinitionById } =
@@ -778,12 +779,10 @@ const isPhoneExistHandler = (value) => {
                           class="h-5 w-5"
                           :disabled="
                             (isAccountSelected(account) &&
-                              !store.permissions.includes(
-                                'DELETE_CONTRACT_ACCOUNTS'
+                              !store.permissions.includes(PermissionConstants.DELETE_CONTRACT_ACCOUNT
                               )) ||
                             (!isAccountSelected(account) &&
-                              !store.permissions.includes(
-                                'CREATE_CONTRACT_ACCOUNTS'
+                              !store.permissions.includes(PermissionConstants.CREATE_CONTRACT_ACCOUNT
                               ))
                           "
                         />
