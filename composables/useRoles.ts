@@ -14,7 +14,7 @@ export const useRoles = () => {
   const { toast } = useToast();
   const { fetch } = useApi();
 
-  const getRoles: () => ApiResult<Role[]> = async () => {
+  const getSystemRoles: () => ApiResult<Role[]> = async () => {
     try {
       const { data, pending, error, status } = await fetch<Role[]>(
         '/api/v1/internal/roles/list'
@@ -32,7 +32,7 @@ export const useRoles = () => {
     }
   };
 
-  const deleteRoleById: (id: string) => ApiResult<any> = async (id) => {
+  const deleteSystemRoleById: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/roles/delete/${id}`,
@@ -51,7 +51,7 @@ export const useRoles = () => {
     }
   };
 
-  const getRolePermissions: (name: string) => ApiResult<Role> = async (name) => {
+  const getSystemRolePermissions: (name: string) => ApiResult<Role> = async (name) => {
     try {
       const { data, pending, error, status } = await fetch<Role>(
         `/api/v1/internal/roles/${name}/permissions`
@@ -75,7 +75,7 @@ export const useRoles = () => {
     }
   };
 
-  const createNewRole: (roleDetail: Role) => ApiResult<Role> = async (roleDetail) => {
+  const createNewSystemRole: (roleDetail: Role) => ApiResult<Role> = async (roleDetail) => {
     try {
       const { data, pending, error, status } = await fetch<Role>(
         '/api/v1/internal/roles/create',
@@ -97,7 +97,7 @@ export const useRoles = () => {
     }
   };
 
-  const updateRolePermissions: (roleName: string, roleDetail: any) => ApiResult<Role> = async (roleName, roleDetail) => {
+  const updateSystemRolePermissions: (roleName: string, roleDetail: any) => ApiResult<Role> = async (roleName, roleDetail) => {
     try {
       const { data, pending, error, status } = await fetch<Role>(
         `/api/v1/internal/roles/${roleName}/permissions/update`,
@@ -120,7 +120,7 @@ export const useRoles = () => {
     }
   };
 
-  const updateRoleStatus: (roleName: string, roleStatus: boolean) => ApiResult<Role> = async (roleName, roleStatus) => {
+  const updateSystemRoleStatus: (roleName: string, roleStatus: boolean) => ApiResult<Role> = async (roleName, roleStatus) => {
     try {
       const { data, pending, error, status } = await fetch<Role>(
         `/api/v1/internal/roles/${roleName}/${roleStatus ?'disable': 'enable'}`,
@@ -145,14 +145,63 @@ export const useRoles = () => {
     }
   };
 
+  const createSystemRolePermissions: (roleName: string, permissionsData: any) => ApiResult<Role> = async (roleName, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Role>(
+        `/api/v1/internal/roles/${roleName}/permissions`,
+        {
+          method: "POST",
+          body: permissionsData
+        }
+      );
+
+      isUpdating.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      await getAuthorities();
+      return data.value ? (data.value as unknown as Role) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  const deleteSystemRolePermissions: (roleName: string, permissionsData: any) => ApiResult<Role> = async (roleName, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Role>(
+        `/api/v1/internal/roles/${roleName}/permissions`,
+        {
+          method: "DELETE",
+          body: permissionsData
+        }
+      );
+
+      isUpdating.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      await getAuthorities();
+      return data.value ? (data.value as unknown as Role) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+
   return {
     isLoading,
     isUpdating,
-    getRoles,
-    getRolePermissions,
-    deleteRoleById,
-    createNewRole,
-    updateRolePermissions,
-    updateRoleStatus,
+    getSystemRoles,
+    getSystemRolePermissions,
+    deleteSystemRoleById,
+    createNewSystemRole,
+    updateSystemRolePermissions,
+    updateSystemRoleStatus,
+    createSystemRolePermissions,
+    deleteSystemRolePermissions
   };
 };

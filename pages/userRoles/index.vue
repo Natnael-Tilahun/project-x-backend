@@ -5,7 +5,7 @@ import type { Role } from "~/types";
 import { columns as tableColumns } from "~/components/userRoles/columns"; // Renamed to avoid conflict
 import { PermissionConstants } from "~/constants/permissions";
 
-const { getRoles,  } = useRoles();
+const { getSystemRoles,  } = useRoles();
 const isLoading = ref(false);
 const isError = ref(false);
 const data = ref<Role[]>([]);
@@ -14,7 +14,7 @@ const { pageNumber } = usePagesInfoStore();
 const fetchSystemRoleData = async () => {
   try {
     isLoading.value = true;
-    data.value = await getRoles(); // Call your API function to fetch roles
+    data.value = await getSystemRoles(); // Call your API function to fetch roles
   } catch (err) {
     console.error("Error fetching roles:", err);
     isError.value = true;

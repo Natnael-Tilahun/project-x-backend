@@ -4,7 +4,7 @@ import { computed } from "vue";
 import { toast } from "../ui/toast";
 import { PermissionConstants } from "~/constants/permissions";
 
-const { deleteRoleById, getRoles, isLoading } = useRoles();
+const { deleteSystemRoleById, isLoading } = useRoles();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const { setIsUpdated } = usePagesInfoStore();
@@ -32,7 +32,7 @@ async function deleteRole(id: string) {
   try {
     isLoading.value = true;
     loading.value = true;
-    await deleteRoleById(id); // Call your API function to fetch roles
+    await deleteSystemRoleById(id); // Call your API function to fetch roles
     console.log("Role deleted successfully");
     toast({
       title: "Role deleted successfully",
