@@ -93,13 +93,59 @@ export const useStaffRoles = () => {
     }
   };
 
-  const updateStaffRolePermissions: (roleName: string, roleDetail: any) => ApiResult<Role> = async (roleName, roleDetail) => {
+  const updateStaffRole: (roleName: string, roleDetail: any) => ApiResult<Role> = async (roleName, roleDetail) => {
     try {
       const { data, pending, error, status } = await fetch<Role>(
         `/api/v1/internal/staff-roles/${roleName}/permissions/update`,
         {
           method: "POST",
           body: roleDetail
+        }
+      );
+
+      isUpdating.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      await getAuthorities();
+      return data.value ? (data.value as unknown as Role) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  const createStaffRolePermissions: (roleName: string, permissionsData: any) => ApiResult<Role> = async (roleName, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Role>(
+        `/api/v1/internal/staff-roles/${roleName}/permissions`,
+        {
+          method: "POST",
+          body: permissionsData
+        }
+      );
+
+      isUpdating.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      await getAuthorities();
+      return data.value ? (data.value as unknown as Role) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  const deleteStaffRolePermissions: (roleName: string, permissionsData: any) => ApiResult<Role> = async (roleName, permissionsData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Role>(
+        `/api/v1/internal/staff-roles/${roleName}/permissions`,
+        {
+          method: "DELETE",
+          body: permissionsData
         }
       );
 
@@ -145,7 +191,9 @@ export const useStaffRoles = () => {
     getStaffRolePermissions,
     deleteStaffRoleById,
     createNewStaffRole,
-    updateStaffRolePermissions,
     updateStaffRoleStatus,
+    updateStaffRole,
+    createStaffRolePermissions,
+    deleteStaffRolePermissions
   };
 };
