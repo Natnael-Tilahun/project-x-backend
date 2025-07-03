@@ -18,6 +18,7 @@ export const mainLinks: MenuItem[] = [
       dropdown: [
         { title: "System Roles", link: "/userRoles", permission: PermissionConstants.READ_ROLE },
         { title: "Staff Roles", link: "/staffRoles", permission: PermissionConstants.READ_STAFF_ROLE},
+        { title: "Merchant Roles", link: "/merchantRoles", permission: PermissionConstants.READ_MERCHANT_OPERATOR_ROLE},
         {
           title: "Permissions",
           link: "/userPermissions",
