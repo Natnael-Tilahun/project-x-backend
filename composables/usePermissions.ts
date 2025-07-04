@@ -17,8 +17,10 @@ export const usePermissions = () => {
         '/api/v1/internal/permissions',
         {
           params: {
-            page: page || pageNumbers.value,
-            size: size || pageSizes.value
+            page: page ,
+            // || pageNumbers.value,
+            size: size 
+            // || pageSizes.value
           }
         }
       );

@@ -35,11 +35,13 @@ const updating = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<Role | null>(null);
 const permissionsData = ref<Permission[]>([])
+const selectedPermissionCodes = ref<string[]>([])
 const route = useRoute();
 const name: string = route.params.name as string;
-
 const addLoading = ref(false);
 const deleteLoading = ref(false);
+const selectedToAdd = ref<string[]>([]);
+const selectedToDelete = ref<string[]>([]);
 
 interface FormValues {
   name: string;
@@ -66,18 +68,6 @@ const groupedPermissions = () => {
 
 const groupedAllPermissionsSorted = computed(() => {
   const groups = groupedPermissions();
-  return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
-});
-
-const groupedSelectedPermissionsSorted = computed(() => {
-  if (!permissionsData.value) return [];
-  const groups = permissionsData.value
-    .filter((p) => p.selected)
-    .reduce((acc: Record<string, Permission[]>, permission: Permission) => {
-      if (!acc[permission.grouping]) acc[permission.grouping] = [];
-      acc[permission.grouping].push(permission);
-      return acc;
-    }, {} as Record<string, Permission[]>);
   return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
 });
 
@@ -135,8 +125,9 @@ try {
   const fetchedData = await getMerchantOperatorRolePermissions(name); // Call your API function to fetch roles
   console.log("data: ", fetchedData)
   if (fetchedData) {
-    data.value.permissionUsageData = fetchedData;
-    console.log("fomr values: ", data.value)
+    selectedPermissionCodes.value = fetchedData
+    // data.value.permissionUsageData = fetchedData;
+    console.log("fomr values: ", selectedPermissionCodes.value)
     const formValues: { [key: string]: any } = {
       ...data.value
     };
@@ -179,8 +170,7 @@ try {
 const fetchPermissionData = async () => {
 try {
   loading.value = true;
-  const fetchedData = await getPermissions(); // Call your API function to fetch roles
-  console.log("permissions data: ", fetchedData)
+  const fetchedData = await getPermissions(0, 1000000); // Call your API function to fetch roles
   if (fetchedData) {
     permissionsData.value = fetchedData;
 
@@ -212,32 +202,11 @@ try {
 
 const onSubmit = form.handleSubmit(async (values: any) => {
   isLoading.value = true;
-  const updatedPermissions =
-    data.value?.permissionUsageData?.reduce(
-      (acc: Record<string, boolean>, permission: Permission) => {
-        if (form.values[permission.code] != undefined) {
-          acc[permission.code] = form.values[permission.code];
-        } else if (
-          data.value?.permissionUsageData?.find(
-            (p) => p.code === permission.code
-          )?.selected != undefined
-        ) {
-          acc[permission.code] =
-            data.value?.permissionUsageData?.find(
-              (p) => p.code === permission.code
-            )?.selected || false;
-        }
-        return acc;
-      },
-      {}
-    ) || {};
-
   const updatedRoleData = {
     name: values.name,
     description: values.description,
     enforce2fa: values.enforce2fa,
     enabled: values.enabled,
-    // permissions: updatedPermissions,
     scope: RoleScope.MERCHANT,
   };
 
@@ -250,11 +219,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     });
   } catch (err: any) {
     console.error("Error updating role:", err);
-    // toast({
-    //   title: "Uh oh! Something went wrong.",
-    //   description: `There was a problem with your request: ${err}`,
-    //   variant: "destructive",
-    // });
     await refetch();
     isError.value = true;
   } finally {
@@ -286,33 +250,6 @@ const updadateRoleStatus = async (status: boolean) => {
     updating.value = false;
   }
 };
-
-// Track selected permissions for add/remove
-const selectedToAdd = ref<string[]>([]);
-const selectedToDelete = ref<string[]>([]);
-
-// All permission codes currently selected for this role
-const selectedPermissionCodes = computed(
-  () =>
-    data.value?.permissionUsageData
-      ?.filter((p) => p.selected)
-      .map((p) => p.code) || []
-);
-
-// Grouped permissions for all (left column)
-const groupedAllPermissions = computed(() => groupedPermissions());
-
-// Grouped permissions for selected (right column)
-const groupedSelectedPermissions = computed(() => {
-  if (!data.value || !data.value?.permissionUsageData) return {};
-  return data.value.permissionUsageData
-    .filter((p) => p.selected)
-    .reduce((groups: Record<string, Permission[]>, permission: Permission) => {
-      if (!groups[permission.grouping]) groups[permission.grouping] = [];
-      groups[permission.grouping].push(permission);
-      return groups;
-    }, {} as Record<string, Permission[]>);
-});
 
 // Add selected permissions
 const addSelectedPermissions = async () => {
@@ -390,10 +327,9 @@ function unselectAllAvailable() {
 
 // Select all permissions in the right column (selected permissions)
 function selectAllSelected() {
-  if (!data.value || !data.value.permissionUsageData) return;
-  selectedToDelete.value = data.value.permissionUsageData
-    .filter((p) => p.selected)
-    .map((p) => p.code);
+  if (!data.value || !selectedPermissionCodes.value) return;
+  selectedToDelete.value = selectedPermissionCodes.value
+    .map((p) => p);
 }
 
 // Unselect all permissions in the right column
@@ -699,7 +635,7 @@ function unselectAllSelected() {
                     type="button"
                     size="sm"
                     @click="selectAllSelected"
-                    :disabled="!Object.keys(groupedSelectedPermissions).length"
+                    :disabled="!selectedPermissionCodes.length"
                   >
                     Select All
                   </UiButton>
@@ -734,58 +670,31 @@ function unselectAllSelected() {
                   </UiButton>
                   </UiPermissionGuard>
                 </div>
-                <div class="border-none" v-if="Object.keys(groupedSelectedPermissions).length">
-                  <UiAccordion type="single" collapsible class="border-none space-y-2">
-                    <template v-for="[grouping, permissions] in groupedSelectedPermissionsSorted" :key="grouping">
-                      <UiAccordionItem :value="grouping" class="border-none" >
-                        <div class="flex justify-between items-center bg-secondary rounded-lg px-4">
-                          <UiAccordionTrigger class="md:text-base gap-2 flex-row-reverse">
-                            <div class="font-medium text-sm mb-">{{ grouping }}</div>
-                          </UiAccordionTrigger>
-                          <!-- Group Checkbox for Delete -->
-                          <UiCheckbox
-                            :checked="permissions.every(p => selectedToDelete.includes(p.code))"
-                            :indeterminate="permissions.some(p => selectedToDelete.includes(p.code)) && !permissions.every(p => selectedToDelete.includes(p.code))"
-                            @update:checked="checked => {
-                              if (checked) {
-                                permissions.forEach(p => {
-                                  if (!selectedToDelete.includes(p.code)) {
-                                    selectedToDelete.push(p.code);
-                                  }
-                                });
-                              } else {
-                                permissions.forEach(p => {
-                                  selectedToDelete = selectedToDelete.filter(code => code !== p.code);
-                                });
-                              }
-                            }"
-                          />
-                        </div>
-                        <UiAccordionContent class="p-0 m-0">
-                          <UiCard class="p-2 grid grid-cols-1 xl:grid-cols-2 3xl:grid-cols-3 gap-x-8 px-2 py-2 m-0">
+                <div class="border-none" v-if="selectedPermissionCodes.length">
+                          <UiCard  class="p-2 grid grid-cols-1 xl:grid-cols-2 3xl:grid-cols-3 gap-x-8 px-2 py-2 m-0">
                             <div
-                              v-for="permission in permissions"
-                              :key="permission.code"
+                              v-for="permission in selectedPermissionCodes"
+                              :key="permission"
                               class="flex items-center py-2 px-2 hover:bg-muted/50"
                             >
                             <FormField
                                   v-slot="{ value, handleChange }"
-                                  :name="`${permission.code}`"
+                                  :name="`${permission}`"
                                 >
                                 <FormItem className="flex flex-row w-full items-start gap-x-3">                                   
-                                   <FormLabel class="self-center text-xs">{{ permission.code }}</FormLabel>
+                                   <FormLabel class="self-center text-xs">{{ permission }}</FormLabel>
                                     <FormControl> 
                               <UiCheckbox
                                 class="order-first self-center"
-                                :checked="selectedToDelete.includes(permission.code)"
+                                :checked="selectedToDelete.includes(permission)"
                                 @update:checked="
                                   (checked) => {
                                     if (checked)
-                                      selectedToDelete.push(permission.code);
+                                      selectedToDelete.push(permission);
                                     else
                                       selectedToDelete =
                                         selectedToDelete.filter(
-                                          (code) => code !== permission.code
+                                          (code) => code !== permission
                                         );
                                   }
                                 "
@@ -795,10 +704,6 @@ function unselectAllSelected() {
                               </FormField>
                             </div>
                           </UiCard>
-                        </UiAccordionContent>
-                      </UiAccordionItem>
-                    </template>
-                  </UiAccordion>
                   <UiPermissionGuard :permission="PermissionConstants.DELETE_MERCHANT_OPERATOR_ROLE_PERMISSION" >
                   <UiButton
                     type="button"
@@ -828,8 +733,8 @@ function unselectAllSelected() {
                 <UiCard v-else class="text-gray-400 py-8 text-center h-full">
                   No selected permissions to remove.
                 </UiCard>
+                </div>
               </div>
-            </div>
           </UiTabsContent>
         </UiTabs>
       </UiCard>

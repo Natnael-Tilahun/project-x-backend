@@ -39,9 +39,10 @@ const fetchData = async () => {
   }
 };
 
-await useAsyncData("permissionsData", async () => {
-  await fetchData();
+onMounted(() => {
+  fetchData();
 });
+
 </script>
 <template>
   <div v-if="isLoading" class="py-10 flex justify-center items-center">
