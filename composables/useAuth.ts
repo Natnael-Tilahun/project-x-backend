@@ -135,6 +135,15 @@ export const useAuth = () => {
   };
 
   const logout = async () => {
+    // Get the session management functions from the plugin
+    const { $releaseSession, $notifyLogout } = useNuxtApp();
+
+    // Release the session
+    $releaseSession();
+
+    // Notify other tabs about the logout
+    $notifyLogout();
+
     store.$reset();
     return navigateTo("/login", { replace: true });
   };
@@ -271,9 +280,7 @@ export const useAuth = () => {
     }
   };
 
-  const changePassword: (newData: any) => ApiResult<any> = async (
-    newData
-  ) => {
+  const changePassword: (newData: any) => ApiResult<any> = async (newData) => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
         "/api/v1/users/change-password",
@@ -310,6 +317,6 @@ export const useAuth = () => {
     requestTwoFactorAuth,
     validateTwoFactorAuth,
     changePassword,
-    initPasswordReset
+    initPasswordReset,
   };
 };

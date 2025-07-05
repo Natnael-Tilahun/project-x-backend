@@ -26,8 +26,11 @@ import { NuxtLink } from "#components";
 import { PermissionConstants } from "~/constants/permissions";
 
 const { createNewContract, isLoading } = useContracts();
-const { getServiceDefinitions,getServiceDefinitionPermissions, getServiceDefinitionById } =
-  useServiceDefinitions();
+const {
+  getServiceDefinitions,
+  getServiceDefinitionPermissions,
+  getServiceDefinitionById,
+} = useServiceDefinitions();
 const { getPermissions } = usePermissions();
 const {
   getCoreAccountsByCustomerId,
@@ -38,11 +41,11 @@ const {
   getContractCoreCustomerAccounts,
   isLoading: isLoadingContractCoreCustomerAccount,
 } = useContractsCoreCustomersAccount();
-const {getServiceDefinitionRolesByServiceDefinitionId } =
+const { getServiceDefinitionRolesByServiceDefinitionId } =
   useServiceDefinitionsRoles();
 
 const isError = ref(false);
-const coreCustomerSummary = ref<CoreCustomerSummery>()
+const coreCustomerSummary = ref<CoreCustomerSummery>();
 const data = ref<Contract>();
 const isSubmitting = ref(false);
 const permissionsData = ref<Permission[]>([]);
@@ -70,9 +73,8 @@ const setOpenEditModal = (value: boolean) => {
 };
 const isPhoneConfirmed = ref<boolean>(false);
 const formValuesToSubmit = ref<any>(null);
-const isPhoneExist = ref<boolean>(false)
-const isWantToCreateWithoutCustomer = ref<boolean>(true)
-
+const isPhoneExist = ref<boolean>(false);
+const isWantToCreateWithoutCustomer = ref<boolean>(true);
 
 const handleAccountSelect = (account: Account | undefined) => {
   const index = selectedAccounts.value.findIndex(
@@ -158,8 +160,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
     if (!newValues.coreCustomers) {
       toast({
-        title: "Uh oh! Something went wrong.",
-        description: "Please select a core customer.",
+        title: "At least one account is required!",
+        description:
+          "At least one account is required to create a contract. Please, Search it first.",
         variant: "destructive",
       });
       return;
@@ -167,8 +170,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
     if (!newValues.coreCustomers?.[0]?.coreAccounts?.length) {
       toast({
-        title: "Uh oh! Something went wrong.",
-        description: "Please select at least one account.",
+        title: "At least one account is required!",
+        description:
+          "At least one account is required to create a contract. Please, Select at least one account.",
         variant: "destructive",
       });
       return;
@@ -176,10 +180,9 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 
     // Store the form values in the ref
     formValuesToSubmit.value = newValues;
-    
+
     // Open the confirmation modal
     setOpenEditModal(true);
-
   } catch (err: any) {
     console.error("Error creating new contract:", err.message);
     isError.value = true;
@@ -197,8 +200,7 @@ const fetchServiceDefinitionPermissions = async (newType: string) => {
     );
     if (newType) {
       const serviceDefinition = await getServiceDefinitionPermissions(newType);
-      serviceDefinitionPermissionsData.value =
-        serviceDefinition || [];
+      serviceDefinitionPermissionsData.value = serviceDefinition || [];
     }
   } catch (err) {
     console.error("Error fetching service definition permissions:", err);
@@ -208,27 +210,25 @@ const fetchServiceDefinitionPermissions = async (newType: string) => {
 const fetchServiceDefinitionRoles = async (newType: string) => {
   try {
     if (newType) {
-      const serviceDefinitionRoles = await getServiceDefinitionRolesByServiceDefinitionId(newType);
-      console.log("service definition roles: ", serviceDefinitionRoles)
-      serviceDefinitionsRolesData.value =
-        serviceDefinitionRoles || [];
-        form.setFieldValue("serviceDefinitionRoleId", null)
+      const serviceDefinitionRoles =
+        await getServiceDefinitionRolesByServiceDefinitionId(newType);
+      console.log("service definition roles: ", serviceDefinitionRoles);
+      serviceDefinitionsRolesData.value = serviceDefinitionRoles || [];
+      form.setFieldValue("serviceDefinitionRoleId", null);
     }
   } catch (err) {
     console.error("Error fetching service definition permissions:", err);
   }
 };
 
-
-
 const fetchData = async () => {
-  isError.value = false
+  isError.value = false;
   try {
     const permissions = await getPermissions(0, 100000);
     permissionsData.value = permissions.sort((a: Permission, b: Permission) =>
       a?.code?.toLowerCase().localeCompare(b?.code?.toLowerCase())
     );
-    const serviceDefinitions = await getServiceDefinitions(0,100000) || [];
+    const serviceDefinitions = (await getServiceDefinitions(0, 100000)) || [];
     serviceDefinitionsData.value = serviceDefinitions;
   } catch (err) {
     console.error("Error fetching permissions:", err);
@@ -290,20 +290,21 @@ const searchCoreAccountsByAccountNumberHandler = async () => {
     selectedAccounts.value = [];
     if (accountNumber.value) {
       const response = await getCoreAccountsByAccount(accountNumber.value);
-      form.setFieldValue("name", response?.fullName)
-      haveExistingContract.value = response && response?.contractId ? true : false;
-      if(haveExistingContract.value){
-      toast({
-      title: "Contract already exist for this account.",
-      description: `This account has an contract. Please view the detail for more info.  `,
-    });
-  }
-      coreCustomerSummary.value = response
+      form.setFieldValue("name", response?.fullName);
+      haveExistingContract.value =
+        response && response?.contractId ? true : false;
+      if (haveExistingContract.value) {
+        toast({
+          title: "Contract already exist for this account.",
+          description: `This account has an contract. Please view the detail for more info.  `,
+        });
+      }
+      coreCustomerSummary.value = response;
       contractId.value = response.contractId;
       coreCustomerId.value = response.customerId;
       accountsData.value = response?.coreAccounts;
       accountsData.value =
-      accountsData.value && accountsData.value.length > 0
+        accountsData.value && accountsData.value.length > 0
           ? accountsData.value.filter(
               (acc: Account) =>
                 !selectedAccounts.value.some(
@@ -400,9 +401,7 @@ watch(
   async (newType) => {
     // If the service definition has changed, clear the permissions
     if (newType) {
-      const serviceDefinition = await fetchServiceDefinitionRoles(
-        newType
-      );
+      const serviceDefinition = await fetchServiceDefinitionRoles(newType);
     }
   }
 );
@@ -411,79 +410,80 @@ const handlePhoneConfirmation = async (value: boolean) => {
   isPhoneConfirmed.value = value;
   if (value && formValuesToSubmit.value) {
     try {
-      isSubmitting.value = true
-      const newValues={
+      isSubmitting.value = true;
+      const newValues = {
         ...formValuesToSubmit.value,
-        withPrimaryContractUser: true
-      }
+        withPrimaryContractUser: true,
+      };
       console.log("newValues values:", newValues);
 
-        const response = await createNewContract(newValues);
-        if(response){
-          data.value = response
-          navigateTo(`/contracts`);
-          toast({
-            title: "Contract Created",
-            description: "Contract created successfully",
-          });
-        }
-   
+      const response = await createNewContract(newValues);
+      if (response) {
+        data.value = response;
+        navigateTo(`/contracts`);
+        toast({
+          title: "Contract Created",
+          description: "Contract created successfully",
+        });
+      }
     } catch (err: any) {
       console.log("Error creating new contractttt:", err.message);
-      if(err && err.message == "Phone is already in use!"){
-        isPhoneExist.value = true
+      if (err && err.message == "Phone is already in use!") {
+        isPhoneExist.value = true;
       }
       isError.value = true;
-      setOpenEditModal(false)
-      isSubmitting.value= false
-    }
-    finally{
-      isSubmitting.value = false
-      setOpenEditModal(false)
+      setOpenEditModal(false);
+      isSubmitting.value = false;
+    } finally {
+      isSubmitting.value = false;
+      setOpenEditModal(false);
     }
   }
   setOpenEditModal(false);
 };
 
-const createNewContractWithoutCustomerHandler = async(value: boolean) => {
-    if ((formValuesToSubmit.value && isPhoneExist.value && value )|| (isWantToCreateWithoutCustomer.value && formValuesToSubmit.value && value )) {
+const createNewContractWithoutCustomerHandler = async (value: boolean) => {
+  if (
+    (formValuesToSubmit.value && isPhoneExist.value && value) ||
+    (isWantToCreateWithoutCustomer.value && formValuesToSubmit.value && value)
+  ) {
     try {
-      isSubmitting.value = true
-       const newValues={
+      isSubmitting.value = true;
+      const newValues = {
         ...formValuesToSubmit.value,
-        withPrimaryContractUser: false
+        withPrimaryContractUser: false,
+      };
+      console.log(
+        "Submitting values for contract without customer:",
+        newValues
+      );
+      const response = await createNewContract(newValues);
+      if (response) {
+        data.value = response;
+        navigateTo(`/contracts`);
+        toast({
+          title: "Contract Created",
+          description: "Contract without customer created successfully",
+        });
       }
-      console.log("Submitting values for contract without customer:", newValues);
-        const response = await createNewContract(newValues);
-        if(response){
-          data.value = response
-          navigateTo(`/contracts`);
-          toast({
-            title: "Contract Created",
-            description: "Contract without customer created successfully",
-          });
-        }
     } catch (err: any) {
       console.log("Error creating new contractttt:", err.message);
-      if(err.message == "Phone is already in use!"){
-        isPhoneExist.value = true
+      if (err.message == "Phone is already in use!") {
+        isPhoneExist.value = true;
       }
       isError.value = true;
+    } finally {
+      isSubmitting.value = false;
     }
-    finally{
-      isSubmitting.value = false
-    }
-  setOpenEditModal(false);
-
+    setOpenEditModal(false);
+  } else {
+    return;
   }
-  else{
-    return
-  }
-}
+};
 
 const isPhoneExistHandler = (value) => {
-  isWantToCreateWithoutCustomer.value = !isWantToCreateWithoutCustomer.value
-}
+  isWantToCreateWithoutCustomer.value = !isWantToCreateWithoutCustomer.value;
+};
 </script>
 
 <template>
@@ -500,21 +500,21 @@ const isPhoneExistHandler = (value) => {
       <div value="roleDetails" class="text-sm md:text-base p-6 basis-full">
         <form @submit="onSubmit" class="space-y-6">
           <div class="flex w-full justify-end">
-
-          <FormField
-              v-slot="{ value, handleChange }"
-              name="isPhoneExist"
-            >
+            <FormField v-slot="{ value, handleChange }" name="isPhoneExist">
               <FormItem
                 class="flex flex-row items-center gap-6 px-4 py-2 border rounded-md w-fit"
               >
-                <FormLabel class="text-base">
-                  Create user
-                </FormLabel>
+                <FormLabel class="text-base"> Create user </FormLabel>
                 <FormControl>
-                  <UiSwitch :checked="value" @update:checked="() => {
-                    isPhoneExistHandler(value)
-                    handleChange}" />
+                  <UiSwitch
+                    :checked="value"
+                    @update:checked="
+                      () => {
+                        isPhoneExistHandler(value);
+                        handleChange;
+                      }
+                    "
+                  />
                 </FormControl>
               </FormItem>
             </FormField>
@@ -779,10 +779,12 @@ const isPhoneExistHandler = (value) => {
                           class="h-5 w-5"
                           :disabled="
                             (isAccountSelected(account) &&
-                              !store.permissions.includes(PermissionConstants.DELETE_CONTRACT_ACCOUNT
+                              !store.permissions.includes(
+                                PermissionConstants.DELETE_CONTRACT_ACCOUNT
                               )) ||
                             (!isAccountSelected(account) &&
-                              !store.permissions.includes(PermissionConstants.CREATE_CONTRACT_ACCOUNT
+                              !store.permissions.includes(
+                                PermissionConstants.CREATE_CONTRACT_ACCOUNT
                               ))
                           "
                         />
@@ -1097,13 +1099,10 @@ const isPhoneExistHandler = (value) => {
                 class="w-full px-6 py-12 text-center flex flex-col items-center justify-center gap-4"
               >
                 <p class="text-muted-foreground">
-                  This Phone already exist. Please create a contract without a customer
+                  This Phone already exist. Please create a contract without a
+                  customer
                 </p>
-                <UiButton
-                  @click="
-                    setOpenEditModal(true)
-                  "
-                  class="w-fit px-5"
+                <UiButton @click="setOpenEditModal(true)" class="w-fit px-5"
                   ><Icon
                     name="material-symbols:add"
                     size="24"
@@ -1154,12 +1153,13 @@ const isPhoneExistHandler = (value) => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="serviceDefinitionRoleId">
+            <FormField
+              v-slot="{ componentField }"
+              name="serviceDefinitionRoleId"
+            >
               <FormItem>
                 <FormLabel> Service Definition Role</FormLabel>
-                <UiSelect
-                  v-bind="componentField"
-                >
+                <UiSelect v-bind="componentField">
                   <FormControl>
                     <UiSelectTrigger>
                       <UiSelectValue
@@ -1220,7 +1220,8 @@ const isPhoneExistHandler = (value) => {
                           selectedPermissions?.length
                             ? selectedPermissions
                                 .map(
-                                  (permission: Permission) => permission.permissionCode
+                                  (permission: Permission) =>
+                                    permission.permissionCode
                                 )
                                 .join(", ")
                             : "Select permissions"
@@ -1327,17 +1328,20 @@ const isPhoneExistHandler = (value) => {
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
           <p class="font-medium pb-3">
+            Please confirm if this phone number is your active phone number.
+            Temporary PIN will be sent to this:
+          </p>
 
-          Please confirm if this phone number is your active phone number.
-          Temporary PIN will be sent to this:
-        </p>
-
-        <div class="flex flex-col gap-1">
-
-          <p >Fullname: <span class="font-bold">{{ coreCustomerSummary?.fullName }}</span></p>
-          <p>Phone Number: <span class="font-bold">{{coreCustomerSummary?.phone}}</span></p>
-        </div>
-
+          <div class="flex flex-col gap-1">
+            <p>
+              Fullname:
+              <span class="font-bold">{{ coreCustomerSummary?.fullName }}</span>
+            </p>
+            <p>
+              Phone Number:
+              <span class="font-bold">{{ coreCustomerSummary?.phone }}</span>
+            </p>
+          </div>
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>
@@ -1351,14 +1355,17 @@ const isPhoneExistHandler = (value) => {
         >
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="() => {
-          if(isPhoneExist || isWantToCreateWithoutCustomer){
-            createNewContractWithoutCustomerHandler(true)
-          }
-          else{
-            handlePhoneConfirmation(true)
-          }
-          }">
+        <UiAlertDialogAction
+          @click="
+            () => {
+              if (isPhoneExist || isWantToCreateWithoutCustomer) {
+                createNewContractWithoutCustomerHandler(true);
+              } else {
+                handlePhoneConfirmation(true);
+              }
+            }
+          "
+        >
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isSubmitting"

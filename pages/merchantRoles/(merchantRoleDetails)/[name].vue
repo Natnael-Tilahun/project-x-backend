@@ -1,0 +1,748 @@
+<script lang="ts" setup>
+import { useForm } from "vee-validate";
+import {
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
+import { useToast } from "~/components/ui/toast";
+import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import { RoleScope } from "~/global-types";
+import type { Role, Permission } from "~/types";
+import { rolesFormSchema } from "~/validations/rolesFormSchema";
+import { PermissionConstants } from "~/constants/permissions";
+import { computed, ref } from "vue";
+
+const { toast } = useToast();
+
+const topAccordionItem = ref("item-1");
+const {
+  getMerchantOperatorRoleById,
+  getMerchantOperatorRolePermissions,
+  updateMerchantOperatorRole,
+  updateMerchantOperatorRoleStatus,
+  createMerchantOperatorRolePermissions,
+  deleteMerchantOperatorRolePermissions,
+  isLoading,
+  isUpdating,
+} = useMerchantRoles();
+const { getAuthorities } = useAuth();
+const {getPermissions} = usePermissions()
+const loading = ref(isLoading.value);
+const updating = ref(isLoading.value);
+const isError = ref(false);
+const data = ref<Role | null>(null);
+const permissionsData = ref<Permission[]>([])
+const selectedPermissionCodes = ref<string[]>([])
+const route = useRoute();
+const name: string = route.params.name as string;
+const addLoading = ref(false);
+const deleteLoading = ref(false);
+const selectedToAdd = ref<string[]>([]);
+const selectedToDelete = ref<string[]>([]);
+
+interface FormValues {
+  name: string;
+  description?: string;
+  enforce2fa?: boolean;
+  disabled: boolean;
+}
+
+const groupedPermissions = () => {
+  if (!permissionsData.value) {
+    return [];
+  }
+  return permissionsData.value.reduce(
+    (groups: Record<string, Permission[]>, permission: Permission) => {
+      if (!groups[permission.grouping]) {
+        groups[permission.grouping] = [];
+      }
+      groups[permission.grouping].push(permission);
+      return groups;
+    },
+    {} as Record<string, Permission[]>
+  );
+};
+
+const groupedAllPermissionsSorted = computed(() => {
+  const groups = groupedPermissions();
+  return Object.entries(groups).sort(([a], [b]) => a.localeCompare(b));
+});
+
+const form = useForm<FormValues>({
+  validationSchema: rolesFormSchema,
+});
+
+const refetch = async () => {
+  isError.value = false
+  await fetchStaffRoleData()
+  await fetchMerchantRolePermissionData()
+  await fetchPermissionData()
+};
+
+onMounted(async() => {
+ await fetchStaffRoleData();
+ await fetchMerchantRolePermissionData()
+ await fetchPermissionData()
+});
+
+
+const fetchStaffRoleData = async () => {
+try {
+  loading.value = true;
+  const fetchedData = await getMerchantOperatorRoleById(name); // Call your API function to fetch roles
+  if (fetchedData) {
+    data.value = fetchedData;
+    const formValues: { [key: string]: any } = {
+      name: fetchedData.name,
+      description: fetchedData.description,
+      enforce2fa: fetchedData.enforce2fa,
+      enabled: fetchedData.enabled,
+      scope: fetchedData.scope,
+    };
+
+    form.setValues(formValues);
+  }
+} catch (err) {
+  console.error("Error fetching roles:", err);
+  toast({
+    title: "Uh oh! Something went wrong.",
+    description: `There was a problem with your request: ${err}`,
+    variant: "destructive",
+  });
+  isError.value = true;
+} finally {
+  loading.value = false;
+  isLoading.value = false;
+}
+}
+
+const fetchMerchantRolePermissionData = async () => {
+try {
+  loading.value = true;
+  const fetchedData = await getMerchantOperatorRolePermissions(name); // Call your API function to fetch roles
+  console.log("data: ", fetchedData)
+  if (fetchedData) {
+    selectedPermissionCodes.value = fetchedData
+    // data.value.permissionUsageData = fetchedData;
+    console.log("fomr values: ", selectedPermissionCodes.value)
+    const formValues: { [key: string]: any } = {
+      ...data.value
+    };
+
+    // Transform permissionUsageData into individual fields
+    fetchedData?.forEach((permission) => {
+      formValues[`${permission.code}`] = permission.selected || false;
+    });
+
+    // Initialize group switches based on fetched data
+    Object.keys(groupedPermissions()).forEach((groupName) => {
+      const permissions = groupedPermissions()[groupName];
+      let allSelected = true;
+
+      permissions.forEach((permission) => {
+        if (!permission.selected) {
+          allSelected = false;
+        }
+      });
+
+      formValues[groupName] = allSelected;
+    });
+
+    form.setValues(formValues);
+  }
+} catch (err) {
+  console.error("Error fetching roles:", err);
+  toast({
+    title: "Uh oh! Something went wrong.",
+    description: `There was a problem with your request: ${err}`,
+    variant: "destructive",
+  });
+  isError.value = true;
+} finally {
+  loading.value = false;
+  isLoading.value = false;
+}
+}
+
+const fetchPermissionData = async () => {
+try {
+  loading.value = true;
+  const fetchedData = await getPermissions(0, 1000000); // Call your API function to fetch roles
+  if (fetchedData) {
+    permissionsData.value = fetchedData;
+
+    // Initialize group switches based on fetched data
+    Object.keys(groupedPermissions()).forEach((groupName) => {
+      const permissions = groupedPermissions()[groupName];
+      let allSelected = true;
+
+      permissions.forEach((permission) => {
+        if (!permission.selected) {
+          allSelected = false;
+        }
+      });
+    });
+  }
+} catch (err) {
+  console.error("Error fetching roles:", err);
+  toast({
+    title: "Uh oh! Something went wrong.",
+    description: `There was a problem with your request: ${err}`,
+    variant: "destructive",
+  });
+  isError.value = true;
+} finally {
+  loading.value = false;
+  isLoading.value = false;
+}
+}
+
+const onSubmit = form.handleSubmit(async (values: any) => {
+  isLoading.value = true;
+  const updatedRoleData = {
+    name: values.name,
+    description: values.description,
+    enforce2fa: values.enforce2fa,
+    enabled: values.enabled,
+    scope: RoleScope.MERCHANT,
+  };
+
+  try {
+    isUpdating.value = true;
+    updating.value = true;
+    await updateMerchantOperatorRole(name, updatedRoleData);
+    toast({
+      title: "Role updated successfully.",
+    });
+  } catch (err: any) {
+    console.error("Error updating role:", err);
+    await refetch();
+    isError.value = true;
+  } finally {
+    isUpdating.value = false;
+    updating.value = false;
+  }
+});
+
+const updadateRoleStatus = async (status: boolean) => {
+  try {
+    isUpdating.value = true;
+    updating.value = true;
+    await updateMerchantOperatorRoleStatus(name, status); // Call your API function to fetch roles
+    await getAuthorities();
+    toast({
+      title: "Role status updated successfully.",
+    });
+    await refetch();
+  } catch (err: any) {
+    console.error("Error updating role status:", err);
+    toast({
+      title: "Uh oh! Something went wrong.",
+      description: `There was a problem with your request: ${err}`,
+      variant: "destructive",
+    });
+    isError.value = true;
+  } finally {
+    isUpdating.value = false;
+    updating.value = false;
+  }
+};
+
+// Add selected permissions
+const addSelectedPermissions = async () => {
+  if (!selectedToAdd.value.length) return;
+  addLoading.value = true;
+  try {
+    isUpdating.value = true;
+    await createMerchantOperatorRolePermissions(name, {
+      permissionCodes: selectedToAdd.value,
+    });
+    toast({
+      title: "Permissions Added",
+      description: "Selected permissions have been added.",
+    });
+    await refetch();
+    selectedToAdd.value = [];
+  } catch (err) {
+    isError.value = true;
+    toast({
+      title: "Error",
+      description: "Failed to add permissions.",
+      variant: "destructive",
+    });
+  } finally {
+    isUpdating.value = false;
+    addLoading.value = false;
+  }
+};
+
+// Delete selected permissions
+const deleteSelectedPermissions = async () => {
+  if (!selectedToDelete.value.length) return;
+  deleteLoading.value = true;
+  try {
+    isUpdating.value = true;
+    await deleteMerchantOperatorRolePermissions(name, {
+      permissionCodes: selectedToDelete.value,
+    });
+    toast({
+      title: "Permissions Deleted",
+      description: "Selected permissions have been removed.",
+    });
+    await refetch();
+    selectedToDelete.value = [];
+  } catch (err) {
+    isError.value = true;
+    toast({
+      title: "Error",
+      description: "Failed to delete permissions.",
+      variant: "destructive",
+    });
+  } finally {
+    isUpdating.value = false;
+    deleteLoading.value = false;
+  }
+};
+
+// Helper: All available permissions that are not already selected
+const availablePermissionCodes = computed(() => {
+  if (!data.value || !data.value.permissionUsageData) return [];
+  return data.value.permissionUsageData
+    .filter((p) => !selectedPermissionCodes.value.includes(p.code))
+    .map((p) => p.code);
+});
+
+// Select all available permissions
+function selectAllAvailable() {
+  selectedToAdd.value = [...availablePermissionCodes.value];
+}
+
+// Unselect all available permissions
+function unselectAllAvailable() {
+  selectedToAdd.value = [];
+}
+
+// Select all permissions in the right column (selected permissions)
+function selectAllSelected() {
+  if (!data.value || !selectedPermissionCodes.value) return;
+  selectedToDelete.value = selectedPermissionCodes.value
+    .map((p) => p);
+}
+
+// Unselect all permissions in the right column
+function unselectAllSelected() {
+  selectedToDelete.value = [];
+}
+</script>
+
+<template>
+  <form @submit="onSubmit">
+    <div v-if="loading" class="py-10 flex justify-center items-center">
+      <UiLoading />
+    </div>
+    <div v-else-if="data && !isError" class="flex flex-col gap-4 items-center">
+      <UiCard class="w-full p-6">
+        <UiAccordion
+          type="single"
+          :default-value="topAccordionItem"
+          collapsible
+        >
+          <UiAccordionItem value="item-1">
+            <div class="flex justify-between items-center">
+              <UiAccordionTrigger class="md:text-lg gap-2">
+                <p class="mr-auto">{{ data?.name }}</p></UiAccordionTrigger
+              >
+
+              <div
+                class="flex items-center gap-4 border pb-1 pt-2 px-3 rounded-md"
+              >
+                <UiPermissionGuard
+                  :permission="
+                    data.enabled
+                      ? PermissionConstants.DISABLE_MERCHANT_OPERATOR_ROLE
+                      : PermissionConstants.ENABLE_MERCHANT_OPERATOR_ROLE
+                  "
+                >
+                  <UiBadge
+                    class="font-bold px-2 py-1 mb-1"
+                    :class="data.enabled ? 'bg-green-500' : 'bg-red-500'"
+                    >{{ data.enabled ? "Enabled" : "Disabled" }}</UiBadge
+                  >
+                  <FormField v-slot="{ value, handleChange }" name="enabled">
+                    <FormItem>
+                      <FormControl>
+                        <UiSwitch
+                          class="data-[state=checked]:bg-green-500 data-[state=unchecked]:bg-red-500"
+                          :checked="value"
+                          @update:checked="handleChange"
+                          @click="updadateRoleStatus(value)"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </UiPermissionGuard>
+              </div>
+            </div>
+
+            <UiAccordionContent class="w-full">
+              <div class="grid grid-cols-1 rounded-xl gap-2 w-full p-6 border">
+                <div class="grid grid-cols-2 gap-2 items-center">
+                  <FormField v-slot="{ value, handleChange }" name="enforce2fa">
+                    <FormItem>
+                      <FormLabel> Enforce 2fa</FormLabel>
+                      <FormControl>
+                        <UiSwitch
+                          :checked="value"
+                          @update:checked="handleChange"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
+                <FormField v-slot="{ componentField }" name="description">
+                  <FormItem>
+                    <FormLabel> Description</FormLabel>
+                    <FormControl class="w-full">
+                      <UiTextarea
+                        type="text"
+                        placeholder="description"
+                        v-bind="componentField"
+                        aria-autocomplete="description"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                <UiPermissionGuard :permission=PermissionConstants.UPDATE_MERCHANT_OPERATOR_ROLE >
+            <div class="w-full flex justify-end mt-4">
+              <UiButton :disabled="isUpdating" type="submit">
+                <Icon
+                  name="svg-spinners:8-dots-rotate"
+                  v-if="isUpdating"
+                  class="mr-2 h-4 w-4 animate-spin"
+                ></Icon>
+                Update</UiButton
+              >
+            </div>
+          </UiPermissionGuard>
+              </div>
+            </UiAccordionContent>
+          </UiAccordionItem>
+        </UiAccordion>
+      </UiCard>
+
+      <UiCard class="w-full p-6">
+        <UiTabs default-value="permissions" class="md:space-y-4 w-full">
+          <UiTabsList
+            class="flex bg-background justify-start py-7 px-0 border-[1px]"
+          >
+            <UiTabsTrigger
+              value="permissions"
+              class="md:text-xl py-3 data-[state=active]:border-b-4 data-[state=active]:border-b-primary"
+            >
+              Permissions
+            </UiTabsTrigger>
+          </UiTabsList>
+
+          <UiTabsContent
+            value="permissions"
+            class="space-y-4 text-sm md:text-base"
+          >
+            <div class="flex gap-8 h-full w-full">
+              <!-- Left: All Permissions (Available) -->
+              <div class="w-full min-h-min flex flex-col">
+                <div class="flex justify-between items-center mb-2">
+                  <h3 class="font-semibold">Available Permissions</h3>
+                  <p class="text-sm text-muted-foreground ">
+                    {{ selectedToAdd.length }} of {{ availablePermissionCodes.length }} selected
+                  </p>
+                </div>
+                <div class="flex items-center gap-2 mb-2">
+                  <UiButton
+                    variant="outline"
+                    size="sm"
+                    type="button"
+                    @click="selectAllAvailable"
+                    :disabled="!data?.permissionUsageData?.filter((p) => !selectedPermissionCodes.includes(p.code)).length"
+                  >
+                    Select All
+                  </UiButton>
+                  <UiButton
+                    variant="outline"
+                    size="sm"
+                    type="button"
+                    @click="unselectAllAvailable"
+                    :disabled="!selectedToAdd.length"
+                  >
+                    Unselect All
+                  </UiButton>
+                  <UiPermissionGuard :permission="PermissionConstants.CREATE_MERCHANT_OPERATOR_ROLE_PERMISSION" >
+                    <UiButton
+                    type="button"
+                      class="ml-auto w-fit bg-green-600"
+                      :disabled="selectedToAdd.length === 0 || addLoading"
+                    @click="addSelectedPermissions"
+                  >
+                    <Icon
+                      name="material-symbols:add"
+                      v-if="addLoading"
+                      class="mr-2 h-4 w-4 animate-spin"
+                    ></Icon>
+                    <Icon
+                      name="heroicons:plus-circle"
+                      v-if="!addLoading"
+                      class="mr-2 h-4 w-4"
+                    ></Icon>
+                    <Icon
+                      name="svg-spinners:8-dots-rotate"
+                      v-if="addLoading"
+                      :disabled="addLoading"
+                      class="mr-2 h-4 w-4 animate-spin"
+                    ></Icon>
+                    Add
+                    {{
+                      selectedToAdd.length ? `(${selectedToAdd.length})` : ""
+                    }}
+                  </UiButton>
+                  </UiPermissionGuard>
+                </div>
+                <UiAccordion type="single" class="border-none space-y-2" collapsible>
+                  <template v-for="[grouping, permissions] in groupedAllPermissionsSorted" :key="grouping">
+                    <UiAccordionItem :value="grouping" class="border-none p-0" >
+                      <div class="flex justify-between items-center bg-secondary rounded-lg px-4 m-0">
+                          <UiAccordionTrigger class="md:text-base gap-2 flex-row-reverse">
+                            <div class="font-medium text-sm m-0">{{ grouping }}</div>
+                          </UiAccordionTrigger>
+                        <!-- Group Checkbox for Add -->
+                        <UiCheckbox
+                        :checked="permissions.every(p => selectedToAdd.includes(p.code))"
+                        :indeterminate="permissions.some(p => selectedToAdd.includes(p.code)) && !permissions.every(p => selectedToAdd.includes(p.code))"
+                        @update:checked="checked => {
+                          if (checked) {
+                            permissions.forEach(p => {
+                              if (!selectedToAdd.includes(p.code) && !selectedPermissionCodes.includes(p.code)) {
+                                selectedToAdd.push(p.code);
+                              }
+                            });
+                          } else {
+                            permissions.forEach(p => {
+                              selectedToAdd = selectedToAdd.filter(code => code !== p.code);
+                            });
+                          }
+                        }"
+                        :disabled="permissions.every(p => selectedPermissionCodes.includes(p.code))"
+                        />
+                      </div>
+                      <UiAccordionContent class="p-0 m-0">
+                        <UiCard class="p-2 grid grid-cols-1 xl:grid-cols-2 3xl:grid-cols-3 gap-x-8 px-2 py-2 m-0">
+                            <div
+                              v-for="permission in permissions"
+                              :key="permission.code"
+                              class="flex items-center py-2 px-2 hover:bg-muted/50"
+                            >
+                            <FormField
+                              v-slot="{ value, handleChange }"
+                              :name="`${permission.code}`"
+                            >
+                   
+                                  <FormItem className="flex flex-row w-full items-start gap-x-3">                                   
+                                   <FormLabel       :class="{
+                          'text-gray-400': selectedPermissionCodes.includes(
+                            permission.code
+                          ),
+                        }"
+                         class="self-center text-xs">{{ permission.code }}</FormLabel>
+                                    <FormControl> 
+                                  <UiCheckbox
+                                    class="order-first self-center"
+                                    :checked="selectedToAdd.includes(permission.code)"
+                                    :disabled="selectedPermissionCodes.includes(permission.code)"
+                                    @update:checked="
+                                      (checked) => {
+                                        if (checked) selectedToAdd.push(permission.code);
+                                        else
+                                          selectedToAdd = selectedToAdd.filter(
+                                            (code) => code !== permission.code
+                                          );
+                                      }
+                                    "
+                                  />
+                                </FormControl>
+                              </FormItem>
+                            </FormField>
+                          </div>
+                        </UiCard>
+                      </UiAccordionContent>
+                    </UiAccordionItem>
+                  </template>
+                </UiAccordion>
+                <UiPermissionGuard :permission="PermissionConstants.CREATE_MERCHANT_OPERATOR_ROLE_PERMISSION" >
+                <UiButton
+                type="button"
+                  class="mt-2 w-full bg-green-600"
+                  :disabled="!selectedToAdd.length || isUpdating || addLoading"
+                  @click.prevent="addSelectedPermissions"
+                >
+                <Icon
+                      name="material-symbols:add"
+                      v-if="addLoading"
+                      class="mr-2 h-4 w-4 animate-spin"
+                    ></Icon>
+                    <Icon
+                      name="heroicons:plus-circle"
+                      v-if="!addLoading"
+                      class="mr-2 h-4 w-4"
+                    ></Icon>
+                  Add
+                  {{ selectedToAdd.length ? `(${selectedToAdd.length})` : "" }}
+                </UiButton>
+                </UiPermissionGuard> 
+              </div>
+
+              <!-- Middle: Bi-directional Arrow -->
+              <div
+                class="flex flex-col items-center justify-center gap-1 p-4 w-fit h-full self-center"
+              >
+                <Icon
+                  name="heroicons:arrow-right"
+                  :class="selectedToAdd.length != 0 && 'text-primary'"
+                  class="h-10 w-10 text-gray-400"
+                />
+                <Icon
+                  name="heroicons:arrow-left"
+                  :class="selectedToDelete.length != 0 && 'text-primary'"
+                  class="h-10 w-10 text-gray-400"
+                />
+              </div>
+
+              <!-- Right: Selected Permissions -->
+              <div class="w-full min-h-min flex flex-col">
+                <!-- <h3 class="font-semibold mb-2">Selected Permissions</h3> -->
+                <div class="flex justify-between items-center mb-2">
+                  <p class="font-medium">Selected Permissions</p>
+                  <p class="text-sm text-muted-foreground">
+                    {{ selectedToDelete.length }} of {{ selectedPermissionCodes.length }} selected
+                  </p>
+                </div>
+                <div class="flex items-center gap-2 mb-2">
+                  <UiButton
+                    variant="outline"
+                    type="button"
+                    size="sm"
+                    @click="selectAllSelected"
+                    :disabled="!selectedPermissionCodes.length"
+                  >
+                    Select All
+                  </UiButton>
+                  <UiButton
+                    variant="outline"
+                    size="sm"
+                    type="button"
+                    @click="unselectAllSelected"
+                    :disabled="!selectedToDelete.length"
+                  >
+                    Unselect All
+                  </UiButton>
+                  <UiPermissionGuard :permission="PermissionConstants.DELETE_MERCHANT_OPERATOR_ROLE_PERMISSION" >
+                  <UiButton
+                  type="button"
+                    class="ml-auto w-fit bg-red-600 text-white"
+                    :disabled="!selectedToDelete.length || isUpdating || deleteLoading"
+                    @click.prevent="deleteSelectedPermissions"
+                  >
+                    <Icon
+                      name="svg-spinners:8-dots-rotate"
+                      v-if="deleteLoading"
+                      class="mr-2 h-4 w-4 animate-spin"
+                    />
+                    <Icon
+                      name="heroicons:trash"
+                      v-if="!deleteLoading"
+                      class="mr-2 h-4 w-4"
+                    ></Icon>
+                    Delete
+                    {{ selectedToDelete.length ? `(${selectedToDelete.length})` : "" }}
+                  </UiButton>
+                  </UiPermissionGuard>
+                </div>
+                <div class="border-none" v-if="selectedPermissionCodes.length">
+                          <UiCard  class="p-2 grid grid-cols-1 xl:grid-cols-2 3xl:grid-cols-3 gap-x-8 px-2 py-2 m-0">
+                            <div
+                              v-for="permission in selectedPermissionCodes"
+                              :key="permission"
+                              class="flex items-center py-2 px-2 hover:bg-muted/50"
+                            >
+                            <FormField
+                                  v-slot="{ value, handleChange }"
+                                  :name="`${permission}`"
+                                >
+                                <FormItem className="flex flex-row w-full items-start gap-x-3">                                   
+                                   <FormLabel class="self-center text-xs">{{ permission }}</FormLabel>
+                                    <FormControl> 
+                              <UiCheckbox
+                                class="order-first self-center"
+                                :checked="selectedToDelete.includes(permission)"
+                                @update:checked="
+                                  (checked) => {
+                                    if (checked)
+                                      selectedToDelete.push(permission);
+                                    else
+                                      selectedToDelete =
+                                        selectedToDelete.filter(
+                                          (code) => code !== permission
+                                        );
+                                  }
+                                "
+                              />
+                              </FormControl>
+                              </FormItem>
+                              </FormField>
+                            </div>
+                          </UiCard>
+                  <UiPermissionGuard :permission="PermissionConstants.DELETE_MERCHANT_OPERATOR_ROLE_PERMISSION" >
+                  <UiButton
+                    type="button"
+                    class="mt-2 w-full bg-red-600 text-white"
+                    :disabled="!selectedToDelete.length || isUpdating || deleteLoading"
+                    @click.prevent="deleteSelectedPermissions"
+                  >
+                  <Icon
+                      name="svg-spinners:8-dots-rotate"
+                      v-if="deleteLoading"
+                      class="mr-2 h-4 w-4 animate-spin"
+                    />
+                    <Icon
+                      name="heroicons:trash"
+                      v-if="!deleteLoading"
+                      class="mr-2 h-4 w-4"
+                    ></Icon>
+                    Delete
+                    {{
+                      selectedToDelete.length
+                        ? `(${selectedToDelete.length})`
+                        : ""
+                    }}
+                  </UiButton>
+                  </UiPermissionGuard>
+                </div>
+                <UiCard v-else class="text-gray-400 py-8 text-center h-full">
+                  No selected permissions to remove.
+                </UiCard>
+                </div>
+              </div>
+          </UiTabsContent>
+        </UiTabs>
+      </UiCard>
+    </div>
+    <div v-else-if="!data && !isError">No data found.</div>
+    <div v-if="isError">
+      <ErrorMessage :retry="refetch" title="Something went wrong." />
+    </div>
+  </form>
+</template>
+
