@@ -38,7 +38,9 @@ definePageMeta({
         class="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]"
       >
         <div class="flex flex-col space-y-2 text-center">
-          <h1 class="text-2xl font-semibold tracking-tight">Activate New User</h1>
+          <h1 class="text-2xl font-semibold tracking-tight">
+            Activate New User
+          </h1>
           <!-- <p class="text-sm text-muted-foreground">
             Enter your email(username) and password below to login
           </p> -->
