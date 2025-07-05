@@ -10,7 +10,7 @@ export default defineNuxtConfig({
       USSD_API_BASE_URL: process.env.USSD_API_BASE_URL,
       X_APP_ID: process.env.X_APP_ID,
       X_APP_VERSION: process.env.X_APP_VERSION,
-      HOME_URL: process.env.HOME_URL || 'http://localhost:3000',
+      HOME_URL: process.env.HOME_URL || "http://localhost:3000",
     },
   },
 
@@ -82,7 +82,7 @@ export default defineNuxtConfig({
     modern: true,
   },
 
-  plugins: ["~/plugins/fontawesome.ts"],
+  plugins: ["~/plugins/fontawesome.ts", "~/plugins/session-sync.client.ts"],
   build: {
     transpile: ["@fortawesome/vue-fontawesome", "lodash-es"],
   },

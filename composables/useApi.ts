@@ -1,4 +1,4 @@
-import { useAuthStore } from '~/stores/auth';
+import { useAuthStore } from "~/stores/auth";
 
 export const useApi = () => {
   const runtimeConfig = useRuntimeConfig();
@@ -6,9 +6,9 @@ export const useApi = () => {
 
   const getHeaders = (includeAuth = true) => {
     const headers: Record<string, string> = {
-      'X-App-ID': runtimeConfig.public.X_APP_ID as string,
-      'X-App-Version': runtimeConfig.public.X_APP_VERSION as string,
-      'X-2FA-Token': store.twoFactorToken ? store.twoFactorToken : ""
+      "X-App-ID": runtimeConfig.public.X_APP_ID as string,
+      "X-App-Version": runtimeConfig.public.X_APP_VERSION as string,
+      "X-2FA-Token": store.twoFactorToken ? store.twoFactorToken : "",
     };
 
     if (includeAuth && store.accessToken) {
@@ -21,35 +21,51 @@ export const useApi = () => {
   const fetch = async <T>(
     endpoint: string,
     options: {
-      method?: string;
+      method?: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
       body?: any;
       params?: Record<string, any>;
       baseUrl?: string;
       includeAuth?: boolean;
     } = {}
   ) => {
-    const { 
-      method = 'GET', 
-      body, 
-      params, 
+    const {
+      method = "GET",
+      body,
+      params,
       baseUrl = runtimeConfig.public.API_BASE_URL,
-      includeAuth = true 
+      includeAuth = true,
     } = options;
-    
-    const queryString = params ? '?' + new URLSearchParams(params).toString() : '';
+
+    const queryString = params
+      ? "?" + new URLSearchParams(params).toString()
+      : "";
     const url = `${baseUrl}${endpoint}${queryString}`;
 
-    const { data, pending, error, status } = await useFetch<T>(url, {
-      method,
-      body,
-      headers: getHeaders(includeAuth),
-    });
+    try {
+      const response = await $fetch<T>(url, {
+        method,
+        body,
+        headers: getHeaders(includeAuth),
+      });
 
-    return { data, pending, error, status };
+      return {
+        data: ref(response),
+        pending: ref(false),
+        error: ref(null),
+        status: ref("success"),
+      };
+    } catch (err) {
+      return {
+        data: ref(null),
+        pending: ref(false),
+        error: ref(err),
+        status: ref("error"),
+      };
+    }
   };
 
   return {
     fetch,
-    getHeaders
+    getHeaders,
   };
-}; 
+};
