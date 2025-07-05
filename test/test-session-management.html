@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Session Management Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .test-section {
+        border: 1px solid #ccc;
+        padding: 15px;
+        margin: 10px 0;
+        border-radius: 5px;
+      }
+      .status {
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 5px;
+      }
+      .success {
+        background-color: #d4edda;
+        color: #155724;
+      }
+      .error {
+        background-color: #f8d7da;
+        color: #721c24;
+      }
+      .info {
+        background-color: #d1ecf1;
+        color: #0c5460;
+      }
+      button {
+        padding: 10px 15px;
+        margin: 5px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+      }
+      .btn-primary {
+        background-color: #007bff;
+        color: white;
+      }
+      .btn-danger {
+        background-color: #dc3545;
+        color: white;
+      }
+      .btn-success {
+        background-color: #28a745;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Session Management Test</h1>
+    <p>
+      This page tests the session management functionality. Open multiple tabs
+      to see how it prevents multiple sessions.
+    </p>
+
+    <div class="test-section">
+      <h3>Current Session Status</h3>
+      <div id="sessionStatus" class="status info">
+        Checking session status...
+      </div>
+      <div id="sessionInfo"></div>
+    </div>
+
+    <div class="test-section">
+      <h3>Session Actions</h3>
+      <button class="btn-primary" onclick="claimSession()">
+        Claim Session
+      </button>
+      <button class="btn-danger" onclick="releaseSession()">
+        Release Session
+      </button>
+      <button class="btn-success" onclick="checkSession()">
+        Check Session
+      </button>
+      <button class="btn-primary" onclick="simulateLogin()">
+        Simulate Login
+      </button>
+      <button class="btn-danger" onclick="simulateLogout()">
+        Simulate Logout
+      </button>
+    </div>
+
+    <div class="test-section">
+      <h3>Event Log</h3>
+      <div
+        id="eventLog"
+        style="
+          height: 200px;
+          overflow-y: auto;
+          border: 1px solid #ccc;
+          padding: 10px;
+          background-color: #f8f9fa;
+        "
+      ></div>
+      <button onclick="clearLog()">Clear Log</button>
+    </div>
+
+    <script>
+      // Session management functions (simplified version of our solution)
+      const generateSessionId = () => {
+        return `session_${Date.now()}_${Math.random()
+          .toString(36)
+          .substr(2, 9)}`;
+      };
+
+      let currentSessionId = null;
+
+      const logEvent = (message) => {
+        const log = document.getElementById("eventLog");
+        const timestamp = new Date().toLocaleTimeString();
+        log.innerHTML += `<div>[${timestamp}] ${message}</div>`;
+        log.scrollTop = log.scrollHeight;
+      };
+
+      const updateStatus = (message, type = "info") => {
+        const status = document.getElementById("sessionStatus");
+        status.textContent = message;
+        status.className = `status ${type}`;
+      };
+
+      const updateSessionInfo = () => {
+        const info = document.getElementById("sessionInfo");
+        const activeSession = localStorage.getItem("active-session");
+
+        if (activeSession) {
+          try {
+            const sessionData = JSON.parse(activeSession);
+            const age = Math.floor((Date.now() - sessionData.timestamp) / 1000);
+            info.innerHTML = `
+                        <strong>Session ID:</strong> ${
+                          sessionData.sessionId
+                        }<br>
+                        <strong>Age:</strong> ${age} seconds<br>
+                        <strong>User Agent:</strong> ${sessionData.userAgent.substring(
+                          0,
+                          50
+                        )}...
+                    `;
+          } catch (error) {
+            info.innerHTML = "<strong>Error:</strong> Invalid session data";
+          }
+        } else {
+          info.innerHTML = "<strong>No active session</strong>";
+        }
+      };
+
+      const claimSession = () => {
+        if (currentSessionId) {
+          logEvent("Session already claimed");
+          return;
+        }
+
+        currentSessionId = generateSessionId();
+        const sessionData = {
+          sessionId: currentSessionId,
+          timestamp: Date.now(),
+          userAgent: navigator.userAgent,
+        };
+
+        localStorage.setItem("active-session", JSON.stringify(sessionData));
+        updateStatus("Session claimed successfully", "success");
+        updateSessionInfo();
+        logEvent(`Session claimed: ${currentSessionId}`);
+      };
+
+      const releaseSession = () => {
+        if (!currentSessionId) {
+          logEvent("No session to release");
+          return;
+        }
+
+        localStorage.removeItem("active-session");
+        currentSessionId = null;
+        updateStatus("Session released", "info");
+        updateSessionInfo();
+        logEvent("Session released");
+      };
+
+      const checkSession = () => {
+        const activeSession = localStorage.getItem("active-session");
+        if (activeSession) {
+          try {
+            const sessionData = JSON.parse(activeSession);
+            const age = Math.floor((Date.now() - sessionData.timestamp) / 1000);
+
+            if (age > 300) {
+              // 5 minutes
+              updateStatus("Session is stale (older than 5 minutes)", "error");
+              localStorage.removeItem("active-session");
+              currentSessionId = null;
+            } else if (sessionData.sessionId === currentSessionId) {
+              updateStatus(
+                "Session is valid and belongs to this tab",
+                "success"
+              );
+            } else {
+              updateStatus("Another session is active", "error");
+            }
+          } catch (error) {
+            updateStatus("Invalid session data", "error");
+          }
+        } else {
+          updateStatus("No active session", "info");
+        }
+        updateSessionInfo();
+        logEvent("Session check performed");
+      };
+
+      const simulateLogin = () => {
+        claimSession();
+
+        // Notify other tabs
+        const loginEvent = {
+          action: "login",
+          sessionId: currentSessionId,
+          timestamp: Date.now(),
+        };
+        localStorage.setItem("auth-event", JSON.stringify(loginEvent));
+
+        logEvent("Login simulation completed");
+      };
+
+      const simulateLogout = () => {
+        releaseSession();
+
+        // Notify other tabs
+        const logoutEvent = {
+          action: "logout",
+          timestamp: Date.now(),
+        };
+        localStorage.setItem("auth-event", JSON.stringify(logoutEvent));
+
+        logEvent("Logout simulation completed");
+      };
+
+      const clearLog = () => {
+        document.getElementById("eventLog").innerHTML = "";
+      };
+
+      // Listen for storage events (cross-tab communication)
+      window.addEventListener("storage", (event) => {
+        if (event.key === "auth-event") {
+          const eventData = event.newValue;
+          if (eventData) {
+            try {
+              const parsedData = JSON.parse(eventData);
+              logEvent(`Storage event: ${parsedData.action} from another tab`);
+
+              if (parsedData.action === "login") {
+                if (parsedData.sessionId !== currentSessionId) {
+                  updateStatus(
+                    "Another tab logged in - this session is invalid",
+                    "error"
+                  );
+                  releaseSession();
+                }
+              } else if (parsedData.action === "logout") {
+                updateStatus("Another tab logged out", "info");
+              }
+            } catch (error) {
+              logEvent("Error parsing storage event");
+            }
+          }
+        } else if (event.key === "active-session") {
+          logEvent("Active session changed");
+          updateSessionInfo();
+        }
+      });
+
+      // Initialize
+      document.addEventListener("DOMContentLoaded", () => {
+        logEvent("Page loaded");
+        checkSession();
+
+        // Check for existing session
+        const activeSession = localStorage.getItem("active-session");
+        if (activeSession) {
+          try {
+            const sessionData = JSON.parse(activeSession);
+            currentSessionId = sessionData.sessionId;
+            updateStatus("Existing session found", "info");
+          } catch (error) {
+            updateStatus("Invalid existing session", "error");
+          }
+        }
+        updateSessionInfo();
+      });
+
+      // Update session info periodically
+      setInterval(updateSessionInfo, 5000);
+    </script>
+  </body>
+</html>
