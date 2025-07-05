@@ -2,7 +2,7 @@ import type { PaymentIntegration, PaymentOperation } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
-import axios from 'axios';
+import axios from "axios";
 
 export const usePaymentIntegrations = () => {
   const isLoading = ref<boolean>(false);
@@ -14,12 +14,11 @@ export const usePaymentIntegrations = () => {
     size?: number
   ) => ApiResult<PaymentIntegration[]> = async (page, size) => {
     try {
-      const { data, pending, error, status } = await fetch<PaymentIntegration[]>(
-        '/api/v1/internal/payment-integrations',
-        {
-          params: { page, size }
-        }
-      );
+      const { data, pending, error, status } = await fetch<
+        PaymentIntegration[]
+      >("/api/v1/internal/payment-integrations", {
+        params: { page, size },
+      });
 
       isLoading.value = pending.value;
 
@@ -27,9 +26,11 @@ export const usePaymentIntegrations = () => {
         handleApiError(error);
       }
 
-      return data.value ? (data.value as unknown as PaymentIntegration[]) : null;
+      return data.value
+        ? (data.value as unknown as PaymentIntegration[])
+        : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
@@ -49,7 +50,7 @@ export const usePaymentIntegrations = () => {
 
       return data.value ? (data.value as unknown as PaymentIntegration) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
@@ -69,7 +70,7 @@ export const usePaymentIntegrations = () => {
 
       return data.value ? (data.value as unknown as PaymentOperation[]) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
@@ -78,10 +79,10 @@ export const usePaymentIntegrations = () => {
   ) => ApiResult<PaymentIntegration> = async (paymentIntegrationData) => {
     try {
       const { data, pending, error, status } = await fetch<PaymentIntegration>(
-        '/api/v1/internal/payment-integrations',
+        "/api/v1/internal/payment-integrations",
         {
           method: "POST",
-          body: paymentIntegrationData
+          body: paymentIntegrationData,
         }
       );
 
@@ -93,7 +94,7 @@ export const usePaymentIntegrations = () => {
 
       return data.value ? (data.value as unknown as PaymentIntegration) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
@@ -109,7 +110,7 @@ export const usePaymentIntegrations = () => {
         `/api/v1/internal/payment-integrations/${paymentIntegrationId}`,
         {
           method: "PATCH",
-          body: paymentIntegrationData
+          body: paymentIntegrationData,
         }
       );
 
@@ -121,11 +122,13 @@ export const usePaymentIntegrations = () => {
 
       return data.value ? (data.value as unknown as PaymentIntegration) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const deletePaymentIntegration: (id: string) => ApiResult<any> = async (id) => {
+  const deletePaymentIntegration: (id: string) => ApiResult<any> = async (
+    id
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/payment-integrations/${id}`,
@@ -140,11 +143,14 @@ export const usePaymentIntegrations = () => {
 
       return data.value;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const importPaymentIntegration: (formData: FormData, options?: { onUploadProgress?: (progressEvent: any) => void }) => ApiResult<PaymentIntegration> = async (formData, options) => {
+  const importPaymentIntegration: (
+    formData: FormData,
+    options?: { onUploadProgress?: (progressEvent: any) => void }
+  ) => ApiResult<PaymentIntegration> = async (formData, options) => {
     try {
       if (options && options.onUploadProgress) {
         const runtimeConfig = useRuntimeConfig();
@@ -152,12 +158,12 @@ export const usePaymentIntegrations = () => {
         // Use axios for upload progress
         try {
           const response = await axios.post<PaymentIntegration>(
-            `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations/import-bulk`,
+            `${__API_BASE_URL__}/api/v1/internal/payment-integrations/import-bulk`,
             formData,
             {
               headers: {
                 ...getHeaders(true),
-                'Content-Type': 'multipart/form-data' 
+                "Content-Type": "multipart/form-data",
               },
               onUploadProgress: options.onUploadProgress,
             }
@@ -169,10 +175,10 @@ export const usePaymentIntegrations = () => {
       }
       // Default: use fetch
       const { data, pending, error, status } = await fetch<PaymentIntegration>(
-        '/api/v1/internal/payment-integrations/import-bulk',
+        "/api/v1/internal/payment-integrations/import-bulk",
         {
           method: "POST",
-          body:  formData,
+          body: formData,
         }
       );
 
@@ -184,14 +190,16 @@ export const usePaymentIntegrations = () => {
 
       return data.value ? (data.value as unknown as PaymentIntegration) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const exportPaymentIntegration: (id:string) => ApiResult<PaymentIntegration> = async (id) => {
+  const exportPaymentIntegration: (
+    id: string
+  ) => ApiResult<PaymentIntegration> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<PaymentIntegration>(
-        `/api/v1/internal/payment-integrations/${id}/export`,
+        `/api/v1/internal/payment-integrations/${id}/export`
       );
 
       isLoading.value = pending.value;
@@ -202,7 +210,7 @@ export const usePaymentIntegrations = () => {
 
       return data.value ? (data.value as unknown as PaymentIntegration) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 

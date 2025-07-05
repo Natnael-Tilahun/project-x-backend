@@ -4,7 +4,6 @@ const isError = ref(false);
 const openExportModal = ref(false);
 const isDownloading = ref(false);
 
-
 const setOpenExportModal = (value: boolean) => {
   openExportModal.value = value;
 };
@@ -17,7 +16,7 @@ async function exportAllIntegrationHandler() {
     const { getHeaders } = useApi();
 
     const response = await fetch(
-      `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-integrations/export-all`,
+      `${__API_BASE_URL__}/api/v1/internal/api-integrations/export-all`,
       {
         method: "GET",
         headers: getHeaders(true),
@@ -54,7 +53,6 @@ async function exportAllIntegrationHandler() {
     setOpenExportModal(false);
   }
 }
-
 </script>
 
 <template>

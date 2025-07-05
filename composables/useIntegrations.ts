@@ -9,12 +9,15 @@ export const useIntegrations = () => {
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
 
-  const getIntegrations: (page?: number, size?: number) => ApiResult<ApiIntegration[]> = async (page, size) => {
+  const getIntegrations: (
+    page?: number,
+    size?: number
+  ) => ApiResult<ApiIntegration[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<ApiIntegration[]>(
-        '/api/v1/internal/api-integrations',
+        "/api/v1/internal/api-integrations",
         {
-          params: { page, size }
+          params: { page, size },
         }
       );
 
@@ -26,11 +29,13 @@ export const useIntegrations = () => {
 
       return data.value ? (data.value as unknown as ApiIntegration[]) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const getIntegrationById: (id: string) => ApiResult<ApiIntegration> = async (id) => {
+  const getIntegrationById: (id: string) => ApiResult<ApiIntegration> = async (
+    id
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<ApiIntegration>(
         `/api/v1/internal/api-integrations/${id}`
@@ -44,17 +49,19 @@ export const useIntegrations = () => {
 
       return data.value ? (data.value as unknown as ApiIntegration) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const createNewIntegration: (integrationData: any) => ApiResult<ApiIntegration> = async (integrationData) => {
+  const createNewIntegration: (
+    integrationData: any
+  ) => ApiResult<ApiIntegration> = async (integrationData) => {
     try {
       const { data, pending, error, status } = await fetch<ApiIntegration>(
-        '/api/v1/internal/api-integrations',
+        "/api/v1/internal/api-integrations",
         {
           method: "POST",
-          body: integrationData
+          body: integrationData,
         }
       );
 
@@ -66,17 +73,20 @@ export const useIntegrations = () => {
 
       return data.value ? (data.value as unknown as ApiIntegration) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const updateIntegration: (integrationId: string, integrationData: any) => ApiResult<ApiIntegration> = async (integrationId, integrationData) => {
+  const updateIntegration: (
+    integrationId: string,
+    integrationData: any
+  ) => ApiResult<ApiIntegration> = async (integrationId, integrationData) => {
     try {
       const { data, pending, error, status } = await fetch<ApiIntegration>(
         `/api/v1/internal/api-integrations/${integrationId}`,
         {
           method: "PATCH",
-          body: integrationData
+          body: integrationData,
         }
       );
 
@@ -88,7 +98,7 @@ export const useIntegrations = () => {
 
       return data.value ? (data.value as unknown as ApiIntegration) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
@@ -107,11 +117,13 @@ export const useIntegrations = () => {
 
       return data.value;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const getIntegrationOperations: (integrationId: string) => ApiResult<ApiOperation[]> = async (integrationId) => {
+  const getIntegrationOperations: (
+    integrationId: string
+  ) => ApiResult<ApiOperation[]> = async (integrationId) => {
     try {
       const { data, pending, error, status } = await fetch<ApiOperation[]>(
         `/api/v1/internal/api-integrations/${integrationId}/api-operations`
@@ -125,11 +137,14 @@ export const useIntegrations = () => {
 
       return data.value ? (data.value as unknown as ApiOperation[]) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const importIntegration: (formData: FormData, options?: { onUploadProgress?: (progressEvent: any) => void }) => ApiResult<ApiIntegration> = async (formData, options) => {
+  const importIntegration: (
+    formData: FormData,
+    options?: { onUploadProgress?: (progressEvent: any) => void }
+  ) => ApiResult<ApiIntegration> = async (formData, options) => {
     try {
       if (options && options.onUploadProgress) {
         const runtimeConfig = useRuntimeConfig();
@@ -137,12 +152,12 @@ export const useIntegrations = () => {
         // Use axios for upload progress
         try {
           const response = await axios.post<ApiIntegration>(
-            `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/api-integrations/import-bulk`,
+            `${__API_BASE_URL__}/api/v1/internal/api-integrations/import-bulk`,
             formData,
             {
               headers: {
                 ...getHeaders(true),
-                'Content-Type': 'multipart/form-data' 
+                "Content-Type": "multipart/form-data",
               },
               onUploadProgress: options.onUploadProgress,
             }
@@ -154,10 +169,10 @@ export const useIntegrations = () => {
       }
       // Default: use fetch
       const { data, pending, error, status } = await fetch<ApiIntegration>(
-        '/api/v1/internal/payment-integrations/import-bulk',
+        "/api/v1/internal/payment-integrations/import-bulk",
         {
           method: "POST",
-          body:  formData,
+          body: formData,
         }
       );
 
@@ -169,14 +184,16 @@ export const useIntegrations = () => {
 
       return data.value ? (data.value as unknown as ApiIntegration) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const exportIntegration: (id:string) => ApiResult<ApiIntegration> = async (id) => {
+  const exportIntegration: (id: string) => ApiResult<ApiIntegration> = async (
+    id
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<ApiIntegration>(
-        `/api/v1/internal/api-integrations/${id}/export`,
+        `/api/v1/internal/api-integrations/${id}/export`
       );
 
       isLoading.value = pending.value;
@@ -187,7 +204,7 @@ export const useIntegrations = () => {
 
       return data.value ? (data.value as unknown as ApiIntegration) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
