@@ -6,11 +6,24 @@ export default defineNuxtConfig({
   ssr: false,
   runtimeConfig: {
     public: {
-      API_BASE_URL: process.env.API_BASE_URL,
-      USSD_API_BASE_URL: process.env.USSD_API_BASE_URL,
-      X_APP_ID: process.env.X_APP_ID,
-      X_APP_VERSION: process.env.X_APP_VERSION,
+      // Only expose non-sensitive configuration to client
       HOME_URL: process.env.HOME_URL || "http://localhost:3000",
+      persistedState: {
+        storage: "cookies",
+        debug: false,
+        cookieOptions: {},
+      },
+    },
+  },
+
+  // Build-time environment replacement
+  vite: {
+    define: {
+      // Replace sensitive URLs at build time
+      __API_BASE_URL__: JSON.stringify(process.env.API_BASE_URL),
+      __USSD_API_BASE_URL__: JSON.stringify(process.env.USSD_API_BASE_URL),
+      __X_APP_ID__: JSON.stringify(process.env.X_APP_ID),
+      __X_APP_VERSION__: JSON.stringify(process.env.X_APP_VERSION),
     },
   },
 
@@ -23,7 +36,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: "Project X Backend",
+      title: "CBE Admin Console",
       link: [],
     },
   },

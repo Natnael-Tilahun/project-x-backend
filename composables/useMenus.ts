@@ -9,12 +9,15 @@ export const useMenus = () => {
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
 
-  const getMenus: (page?: number, size?: number) => ApiResult<Menu[]> = async (page, size) => {
+  const getMenus: (page?: number, size?: number) => ApiResult<Menu[]> = async (
+    page,
+    size
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<Menu[]>(
-        '/api/v1/internal/menus',
+        "/api/v1/internal/menus",
         {
-          params: { page, size }
+          params: { page, size },
         }
       );
 
@@ -26,7 +29,7 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu[]) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
@@ -44,11 +47,13 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const getChildrensByParentId: (id: string) => ApiResult<Menu> = async (id) => {
+  const getChildrensByParentId: (id: string) => ApiResult<Menu> = async (
+    id
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<Menu>(
         `/api/v1/internal/menus/${id}/children`
@@ -62,17 +67,19 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const createNewMenu: (menuData: any) => ApiResult<Menu> = async (menuData) => {
+  const createNewMenu: (menuData: any) => ApiResult<Menu> = async (
+    menuData
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<Menu>(
-        '/api/v1/internal/menus/create',
+        "/api/v1/internal/menus/create",
         {
           method: "POST",
-          body: menuData
+          body: menuData,
         }
       );
 
@@ -84,17 +91,20 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const updateMenu: (menuId: string, menuData: any) => ApiResult<Menu> = async (menuId, menuData) => {
+  const updateMenu: (menuId: string, menuData: any) => ApiResult<Menu> = async (
+    menuId,
+    menuData
+  ) => {
     try {
       const { data, pending, error, status } = await fetch<Menu>(
         `/api/v1/internal/menus/${menuId}`,
         {
           method: "PATCH",
-          body: menuData
+          body: menuData,
         }
       );
 
@@ -106,17 +116,20 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const updateProductMenus: (menuId: string, menuData: any) => ApiResult<Menu> = async (menuId, menuData) => {
+  const updateProductMenus: (
+    menuId: string,
+    menuData: any
+  ) => ApiResult<Menu> = async (menuId, menuData) => {
     try {
       const { data, pending, error, status } = await fetch<Menu>(
         `/api/v1/internal/menus/${menuId}/products`,
         {
           method: "PUT",
-          body: menuData
+          body: menuData,
         }
       );
 
@@ -128,17 +141,20 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const updateChildrenMenus: (menuId: string, menuData: any) => ApiResult<Menu> = async (menuId, menuData) => {
+  const updateChildrenMenus: (
+    menuId: string,
+    menuData: any
+  ) => ApiResult<Menu> = async (menuId, menuData) => {
     try {
       const { data, pending, error, status } = await fetch<Menu>(
         `/api/v1/internal/menus/${menuId}/add-children`,
         {
           method: "POST",
-          body: menuData
+          body: menuData,
         }
       );
 
@@ -150,7 +166,7 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
@@ -169,11 +185,14 @@ export const useMenus = () => {
 
       return data.value;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const importMenus: (formData: FormData, options?: { onUploadProgress?: (progressEvent: any) => void }) => ApiResult<Menu> = async (formData, options) => {
+  const importMenus: (
+    formData: FormData,
+    options?: { onUploadProgress?: (progressEvent: any) => void }
+  ) => ApiResult<Menu> = async (formData, options) => {
     try {
       if (options && options.onUploadProgress) {
         const runtimeConfig = useRuntimeConfig();
@@ -181,12 +200,12 @@ export const useMenus = () => {
         // Use axios for upload progress
         try {
           const response = await axios.post<Menu>(
-            `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus/import-bulk`,
+            `${__API_BASE_URL__}/api/v1/internal/menus/import-bulk`,
             formData,
             {
               headers: {
                 ...getHeaders(true),
-                'Content-Type': 'multipart/form-data' 
+                "Content-Type": "multipart/form-data",
               },
               onUploadProgress: options.onUploadProgress,
             }
@@ -198,10 +217,10 @@ export const useMenus = () => {
       }
       // Default: use fetch
       const { data, pending, error, status } = await fetch<Menu>(
-        '/api/v1/internal/menus/import-bulk',
+        "/api/v1/internal/menus/import-bulk",
         {
           method: "POST",
-          body:  formData,
+          body: formData,
         }
       );
 
@@ -213,7 +232,7 @@ export const useMenus = () => {
 
       return data.value ? (data.value as unknown as Menu) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
