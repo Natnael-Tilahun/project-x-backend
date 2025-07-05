@@ -36,7 +36,7 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: "Project X Backend",
+      title: "CBE Admin Console",
       link: [],
     },
   },
