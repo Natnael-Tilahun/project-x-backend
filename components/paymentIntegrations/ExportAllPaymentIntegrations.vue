@@ -9,7 +9,6 @@ const isDownloading = ref(false);
 const isImporting = ref(false);
 const importProgress = ref(0); // Progress percentage (0-100)
 
-
 const setOpenExportModal = (value: boolean) => {
   openExportModal.value = value;
 };
@@ -25,18 +24,20 @@ async function exportAllIntegrationHandler() {
     const { getHeaders } = useApi();
 
     const response = await axios.get(
-      `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/payment-integrations/export-all`,
+      `${__API_BASE_URL__}/api/v1/internal/payment-integrations/export-all`,
       {
         headers: {
           ...getHeaders(true),
-          'Content-Type': 'multipart/form-data'
+          "Content-Type": "multipart/form-data",
         },
         onDownloadProgress: (progressEvent: AxiosProgressEvent) => {
           if (progressEvent.total && progressEvent.loaded) {
-            importProgress.value = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+            importProgress.value = Math.round(
+              (progressEvent.loaded * 100) / progressEvent.total
+            );
           }
         },
-        responseType: 'blob'
+        responseType: "blob",
       }
     );
 
@@ -71,7 +72,6 @@ async function exportAllIntegrationHandler() {
     setOpenExportModal(false);
   }
 }
-
 </script>
 
 <template>
@@ -106,8 +106,8 @@ async function exportAllIntegrationHandler() {
           sure?</UiAlertDialogTitle
         >
         <UiAlertDialogDescription>
-          This action cannot be undone. This will export all the payment integration
-          data and download it to your file system.
+          This action cannot be undone. This will export all the payment
+          integration data and download it to your file system.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>

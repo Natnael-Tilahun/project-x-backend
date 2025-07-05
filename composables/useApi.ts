@@ -1,13 +1,12 @@
 import { useAuthStore } from "~/stores/auth";
 
 export const useApi = () => {
-  const runtimeConfig = useRuntimeConfig();
   const store = useAuthStore();
 
   const getHeaders = (includeAuth = true) => {
     const headers: Record<string, string> = {
-      "X-App-ID": runtimeConfig.public.X_APP_ID as string,
-      "X-App-Version": runtimeConfig.public.X_APP_VERSION as string,
+      "X-App-ID": __X_APP_ID__,
+      "X-App-Version": __X_APP_VERSION__,
       "X-2FA-Token": store.twoFactorToken ? store.twoFactorToken : "",
     };
 
@@ -32,7 +31,7 @@ export const useApi = () => {
       method = "GET",
       body,
       params,
-      baseUrl = runtimeConfig.public.API_BASE_URL,
+      baseUrl = __API_BASE_URL__,
       includeAuth = true,
     } = options;
 
@@ -42,7 +41,7 @@ export const useApi = () => {
     const url = `${baseUrl}${endpoint}${queryString}`;
 
     try {
-      const response = await $fetch<T>(url, {
+      const response = await $fetch(url, {
         method,
         body,
         headers: getHeaders(includeAuth),

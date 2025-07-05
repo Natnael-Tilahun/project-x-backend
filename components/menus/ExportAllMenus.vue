@@ -4,7 +4,6 @@ const isError = ref(false);
 const openExportModal = ref(false);
 const isDownloading = ref(false);
 
-
 const setOpenExportModal = (value: boolean) => {
   openExportModal.value = value;
 };
@@ -17,7 +16,7 @@ async function exportAllMenusHandler() {
     const { getHeaders } = useApi();
 
     const response = await fetch(
-      `${runtimeConfig.public.API_BASE_URL}/api/v1/internal/menus/export-all`,
+      `${__API_BASE_URL__}/api/v1/internal/menus/export-all`,
       {
         method: "GET",
         headers: getHeaders(true),
@@ -54,7 +53,6 @@ async function exportAllMenusHandler() {
     setOpenExportModal(false);
   }
 }
-
 </script>
 
 <template>
@@ -80,8 +78,8 @@ async function exportAllMenusHandler() {
           sure?</UiAlertDialogTitle
         >
         <UiAlertDialogDescription>
-          This action cannot be undone. This will export all the menus
-          data and download it to your file system.
+          This action cannot be undone. This will export all the menus data and
+          download it to your file system.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>
