@@ -33,10 +33,5 @@
         }
       ]
     }
-  ],
-  "functions": {
-    ".nuxt/dist/server/server.mjs": {
-      "maxDuration": 30
-    }
-  }
+  ]
 }
