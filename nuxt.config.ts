@@ -1,8 +1,20 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  // nitro: {
-  //   preset: "vercel",
-  // },
+  nitro: {
+    // preset: "vercel",
+    routeRules: {
+      "/**": {
+        headers: {
+          "x-powered-by": "",
+          server: "",
+          "X-Content-Type-Options": "nosniff",
+          "X-Frame-Options": "DENY",
+          "X-XSS-Protection": "1; mode=block",
+          "Referrer-Policy": "strict-origin-when-cross-origin",
+        },
+      },
+    },
+  },
   ssr: false,
   runtimeConfig: {
     public: {
