@@ -25,8 +25,8 @@ const route = useRoute();
 const {  createNewContractForNewUser } =
   useContractsUsers();
 const { searchUsers } = useUsers();
-const { searchCustomers } = useCustomers();
-const { getServiceDefinitionsRoles } = useServiceDefinitionsRoles();
+const { searchCustomers, getCoreAccountsByAccount } = useCustomers();
+const { getServiceDefinitionsRoles, getServiceDefinitionRolesByServiceDefinitionId } = useServiceDefinitionsRoles();
 
 const contractId = ref<string>("");
 const contractCoreCustomerId = ref<string>("");
@@ -40,6 +40,11 @@ const searchUser = ref<string>("");
 const openNewUserModal = ref(false);
 const openExistingUserModal = ref(false);
 const serviceDefinitionRolesData = ref<ServiceDefinitionRole[]>([]);
+const accountNumber = ref<string>("");
+const accountsData = ref<any[]>([]);
+const selectedAccount = ref<any>(null);
+const inheritAccountPermissions = ref(true);
+const selectedAccountPermissions = ref<string[]>([]);
 
 contractId.value = getIdFromPath();
 contractCoreCustomerId.value = route.query.coreCustomerId as string;
@@ -66,7 +71,7 @@ const newCustomerForm = useForm({
 const fetchServiceDefinitionRoles = async () => {
   try {
     loading.value = true;
-    const response = await getServiceDefinitionsRoles();
+    const response = await getServiceDefinitionRolesByServiceDefinitionId(contractData.value?.serviceDefinition?.id);
     serviceDefinitionRolesData.value = response;
   } catch (err) {
     console.error("Error fetching service definition roles:", err);
@@ -119,28 +124,57 @@ onMounted(() => {
   fetchServiceDefinitionRoles();
 });
 
+const searchAccountsByAccountNumber = async () => {
+  try {
+    loading.value = true;
+    accountsData.value = [];
+    selectedAccount.value = null;
+    if (accountNumber.value) {
+      // You may need to implement or import this composable
+      const response = await getCoreAccountsByAccount(accountNumber.value);
+      accountsData.value = response?.coreAccounts || [];
+    }
+  } catch (err: any) {
+    toast({
+      title: "Uh oh! Something went wrong.",
+      description: err.message,
+      variant: "destructive",
+    });
+    isError.value = true;
+  } finally {
+    loading.value = false;
+  }
+};
+
 const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
   try {
     loading.value = true;
-    if (!contractId.value) {
+    if (!contractId.value || !selectedAccount.value) {
       toast({
         title: "Uh oh! Something went wrong.",
-        description: "Contract not found.",
+        description: "Contract or account not selected.",
         variant: "destructive",
       });
       return;
     }
 
-    const newValues = {
-      ...values,
+    const requestBody = {
+      phone: values.phone,
+      nationalId: values.nationalId,
+      language: values.language,
+      isPrimaryUser: values.isPrimaryUser,
       serviceDefinitionRoleId: values.serviceDefinitionRoleId,
+      coreAccountNumber: selectedAccount.value.accountNumber,
+      contractUserAccountDTOSet: [
+        {
+          inheritAccountPermissions: inheritAccountPermissions.value,
+          permissionCodes: inheritAccountPermissions.value ? [] : selectedAccountPermissions.value,
+          accountId: selectedAccount.value.id,
+        },
+      ],
     };
-    console.log("newValues: ", newValues);
 
-    const response = await createNewContractForNewUser(
-      contractId.value,
-      newValues
-    ); // Call your API function to fetch roles
+    const response = await createNewContractForNewUser(contractId.value, requestBody);
     console.log("response: ", response);
     navigateTo(`${route.path}?activeTab=contractUsers`);
     toast({
@@ -197,121 +231,136 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
             Create New Contract User and Customer</UiButton
           >
         </UiAlertDialogTrigger>
-        <UiAlertDialogContent class="sm:min-w-full">
-          <ContractsUsersTest :serviceDefinitionId="contractProps?.serviceDefinition?.id" />
-
-          <!-- <form @submit="newUserOnSubmit">
-            <UiAlertDialogHeader>
-              <UiAlertDialogTitle
-                >Create New Customer and Contract User</UiAlertDialogTitle
+        <UiAlertDialogContent class="sm:max-w-full h-[80%]">
+          <form @submit.prevent="newUserOnSubmit">
+            <!-- Account number search -->
+            <div class="mb-4">
+              <UiLabel for="accountNumber">Find account by account number</UiLabel>
+              <div class="flex gap-2">
+                <UiInput
+                  id="accountNumber"
+                  type="text"
+                  v-model="accountNumber"
+                  placeholder="Enter account number"
+                />
+                <UiButton :disabled="!accountNumber || loading" @click="searchAccountsByAccountNumber">
+                  <Icon name="svg-spinners:8-dots-rotate" v-if="loading" class="mr-2 h-4 w-4 animate-spin" />
+                  Search
+                </UiButton>
+              </div>
+            </div>
+            <!-- List accounts and select one -->
+            <div v-if="accountsData.length > 0" class="mb-4">
+              <UiLabel>Select Account</UiLabel>
+              <div v-for="account in accountsData" :key="account.accountNumber" class="flex items-center gap-2">
+                <input
+                  type="radio"
+                  :value="account"
+                  v-model="selectedAccount"
+                />
+                <span>{{ account.accountNumber }} - {{ account.accountTitle1 }}</span>
+              </div>
+            </div>
+            <!-- Inherit permissions switch and permission select -->
+            <div v-if="selectedAccount" class="mb-4">
+              <UiLabel>Inherit Account Permissions</UiLabel>
+              <UiSwitch v-model="inheritAccountPermissions" />
+              <div v-if="!inheritAccountPermissions">
+                <UiLabel>Select Permissions</UiLabel>
+                <UiSelect
+                  v-model="selectedAccountPermissions"
+                  multiple
+                  :options="permissionsData.map(p => ({ label: p.permissionCode, value: p.permissionCode }))"
+                />
+              </div>
+            </div>
+            <!-- Other form fields (phone, nationalId, etc.) -->
+            <FormField v-slot="{ componentField }" name="phone">
+              <FormItem>
+                <FormLabel>Phone </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter phone"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="nationalId">
+              <FormItem>
+                <FormLabel>National Id </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter national Id"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="language">
+              <FormItem>
+                <FormLabel>Language </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter language"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              v-slot="{ componentField }"
+              name="serviceDefinitionRoleId"
+            >
+              <FormItem>
+                <FormLabel> Service Definition Role </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue
+                        placeholder="Select a service definition role"
+                      />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in serviceDefinitionRolesData"
+                        :key="item.id"
+                        :value="item.id"
+                      >
+                        {{ item?.roleName }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              v-slot="{ value, handleChange }"
+              name="isPrimaryUser"
+            >
+              <FormItem
+                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
               >
-              <UiSeparator />
-              <UiAlertDialogDescription>
-                <div class="grid grid-cols-2 gap-6">
-                  <div class="col-span-full">
-                    <FormField v-slot="{ componentField }" name="phone">
-                      <FormItem>
-                        <FormLabel>Phone </FormLabel>
-                        <FormControl>
-                          <UiInput
-                            type="text"
-                            placeholder="Enter phone"
-                            v-bind="componentField"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    </FormField>
-                    <FormField v-slot="{ componentField }" name="nationalId">
-                      <FormItem>
-                        <FormLabel>National Id </FormLabel>
-                        <FormControl>
-                          <UiInput
-                            type="text"
-                            placeholder="Enter national Id"
-                            v-bind="componentField"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    </FormField>
-                    <FormField v-slot="{ componentField }" name="language">
-                      <FormItem>
-                        <FormLabel>Language </FormLabel>
-                        <FormControl>
-                          <UiInput
-                            type="text"
-                            placeholder="Enter language"
-                            v-bind="componentField"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    </FormField>
-                    <FormField
-                      v-slot="{ componentField }"
-                      name="serviceDefinitionRoleId"
-                    >
-                      <FormItem>
-                        <FormLabel> Service Definition Role </FormLabel>
-                        <UiSelect v-bind="componentField">
-                          <FormControl>
-                            <UiSelectTrigger>
-                              <UiSelectValue
-                                placeholder="Select a service definition role"
-                              />
-                            </UiSelectTrigger>
-                          </FormControl>
-                          <UiSelectContent>
-                            <UiSelectGroup>
-                              <UiSelectItem
-                                v-for="item in serviceDefinitionRolesData"
-                                :key="item.id"
-                                :value="item.id"
-                              >
-                                {{ item?.roleName }}
-                              </UiSelectItem>
-                            </UiSelectGroup>
-                          </UiSelectContent>
-                        </UiSelect>
-                        <FormMessage />
-                      </FormItem>
-                    </FormField>
-                  </div>
-                  <FormField
-                    v-slot="{ value, handleChange }"
-                    name="isPrimaryUser"
-                  >
-                    <FormItem
-                      class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
-                    >
-                      <FormLabel class="text-base"> Is Primary User </FormLabel>
-                      <FormControl>
-                        <UiSwitch
-                          :checked="value"
-                          @update:checked="handleChange"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  </FormField>
-                </div>
-              </UiAlertDialogDescription>
-            </UiAlertDialogHeader>
-            <UiAlertDialogFooter class="flex justify-end pt-8">
-              <UiAlertDialogCancel @click="setOpenNewUserModal(false)">
-                Cancel
-              </UiAlertDialogCancel>
-              <UiButton type="submit">
-                <Icon
-                  name="svg-spinners:8-dots-rotate"
-                  v-if="loading"
-                  :disabled="loading"
-                  class="mr-2 h-4 w-4 animate-spin"
-                ></Icon>
-                Continue
-              </UiButton>
-            </UiAlertDialogFooter>
-          </form> -->
+                <FormLabel class="text-base"> Is Primary User </FormLabel>
+                <FormControl>
+                  <UiSwitch
+                    :checked="value"
+                    @update:checked="handleChange"
+                  />
+                </FormControl>
+              </FormItem>
+            </FormField>
+            <UiButton type="submit" :disabled="loading">Create</UiButton>
+          </form>
         </UiAlertDialogContent>
       </UiAlertDialog>
     </div>

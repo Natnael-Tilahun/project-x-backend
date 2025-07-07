@@ -91,7 +91,7 @@ export default defineNuxtPlugin(() => {
             const sessionAge = currentTime - sessionData.timestamp;
 
             // If session is stale, clean it up
-            if (sessionAge > 5 * 60 * 1000) {
+            if (sessionAge > 10 * 60 * 1000) {
               localStorage.removeItem("active-session");
               return;
             }

@@ -32,10 +32,10 @@ const fetchData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    const response = await getContractByCoreCustomerId(coreCustomerId.value);
-    if (response) {
-      data.value.push(response);
-    }
+    const response = await getContractByCoreCustomerId(customerId.value);
+    // if (response) {
+      data.value = response || [];
+    // }
   } catch (err: any) {
     console.error("Error fetching contracts:", err);
     if (err == "Error: 404 NOT_FOUND") {
