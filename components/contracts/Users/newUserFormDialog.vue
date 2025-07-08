@@ -19,13 +19,14 @@ import {
   SelectGroup,
   SelectItem,
 } from "@/components/ui/select";
+import UserPermissions from './userPermissions.vue';
 
 const { getContractCoreCustomers } = useContractsCoreCustomers();
 const { getCoreAccountsByAccount } = useCustomers();
 const { getServiceDefinitionRolesByServiceDefinitionId } = useServiceDefinitionsRoles();
 const { createNewContractForNewUser } = useContractsUsers();
 
-const props = defineProps<{ serviceDefinitionId: string }>();
+const props = defineProps<{ serviceDefinitionId?: string }>();
 const contractId = ref<string>(getIdFromPath());
 const contractAccounts = ref<any[]>([]); // All contract accounts
 const selectedAccounts = ref<any[]>([]); // Selected contract accounts with permission info
@@ -142,10 +143,14 @@ const toggleAccountSelection = (account: any) => {
 // Handle inheritAccountPermissions toggle for a selected account
 const toggleInheritPermissions = (accountId: string, value: boolean) => {
   const acc = selectedAccounts.value.find((a) => a.accountId === accountId);
+  const account = contractAccounts.value.find((a) => a.id === accountId);
   if (acc) {
     acc.inheritAccountPermissions = value;
     if (value) {
       acc.permissionCodes = [];
+    } else if (account && Array.isArray(account.permissions)) {
+      // Select all permissions from that contractAccount
+      acc.permissionCodes = account.permissions.map((perm: any) => perm.code);
     }
   }
 };
@@ -412,15 +417,17 @@ const onSubmit = async (e: Event) => {
                   </div>
                   <div v-if="account.selected && !selectedAccounts.find(a => a.accountId === account.id)?.inheritAccountPermissions" class="flex flex-col min-w-[260px]">
                     <span class="text-xs text-muted-foreground mb-1">Select userAccount Permissions</span>
-                    <div class="flex flex-wrap gap-2 mt-1">
-                      <UiCheckbox
-                        v-for="perm in account.permissions"
-                        :key="perm.code"
-                        :checked="selectedAccounts.find(a => a.accountId === account.id)?.permissionCodes.includes(perm.code)"
-                        @click="() => togglePermissionForAccount(account.id, perm.code)"
+                    <div v-if="account.permissions && account.permissions.length > 0" class="mt-1">
+                      <UserPermissions
+                        :permissions="account.permissions"
+                        :selected="selectedAccounts.find(a => a.accountId === account.id)?.permissionCodes || []"
+                        @update:modelValue="(val) => {
+                          const acc = selectedAccounts.find(a => a.accountId === account.id);
+                          if (acc) acc.permissionCodes = val;
+                        }"
                       />
-                      <span v-for="perm in account.permissions" :key="perm.code" class="text-xs px-2">{{ perm.code }}</span>
                     </div>
+                    <div v-else class="text-xs text-muted-foreground italic mt-2">No permissions available for this account.</div>
                   </div>
                 </div>
               </div>

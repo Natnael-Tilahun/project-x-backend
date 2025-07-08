@@ -204,7 +204,7 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
             class="h-4 w-4 mx-auto"
                 ></Icon>
           </UiButton>
-          <ContractsUsersTest  @close="setOpenNewUserModal(false)" :serviceDefinitionId="contractProps?.serviceDefinition?.id" />
+          <ContractsUsersNewUserFormDialog  @close="setOpenNewUserModal(false)" :serviceDefinitionId="contractProps?.serviceDefinition?.id" />
 
         </UiAlertDialogContent>
       </UiAlertDialog>
