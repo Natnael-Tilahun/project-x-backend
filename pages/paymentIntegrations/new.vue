@@ -24,7 +24,7 @@ import {
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Charge, PaymentIntegration } from "~/types";
-import ChargeSelect from "~/components/charges/ChargeSelect.vue";   
+import ChargeSelect from "~/components/charges/ChargeSelect.vue";
 
 const route = useRoute();
 const {
@@ -34,7 +34,7 @@ const {
   isSubmitting,
   isLoading,
 } = usePaymentIntegrations();
-const {getCharges, isLoading:isChargeLoading} = useCharges()
+const { getCharges, isLoading: isChargeLoading } = useCharges();
 
 const openItems = ref("serviceDefinition");
 const fullPath = ref(route.fullPath);
@@ -47,7 +47,7 @@ pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
 const activeTab = route.query.activeTab as string;
 openItems.value = activeTab || "serviceDefinition";
-const chargesData = ref<Charge[]>([])
+const chargesData = ref<Charge[]>([]);
 const paymentIntegrationName = ref<string>("Create New Payment Integration");
 
 // Watch for changes in the route's query parameters
@@ -70,9 +70,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     loading.value = true;
     const newValues = {
       ...values,
-      chargeId:values.chargeId
-    }
-    console.log("newValues: ", newValues)
+      chargeId: values.chargeId,
+    };
     data.value = await createNewPaymentIntegration(newValues); // Call your API function to fetch profile
     form.setValues(data.value);
     paymentIntegrationId.value = data.value.id;
@@ -104,22 +103,21 @@ function splitPath(path: any) {
 
 const fetchChargeData = async () => {
   try {
-  isLoading.value = true;
-  loading.value = true;
-  chargesData.value = await getCharges(0,100000);
-} catch (err) {
-  console.error("Error fetching charges:", err);
-  isError.value = true;
-} finally {
-  isLoading.value = false;
-  loading.value = false;
-}
-}
+    isLoading.value = true;
+    loading.value = true;
+    chargesData.value = await getCharges(0, 100000);
+  } catch (err) {
+    console.error("Error fetching charges:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
 
 onMounted(() => {
   fetchChargeData();
-})
-
+});
 </script>
 
 <template>
@@ -337,56 +335,56 @@ onMounted(() => {
               </FormItem>
             </FormField>
             <FormField
-                :model-value="data?.dailyLimitPerAccount"
-                v-slot="{ componentField }"
-                name="dailyLimitPerAccount"
-              >
-                <FormItem>
-                  <FormLabel> Daily Limit Per Account </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="number"
-                      placeholder="Enter daily limit per account"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.limitPerTransaction"
-                v-slot="{ componentField }"
-                name="limitPerTransaction"
-              >
-                <FormItem>
-                  <FormLabel> Limit Per Transaction </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="number"
-                      placeholder="Enter limit per transaction"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField
-                :model-value="data?.maxTransactionsPerDay"
-                v-slot="{ componentField }"
-                name="maxTransactionsPerDay"
-              >
-                <FormItem>
-                  <FormLabel> Max Transactions Per Day </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="number"
-                      placeholder="Enter max transactions per day"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
+              :model-value="data?.dailyLimitPerAccount"
+              v-slot="{ componentField }"
+              name="dailyLimitPerAccount"
+            >
+              <FormItem>
+                <FormLabel> Daily Limit Per Account </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="number"
+                    placeholder="Enter daily limit per account"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="data?.limitPerTransaction"
+              v-slot="{ componentField }"
+              name="limitPerTransaction"
+            >
+              <FormItem>
+                <FormLabel> Limit Per Transaction </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="number"
+                    placeholder="Enter limit per transaction"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+              :model-value="data?.maxTransactionsPerDay"
+              v-slot="{ componentField }"
+              name="maxTransactionsPerDay"
+            >
+              <FormItem>
+                <FormLabel> Max Transactions Per Day </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="number"
+                    placeholder="Enter max transactions per day"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
             <FormField
               :model-value="data?.integrationType"
               v-slot="{ componentField }"
@@ -417,40 +415,37 @@ onMounted(() => {
             </FormField>
 
             <FormField
-                :model-value="data?.category"
-                v-slot="{ componentField }"
-                name="category"
-              >
-                <FormItem>
-                  <FormLabel> Category </FormLabel>
-                  <UiSelect v-bind="componentField">
-                    <FormControl>
-                      <UiSelectTrigger>
-                        <UiSelectValue
-                          :placeholder="
-                            data?.category
-                              ? data?.category
-                              : 'Select a category'
-                          "
-                        />
-                      </UiSelectTrigger>
-                    </FormControl>
-                    <UiSelectContent>
-                      <UiSelectGroup>
-                        <UiSelectItem
-                          v-for="(displayValue, enumKey) in PaymentCategory"
-                          :key="enumKey"
-                          :value="enumKey"
-                        >
-                          {{ displayValue }}
-                        </UiSelectItem>
-                      </UiSelectGroup>
-                    </UiSelectContent>
-                  </UiSelect>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-
+              :model-value="data?.category"
+              v-slot="{ componentField }"
+              name="category"
+            >
+              <FormItem>
+                <FormLabel> Category </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue
+                        :placeholder="
+                          data?.category ? data?.category : 'Select a category'
+                        "
+                      />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="(displayValue, enumKey) in PaymentCategory"
+                        :key="enumKey"
+                        :value="enumKey"
+                      >
+                        {{ displayValue }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
 
             <FormField
               :model-value="data?.transactionAmountType"
@@ -666,7 +661,7 @@ onMounted(() => {
             <FormField
               :model-value="data?.visibility"
               v-slot="{ componentField }"
-              name="visiblity"
+              name="visibility"
             >
               <FormItem>
                 <FormLabel> Visibility </FormLabel>
@@ -693,20 +688,16 @@ onMounted(() => {
             </FormField>
 
             <FormField
-            :model-value="data?.chargeId"
+              :model-value="data?.chargeId"
               v-slot="{ componentField }"
               name="chargeId"
             >
               <FormItem>
                 <FormLabel>Charge</FormLabel>
-                <ChargeSelect
-                  v-bind="componentField"
-                  :charges="chargesData"
-                />
+                <ChargeSelect v-bind="componentField" :charges="chargesData" />
                 <FormMessage />
               </FormItem>
             </FormField>
-
 
             <FormField
               :model-value="data?.defaultPaymentReason"
