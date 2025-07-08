@@ -70,9 +70,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     loading.value = true;
     const newValues = {
       ...values,
-      charge: {
-        id: values.charge
-      }
+      chargeId:values.chargeId
     }
     console.log("newValues: ", newValues)
     data.value = await createNewPaymentIntegration(newValues); // Call your API function to fetch profile
@@ -666,7 +664,7 @@ onMounted(() => {
             </FormField>
 
             <FormField
-              :model-value="data?.visiblity"
+              :model-value="data?.visibility"
               v-slot="{ componentField }"
               name="visiblity"
             >
@@ -695,8 +693,9 @@ onMounted(() => {
             </FormField>
 
             <FormField
+            :model-value="data?.chargeId"
               v-slot="{ componentField }"
-              name="charge"
+              name="chargeId"
             >
               <FormItem>
                 <FormLabel>Charge</FormLabel>

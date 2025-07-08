@@ -197,121 +197,15 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
             Create New Contract User and Customer</UiButton
           >
         </UiAlertDialogTrigger>
-        <UiAlertDialogContent class="sm:min-w-full">
-          <ContractsUsersTest :serviceDefinitionId="contractProps?.serviceDefinition?.id" />
-
-          <!-- <form @submit="newUserOnSubmit">
-            <UiAlertDialogHeader>
-              <UiAlertDialogTitle
-                >Create New Customer and Contract User</UiAlertDialogTitle
-              >
-              <UiSeparator />
-              <UiAlertDialogDescription>
-                <div class="grid grid-cols-2 gap-6">
-                  <div class="col-span-full">
-                    <FormField v-slot="{ componentField }" name="phone">
-                      <FormItem>
-                        <FormLabel>Phone </FormLabel>
-                        <FormControl>
-                          <UiInput
-                            type="text"
-                            placeholder="Enter phone"
-                            v-bind="componentField"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    </FormField>
-                    <FormField v-slot="{ componentField }" name="nationalId">
-                      <FormItem>
-                        <FormLabel>National Id </FormLabel>
-                        <FormControl>
-                          <UiInput
-                            type="text"
-                            placeholder="Enter national Id"
-                            v-bind="componentField"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    </FormField>
-                    <FormField v-slot="{ componentField }" name="language">
-                      <FormItem>
-                        <FormLabel>Language </FormLabel>
-                        <FormControl>
-                          <UiInput
-                            type="text"
-                            placeholder="Enter language"
-                            v-bind="componentField"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    </FormField>
-                    <FormField
-                      v-slot="{ componentField }"
-                      name="serviceDefinitionRoleId"
-                    >
-                      <FormItem>
-                        <FormLabel> Service Definition Role </FormLabel>
-                        <UiSelect v-bind="componentField">
-                          <FormControl>
-                            <UiSelectTrigger>
-                              <UiSelectValue
-                                placeholder="Select a service definition role"
-                              />
-                            </UiSelectTrigger>
-                          </FormControl>
-                          <UiSelectContent>
-                            <UiSelectGroup>
-                              <UiSelectItem
-                                v-for="item in serviceDefinitionRolesData"
-                                :key="item.id"
-                                :value="item.id"
-                              >
-                                {{ item?.roleName }}
-                              </UiSelectItem>
-                            </UiSelectGroup>
-                          </UiSelectContent>
-                        </UiSelect>
-                        <FormMessage />
-                      </FormItem>
-                    </FormField>
-                  </div>
-                  <FormField
-                    v-slot="{ value, handleChange }"
-                    name="isPrimaryUser"
-                  >
-                    <FormItem
-                      class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
-                    >
-                      <FormLabel class="text-base"> Is Primary User </FormLabel>
-                      <FormControl>
-                        <UiSwitch
-                          :checked="value"
-                          @update:checked="handleChange"
-                        />
-                      </FormControl>
-                    </FormItem>
-                  </FormField>
-                </div>
-              </UiAlertDialogDescription>
-            </UiAlertDialogHeader>
-            <UiAlertDialogFooter class="flex justify-end pt-8">
-              <UiAlertDialogCancel @click="setOpenNewUserModal(false)">
-                Cancel
-              </UiAlertDialogCancel>
-              <UiButton type="submit">
-                <Icon
-                  name="svg-spinners:8-dots-rotate"
-                  v-if="loading"
-                  :disabled="loading"
-                  class="mr-2 h-4 w-4 animate-spin"
+        <UiAlertDialogContent class="sm:min-w-full h-[90%] p-6">
+          <UiButton @click="setOpenNewUserModal(false)" variant="outline" class="absolute right-8 top-2">
+            <Icon
+            name="material-symbols:close"
+            class="h-4 w-4 mx-auto"
                 ></Icon>
-                Continue
-              </UiButton>
-            </UiAlertDialogFooter>
-          </form> -->
+          </UiButton>
+          <ContractsUsersTest  @close="setOpenNewUserModal(false)" :serviceDefinitionId="contractProps?.serviceDefinition?.id" />
+
         </UiAlertDialogContent>
       </UiAlertDialog>
     </div>
