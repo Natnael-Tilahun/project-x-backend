@@ -60,16 +60,16 @@ export default defineNuxtPlugin(() => {
   });
 
   // Listen for page visibility change
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden && authStore.isAuthenticated) {
-      // Page is hidden, check if another session took over
-      setTimeout(() => {
-        if (sessionManager.isAnotherSessionActive()) {
-          sessionManager.handleSessionConflict();
-        }
-      }, 1000);
-    }
-  });
+  // document.addEventListener("visibilitychange", () => {
+  //   if (document.hidden && authStore.isAuthenticated) {
+  //     // Page is hidden, check if another session took over
+  //     setTimeout(() => {
+  //       if (sessionManager.isAnotherSessionActive()) {
+  //         sessionManager.handleSessionConflict();
+  //       }
+  //     }, 1000);
+  //   }
+  // });
 
   // Periodic session validation (every 30 seconds)
   let sessionValidationInterval: NodeJS.Timeout | null = null;
