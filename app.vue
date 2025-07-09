@@ -24,7 +24,7 @@ watch(
       const handleBeforeUnload = () => {
         logout();
       };
-      window.addEventListener("beforeunload", handleBeforeUnload);
+      // window.addEventListener("beforeunload", handleBeforeUnload);
 
       // Cleanup when component is unmounted
       onUnmounted(() => {
