@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted, watch, computed } from "vue";
-import { useForm, useSetFormErrors } from "vee-validate";
+import { useForm } from "vee-validate";
 import {
   FormControl,
   FormField,
@@ -34,13 +34,11 @@ const serviceDefinitionsRolesData = ref<any[]>([]);
 const isSubmitting = ref(false);
 const loading = ref(false);
 const errorMessage = ref("");
-const openEditModal = ref(false);
 const coreAccountNumber = ref<string>("");
 const phone = ref<string>("");
 const name = ref<string>("");
 const accountSearchNumber = ref<string>("");
 const showAlreadyHasContract = ref(false);
-const permissionsDialog = ref<{ [key: string]: boolean }>({});
 const route  = useRouter()
 
 const emit = defineEmits(["close"]);
@@ -159,18 +157,6 @@ const toggleInheritPermissions = (accountId: string, value: boolean) => {
   }
 };
 
-// Handle permission selection for a selected account
-const togglePermissionForAccount = (accountId: string, code: string) => {
-  const acc = selectedAccounts.value.find((a) => a.accountId === accountId);
-  if (acc) {
-    if (acc.permissionCodes.includes(code)) {
-      acc.permissionCodes = acc.permissionCodes.filter((c: string) => c !== code);
-    } else {
-      acc.permissionCodes.push(code);
-    }
-  }
-};
-
 // Select All logic
 const allAccountsSelected = computed(() =>
   contractAccounts.value.length > 0 && contractAccounts.value.every(acc => acc.selected)
@@ -242,7 +228,6 @@ const onSubmit = async (e: Event) => {
         accountId: acc.accountId,
       })),
     };
-    console.log("body: ", body)
     await createNewContractForNewUser(contractId.value, body);
     toast({
       title: "User Created",

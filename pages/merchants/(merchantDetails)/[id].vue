@@ -1,10 +1,10 @@
 <script lang="ts" setup>
-const openItems = ref(["item-1"]);
+const openItems = ref("merchantDetails");
 
 import { useForm } from "vee-validate";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
-import { newMerchantFormSchema } from "~/validations/newMerchantFormSchema";
+import { editMerchantFormSchema } from "~/validations/editMerchantFormSchema";
 import {
   FormControl,
   FormField,
@@ -15,14 +15,21 @@ import {
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Merchant } from "~/types";
 import { PermissionConstants } from "~/constants/permissions";
+import { MerchantCategoryCode, MerchantStatus } from "~/global-types";
 const route = useRoute();
-const { getMerchantById, updateMerchant, isLoading, isSubmitting } =
-  useMerchants();
+const {
+  getMerchantById,
+  getMerchantAccountsId,
+  updateMerchant,
+  isLoading,
+  isSubmitting,
+} = useMerchants();
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
 const merchantId = ref<string>("");
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
+const accountsData = ref<string[]>([]);
 
 const isError = ref(false);
 const data = ref<Merchant>();
@@ -36,27 +43,52 @@ function splitPath(path: any) {
 }
 
 const form = useForm({
-  validationSchema: newMerchantFormSchema,
+  validationSchema: editMerchantFormSchema,
 });
 
-try {
-  isLoading.value = true;
-  loading.value = true;
-  data.value = await getMerchantById(merchantId.value);
-  let a = {
-    ...data.value,
-    tradeLicenseIssueDate: new Date(
-      data.value.tradeLicenseIssueDate
-    ).toDateString(),
-  };
-  form.setValues(a);
-} catch (err) {
-  console.error("Error fetching merchant:", err);
-  isError.value = true;
-} finally {
-  isLoading.value = false;
-  loading.value = false;
-}
+const fetchMerchantData = async () => {
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    isError.value = false;
+    data.value = await getMerchantById(merchantId.value);
+    let a = {
+      ...data.value,
+    };
+    form.setValues(a);
+  } catch (err) {
+    console.error("Error fetching merchant:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
+
+const fetchMerchantAccountsData = async () => {
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    isError.value = false;
+    accountsData.value = (await getMerchantAccountsId(merchantId.value)) || [];
+  } catch (err) {
+    console.error("Error fetching merchant accounts:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
+
+onMounted(async () => {
+  await fetchMerchantAccountsData();
+  await fetchMerchantData();
+});
+
+const refetch = async () => {
+  await fetchMerchantAccountsData();
+  await fetchMerchantData();
+};
 
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
@@ -76,6 +108,42 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     submitting.value = false;
   }
 });
+
+const selectedAccounts = ref<string[]>([]);
+
+function handleAccountToggle(accountId: string) {
+  const idx = selectedAccounts.value.indexOf(accountId);
+  if (idx === -1) {
+    selectedAccounts.value.push(accountId);
+  } else {
+    selectedAccounts.value.splice(idx, 1);
+  }
+}
+
+async function updateSelectedAccounts() {
+  // Implement your update logic here, e.g., API call
+  toast({
+    title: "Accounts Updated",
+    description: `Updated accounts: ${selectedAccounts.value.join(", ")}`,
+  });
+}
+
+watch(
+  () => route.query.activeTab,
+  (newActiveTab) => {
+    if (newActiveTab) {
+      openItems.value = newActiveTab as string; // Update the active tab when the query param
+      if (
+        newActiveTab == "merchantDetails" ||
+        newActiveTab == "merchantOperators" ||
+        newActiveTab == "merchantBranches" ||
+        newActiveTab == "merchantTransactions"
+      ) {
+        refetch();
+      }
+    }
+  }
+);
 </script>
 
 <template>
@@ -83,9 +151,122 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     <div v-if="loading" class="py-10 flex justify-center w-full">
       <UiLoading />
     </div>
-    <UiCard v-else-if="data && !isError" class="w-full p-6">
+    <UiTabs
+     v-else-if="data && !isError"
+      v-model="openItems"
+      class="w-full space-y-0"
+    >
+      <div class="w-full flex justify-end mb-4 gap-4 px-6">
+        <UiPermissionGuard :permission="data?.active ? PermissionConstants.DEACTIVATE_STAFF : PermissionConstants.ACTIVATE_STAFF">
+
+        <UiButton
+          size="sm"
+          @click="handleStaffActivation"
+          :disabled="submitting"
+          :class="data?.active ? 'bg-red-600' : 'bg-green-600'"
+        >
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="submitting"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          {{ data?.active ? "Deactivate" : "Activate" }}
+        </UiButton>
+        </UiPermissionGuard>
+        <!-- <UiButton class="bg-red-600">Deactivate</UiButton> -->
+      </div>
+      <UiTabsList
+        class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
+      >
+        <UiPermissionGuard :permission=PermissionConstants.READ_MERCHANT>
+          <UiTabsTrigger
+            value="merchantDetails"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'merchantDetails',
+                },
+              })
+            "
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+          >
+            Detail Info
+          </UiTabsTrigger>
+        </UiPermissionGuard>
+        <UiPermissionGuard :permission=PermissionConstants.READ_STAFF_ASSIGNMENT>
+          <UiTabsTrigger
+            value="merchantOperators"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'merchantOperators',
+                },
+              })
+            "
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+          >
+            Operators
+          </UiTabsTrigger>
+        </UiPermissionGuard>
+        <UiPermissionGuard :permission=PermissionConstants.READ_MERCHANT>
+          <UiTabsTrigger
+            value="operatorDetails"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'operatorDetails',
+                },
+              })
+            "
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+          >
+            Detail Info
+          </UiTabsTrigger>
+        </UiPermissionGuard>
+        <!-- <UiPermissionGuard :permission=PermissionConstants.RESET_STAFF > -->
+        <UiTabsTrigger
+          value="merchantBranches"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'merchantBranches',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Branches
+        </UiTabsTrigger>
+        <!-- </UiPermissionGuard> -->
+      </UiTabsList>
+      <UiPermissionGuard :permission=PermissionConstants.READ_MERCHANT>
+        <UiTabsContent
+          value="merchantDetails"
+          class="text-base bg-background rounded-lg"
+        >
+    <UiCard  class="w-full p-6">
       <form @submit="onSubmit">
         <div class="grid grid-cols-2 gap-6">
+          <FormField
+            v-slot="{ componentField }"
+            name="defaultPaymentReceivingAccountNumber"
+          >
+            <FormItem>
+              <FormLabel>Default Payment Receiving Account Number </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="text"
+                  placeholder="Enter default payment receiving account number"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
           <FormField v-slot="{ componentField }" name="merchantId">
             <FormItem>
               <FormLabel>Merchant Id </FormLabel>
@@ -139,6 +320,42 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
+          <FormField v-slot="{ componentField }" name="merchantLevel">
+            <FormItem>
+              <FormLabel> Merchant Level </FormLabel>
+              <FormControl>
+                <UiInput
+                  type="text"
+                  placeholder="Enter merchant level"
+                  v-bind="componentField"
+                />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="status">
+            <FormItem>
+              <FormLabel>Status</FormLabel>
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue placeholder="Select a merchant status" />
+                  </UiSelectTrigger>
+                </FormControl>
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-for="item in Object.values(MerchantStatus)"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
+              <FormMessage />
+            </FormItem>
+          </FormField>
           <FormField v-slot="{ componentField }" name="businessType">
             <FormItem>
               <FormLabel> Business Type </FormLabel>
@@ -149,6 +366,34 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                   v-bind="componentField"
                 />
               </FormControl>
+              <FormMessage />
+            </FormItem>
+          </FormField>
+          <FormField v-slot="{ componentField }" name="merchantCategoryCode">
+            <FormItem>
+              <FormLabel>
+                Merchant Category Code
+                <span class="text-red-500">*</span></FormLabel
+              >
+              <UiSelect v-bind="componentField">
+                <FormControl>
+                  <UiSelectTrigger>
+                    <UiSelectValue
+                      placeholder="Select a merchant category code"
+                    />
+                  </UiSelectTrigger>
+                </FormControl>
+                <UiSelectContent>
+                  <UiSelectGroup>
+                    <UiSelectItem
+                      v-for="item in Object.values(MerchantCategoryCode)"
+                      :value="item"
+                    >
+                      {{ item }}
+                    </UiSelectItem>
+                  </UiSelectGroup>
+                </UiSelectContent>
+              </UiSelect>
               <FormMessage />
             </FormItem>
           </FormField>
@@ -296,35 +541,120 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               <FormMessage />
             </FormItem>
           </FormField>
-          <UiPermissionGuard :permission="PermissionConstants.UPDATE_MERCHANT" >
-          <div class="col-span-full w-full py-4 flex justify-between">
-            <UiButton
-              :disabled="submitting"
-              variant="outline"
-              type="button"
-              @click="$router.go(-1)"
-            >
-              Cancel
-            </UiButton>
-            <UiButton :disabled="submitting" type="submit">
-              <Icon
-                name="svg-spinners:8-dots-rotate"
-                v-if="submitting"
-                class="mr-2 h-4 w-4 animate-spin"
-              ></Icon>
 
-              Update
-            </UiButton>
+          <div class="flex flex-col gap-2">
+            <UiLabel>Merchant Accounts</UiLabel>
+
+            <UiPopover class="flex flex-col">
+              <UiPopoverTrigger asChild>
+                <div
+                  variant="outline"
+                  role="combobox"
+                  class="w-full text-sm text-left border flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
+                  :class="{
+                    'text-muted-foreground': selectedAccounts.length === 0,
+                  }"
+                >
+                  <span v-if="selectedAccounts.length">
+                    {{
+                      accountsData
+                        .filter((acc) => selectedAccounts.includes(acc.id))
+                        .map((acc) => acc.accountNumber)
+                        .join(", ")
+                    }}
+                  </span>
+                  <span v-else> Select account(s) </span>
+                  <Icon
+                    name="material-symbols:unfold-more-rounded"
+                    class="ml-2 h-4 w-4 shrink-0 opacity-50"
+                  />
+                </div>
+              </UiPopoverTrigger>
+              <UiPopoverContent class="w-full self-start p-0">
+                <UiCommand>
+                  <UiCommandInput placeholder="Search accounts..." />
+                  <UiCommandList>
+                    <UiCommandEmpty>No accounts found.</UiCommandEmpty>
+                    <UiCommandGroup>
+                      <UiCommandItem
+                        v-for="account in accountsData"
+                        :key="account.id"
+                        :value="account.id"
+                        @select="() => handleAccountToggle(account.id)"
+                      >
+                        <div class="flex items-center w-full">
+                          <span>
+                            {{ account.accountNumber }} -
+                            {{ account.accountName }}
+                          </span>
+                          <UiCheckbox
+                            :checked="selectedAccounts.includes(account.id)"
+                            class="ml-auto"
+                          />
+                        </div>
+                      </UiCommandItem>
+                    </UiCommandGroup>
+                  </UiCommandList>
+                </UiCommand>
+                <div class="p-2 border-t flex w-full justify-end">
+                  <UiButton
+                    size="sm"
+                    class="w-full"
+                    :disabled="selectedAccounts.length === 0"
+                    @click="updateSelectedAccounts"
+                  >
+                    Update Accounts
+                  </UiButton>
+                </div>
+              </UiPopoverContent>
+            </UiPopover>
           </div>
+
+          <UiPermissionGuard :permission="PermissionConstants.UPDATE_MERCHANT">
+            <div class="col-span-full w-full py-4 flex justify-between">
+              <UiButton
+                :disabled="submitting"
+                variant="outline"
+                type="button"
+                @click="$router.go(-1)"
+              >
+                Cancel
+              </UiButton>
+              <UiButton :disabled="submitting" type="submit">
+                <Icon
+                  name="svg-spinners:8-dots-rotate"
+                  v-if="submitting"
+                  class="mr-2 h-4 w-4 animate-spin"
+                ></Icon>
+
+                Update
+              </UiButton>
+            </div>
           </UiPermissionGuard>
         </div>
       </form>
     </UiCard>
-    <div v-else-if="data == null || data == undefined">
+    </UiTabsContent>
+    <UiTabsContent
+          value="merchantOperators"
+          class="text-base bg-background rounded-lg"
+        >
+        <MerchantsOperators />
+ 
+    </UiTabsContent>
+    <UiTabsContent
+          value="operatorDetails"
+          class="text-base bg-background rounded-lg"
+        >
+    <MerchantsOperatorsDetails />
+    </UiTabsContent>
+    </UiPermissionGuard>
+    </UiTabs>
+    <div class="w-full" v-else-if="data == null || data == undefined">
       <UiNoResultFound title="Sorry, No merchant found." />
     </div>
-    <div v-else-if="isError">
-      <ErrorMessage title="Something went wrong." />
+    <div v-else-if="isError" class="w-full">
+      <ErrorMessage :retry="refetch" title="Something went wrong." />
     </div>
   </div>
 </template>

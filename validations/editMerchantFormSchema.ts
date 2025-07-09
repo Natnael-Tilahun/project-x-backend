@@ -7,7 +7,7 @@ const merchantStatusTypeSchema = z.nativeEnum(MerchantStatus).optional().nullabl
 
 
 
-export const newMerchantFormSchema = toTypedSchema(
+export const editMerchantFormSchema = toTypedSchema(
   z.object({
     merchantId: z.string().optional().nullable(),
     businessType: z.string().min(2).optional().nullable(),
@@ -25,7 +25,6 @@ export const newMerchantFormSchema = toTypedSchema(
     postalNumber: z.string().optional(),
     faxNumber: z.string().optional().nullable(),
     shortCode: z.string().optional(),
-    coreAccountNumber:	z.string(),
     status: merchantStatusTypeSchema,
     merchantCategoryCode: merchantCategoryCodeTypeSchema,
     defaultPaymentReceivingAccountNumber:	z.string().optional().nullable()
