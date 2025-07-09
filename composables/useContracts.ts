@@ -102,7 +102,7 @@ export const useContracts = () => {
   ) => ApiResult<Contract[]> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<Contract[]>(
-        `/api/v1/internal/contracts/coreCustomer/${id}`
+        `/api/v1/internal/contracts/customer/${id}`
       );
 
       isLoading.value = pending.value;

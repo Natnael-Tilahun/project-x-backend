@@ -3,11 +3,25 @@ import { z } from "zod";
 
 export const newContractUserFormSchema = toTypedSchema(
   z.object({
-    id: z.string().optional().nullable(),
+    name: z.string(),
+    email: z.string().optional(),
+    phone: z.string(),
+    language: z.string().optional(),
+    nationalId: z.string().optional().nullable(),
+    isPrimaryUser: z.boolean().default(true),
     serviceDefinitionRoleId: z.string(),
-    enable: z.boolean().optional().nullable().default(true),
-    isPrimaryUser: z.boolean().default(false),
-    // user: z.any().optional().nullable(),
-    // contract: z.any().optional().nullable(),
+    coreAccountNumber: z.string(),
+    id: z.string().optional().nullable(),
+    contractUserAccountDTOSet: z.array(
+      z.object({
+        inheritAccountPermissions: z
+          .boolean()
+          .default(true)
+          .optional()
+          .nullable(),
+        permissionCodes: z.array(z.string()).optional().nullable(),
+        accountId: z.string().optional().nullable(),
+      })
+    ).optional(),
   })
 );
