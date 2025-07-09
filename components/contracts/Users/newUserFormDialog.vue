@@ -42,6 +42,9 @@ const accountSearchNumber = ref<string>("");
 const showAlreadyHasContract = ref(false);
 const permissionsDialog = ref<{ [key: string]: boolean }>({});
 
+const emit = defineEmits(["close"]);
+
+
 const form = useForm({
   validationSchema: newContractUserFormSchema,
   initialValues: {
@@ -259,15 +262,15 @@ const onSubmit = async (e: Event) => {
 <template>
   <div class="w-full h-full flex flex-col gap-8 overflow-y-scroll">
     <div>
-      <h1 class="md:text-2xl text-lg font-medium">Create New Contract User</h1>
+      <h1 class="md:text-2xl text-lg font-medium">Create new customer and add to contract user</h1>
       <p class="text-sm text-muted-foreground">
-        Create a new contract user by searching for an account, selecting contract accounts, and assigning permissions.
+        Create a new customer user by searching for an account, selecting contract accounts, and assigning permissions.
       </p>
     </div>
     <UiCard class="w-full flex border-[1px] rounded-lg ">
       <div class="text-sm md:text-base p-6 basis-full">
         <form @submit="onSubmit" class="space-y-6">
-          <div class="flex items-center gap-4 md:w-1/2">
+          <div class="flex items-center gap-4 md:w-1/2 pr-3">
                 <UiInput
                   v-model="accountSearchNumber"
                   type="text"
@@ -309,7 +312,12 @@ const onSubmit = async (e: Event) => {
                   <FormMessage />
                 </FormItem>
               </FormField>
-              <FormField v-slot="{ componentField, errorMessage }" name="serviceDefinitionRoleId">
+              <div v-if="showAlreadyHasContract" class="text-red-500 text-xs font-semibold">
+                This account already has a contract.
+              </div>
+            </div>
+            <div class="flex flex-col gap-4">
+                            <FormField v-slot="{ componentField, errorMessage }" name="serviceDefinitionRoleId">
                 <FormItem>
                   <FormLabel>Service Definition Role</FormLabel>
                   <Select v-bind="componentField">
@@ -329,24 +337,6 @@ const onSubmit = async (e: Event) => {
                   <FormMessage>{{ errorMessage }}</FormMessage>
                 </FormItem>
               </FormField>
-              <!-- <div v-if="name">
-                <p class="text-muted-foreground text-xs">Name</p>
-                <p class="font-medium">{{ name }}</p>
-              </div>
-              <div v-if="phone">
-                <p class="text-muted-foreground text-xs">Phone</p>
-                <p class="font-medium">{{ phone }}</p>
-              </div>
-              <div v-if="coreAccountNumber">
-                <p class="text-muted-foreground text-xs">Core Account Number</p>
-                <p class="font-medium">{{ coreAccountNumber }}</p>
-              </div> -->
-
-              <div v-if="showAlreadyHasContract" class="text-red-500 text-xs font-semibold">
-                This account already has a contract.
-              </div>
-            </div>
-            <div class="flex flex-col gap-4">
               <FormField v-slot="{ componentField }" name="nationalId">
                 <FormItem>
                   <FormLabel>National ID</FormLabel>
@@ -433,7 +423,10 @@ const onSubmit = async (e: Event) => {
               </div>
             </div>
           </div>
-          <div class="col-span-full w-full py-4 flex justify-end">
+          <div class="col-span-full w-full py-4 flex justify-end items-center gap-6">
+            <UiButton variant="outline" type="button" :disabled="isSubmitting" @click="emit('close')">
+              Submit
+            </UiButton>
             <UiButton :disabled="isSubmitting" type="submit">
               <Icon name="svg-spinners:8-dots-rotate" v-if="isSubmitting" class="mr-2 h-4 w-4 animate-spin" />
               Submit

@@ -194,10 +194,10 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
       >
         <UiAlertDialogTrigger class="self-end">
           <UiButton class="w-full" @click="setOpenNewUserModal(true)">
-            Create New Contract User and Customer</UiButton
+            Create new customer and add to contract user</UiButton
           >
         </UiAlertDialogTrigger>
-        <UiAlertDialogContent class="sm:min-w-full h-[90%] p-6">
+        <UiAlertDialogContent class="sm:min-w-full h-[100%] p-6">
           <UiButton @click="setOpenNewUserModal(false)" variant="outline" class="absolute right-8 top-2">
             <Icon
             name="material-symbols:close"
