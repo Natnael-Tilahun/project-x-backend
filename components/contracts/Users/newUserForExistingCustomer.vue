@@ -23,9 +23,10 @@ import { copyToClipboard, getIdFromPath } from "~/lib/utils";
 const route = useRoute();
 const { createNewContractForExistingUser, createNewContractForNewUser } =
   useContractsUsers();
-const { getServiceDefinitionsRoles } = useServiceDefinitionsRoles();
+const { getServiceDefinitionsRoles, getServiceDefinitionRolesByServiceDefinitionId } = useServiceDefinitionsRoles();
 
 const contractId = ref<string>("");
+const serviceDefinitionId = ref<string>("");
 const contractCoreCustomerId = ref<string>("");
 const loading = ref(false);
 const isError = ref(false);
@@ -47,6 +48,7 @@ const emit = defineEmits(["close"]);
 if (props.contractProps) {
   contractData.value = props.contractProps;
   data.value = props.data;
+  serviceDefinitionId.value = contractData.value.serviceDefinition.id
 }
 
 const form = useForm({
@@ -60,7 +62,7 @@ const form = useForm({
 const fetchServiceDefinitionRoles = async () => {
   try {
     loading.value = true;
-    const response = await getServiceDefinitionsRoles();
+    const response = await getServiceDefinitionRolesByServiceDefinitionId(serviceDefinitionId.value);
     serviceDefinitionRolesData.value = response;
   } catch (err) {
     console.error("Error fetching service definition roles:", err);
@@ -70,11 +72,8 @@ const fetchServiceDefinitionRoles = async () => {
   }
 };
 
-// const setOpenExistingUserModal = (value: boolean) => {
-//   emit("close")
-// };
-
 const refetch = async () => {
+  isError.value= false
   await fetchServiceDefinitionRoles();
 };
 
