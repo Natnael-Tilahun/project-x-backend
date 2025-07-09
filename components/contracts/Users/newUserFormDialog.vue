@@ -41,6 +41,7 @@ const name = ref<string>("");
 const accountSearchNumber = ref<string>("");
 const showAlreadyHasContract = ref(false);
 const permissionsDialog = ref<{ [key: string]: boolean }>({});
+const route  = useRouter()
 
 const emit = defineEmits(["close"]);
 
@@ -50,7 +51,7 @@ const form = useForm({
   initialValues: {
     phone: "",
     nationalId: "",
-    language: "",
+    language: null,
     isPrimaryUser: false,
   },
 });
@@ -247,6 +248,8 @@ const onSubmit = async (e: Event) => {
       title: "User Created",
       description: "Contract user created successfully.",
     });
+    emit("close")
+    route.push(`/contracts/${contractId.value}?activeTab=contractUsers`)
   } catch (err: any) {
     toast({
       title: "Error",
