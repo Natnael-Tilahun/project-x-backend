@@ -6,7 +6,7 @@ export const newContractUserFormSchema = toTypedSchema(
     name: z.string(),
     email: z.string().optional(),
     phone: z.string(),
-    language: z.string().optional(),
+    language: z.string().optional().nullable(),
     nationalId: z.string().optional().nullable(),
     isPrimaryUser: z.boolean().default(true),
     serviceDefinitionRoleId: z.string(),
