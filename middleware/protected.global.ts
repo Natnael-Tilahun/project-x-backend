@@ -18,7 +18,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     if (authStore.refreshToken) {
       try {
         const { data, error } = await api.fetch(
-          "/api/v1/auth/refresh-token",
+          "/api/v1/internal/refresh-token",
           {
             method: "POST",
             body: {
