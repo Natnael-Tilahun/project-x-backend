@@ -32,7 +32,7 @@ export const useAuth = () => {
   const login: (user: UserInput) => ApiResult<AuthResponse> = async (user) => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
-        "/api/v1/auth/sign-in/password",
+        "/api/v1/internal/auth/sign-in/password",
         {
           method: "POST",
           body: user,
@@ -66,7 +66,7 @@ export const useAuth = () => {
   const getRefreshToken: () => ApiResult<AuthResponse> = async () => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
-        "/api/v1/auth/refresh-token",
+        "/api/v1/internal/auth/refresh-token",
         {
           method: "POST",
           body: {
@@ -90,7 +90,7 @@ export const useAuth = () => {
   const getAuthorities: () => ApiResult<AuthResponse> = async () => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
-        "/api/v1/auth/roles"
+        "/api/v1/internal/auth/roles"
       );
 
       isLoading.value = pending.value;
@@ -119,7 +119,7 @@ export const useAuth = () => {
     if (!authUser.value) {
       try {
         const { data, error, status } = await fetch<AuthResponse>(
-          "/api/v1/auth/status"
+          "/api/v1/internal/auth/status"
         );
 
         if (status.value === "error") {
@@ -151,7 +151,7 @@ export const useAuth = () => {
   const getProfile: () => ApiResult<AuthResponse> = async () => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
-        "/api/v1/users/me"
+        "/api/v1/internal/users/self/me"
       );
 
       isLoading.value = pending.value;
@@ -171,7 +171,7 @@ export const useAuth = () => {
   ) => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
-        "/api/v1/users/reset-password/finish",
+        "/api/v1/internal/users/self/reset-password/finish",
         {
           method: "POST",
           body: newData,
@@ -196,7 +196,7 @@ export const useAuth = () => {
   ) => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
-        "/api/v1/users/reset-password/init",
+        "/api/v1/internal/users/self/reset-password/init",
         {
           method: "POST",
           body: newData,
@@ -221,7 +221,7 @@ export const useAuth = () => {
   ) => ApiResult<OtpDTO> = async (deliveryMethod) => {
     try {
       const { data, pending, error, status } = await fetch<OtpDTO>(
-        `/api/v1/auth/two-factor/request-token?deliveryMethod=${deliveryMethod}`,
+        `/api/v1/internal/auth/two-factor/request-token?deliveryMethod=${deliveryMethod}`,
         {
           method: "POST",
         }
@@ -251,7 +251,7 @@ export const useAuth = () => {
   ) => ApiResult<TFAAccessTokenDTO> = async (otp) => {
     try {
       const { data, pending, error, status } = await fetch<TFAAccessTokenDTO>(
-        `/api/v1/auth/two-factor/validate`,
+        `/api/v1/internal/auth/two-factor/validate`,
         {
           method: "POST",
           body: {
@@ -283,7 +283,7 @@ export const useAuth = () => {
   const changePassword: (newData: any) => ApiResult<any> = async (newData) => {
     try {
       const { data, pending, error, status } = await fetch<AuthResponse>(
-        "/api/v1/users/change-password",
+        "/api/v1/internal/users/self/change-password",
         {
           method: "POST",
           body: newData,

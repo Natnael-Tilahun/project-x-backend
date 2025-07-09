@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { buttonVariants } from "~/components/ui/button";
-import { cn } from "@/lib/utils";
 import ForgotPasswordForm from "~/components/login/ForgotPasswordForm.vue"
 // Page Meta Configuration
 definePageMeta({
