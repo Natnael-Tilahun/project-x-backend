@@ -1,9 +1,8 @@
 import type { ColumnDef } from "@tanstack/vue-table";
 
 import { Checkbox } from "~/components/ui/checkbox";
-import DataTableColumnHeaderVue from "../ui/dataTable/ColumnHeader.vue";
 import { Badge } from "../ui/badge";
-import MerchantsOperatorsAssignmentsDataTableRowActionsVue from "./DataTableRowActions.vue";
+import MerchantsOperatorsDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { MerchantOperators, StaffAssignment } from "~/types";
 import { h, inject } from "vue"; // Import inject
@@ -88,10 +87,10 @@ export const columns = (refetch: RefetchFunction): ColumnDef<MerchantOperators>[
     },
   },
   {
-    accessorKey: "operatorRole",
+    accessorKey: "operatorRoleId",
     header: "Operator Role	",
     cell: ({ row }) => {
-      const roleName = row.original?.operatorRole;
+      const roleName = row.original?.operatorRoleId;
       return roleName
         ? h(
             NuxtLink,
@@ -100,7 +99,7 @@ export const columns = (refetch: RefetchFunction): ColumnDef<MerchantOperators>[
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `/merchantRoles/${roleName}`,
             },
-            row.getValue("operatorRole")
+            row.getValue("operatorRoleId")
           )
         : h("p", "-");
     },
@@ -147,7 +146,7 @@ export const columns = (refetch: RefetchFunction): ColumnDef<MerchantOperators>[
       return h(
         "div",
         { class: "relative" },
-        h(MerchantsOperatorsAssignmentsDataTableRowActionsVue, {
+        h(MerchantsOperatorsDataTableRowActionsVue, {
           row,
           refetch
         })

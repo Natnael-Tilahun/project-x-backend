@@ -137,7 +137,11 @@ watch(
         newActiveTab == "merchantDetails" ||
         newActiveTab == "merchantOperators" ||
         newActiveTab == "merchantBranches" ||
-        newActiveTab == "merchantTransactions"
+        newActiveTab == "merchantTransactions" ||
+        newActiveTab == "operatorDetails" ||
+        newActiveTab == "newOperator" ||
+        newActiveTab == "branchDetails" ||
+        newActiveTab == "newBranch"
       ) {
         refetch();
       }
@@ -732,8 +736,7 @@ watch(
           value="newOperator"
           class="text-base bg-background rounded-lg"
         >
-        New Operator
-          <!-- <MerchantsOperatorsDetails /> -->
+          <MerchantsOperatorsNew />
         </UiTabsContent>
       </UiPermissionGuard>
     </UiTabs>

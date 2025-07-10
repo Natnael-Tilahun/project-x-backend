@@ -7,7 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { merchantOperatorFormSchem } from "~/validations/merchantOperatorFormSchem";
+import { newMerchantOperatorFormSchem } from "~/validations/newMerchantOperatorFormSchem";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 import {  AppVersionStatus } from "@/global-types";
@@ -15,7 +15,7 @@ import { getIdFromPath, splitPath } from "~/lib/utils";
 import { PermissionConstants } from "~/constants/permissions";
 import type {  MerchantBranch, MerchantOperatorRole, MerchantOperators } from "~/types";
 
-const { getMerchantOperatorById, updateMerchantOperator } =
+const { createNeweMerchantOperator } =
   await useMerchantOperators();
 const {getMerchantBranches} = useMerchantBranchs()
 const {getMerchantOperatorRoles} = useMerchantRoles()
@@ -25,7 +25,6 @@ const data = ref<MerchantOperators>();
 const branchesData = ref<MerchantBranch[]>([]);
 const merchantRolesData = ref<MerchantOperatorRole[]>([]);
 
-const applicationId = ref<string>("");
 const operatorId = ref<string>("");
 const merchantId = ref<string>("");
 const route = useRoute();
@@ -34,37 +33,16 @@ const pathSegments = ref([]);
 
 merchantId.value = getIdFromPath()
 
-pathSegments.value = splitPath(fullPath.value);
-const pathLength = pathSegments.value.length;
-applicationId.value = pathSegments.value[pathLength - 1];
-operatorId.value = route.query.operatorId;
-
 const isSubmitting = ref(false);
 
 const form = useForm({
-  validationSchema: merchantOperatorFormSchem,
+  validationSchema: newMerchantOperatorFormSchem,
+  initialValues: {
+    active: true,
+    language: null,
+    branchId: null,
+  },
 });
-
-const fetchOperatorData = async () => {
-  try {
-    isError.value = false
-    loading.value = true;
-    data.value = await getMerchantOperatorById(
-      operatorId.value
-    );
-
-    if (data.value) {
-      form.setValues({
-        ...data.value,
-      });
-    }
-  } catch (err) {
-    console.error("Error fetching operator", err);
-    isError.value = true;
-  } finally {
-    loading.value = false;
-  }
-};
 
 const fetchOperatorRolesData = async () => {
   try {
@@ -101,13 +79,11 @@ const fetchMerchantsData = async () => {
 onMounted(async () => {
   await fetchMerchantsData()
   await fetchOperatorRolesData()
-  await fetchOperatorData();
 });
 
 const refetch = async () => {
   await fetchMerchantsData()
   await fetchOperatorRolesData()
-  await fetchOperatorData();
 };
 
 const onSubmit = form.handleSubmit(async (values: any) => {
@@ -118,19 +94,19 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       ...data.value,
       ...values,
     };
-    data.value = await updateMerchantOperator(
-      operatorId.value,
+    data.value = await createNeweMerchantOperator(
+      merchantId.value,
       updatedData
     );
     form.setValues({
       ...data.value,
     });
     toast({
-      title: "Operator Updated",
-      description: "Merchant operator updated successfully",
+      title: "Operator Created",
+      description: "Merchant operator created successfully",
     });
   } catch (err: any) {
-    console.error("Error updating operator:", err);
+    console.error("Error creating operator:", err);
     isError.value = true;
   } finally {
     loading.value = false;
@@ -145,26 +121,12 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       <UiLoading />
     </div>
     <UiCard
-      v-else-if="data && !isError"
+      v-else-if="!isError"
       class="w-full flex border-[1px] rounded-lg h-full"
     >
       <div class="text-sm md:text-base p-6 basis-full">
         <form @submit="onSubmit">
           <div class="grid grid-cols-2 gap-6">
-            <FormField v-slot="{ componentField }" name="merchantOperatorId">
-                <FormItem>
-                  <FormLabel>Operator Id	 </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="text"
-                      disabled
-                      placeholder="Enter Operator Id	"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
             <FormField v-slot="{ componentField }" name="firstName">
               <FormItem class="w-full">
                 <FormLabel> First Name	</FormLabel>
@@ -204,33 +166,30 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
-
-            <FormField v-slot="{ componentField }" name="operatorCode">
+            <FormField v-slot="{ componentField }" name="password">
               <FormItem class="w-full">
-                <FormLabel>Operator Code</FormLabel>
+                <FormLabel>Password</FormLabel>
                 <FormControl>
                   <UiInput
-                    type="text"
-                    disabled
-                    placeholder="Enter operator code"
+                    placeholder="Enter password"
                     v-bind="componentField"
                   />
                 </FormControl>
                 <FormMessage />
               </FormItem>
             </FormField>
-
-            <FormField v-slot="{ value, handleChange }" name="active">
-              <FormItem
-                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
-              >
-                <FormLabel class="text-base"> Is Active</FormLabel>
+            <FormField v-slot="{ componentField }" name="confirmPassword">
+              <FormItem class="w-full">
+                <FormLabel>Confirm Password</FormLabel>
                 <FormControl>
-                  <UiSwitch :checked="value" @update:checked="handleChange" />
+                  <UiInput
+                    placeholder="Enter confirm password"
+                    v-bind="componentField"
+                  />
                 </FormControl>
+                <FormMessage />
               </FormItem>
             </FormField>
-
             <FormField v-slot="{ componentField }" name="operatorRoleId">
               <FormItem class="w-full">
                 <FormLabel>Operator Role</FormLabel>
@@ -254,14 +213,13 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
-
-            <FormField v-slot="{ componentField }" name="merchantBranchId">
+            <FormField v-slot="{ componentField }" name="branchId">
               <FormItem class="w-full">
                 <FormLabel>Merchant Branch </FormLabel>
                 <UiSelect v-bind="componentField">
                   <FormControl>
                     <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a merchant branch	" />
+                      <UiSelectValue placeholder="Select a merchant branch" />
                     </UiSelectTrigger>
                   </FormControl>
                   <UiSelectContent>
@@ -281,6 +239,30 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                   </UiSelectContent>
                 </UiSelect>
                 <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="language">
+                <FormItem>
+                  <FormLabel>Language	 </FormLabel>
+                  <FormControl>
+                    <UiInput
+                      type="text"
+                      disabled
+                      placeholder="Enter language"
+                      v-bind="componentField"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              </FormField>
+              <FormField v-slot="{ value, handleChange }" name="active">
+              <FormItem
+                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
+              >
+                <FormLabel class="text-base"> Is Active</FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value" @update:checked="handleChange" />
+                </FormControl>
               </FormItem>
             </FormField>
 
@@ -309,9 +291,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
         </form>
       </div>
     </UiCard>
-    <div v-else-if="data == null || data == undefined">
-      <UiNoResultFound title="Sorry, No application found." />
-    </div>
     <div v-else-if="isError">
       <ErrorMessage :retry="refetch" title="Something went wrong." />
     </div>

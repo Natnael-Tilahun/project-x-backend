@@ -8,10 +8,11 @@ import { PermissionConstants } from "~/constants/permissions";
 
 const {getStaffAssignmentByStaffId } = useStaffAssignments();
 const {getMerchantOperators} = useMerchantOperators()
+const route = useRoute();
+const fullPath = ref(route.path);
 const isLoading = ref(false);
 const isError = ref(false);
 const data = ref<MerchantOperators[]>([]);
-const keyword = ref<string>("");
 const merchantId = ref<string>("")
 merchantId.value = getIdFromPath()
 
@@ -60,7 +61,7 @@ const columns = computed(() => tableColumns(refetch));
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
     <UiPermissionGuard :permission="PermissionConstants.CREATE_STAFF_ASSIGNMENT" >
-    <NuxtLink to="/operators/new" class="w-fit self-end">
+    <NuxtLink :to="`${fullPath}?activeTab=newOperator`" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
         ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
         New Operator</UiButton

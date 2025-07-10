@@ -323,7 +323,7 @@ interface Merchant {
 interface MerchantOperators {
   merchantOperatorId?:	string
   operatorCode:	string
-  operatorRole: MerchantOperatorRole
+  operatorRoleId: MerchantOperatorRole
   firstName: string
   middleName: string
   lastName: string

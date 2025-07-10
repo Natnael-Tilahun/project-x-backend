@@ -2,19 +2,25 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "~/components/ui/toast";
 import { PermissionConstants } from "~/constants/permissions";
-const { deleteStaffAssignment, terminateStaffAssignment, isLoading } =
-  useStaffAssignments();
+const { deleteMerchantOperator, isLoading } =
+  useMerchantOperators();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const openEditModal = ref(false);
-const openEditTeminationModal = ref(false);
+const route = useRoute();
+const fullPath = ref(route.path);
+const openSheet = ref(true);
 
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 
-const setOpenEditTerminationModal = (value: boolean) => {
-  openEditTeminationModal.value = value;
+const setOpenSheet = (value: boolean) => {
+  openSheet.value = value;
+};
+
+const closeSheet = () => {
+  openSheet.value = false;
 };
 
 interface DataTableRowActionsProps<TData> {
@@ -25,26 +31,25 @@ const props = defineProps<{
   row: Row<any>;
   refetch: () => Promise<void>;
 }>();
-const emit = defineEmits(['staffAssignmentsDeleted', 'editStaffAssignments']); // Added 'languageDeleted'
+const emit = defineEmits(['merchantOperatorsDeleted', 'editMerchantOperators']); // Added 'languageDeleted'
 
-function viewStaffAssignmentDetail(id: string) {
-  navigateTo(`/staffAssignments/${id}`);
-  navigator.clipboard.writeText(id);
+function viewMerchantOperatorDetail(id: string) {
+  navigateTo(`${route.path}?activeTab=operatorDetails&operatorId=${id}`);
 }
 
-async function deleteStaffAssignments(id: string) {
+async function deleteMerchantOperators(id: string) {
   try {
     isLoading.value = true;
     loading.value = true;
-    await deleteStaffAssignment(id); // Call your API function to fetch roles
-    console.log("Staff assignment deleted successfully");
+    await deleteMerchantOperator(id); // Call your API function to fetch roles
+    console.log("Merchant operator deleted successfully");
     toast({
-      title: "Staff assignment deleted successfully",
+      title: "Merchant operator deleted successfully",
     });
     // Reload the window after deleting the role
     await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
-    console.error("Error deleting staff assignment:", err);
+    console.error("Error deleting merchant operator:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
@@ -53,57 +58,41 @@ async function deleteStaffAssignments(id: string) {
   }
 }
 
-async function terminateStaffAssignments(id: string) {
-  try {
-    isLoading.value = true;
-    loading.value = true;
-    await terminateStaffAssignment(id); // Call your API function to fetch roles
-    console.log("Staff assignment terminated successfully");
-    toast({
-      title: "Staff assignment terminated successfully",
-    });
-    // Reload the window after deleting the role
-    await props.refetch(); // Call refetch after successful deletion
-  } catch (err) {
-    console.error("Error terminating staff assignment:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-    loading.value = false;
-    setOpenEditTerminationModal(false);
-  }
-}
+
 </script>
 
 <template>
   <UiDropdownMenu>
     <UiDropdownMenuTrigger as-child>
-      <UiButton
-        variant="ghost"
-        class="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-      >
+      <UiButton variant="ghost" class="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
         <Icon name="majesticons:dots-horizontal" class="h-4 w-4"></Icon>
         <span class="sr-only">Open menu</span>
       </UiButton>
     </UiDropdownMenuTrigger>
     <UiDropdownMenuContent align="end" class="w-[160px]">
-      <UiPermissionGuard :permission="PermissionConstants.READ_STAFF_ASSIGNMENT">
-        <UiDropdownMenuItem @click="viewStaffAssignmentDetail(row.original.id)"
-          >View and Edit</UiDropdownMenuItem
-        >
+      <UiPermissionGuard :permission="PermissionConstants.READ_MERCHANT">
+        <UiDropdownMenuItem @click="viewMerchantOperatorDetail(row.original.merchantOperatorId)">View and Edit
+        </UiDropdownMenuItem>
         <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-      <UiPermissionGuard :permission="PermissionConstants.TERMINATE_STAFF_ASSIGNMENT" >
-      <UiDropdownMenuItem @click="setOpenEditTerminationModal(true)"
-        >Terminate Staff Assignment</UiDropdownMenuItem
-      >
-      <UiDropdownMenuSeparator />
+      <UiPermissionGuard :permission="PermissionConstants.READ_MERCHANT">
+        <!-- <UiDropdownMenuItem 
+        > -->
+        <UiSheet :open="openSheet" :onOpenChange="setOpenSheet">
+          <UiSheetTrigger class="cursor-pointer text-sm text-left px-2">
+            Reset Operator Password
+          </UiSheetTrigger>
+          <UiSheetContent class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto">
+            <MerchantsOperatorsResetPasswordSheet @close="closeSheet"
+              :merchantOperatorIdProps="row.original.merchantOperatorId" />
+          </UiSheetContent>
+        </UiSheet>
+        <!-- </UiDropdownMenuItem
+        > -->
+        <UiDropdownMenuSeparator />
       </UiPermissionGuard>
-      <UiPermissionGuard :permission="PermissionConstants.DELETE_STAFF_ASSIGNMENT">
-        <UiDropdownMenuItem
-          @click="setOpenEditModal(true)"
-          class="text-red-600"
-        >
+      <UiPermissionGuard :permission="PermissionConstants.DELETE_MERCHANT">
+        <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
           Delete
           <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
         </UiDropdownMenuItem>
@@ -116,55 +105,22 @@ async function terminateStaffAssignments(id: string) {
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
-          This action cannot be undone. This will permanently delete the staff
-          assignment and remove your data from our servers.
+          This action cannot be undone. This will permanently delete the merchant operator and remove your data from our
+          servers.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>
         <UiAlertDialogCancel @click="setOpenEditModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="deleteStaffAssignments(row.original.id)">
-          <Icon
-            name="svg-spinners:8-dots-rotate"
-            v-if="isLoading"
-            :disabled="isLoading"
-            class="mr-2 h-4 w-4 animate-spin"
-          ></Icon>
+        <UiAlertDialogAction @click="deleteMerchantOperators(row.original.merchantOperatorId)">
+          <Icon name="svg-spinners:8-dots-rotate" v-if="isLoading" :disabled="isLoading"
+            class="mr-2 h-4 w-4 animate-spin"></Icon>
           Continue
         </UiAlertDialogAction>
       </UiAlertDialogFooter>
     </UiAlertDialogContent>
   </UiAlertDialog>
 
-  <UiAlertDialog
-    :open="openEditTeminationModal"
-    :onOpenChange="setOpenEditTerminationModal"
-  >
-    <UiAlertDialogContent>
-      <UiAlertDialogHeader>
-        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
-        <UiAlertDialogDescription>
-          This action cannot be undone. This will permanently terminate the
-          staff assignment and remove your data from our servers.
-        </UiAlertDialogDescription>
-      </UiAlertDialogHeader>
-      <UiAlertDialogFooter>
-        <UiAlertDialogCancel @click="setOpenEditTerminationModal(false)">
-          Cancel
-        </UiAlertDialogCancel>
-        <UiAlertDialogAction
-          @click="terminateStaffAssignments(row.original.staff.id)"
-        >
-          <Icon
-            name="svg-spinners:8-dots-rotate"
-            v-if="isLoading"
-            :disabled="isLoading"
-            class="mr-2 h-4 w-4 animate-spin"
-          ></Icon>
-          Continue
-        </UiAlertDialogAction>
-      </UiAlertDialogFooter>
-    </UiAlertDialogContent>
-  </UiAlertDialog>
+
 </template>

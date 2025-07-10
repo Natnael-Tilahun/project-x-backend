@@ -10,8 +10,8 @@ export const merchantOperatorFormSchem = toTypedSchema(
     lastName: z.string().optional().nullable(),
     merchantOperatorId: z.string().optional().nullable(),
     merchantBranchId: z.string().optional().nullable(),
-    operatorRole: z.string(),
+    operatorRoleId: z.string(),
     active: z.boolean().optional().nullable(),
-    operatorCode: z.string().optional()
+    operatorCode: z.string().optional(),
   })
 );
