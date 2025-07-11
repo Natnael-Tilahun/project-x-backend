@@ -746,11 +746,11 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
                           :disabled="
                             (isAccountSelected(account) &&
                               !store.permissions.includes(
-                                'DELETE_CONTRACT_ACCOUNTS'
+                                'DELETE_CONTRACT_ACCOUNT'
                               )) ||
                             (!isAccountSelected(account) &&
                               !store.permissions.includes(
-                                'CREATE_CONTRACT_ACCOUNTS'
+                                'CREATE_CONTRACT_ACCOUNT'
                               ))
                           "
                         />

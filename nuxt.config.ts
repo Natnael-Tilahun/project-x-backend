@@ -19,7 +19,8 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // Only expose non-sensitive configuration to client
-      HOME_URL: process.env.HOME_URL || "http://localhost:3000",
+      HOME_URL:
+        process.env.HOME_URL || "https://https://digtalbankinguat.cbe.com.et/",
       persistedState: {
         storage: "cookies",
         debug: false,

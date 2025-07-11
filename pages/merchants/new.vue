@@ -11,6 +11,7 @@ import { ref, onBeforeUnmount } from "vue";
 import { toast } from "~/components/ui/toast";
 import { newMerchantFormSchema } from "~/validations/newMerchantFormSchema";
 import type { Merchant } from "~/types";
+import { MerchantCategoryCode } from "~/global-types";
 const { createNeweMerchant, isLoading } = useMerchants();
 const isError = ref(false);
 const data = ref<Merchant>();
@@ -24,8 +25,11 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     isSubmitting.value = true;
     isLoading.value = true;
-    console.log("values: ", values);
-    data.value = await createNeweMerchant(values.customerId, values); // Call your API function to fetch profile
+    const newValues = {
+      ...values
+    }
+    console.log("newValues: ", newValues);
+    data.value = await createNeweMerchant(newValues); // Call your API function to fetch profile
     navigateTo(`/merchants/${data.value.merchantId}`);
     console.log("New Merchant data; ", data.value);
     toast({
@@ -62,13 +66,13 @@ onBeforeUnmount(() => {
       <div value="roleDetails" class="text-sm md:text-base p-6 basis-full">
         <form @submit="onSubmit">
           <div class="grid grid-cols-2 gap-6">
-            <FormField v-slot="{ componentField }" name="customerId">
+            <FormField v-slot="{ componentField }" name="coreAccountNumber">
               <FormItem>
-                <FormLabel>Customer Id <span class="text-red-500">*</span> </FormLabel>
+                <FormLabel>Core Account Number <span class="text-red-500">*</span> </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
-                    placeholder="Enter customer Id"
+                    placeholder="Enter core account number"
                     v-bind="componentField"
                   />
                 </FormControl>
@@ -116,7 +120,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="businessType">
               <FormItem>
-                <FormLabel> Business Type <span class="text-red-500">*</span>  </FormLabel>
+                <FormLabel> Business Type </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
@@ -124,6 +128,29 @@ onBeforeUnmount(() => {
                     v-bind="componentField"
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ componentField }" name="merchantCategoryCode">
+              <FormItem>
+                <FormLabel> Merchant Category Code <span class="text-red-500">*</span></FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a merchant category code" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(MerchantCategoryCode)"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
                 <FormMessage />
               </FormItem>
             </FormField>
@@ -194,7 +221,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="tradeLicenseNumber">
               <FormItem>
-                <FormLabel> Trade License Number <span class="text-red-500">*</span> </FormLabel>
+                <FormLabel> Trade License Number </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
@@ -207,7 +234,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="tradeLicenseIssueDate">
               <FormItem>
-                <FormLabel> Trade License Issue Date <span class="text-red-500">*</span>  </FormLabel>
+                <FormLabel> Trade License Issue Date  </FormLabel>
                 <FormControl>
                   <UiInput
                     type="date"
@@ -223,7 +250,7 @@ onBeforeUnmount(() => {
               name="tradeLicenseExpiryDate"
             >
               <FormItem>
-                <FormLabel> Trade License Expiry Date <span class="text-red-500">*</span>  </FormLabel>
+                <FormLabel> Trade License Expiry Date </FormLabel>
                 <FormControl>
                   <UiInput
                     type="date"
@@ -236,7 +263,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="taxPayerIdNumber">
               <FormItem>
-                <FormLabel> Tax Payer Id Number <span class="text-red-500">*</span>  </FormLabel>
+                <FormLabel> Tax Payer Id Number </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
@@ -249,7 +276,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="taxPayerIssueDate">
               <FormItem>
-                <FormLabel> Tax Payer Issue Date <span class="text-red-500">*</span>  </FormLabel>
+                <FormLabel> Tax Payer Issue Date </FormLabel>
                 <FormControl>
                   <UiInput
                     type="date"
@@ -262,7 +289,7 @@ onBeforeUnmount(() => {
             </FormField>
             <FormField v-slot="{ componentField }" name="taxPayerExpiryDate">
               <FormItem>
-                <FormLabel> Tax Payer Expiry Date <span class="text-red-500">*</span>  </FormLabel>
+                <FormLabel> Tax Payer Expiry Date </FormLabel>
                 <FormControl>
                   <UiInput
                     type="date"
@@ -273,7 +300,19 @@ onBeforeUnmount(() => {
                 <FormMessage />
               </FormItem>
             </FormField>
-
+            <FormField v-slot="{ componentField }" name="defaultPaymentReceivingAccountNumber">
+              <FormItem>
+                <FormLabel>Default Payment Receiving Account Number </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter default payment receiving account number"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="isSubmitting"
