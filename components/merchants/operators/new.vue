@@ -10,15 +10,18 @@ import {
 import { newMerchantOperatorFormSchem } from "~/validations/newMerchantOperatorFormSchem";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
-import {  AppVersionStatus } from "@/global-types";
+import { AppVersionStatus } from "@/global-types";
 import { getIdFromPath, splitPath } from "~/lib/utils";
 import { PermissionConstants } from "~/constants/permissions";
-import type {  MerchantBranch, MerchantOperatorRole, MerchantOperators } from "~/types";
+import type {
+  MerchantBranch,
+  MerchantOperatorRole,
+  MerchantOperators,
+} from "~/types";
 
-const { createNeweMerchantOperator } =
-  await useMerchantOperators();
-const {getMerchantBranches} = useMerchantBranchs()
-const {getMerchantOperatorRoles} = useMerchantRoles()
+const { createNeweMerchantOperator } = await useMerchantOperators();
+const { getMerchantBranches } = useMerchantBranchs();
+const { getMerchantOperatorRoles } = useMerchantRoles();
 const isError = ref(false);
 const loading = ref(false);
 const data = ref<MerchantOperators>();
@@ -31,7 +34,7 @@ const route = useRoute();
 const fullPath = ref(route.path);
 const pathSegments = ref([]);
 
-merchantId.value = getIdFromPath()
+merchantId.value = getIdFromPath();
 
 const isSubmitting = ref(false);
 
@@ -46,11 +49,11 @@ const form = useForm({
 
 const fetchOperatorRolesData = async () => {
   try {
-    isError.value = false
+    isError.value = false;
     loading.value = true;
-   const response = await getMerchantOperatorRoles();
-    merchantRolesData.value = response.content
-    console.log(merchantRolesData.value)
+    const response = await getMerchantOperatorRoles();
+    merchantRolesData.value = response.content;
+    console.log(merchantRolesData.value);
   } catch (err) {
     console.error("Error fetching operator", err);
     isError.value = true;
@@ -59,15 +62,12 @@ const fetchOperatorRolesData = async () => {
   }
 };
 
-
 const fetchMerchantsData = async () => {
   try {
-    isError.value = false
+    isError.value = false;
     loading.value = true;
-    const response = await getMerchantBranches(
-      merchantId.value,0,1000
-    )
-    branchesData.value = response.content
+    const response = await getMerchantBranches(merchantId.value, 0, 1000);
+    branchesData.value = response.content;
   } catch (err) {
     console.error("Error fetching branches", err);
     isError.value = true;
@@ -77,13 +77,13 @@ const fetchMerchantsData = async () => {
 };
 
 onMounted(async () => {
-  await fetchMerchantsData()
-  await fetchOperatorRolesData()
+  await fetchMerchantsData();
+  await fetchOperatorRolesData();
 });
 
 const refetch = async () => {
-  await fetchMerchantsData()
-  await fetchOperatorRolesData()
+  await fetchMerchantsData();
+  await fetchOperatorRolesData();
 };
 
 const onSubmit = form.handleSubmit(async (values: any) => {
@@ -101,6 +101,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     form.setValues({
       ...data.value,
     });
+    navigateTo(`/merchants/${merchantId.value}?activeTab=merchantOperators`);
     toast({
       title: "Operator Created",
       description: "Merchant operator created successfully",
@@ -129,7 +130,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           <div class="grid grid-cols-2 gap-6">
             <FormField v-slot="{ componentField }" name="firstName">
               <FormItem class="w-full">
-                <FormLabel> First Name	</FormLabel>
+                <FormLabel> First Name </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
@@ -142,7 +143,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
             </FormField>
             <FormField v-slot="{ componentField }" name="middleName">
               <FormItem class="w-full">
-                <FormLabel> Middle Name	</FormLabel>
+                <FormLabel> Middle Name </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
@@ -155,7 +156,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
             </FormField>
             <FormField v-slot="{ componentField }" name="lastName">
               <FormItem class="w-full">
-                <FormLabel> Last Name	</FormLabel>
+                <FormLabel> Last Name </FormLabel>
                 <FormControl>
                   <UiInput
                     type="text"
@@ -242,20 +243,20 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               </FormItem>
             </FormField>
             <FormField v-slot="{ componentField }" name="language">
-                <FormItem>
-                  <FormLabel>Language	 </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="text"
-                      disabled
-                      placeholder="Enter language"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-              <FormField v-slot="{ value, handleChange }" name="active">
+              <FormItem>
+                <FormLabel>Language </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    disabled
+                    placeholder="Enter language"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ value, handleChange }" name="active">
               <FormItem
                 class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
               >
@@ -266,26 +267,28 @@ const onSubmit = form.handleSubmit(async (values: any) => {
               </FormItem>
             </FormField>
 
-            <UiPermissionGuard :permission="PermissionConstants.UPDATE_APPLICATION_VERSION" >
-            <div class="col-span-full w-full py-4 flex justify-between">
-              <UiButton
-                :disabled="isSubmitting"
-                variant="outline"
-                type="button"
-                @click="$router.go(-1)"
-              >
-                Cancel
-              </UiButton>
-              <UiButton :disabled="isSubmitting" type="submit">
-                <Icon
-                  name="svg-spinners:8-dots-rotate"
-                  v-if="isSubmitting"
-                  class="mr-2 h-4 w-4 animate-spin"
-                ></Icon>
+            <UiPermissionGuard
+              :permission="PermissionConstants.UPDATE_APPLICATION_VERSION"
+            >
+              <div class="col-span-full w-full py-4 flex justify-between">
+                <UiButton
+                  :disabled="isSubmitting"
+                  variant="outline"
+                  type="button"
+                  @click="$router.go(-1)"
+                >
+                  Cancel
+                </UiButton>
+                <UiButton :disabled="isSubmitting" type="submit">
+                  <Icon
+                    name="svg-spinners:8-dots-rotate"
+                    v-if="isSubmitting"
+                    class="mr-2 h-4 w-4 animate-spin"
+                  ></Icon>
 
-                Update
-              </UiButton>
-            </div>
+                  Update
+                </UiButton>
+              </div>
             </UiPermissionGuard>
           </div>
         </form>

@@ -8,12 +8,16 @@ export const useMerchantBranchs = () => {
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
 
-  const getMerchantBranches: (merchantId: string, page?: number, size?: number) => ApiResult<MerchantBranch[]> = async (merchantId, page, size) => {
+  const getMerchantBranches: (
+    merchantId: string,
+    page?: number,
+    size?: number
+  ) => ApiResult<MerchantBranch[]> = async (merchantId, page, size) => {
     try {
       const { data, pending, error, status } = await fetch<MerchantBranch[]>(
         `/api/v1/internal/merchant-branches/merchant/${merchantId}`,
         {
-          params: { page, size }
+          params: { page, size },
         }
       );
 
@@ -25,11 +29,13 @@ export const useMerchantBranchs = () => {
 
       return data.value ? (data.value as unknown as MerchantBranch[]) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const getMerchantBranchById: (id: string) => ApiResult<MerchantBranch> = async (id) => {
+  const getMerchantBranchById: (
+    id: string
+  ) => ApiResult<MerchantBranch> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<MerchantBranch>(
         `/api/v1/internal/merchant-branches/${id}`
@@ -43,17 +49,20 @@ export const useMerchantBranchs = () => {
 
       return data.value ? (data.value as unknown as MerchantBranch) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const createNeweMerchantBranch: (merchantId: string, merchantData: any) => ApiResult<MerchantBranch> = async ( merchantId, merchantData) => {
+  const createNeweMerchantBranch: (
+    merchantId: string,
+    merchantData: any
+  ) => ApiResult<MerchantBranch> = async (merchantId, merchantData) => {
     try {
       const { data, pending, error, status } = await fetch<MerchantBranch>(
         `/api/v1/internal/merchant-branches/${merchantId}`,
         {
           method: "POST",
-          body: merchantData
+          body: merchantData,
         }
       );
 
@@ -65,17 +74,20 @@ export const useMerchantBranchs = () => {
 
       return data.value ? (data.value as unknown as MerchantBranch) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
-  const updateMerchantBranch: (branchId: string, branchData: any) => ApiResult<MerchantBranch> = async (branchId, branchData) => {
+  const updateMerchantBranch: (
+    branchId: string,
+    branchData: any
+  ) => ApiResult<MerchantBranch> = async (branchId, branchData) => {
     try {
       const { data, pending, error, status } = await fetch<MerchantBranch>(
         `/api/v1/internal/merchant-branches/${branchId}`,
         {
           method: "PATCH",
-          body: branchData
+          body: branchData,
         }
       );
 
@@ -87,7 +99,7 @@ export const useMerchantBranchs = () => {
 
       return data.value ? (data.value as unknown as MerchantBranch) : null;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 
@@ -106,7 +118,7 @@ export const useMerchantBranchs = () => {
 
       return data.value;
     } catch (err) {
-      throw err
+      throw err;
     }
   };
 

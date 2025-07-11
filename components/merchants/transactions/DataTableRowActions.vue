@@ -2,24 +2,16 @@
 import type { Row } from "@tanstack/vue-table";
 import { toast } from "~/components/ui/toast";
 import { PermissionConstants } from "~/constants/permissions";
-const { deleteMerchantOperator, isLoading } = useMerchantOperators();
+const { deleteMerchantBranch, isLoading } = useMerchantBranchs();
 const loading = ref(isLoading.value);
 const isError = ref(false);
 const openEditModal = ref(false);
 const route = useRoute();
 const fullPath = ref(route.path);
-const openSheet = ref(false);
+const openSheet = ref(true);
 
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
-};
-
-const setOpenSheet = (value: boolean) => {
-  openSheet.value = value;
-};
-
-const closeSheet = () => {
-  openSheet.value = false;
 };
 
 interface DataTableRowActionsProps<TData> {
@@ -30,25 +22,25 @@ const props = defineProps<{
   row: Row<any>;
   refetch: () => Promise<void>;
 }>();
-const emit = defineEmits(["merchantOperatorsDeleted", "editMerchantOperators"]); // Added 'languageDeleted'
+const emit = defineEmits(["merchantBranchesDeleted", "editMerchantBranches"]); // Added 'languageDeleted'
 
-function viewMerchantOperatorDetail(id: string) {
-  navigateTo(`${route.path}?activeTab=operatorDetails&operatorId=${id}`);
+function viewMerchantBranchDetail(id: string) {
+  navigateTo(`${route.path}?activeTab=branchDetails&branchId=${id}`);
 }
 
-async function deleteMerchantOperators(id: string) {
+async function deleteMerchantBranches(id: string) {
   try {
     isLoading.value = true;
     loading.value = true;
-    await deleteMerchantOperator(id); // Call your API function to fetch roles
-    console.log("Merchant operator deleted successfully");
+    await deleteMerchantBranch(id); // Call your API function to fetch roles
+    console.log("Merchant branch deleted successfully");
     toast({
-      title: "Merchant operator deleted successfully",
+      title: "Merchant branch deleted successfully",
     });
     // Reload the window after deleting the role
     await props.refetch(); // Call refetch after successful deletion
   } catch (err) {
-    console.error("Error deleting merchant operator:", err);
+    console.error("Error deleting merchant branch:", err);
     isError.value = true;
   } finally {
     isLoading.value = false;
@@ -72,32 +64,9 @@ async function deleteMerchantOperators(id: string) {
     <UiDropdownMenuContent align="end" class="w-[160px]">
       <UiPermissionGuard :permission="PermissionConstants.READ_MERCHANT">
         <UiDropdownMenuItem
-          @click="viewMerchantOperatorDetail(row.original.merchantOperatorId)"
+          @click="viewMerchantBranchDetail(row.original.merchantBranchId)"
           >View and Edit
         </UiDropdownMenuItem>
-        <UiDropdownMenuSeparator />
-      </UiPermissionGuard>
-      <UiPermissionGuard :permission="PermissionConstants.READ_MERCHANT">
-        <!-- <UiDropdownMenuItem 
-        > -->
-        <UiSheet :open="openSheet" :onOpenChange="setOpenSheet">
-          <UiSheetTrigger
-            @click="setOpenSheet(true)"
-            class="cursor-pointer text-sm text-left px-2"
-          >
-            Reset Operator Password
-          </UiSheetTrigger>
-          <UiSheetContent
-            class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
-          >
-            <MerchantsOperatorsResetPasswordSheet
-              @close="closeSheet"
-              :merchantOperatorIdProps="row.original.merchantOperatorId"
-            />
-          </UiSheetContent>
-        </UiSheet>
-        <!-- </UiDropdownMenuItem
-        > -->
         <UiDropdownMenuSeparator />
       </UiPermissionGuard>
       <UiPermissionGuard :permission="PermissionConstants.DELETE_MERCHANT">
@@ -118,7 +87,7 @@ async function deleteMerchantOperators(id: string) {
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
           This action cannot be undone. This will permanently delete the
-          merchant operator and remove your data from our servers.
+          merchant branch and remove your data from our servers.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>
@@ -126,7 +95,7 @@ async function deleteMerchantOperators(id: string) {
           Cancel
         </UiAlertDialogCancel>
         <UiAlertDialogAction
-          @click="deleteMerchantOperators(row.original.merchantOperatorId)"
+          @click="deleteMerchantBranches(row.original.merchantBranchId)"
         >
           <Icon
             name="svg-spinners:8-dots-rotate"

@@ -10,10 +10,13 @@ import {
 import { merchantOperatorResetPasswordFormSchem } from "~/validations/merchantOperatorResetPasswordFormSchem";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
-import type {  MerchantBranch, MerchantOperatorRole, MerchantOperators } from "~/types";
+import type {
+  MerchantBranch,
+  MerchantOperatorRole,
+  MerchantOperators,
+} from "~/types";
 
-const { resetMerchantOperatorPassword, isLoading } =
-useMerchantOperators();
+const { resetMerchantOperatorPassword, isLoading } = useMerchantOperators();
 
 const isError = ref(false);
 const loading = ref(false);
@@ -25,17 +28,14 @@ const setOpenEditTerminationModal = (value: boolean) => {
   openEditTeminationModal.value = value;
 };
 
-
-
-
 const props = defineProps<{
-    merchantOperatorIdProps?: string | null;
+  merchantOperatorIdProps?: string | null;
 }>();
 
 const emit = defineEmits(["close"]);
 
-if(props.merchantOperatorIdProps){
-  merchantOperatorId.value = props.merchantOperatorIdProps
+if (props.merchantOperatorIdProps) {
+  merchantOperatorId.value = props.merchantOperatorIdProps;
 }
 
 const isSubmitting = ref(false);
@@ -55,6 +55,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       merchantOperatorId.value,
       updatedData
     );
+    emit("close");
     toast({
       title: "Operator Password Reset",
       description: "Merchant operator password reset successfully",
@@ -70,71 +71,69 @@ const onSubmit = form.handleSubmit(async (values: any) => {
 </script>
 
 <template>
-    <UiSheet  class="flex flex-col gap-6 items-center">
+  <UiSheet class="flex flex-col gap-6 items-center">
     <UiSheetHeader>
       <UiSheetTitle class="border-b-2"
         >Reset Merchant Operator Password</UiSheetTitle
       >
       <UiSheetDescription class="py-4 space-y-4">
-    <UiCard
-      class="w-full flex border-[1px] rounded-lg h-full"
-    >
-      <div class="text-sm md:text-base p-6 basis-full">
-        <form @submit="onSubmit">
-          <div class="grid grid-cols-2 gap-6">
-            <FormField v-slot="{ componentField }" name="newPassword">
-              <FormItem class="w-full">
-                <FormLabel>New Password</FormLabel>
-                <FormControl>
-                  <UiInput
-                    placeholder="Enter new password"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-            <FormField v-slot="{ componentField }" name="confirmPassword">
-              <FormItem class="w-full">
-                <FormLabel>Confirm Password</FormLabel>
-                <FormControl>
-                  <UiInput
-                    placeholder="Enter confirm password"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
+        <UiCard class="w-full flex border-[1px] rounded-lg h-full">
+          <div class="text-sm md:text-base p-6 basis-full">
+            <form @submit="onSubmit">
+              <div class="grid grid-cols-2 gap-6">
+                <FormField v-slot="{ componentField }" name="newPassword">
+                  <FormItem class="w-full">
+                    <FormLabel>New Password</FormLabel>
+                    <FormControl>
+                      <UiInput
+                        placeholder="Enter new password"
+                        v-bind="componentField"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                <FormField v-slot="{ componentField }" name="confirmPassword">
+                  <FormItem class="w-full">
+                    <FormLabel>Confirm Password</FormLabel>
+                    <FormControl>
+                      <UiInput
+                        placeholder="Enter confirm password"
+                        v-bind="componentField"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
 
-            <div class="col-span-full w-full py-4 flex justify-between">
-              <UiButton
-                :disabled="isSubmitting"
-                variant="outline"
-                type="button"
-                @click="emit('close')"
-              >
-                Cancel
-              </UiButton>
-              <UiButton :disabled="isSubmitting" type="submit">
-                <Icon
-                  name="svg-spinners:8-dots-rotate"
-                  v-if="isSubmitting"
-                  class="mr-2 h-4 w-4 animate-spin"
-                ></Icon>
+                <div class="col-span-full w-full py-4 flex justify-between">
+                  <UiButton
+                    :disabled="isSubmitting"
+                    variant="outline"
+                    type="button"
+                    @click="emit('close')"
+                  >
+                    Cancel
+                  </UiButton>
+                  <UiButton :disabled="isSubmitting" type="submit">
+                    <Icon
+                      name="svg-spinners:8-dots-rotate"
+                      v-if="isSubmitting"
+                      class="mr-2 h-4 w-4 animate-spin"
+                    ></Icon>
 
-                Update
-              </UiButton>
-            </div>
+                    Update
+                  </UiButton>
+                </div>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
-    </UiCard>
-    </UiSheetDescription>
+        </UiCard>
+      </UiSheetDescription>
     </UiSheetHeader>
-    </UiSheet>
+  </UiSheet>
 
-    <UiAlertDialog
+  <UiAlertDialog
     :open="openEditTeminationModal"
     :onOpenChange="setOpenEditTerminationModal"
   >
@@ -142,16 +141,15 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
-          This action cannot be undone. This will permanently reset the merchant operator password and remove your data from our servers.
+          This action cannot be undone. This will permanently reset the merchant
+          operator password and remove your data from our servers.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>
         <UiAlertDialogCancel @click="setOpenEditTerminationModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction
-          @click="onSubmit"
-        >
+        <UiAlertDialogAction @click="onSubmit">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"
@@ -163,5 +161,4 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       </UiAlertDialogFooter>
     </UiAlertDialogContent>
   </UiAlertDialog>
-
 </template>

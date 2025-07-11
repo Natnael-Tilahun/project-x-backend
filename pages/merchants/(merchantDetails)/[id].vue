@@ -160,7 +160,7 @@ watch(
       v-model="openItems"
       class="w-full space-y-0"
     >
-      <div class="w-full flex justify-end mb-4 gap-4 px-6">
+      <!-- <div class="w-full flex justify-end mb-4 gap-4 px-6">
         <UiPermissionGuard
           :permission="
             data?.active
@@ -182,8 +182,7 @@ watch(
             {{ data?.active ? "Deactivate" : "Activate" }}
           </UiButton>
         </UiPermissionGuard>
-        <!-- <UiButton class="bg-red-600">Deactivate</UiButton> -->
-      </div>
+      </div> -->
       <UiTabsList
         class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
       >
@@ -737,6 +736,24 @@ watch(
           class="text-base bg-background rounded-lg"
         >
           <MerchantsOperatorsNew />
+        </UiTabsContent>
+        <UiTabsContent
+          value="merchantBranches"
+          class="text-base bg-background rounded-lg"
+        >
+          <MerchantsBranches />
+        </UiTabsContent>
+        <UiTabsContent
+          value="branchDetails"
+          class="text-base bg-background rounded-lg"
+        >
+          <MerchantsBranchesDetails />
+        </UiTabsContent>
+        <UiTabsContent
+          value="newBranch"
+          class="text-base bg-background rounded-lg"
+        >
+          <MerchantsBranchesNew />
         </UiTabsContent>
       </UiPermissionGuard>
     </UiTabs>

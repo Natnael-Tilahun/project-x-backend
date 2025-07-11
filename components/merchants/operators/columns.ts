@@ -7,11 +7,12 @@ import { NuxtLink } from "#components";
 import type { MerchantOperators, StaffAssignment } from "~/types";
 import { h, inject } from "vue"; // Import inject
 
-
 // Type for the refetch function
 type RefetchFunction = () => Promise<void>;
 
-export const columns = (refetch: RefetchFunction): ColumnDef<MerchantOperators>[] => [
+export const columns = (
+  refetch: RefetchFunction
+): ColumnDef<MerchantOperators>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -31,12 +32,13 @@ export const columns = (refetch: RefetchFunction): ColumnDef<MerchantOperators>[
     enableHiding: false,
   },
   {
-    accessorKey: "merchantOperatorId	",
-    header: "Operator Id",
+    accessorKey: "fullName",
+    header: "FullName",
     cell: ({ row }) => {
       const route = useRoute();
       const merchantOperatorId = row.original?.merchantOperatorId;
-      return merchantOperatorId
+      const fullName = row.original.fullName;
+      return fullName
         ? h(
             NuxtLink,
             {
@@ -44,26 +46,6 @@ export const columns = (refetch: RefetchFunction): ColumnDef<MerchantOperators>[
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
               to: `${route.path}?activeTab=operatorDetails&operatorId=${merchantOperatorId}`,
             },
-            merchantOperatorId ? merchantOperatorId : "View Details"
-          )
-        : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "fullName	",
-    header: "FullName	",
-    cell: ({ row }) => {
-      const route = useRoute();
-      const merchantOperatorId = row.original?.merchantOperatorId;
-      const fullName	 = row.original.fullName
-      return fullName	
-        ? h(
-            NuxtLink,
-            {
-              class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-                to: `${route.path}?activeTab=operatorDetails&operatorId=${merchantOperatorId}`,
-              },
             fullName ? fullName : "View Operator"
           )
         : h("p", "-");
@@ -74,15 +56,14 @@ export const columns = (refetch: RefetchFunction): ColumnDef<MerchantOperators>[
     header: "operatorCode	",
     cell: ({ row }) => {
       const operatorCode = row.original.operatorCode;
-      return operatorCode	
-        ?  h(
-          "div",
-          {
-            class:
-              "whitespace-nowrap truncate hover:w-full font-medium",
-          },
-          row.getValue("operatorCode")
-        )
+      return operatorCode
+        ? h(
+            "div",
+            {
+              class: "whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("operatorCode")
+          )
         : h("p", "-");
     },
   },
@@ -110,14 +91,13 @@ export const columns = (refetch: RefetchFunction): ColumnDef<MerchantOperators>[
     cell: ({ row }) => {
       const merchantBranch = row.original?.merchantBranch;
       return merchantBranch
-        ?  h(
-          "div",
-          {
-            class:
-              "whitespace-nowrap truncate hover:w-full font-medium",
-          },
-          row.getValue("merchantBranch")?.branchName
-        )
+        ? h(
+            "div",
+            {
+              class: "whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("merchantBranch")?.branchName
+          )
         : h("p", "-");
     },
   },
@@ -130,8 +110,7 @@ export const columns = (refetch: RefetchFunction): ColumnDef<MerchantOperators>[
         ? h(
             "div",
             {
-              class:
-                "whitespace-nowrap truncate hover:w-full font-medium",
+              class: "whitespace-nowrap truncate hover:w-full font-medium",
             },
             row.getValue("active")
           )
@@ -148,7 +127,7 @@ export const columns = (refetch: RefetchFunction): ColumnDef<MerchantOperators>[
         { class: "relative" },
         h(MerchantsOperatorsDataTableRowActionsVue, {
           row,
-          refetch
+          refetch,
         })
       );
     },
