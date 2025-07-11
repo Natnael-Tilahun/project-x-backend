@@ -9,41 +9,37 @@ import {
 } from "@/components/ui/form";
 import { newMerchantBranchFormSchem } from "~/validations/newMerchantBranchFormSchem";
 import { ref } from "vue";
-import { toast } from "~/components/ui/toast";
 import { getIdFromPath } from "~/lib/utils";
 import { PermissionConstants } from "~/constants/permissions";
-import type { MerchantBranch } from "~/types";
+import type { MerchantBranch, MerchantTransaction } from "~/types";
+const { getMerchantTransactionById } = useMerchantTransactions();
 
-const { getMerchantBranchById, updateMerchantBranch } = useMerchantBranchs();
 const isError = ref(false);
 const loading = ref(false);
-const data = ref<MerchantBranch>();
+const data = ref<MerchantTransaction>();
 const merchantId = ref<string>("");
-const branchId = ref<string>("");
+const transactionId = ref<string>("");
 const isSubmitting = ref(false);
 const route = useRoute();
 merchantId.value = getIdFromPath();
-branchId.value = route.query.branchId;
+transactionId.value = route.query.transactionId;
 
 const form = useForm({
   validationSchema: newMerchantBranchFormSchem,
 });
 
-const fetchBranchData = async () => {
+const fetchTransactionData = async () => {
   try {
     isError.value = false;
     loading.value = true;
-    data.value = await getMerchantBranchById(branchId.value);
+    data.value = await getMerchantTransactionById(transactionId.value);
     if (data.value) {
       form.setValues({
         ...data.value,
-        city: data.value?.address?.city || null,
-        businessEmail: data.value?.address?.businessEmail || null,
-        postalNumber: data.value?.address?.postalNumber || null,
       });
     }
   } catch (err) {
-    console.error("Error fetching branch", err);
+    console.error("Error fetching transaction", err);
     isError.value = true;
   } finally {
     loading.value = false;
@@ -51,45 +47,12 @@ const fetchBranchData = async () => {
 };
 
 onMounted(async () => {
-  await fetchBranchData();
+  await fetchTransactionData();
 });
 
 const refetch = async () => {
-  await fetchBranchData();
+  await fetchTransactionData();
 };
-
-const onSubmit = form.handleSubmit(async (values: any) => {
-  try {
-    isSubmitting.value = true;
-    loading.value = true;
-    const updatedData = {
-      ...data.value,
-      ...values,
-      address: {
-        city: data.value?.address?.city || null,
-        businessEmail: data.value?.address?.businessEmail || null,
-        postalNumber: data.value?.address?.postalNumber || null,
-      },
-    };
-    data.value = await updateMerchantBranch(branchId.value, updatedData);
-    form.setValues({
-      ...data.value,
-      city: data.value?.address?.city || null,
-      businessEmail: data.value?.address?.businessEmail || null,
-      postalNumber: data.value?.address?.postalNumber || null,
-    });
-    toast({
-      title: "Branch Updated",
-      description: "Merchant branch updated successfully",
-    });
-  } catch (err: any) {
-    console.error("Error updating branch:", err);
-    isError.value = true;
-  } finally {
-    loading.value = false;
-    isSubmitting.value = false;
-  }
-});
 </script>
 
 <template>
@@ -102,7 +65,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       class="w-full flex border-[1px] rounded-lg h-full"
     >
       <div class="text-sm md:text-base p-6 basis-full">
-        <form @submit="onSubmit">
+        <form>
           <div class="grid grid-cols-2 gap-6">
             <FormField v-slot="{ componentField }" name="branchName">
               <FormItem class="w-full">

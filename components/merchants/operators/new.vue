@@ -229,7 +229,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                         v-for="item in branchesData"
                         :value="item.merchantBranchId"
                       >
-                        {{ item }}
+                        {{ item.branchName }}
                       </UiSelectItem>
                     </UiSelectGroup>
                     <UiSelectGroup v-else>

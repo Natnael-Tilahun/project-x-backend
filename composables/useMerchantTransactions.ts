@@ -8,13 +8,14 @@ export const useMerchantTransactions = () => {
   const { fetch } = useApi();
 
   const getMerchantTransactions: (
+    merchantId: string,
     page?: number,
     size?: number
-  ) => ApiResult<MerchantTransaction[]> = async (page, size) => {
+  ) => ApiResult<MerchantTransaction[]> = async (merchantId, page, size) => {
     try {
       const { data, pending, error, status } = await fetch<
         MerchantTransaction[]
-      >(`/api/v1/internal/merchants/transaction`, {
+      >(`/api/v1/internal/merchants/${merchantId}/transaction`, {
         params: { page, size },
       });
 
