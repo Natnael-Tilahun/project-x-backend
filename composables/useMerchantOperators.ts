@@ -8,10 +8,10 @@ export const useMerchantOperators = () => {
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
 
-  const getMerchantOperators: (page?: number, size?: number) => ApiResult<MerchantOperators[]> = async (page, size) => {
+  const getMerchantOperators: (merchantId: string, page?: number, size?: number) => ApiResult<MerchantOperators[]> = async (merchantId, page, size) => {
     try {
       const { data, pending, error, status } = await fetch<MerchantOperators[]>(
-        '/api/v1/internal/merchants/operators',
+        `/api/v1/internal/merchants/${merchantId}/operators`,
         {
           params: { page, size }
         }
