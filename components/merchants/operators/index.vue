@@ -19,7 +19,7 @@ merchantId.value = getIdFromPath()
 const fetchMerchantOperatorsData = async () => {
   try {
     isLoading.value = true;
-    const merchantOperators = await getMerchantOperators();
+    const merchantOperators = await getMerchantOperators(merchantId.value, 0,10000);
     // Sort integrations by name alphabetically
     data.value = merchantOperators?.content?.sort((a:MerchantOperators, b:MerchantOperators) => {
       if (a?.fullName && b?.fullName) {
