@@ -12,7 +12,7 @@ import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 import { getIdFromPath, splitPath } from "~/lib/utils";
 import { PermissionConstants } from "~/constants/permissions";
-import type { MerchantBranch, MerchantOperatorRole } from "~/types";
+import type { Account, MerchantBranch, MerchantOperatorRole } from "~/types";
 
 const { createNeweMerchantBranch } = useMerchantBranchs();
 const isError = ref(false);
@@ -20,8 +20,16 @@ const loading = ref(false);
 const data = ref<MerchantBranch>();
 const merchantId = ref<string>("");
 const isSubmitting = ref(false);
-
 merchantId.value = getIdFromPath();
+const accountsData = ref<Account[]>([]);
+
+const props = defineProps<{
+  accountsData: Account[];
+}>();
+
+if (props.accountsData) {
+  accountsData.value = props.accountsData;
+}
 
 const form = useForm({
   validationSchema: newMerchantBranchFormSchem,
@@ -107,18 +115,31 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField
-              v-slot="{ componentField }"
-              name="paymentReceivingAccountNumber"
-            >
+            <FormField v-slot="{ componentField }" name="paymentReceivingAccountNumber">
               <FormItem class="w-full">
                 <FormLabel>Payment Receiving Account Number</FormLabel>
-                <FormControl>
-                  <UiInput
-                    placeholder="Enter payment receiving account number"
-                    v-bind="componentField"
-                  />
-                </FormControl>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a payment receiving account number" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup v-if="accountsData.length > 0">
+                      <UiSelectItem
+                        v-for="item in accountsData"
+                        :value="item.accountNumber"
+                      >
+                        {{ item.accountNumber }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                    <UiSelectGroup v-else>
+                      <UiSelectItem value="No accounts found">
+                        No accounts found
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
                 <FormMessage />
               </FormItem>
             </FormField>

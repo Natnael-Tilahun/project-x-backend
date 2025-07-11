@@ -318,6 +318,7 @@ interface Merchant {
   merchantLevel?:string
   staticQrData?: string
   qrCodeDataBase64?:string
+  coreCustomerId?: string
 }
 
 interface MerchantOperators {
