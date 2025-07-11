@@ -18,9 +18,9 @@ merchantId.value = getIdFromPath();
 const fetchMerchantTransactionsData = async () => {
   try {
     isLoading.value = true;
-    const merchantBranches = await getMerchantTransactions(0, 10000);
+    const merchantBranches = await getMerchantTransactions(merchantId.value, 0, 10000);
     // Sort integrations by name alphabetically
-    data.value = merchantBranches?.content;
+    data.value = merchantBranches;
     // ?.sort(
     //   (a: MerchantBranch, b: MerchantBranch) => {
     //     if (a?.branchName && b?.branchName) {

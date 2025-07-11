@@ -3,7 +3,7 @@ import type { ColumnDef } from "@tanstack/vue-table";
 import { Checkbox } from "~/components/ui/checkbox";
 import MerchantsBranchesDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
-import type { MerchantBranch } from "~/types";
+import type { MerchantBranch, MerchantTransaction } from "~/types";
 import { h } from "vue"; // Import inject
 
 // Type for the refetch function
@@ -11,7 +11,7 @@ type RefetchFunction = () => Promise<void>;
 
 export const columns = (
   refetch: RefetchFunction
-): ColumnDef<MerchantBranch>[] => [
+): ColumnDef<MerchantTransaction>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -31,53 +31,100 @@ export const columns = (
     enableHiding: false,
   },
   {
-    accessorKey: "branchName",
-    header: "Branch Name",
+    accessorKey: "merchantTransactionId",
+    header: "Transaction ID",
     cell: ({ row }) => {
       const route = useRoute();
-      const merchantBranchId = row.original?.merchantBranchId;
-      const branchName = row.original.branchName;
-      return branchName
+      const merchantTransactionId = row.original.merchantTransactionId;
+      return merchantTransactionId
         ? h(
             NuxtLink,
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}?activeTab=branchDetails&branchId=${merchantBranchId}`,
+              to: `${route.path}?activeTab=transactionDetails&transactionId=${merchantTransactionId}`,
             },
-            branchName ? branchName : "View Brach"
+            "View Transaction"
           )
         : h("p", "-");
     },
   },
   {
-    accessorKey: "branchCode",
-    header: "Branch Code",
+    accessorKey: "merchantName",
+    header: "Merchant Name",
     cell: ({ row }) => {
-      const branchCode = row.original.branchCode;
-      return branchCode
+      const merchantName = row.original.merchantName;
+      return merchantName
         ? h(
             "div",
             {
               class: "whitespace-nowrap truncate hover:w-full font-medium",
             },
-            row.getValue("branchCode")
+            row.getValue("merchantName")
           )
         : h("p", "-");
     },
   },
   {
-    accessorKey: "businessPhoneNumber",
-    header: "Business Phone Number",
+    accessorKey: "businessName",
+    header: "Business Name",
     cell: ({ row }) => {
-      const businessPhoneNumber = row.original.businessPhoneNumber;
-      return businessPhoneNumber
+      const businessName = row.original.businessName;
+      return businessName
         ? h(
             "div",
             {
               class: "whitespace-nowrap truncate hover:w-full font-medium",
             },
-            row.getValue("businessPhoneNumber")
+            row.getValue("businessName")
+          )
+        : h("p", "-");
+    },
+  },
+  {
+    accessorKey: "amount",
+    header: "Amount",
+    cell: ({ row }) => {
+      const amount = row.original.amount;
+      return amount
+        ? h(
+            "div",
+            {
+              class: "whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("amount")
+          )
+        : h("p", "-");
+    },
+  },
+  {
+    accessorKey: "paymentStatus",
+    header: "Payment Status",
+    cell: ({ row }) => {
+      const paymentStatus = row.original.paymentStatus;
+      return paymentStatus
+        ? h(
+            "div",
+            {
+              class: "whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            row.getValue("paymentStatus")
+          )
+        : h("p", "-");
+    },
+  },
+  {
+    accessorKey: "completedDate",
+    header: "Completed Date",
+    cell: ({ row }) => {
+      const completedDate = row.original.completedDate;
+      return completedDate
+        ? h(
+            "div",
+            {
+              class: "whitespace-nowrap truncate hover:w-full font-medium",
+            },
+            new Date(row.getValue("completedDate")).toLocaleDateString()
           )
         : h("p", "-");
     },

@@ -12,7 +12,7 @@ import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 import { getIdFromPath } from "~/lib/utils";
 import { PermissionConstants } from "~/constants/permissions";
-import type { MerchantBranch } from "~/types";
+import type { Account, MerchantBranch } from "~/types";
 
 const { getMerchantBranchById, updateMerchantBranch } = useMerchantBranchs();
 const isError = ref(false);
@@ -24,6 +24,15 @@ const isSubmitting = ref(false);
 const route = useRoute();
 merchantId.value = getIdFromPath();
 branchId.value = route.query.branchId;
+const accountsData = ref<Account[]>([]);
+
+const props = defineProps<{
+  accountsData: Account[];
+}>();
+
+if (props.accountsData) {
+  accountsData.value = props.accountsData;
+}
 
 const form = useForm({
   validationSchema: newMerchantBranchFormSchem,
@@ -62,13 +71,13 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     isSubmitting.value = true;
     loading.value = true;
+    console.log(values);
     const updatedData = {
-      ...data.value,
       ...values,
       address: {
-        city: data.value?.address?.city || null,
-        businessEmail: data.value?.address?.businessEmail || null,
-        postalNumber: data.value?.address?.postalNumber || null,
+        city: values?.city || null,
+        businessEmail: values?.businessEmail || null,
+        postalNumber: values?.postalNumber || null,
       },
     };
     data.value = await updateMerchantBranch(branchId.value, updatedData);
@@ -143,7 +152,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField
+            <!-- <FormField
               v-slot="{ componentField }"
               name="paymentReceivingAccountNumber"
             >
@@ -155,6 +164,34 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                     v-bind="componentField"
                   />
                 </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField> -->
+            <FormField v-slot="{ componentField }" name="paymentReceivingAccountNumber">
+              <FormItem class="w-full">
+                <FormLabel>Payment Receiving Account Number</FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a payment receiving account number" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup v-if="accountsData.length > 0">
+                      <UiSelectItem
+                        v-for="item in accountsData"
+                        :value="item.accountNumber"
+                      >
+                        {{ item.accountNumber }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                    <UiSelectGroup v-else>
+                      <UiSelectItem value="No accounts found">
+                        No accounts found
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
                 <FormMessage />
               </FormItem>
             </FormField>
@@ -176,7 +213,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormControl>
                   <UiInput
                     type="text"
-                    disabled
                     placeholder="Enter city"
                     v-bind="componentField"
                   />
@@ -190,7 +226,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormControl>
                   <UiInput
                     type="text"
-                    disabled
                     placeholder="Enter business email"
                     v-bind="componentField"
                   />
@@ -204,7 +239,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormControl>
                   <UiInput
                     type="text"
-                    disabled
                     placeholder="Enter postal number"
                     v-bind="componentField"
                   />

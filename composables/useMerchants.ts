@@ -128,6 +128,28 @@ export const useMerchants = () => {
     }
   };
 
+  const updateMerchantAccounts: (merchantId: string, merchantData: any) => ApiResult<any> = async (merchantId, merchantData) => {
+    try {
+      const { data, pending, error, status } = await fetch<Merchant>(
+        `/api/v1/internal/merchants/${merchantId}/accounts`,
+        {
+          method: "POST",
+          body: merchantData
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as any) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
   return {
     isLoading,
     getMerchants,
@@ -136,6 +158,7 @@ export const useMerchants = () => {
     deleteMerchant,
     updateMerchant,
     getMerchantAccountsId,
+    updateMerchantAccounts,
     isSubmitting,
   };
 };

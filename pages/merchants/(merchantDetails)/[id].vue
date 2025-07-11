@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import type { Merchant } from "~/types";
+import type { Account, Merchant } from "~/types";
 import { PermissionConstants } from "~/constants/permissions";
 import { MerchantCategoryCode, MerchantStatus } from "~/global-types";
 const route = useRoute();
@@ -21,16 +21,21 @@ const {
   getMerchantById,
   getMerchantAccountsId,
   updateMerchant,
+  updateMerchantAccounts,
   isLoading,
   isSubmitting,
 } = useMerchants();
+const { getCoreAccountsByCustomerId } = useCustomers();
+
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
 const merchantId = ref<string>("");
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
-const accountsData = ref<string[]>([]);
-
+const accountsData = ref<Account[]>([]);
+const coreCustomerId = ref<string>("");
+const selectedAccounts = ref<string[]>([]);
+const isUpdatingAccounts = ref(false);
 const isError = ref(false);
 const data = ref<Merchant>();
 
@@ -46,16 +51,24 @@ const form = useForm({
   validationSchema: editMerchantFormSchema,
 });
 
+
+
 const fetchMerchantData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
     isError.value = false;
     data.value = await getMerchantById(merchantId.value);
+    coreCustomerId.value = data.value?.coreCustomerId || ""
+    const response = await getMerchantAccountsId(merchantId.value) || []
+    selectedAccounts.value = response && response?.map((account) => account.accountNumber) || []
     let a = {
       ...data.value,
     };
     form.setValues(a);
+    if (data.value?.coreCustomerId) {
+      await fetchMerchantAccountsData(coreCustomerId.value);
+    }
   } catch (err) {
     console.error("Error fetching merchant:", err);
     isError.value = true;
@@ -65,12 +78,31 @@ const fetchMerchantData = async () => {
   }
 };
 
-const fetchMerchantAccountsData = async () => {
+const fetchSelectedMerchantAccountsData = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
     isError.value = false;
-    accountsData.value = (await getMerchantAccountsId(merchantId.value)) || [];
+    const response = await getMerchantAccountsId(merchantId.value) || []
+    console.log("response", response);
+    selectedAccounts.value = response && response?.map((account) => account.accountNumber) || []
+  } catch (err) {
+    console.error("Error fetching merchant accounts:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
+
+const fetchMerchantAccountsData = async (coreCustomerId: string) => {
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    isError.value = false;
+    if (coreCustomerId) {
+      accountsData.value = (await getCoreAccountsByCustomerId(coreCustomerId)) || []
+    }
   } catch (err) {
     console.error("Error fetching merchant accounts:", err);
     isError.value = true;
@@ -81,12 +113,13 @@ const fetchMerchantAccountsData = async () => {
 };
 
 onMounted(async () => {
-  await fetchMerchantAccountsData();
+  // await fetchSelectedMerchantAccountsData();
   await fetchMerchantData();
 });
 
 const refetch = async () => {
-  await fetchMerchantAccountsData();
+  isError.value = false;
+  // await fetchSelectedMerchantAccountsData();
   await fetchMerchantData();
 };
 
@@ -109,7 +142,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   }
 });
 
-const selectedAccounts = ref<string[]>([]);
+
 
 function handleAccountToggle(accountId: string) {
   const idx = selectedAccounts.value.indexOf(accountId);
@@ -120,12 +153,24 @@ function handleAccountToggle(accountId: string) {
   }
 }
 
-async function updateSelectedAccounts() {
-  // Implement your update logic here, e.g., API call
+const updateSelectedAccounts = async () => {
+  try {    
+  isUpdatingAccounts.value = true;
+  const data = {
+    accountNumbers: selectedAccounts.value
+  }
+  await updateMerchantAccounts(merchantId.value, data)
   toast({
     title: "Accounts Updated",
-    description: `Updated accounts: ${selectedAccounts.value.join(", ")}`,
+    description: `Updated accounts: ${data.accountNumbers.join(", ")}`,
   });
+  isUpdatingAccounts.value = false;
+  } catch (error) {
+    console.error("Error updating accounts:", error);
+    // isError.value = true;
+  } finally {
+    isUpdatingAccounts.value = false;
+  }
 }
 
 watch(
@@ -141,7 +186,9 @@ watch(
         newActiveTab == "operatorDetails" ||
         newActiveTab == "newOperator" ||
         newActiveTab == "branchDetails" ||
-        newActiveTab == "newBranch"
+        newActiveTab == "newBranch" ||
+        newActiveTab == "merchantTransactions" ||
+        newActiveTab == "transactionDetails" 
       ) {
         refetch();
       }
@@ -296,6 +343,37 @@ watch(
           class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
         >
           New Branch
+        </UiTabsTrigger>
+
+        <UiTabsTrigger
+          value="merchantTransactions"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'merchantTransactions',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Transactions
+        </UiTabsTrigger>
+        <UiTabsTrigger
+          value="transactionDetails"
+          :disabled="openItems != 'transactionDetails'"
+          :class="openItems == 'transactionDetails' ? '' : 'hidden'"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'transactionDetails',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Transaction Details
         </UiTabsTrigger>
       </UiTabsList>
       <UiPermissionGuard :permission="PermissionConstants.READ_MERCHANT">
@@ -637,7 +715,7 @@ watch(
                           {{
                             accountsData
                               .filter((acc) =>
-                                selectedAccounts.includes(acc.id)
+                                selectedAccounts?.includes(acc.accountNumber)
                               )
                               .map((acc) => acc.accountNumber)
                               .join(", ")
@@ -658,21 +736,21 @@ watch(
                           <UiCommandGroup>
                             <UiCommandItem
                               v-for="account in accountsData"
-                              :key="account.id"
-                              :value="account.id"
-                              @select="() => handleAccountToggle(account.id)"
+                              :key="account.accountNumber"
+                              :value="account.accountNumber"
+                              @select="() => handleAccountToggle(account.accountNumber)"
                             >
+                            <UiCheckbox
+                                  :checked="
+                                    selectedAccounts?.includes(account.accountNumber)
+                                  "
+                                  class="ml-auto mr-2"
+                                />
                               <div class="flex items-center w-full">
                                 <span>
                                   {{ account.accountNumber }} -
-                                  {{ account.accountName }}
+                                  {{ account?.accountTitle1	 }}
                                 </span>
-                                <UiCheckbox
-                                  :checked="
-                                    selectedAccounts.includes(account.id)
-                                  "
-                                  class="ml-auto"
-                                />
                               </div>
                             </UiCommandItem>
                           </UiCommandGroup>
@@ -682,9 +760,14 @@ watch(
                         <UiButton
                           size="sm"
                           class="w-full"
-                          :disabled="selectedAccounts.length === 0"
+                          :disabled="selectedAccounts.length === 0 || isUpdatingAccounts"
                           @click="updateSelectedAccounts"
                         >
+                        <Icon
+                        name="svg-spinners:8-dots-rotate"
+                        v-if="isUpdatingAccounts"
+                        class="mr-2 h-4 w-4 animate-spin"
+                      ></Icon>
                           Update Accounts
                         </UiButton>
                       </div>
@@ -747,13 +830,25 @@ watch(
           value="branchDetails"
           class="text-base bg-background rounded-lg"
         >
-          <MerchantsBranchesDetails />
+          <MerchantsBranchesDetails :accountsData="accountsData" />
         </UiTabsContent>
         <UiTabsContent
           value="newBranch"
           class="text-base bg-background rounded-lg"
         >
-          <MerchantsBranchesNew />
+          <MerchantsBranchesNew :accountsData="accountsData" />
+        </UiTabsContent>
+        <UiTabsContent
+          value="merchantTransactions"
+          class="text-base bg-background rounded-lg"
+        >
+          <MerchantsTransactions />
+        </UiTabsContent>
+        <UiTabsContent
+          value="transactionDetails"
+          class="text-base bg-background rounded-lg"
+        >
+          <MerchantsTransactionsDetails />
         </UiTabsContent>
       </UiPermissionGuard>
     </UiTabs>
