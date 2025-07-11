@@ -1,5 +1,5 @@
 import { useApi } from "./useApi";
-import type { Merchant } from "~/types";
+import type { Account, Merchant } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
@@ -47,10 +47,28 @@ export const useMerchants = () => {
     }
   };
 
-  const createNeweMerchant: (customerId: string, merchantData: any) => ApiResult<Merchant> = async (customerId, merchantData) => {
+  const getMerchantAccountsId: (id: string) => ApiResult<Account[]> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<Account[]>(
+        `/api/v1/internal/merchants/${id}/accounts`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Account[]) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  const createNeweMerchant: (merchantData: any) => ApiResult<Merchant> = async ( merchantData) => {
     try {
       const { data, pending, error, status } = await fetch<Merchant>(
-        `/api/v1/internal/merchants/${customerId}`,
+        `/api/v1/internal/merchants`,
         {
           method: "POST",
           body: merchantData
@@ -69,12 +87,12 @@ export const useMerchants = () => {
     }
   };
 
-  const updateMerchant: (customerId: string, merchantData: any) => ApiResult<Merchant> = async (customerId, merchantData) => {
+  const updateMerchant: (merchantId: string, merchantData: any) => ApiResult<Merchant> = async (merchantId, merchantData) => {
     try {
       const { data, pending, error, status } = await fetch<Merchant>(
-        `/api/v1/internal/merchants/${customerId}`,
+        `/api/v1/internal/merchants/${merchantId}`,
         {
-          method: "POST",
+          method: "PATCH",
           body: merchantData
         }
       );
@@ -117,6 +135,7 @@ export const useMerchants = () => {
     createNeweMerchant,
     deleteMerchant,
     updateMerchant,
+    getMerchantAccountsId,
     isSubmitting,
   };
 };

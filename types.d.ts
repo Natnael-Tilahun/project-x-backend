@@ -1,12 +1,4 @@
-import {
-  ChargeType,
-  DeviceStatus,
-  LanguageRelatedStatus,
-  PaymentIntegrationType,
-  PermissionCategory,
-  PermissionScope,
-} from "@/global-types";
-import { TransactionAmountType } from "@/global-types";
+import { MerchantStatus, PaymentStatus, TransactionAmountType, TransactionInitiator } from "@/global-types";
 import {
   Visibility,
   PaymentOperationType,
@@ -54,6 +46,12 @@ import {
   PaymentCategory,
   RuleType,
   ChargeType,
+  DeviceStatus,
+  LanguageRelatedStatus,
+  MerchantCategoryCode,
+  PaymentIntegrationType,
+  PermissionCategory,
+  PermissionScope,
 } from "@/global-types";
 
 interface User {
@@ -299,22 +297,93 @@ interface Address {
 }
 
 interface Merchant {
-  customerIdId: string;
+  coreAccountNumber:	string
   merchantId?: string;
-  businessType: string;
+  businessType?: string;
   businessNumber: string;
   businessName: string;
   tradeLicenseNumber: string;
   tradeLicenseIssueDate: string;
   tradeLicenseExpiryDate: string;
-  taxPayerIdNumber: Gender;
+  taxPayerIdNumber: string;
   taxPayerIssueDate: string;
   taxPayerExpiryDate: string;
   businessPhoneNumber: string;
   faxNumber: string;
   address: Address;
-  shortCode: string;
-  status: Status;
+  shortCode?: number;
+  status?: MerchantStatus;
+  merchantCategoryCode: MerchantCategoryCode
+  defaultPaymentReceivingAccountNumber?:	string
+  merchantLevel?:string
+  staticQrData?: string
+  qrCodeDataBase64?:string
+}
+
+interface MerchantOperators {
+  merchantOperatorId?:	string
+  operatorCode:	string
+  operatorRoleId: MerchantOperatorRole
+  firstName: string
+  middleName: string
+  lastName: string
+  fullName?: string
+  active: boolean
+  user?: User
+  merchant?: Merchant
+  merchantBranch?:	MerchantBranch
+  staticQrData?:	string
+  qrCodeDataBase64?:	string
+}
+
+interface MerchantBranch{
+  merchantBranchId?:	string
+  branchName:	string
+  branchCode?:	string
+  businessPhoneNumber?:	string
+  faxNumber?:	string
+  paymentReceivingAccountNumber?:	string
+  address?: Address
+}
+
+interface MerchantOperatorRole{
+  name:	string
+  description?:	string
+  enabled?:	boolean
+}
+
+interface MerchantTransaction{
+  merchantTransactionId?:	string
+  merchantId:	string
+  merchantName:	string
+  merchantCity?:	string
+  merchantBranchId?:	string
+  businessName?:	string
+  merchantBranchName?:	string
+  operatorId?:	string
+  operatorUsername?:	string
+  operatorName?:	string
+  amount:	number
+  currencyCode?:	string
+  merchantCategoryCode?:	string
+  countryCode?:	string
+  paymentReference?:	string
+  tipAmount?:	number
+  dynamicId?:	string
+  transactionRefId?:	string
+  paymentStatus:	PaymentStatus
+  expirationDate?:	string
+  completedDate?:	string
+  transactionInitiator:	TransactionInitiator
+  mbTransactionId?:	string
+  coreTransactionId?:	string
+  merchantAccountNumber:	string
+  payerAccountNumber?:	string
+  payerId?:	string
+  payerName?:	string
+  payerPhone?:	string
+  qrEncodedData?:	string
+  qrCodeDataBase64?:	string
 }
 
 interface Integration {
