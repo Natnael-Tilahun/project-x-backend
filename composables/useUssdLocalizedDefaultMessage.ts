@@ -23,7 +23,7 @@ export const useUssdLocalizedDefaultMessage = () => {
       const { data, pending, error, status } = await useFetch<
         LocalizedDefaultMessage[]
       >(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/by-language`,
+        `${__USSD_API_BASE_URL__}/api/v1/localized-messages/by-language`,
         {
           method: "GET",
           // headers: {
@@ -50,7 +50,7 @@ export const useUssdLocalizedDefaultMessage = () => {
     try {
       const { data, pending, error, status } =
         await useFetch<LocalizedDefaultMessage>(
-          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/${id}`,
+          `${__USSD_API_BASE_URL__}/api/v1/localized-messages/${id}`,
           {
             method: "GET",
             // headers: {
@@ -77,7 +77,7 @@ export const useUssdLocalizedDefaultMessage = () => {
     try {
       const { data, pending, error, status } =
         await useFetch<LocalizedDefaultMessage>(
-          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages`,
+          `${__USSD_API_BASE_URL__}/api/v1/localized-messages`,
           {
             method: "POST",
             // headers: {
@@ -109,7 +109,7 @@ export const useUssdLocalizedDefaultMessage = () => {
     try {
       const { data, pending, error, status } =
         await useFetch<LocalizedDefaultMessage>(
-          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/edit-localized-messages/${defaultMessageId}`,
+          `${__USSD_API_BASE_URL__}/api/v1/localized-messages/edit-localized-messages/${defaultMessageId}`,
           {
             method: "PUT",
             // headers: {
@@ -142,7 +142,7 @@ export const useUssdLocalizedDefaultMessage = () => {
         error,
         status: statusCode,
       } = await useFetch<LocalizedDefaultMessage>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/${id}/${status}`,
+        `${__USSD_API_BASE_URL__}/api/v1/localized-messages/${id}/${status}`,
         {
           method: "PUT",
           // headers: {
@@ -169,7 +169,7 @@ export const useUssdLocalizedDefaultMessage = () => {
     try {
       const { data, pending, error, status } =
         await useFetch<LocalizedDefaultMessage>(
-          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-messages/${defaultMessageId}`,
+          `${__USSD_API_BASE_URL__}/api/v1/localized-messages/${defaultMessageId}`,
           {
             method: "DELETE",
             // headers: {
@@ -190,6 +190,30 @@ export const useUssdLocalizedDefaultMessage = () => {
     }
   };
 
+  const cacheLocalizedDefaultMessagesToRedis: () => ApiResult<LocalizedDefaultMessage[]> = async () => {
+    try {
+      const { data, pending, error, status } = await useFetch<LocalizedDefaultMessage[]>(
+        `${__USSD_API_BASE_URL__}/api/v1/redis/cache-toRedis-localized-messages`,
+        {
+          method: "GET",
+          // headers: {
+          //   Authorization: `Bearer ${store.accessToken}`,
+          // },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? data.value : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
   return {
     isLoading,
     getUssdLocalizedDefaultMessages,
@@ -199,5 +223,6 @@ export const useUssdLocalizedDefaultMessage = () => {
     deleteUssdLocalizedDefaultMessage,
     updateUssdLocalizedDefaultMessageStatus,
     isSubmitting,
+    cacheLocalizedDefaultMessagesToRedis,
   };
 };

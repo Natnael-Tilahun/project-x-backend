@@ -24,7 +24,7 @@ const fetchMerchantBranchesData = async () => {
       10000
     );
     // Sort integrations by name alphabetically
-    data.value = merchantBranches?.content?.sort(
+    data.value = merchantBranches?.sort(
       (a: MerchantBranch, b: MerchantBranch) => {
         if (a?.branchName && b?.branchName) {
           return a?.branchName

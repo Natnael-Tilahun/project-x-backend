@@ -23,7 +23,7 @@ export const useUssdLocalizedMenus = () => {
       const { data, pending, error, status } = await useFetch<
         LocalizedUssdMenu[]
       >(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/by-language`,
+        `${__USSD_API_BASE_URL__}/api/v1/localized-menu/by-language`,
         {
           method: "GET",
           // headers: {
@@ -50,7 +50,7 @@ export const useUssdLocalizedMenus = () => {
     try {
       const { data, pending, error, status } =
         await useFetch<LocalizedUssdMenu>(
-          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/${id}`,
+          `${__USSD_API_BASE_URL__}/api/v1/localized-menu/${id}`,
           {
             method: "GET",
             // headers: {
@@ -77,7 +77,7 @@ export const useUssdLocalizedMenus = () => {
     try {
       const { data, pending, error, status } =
         await useFetch<LocalizedUssdMenu>(
-          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu`,
+          `${__USSD_API_BASE_URL__}/api/v1/localized-menu`,
           {
             method: "POST",
             // headers: {
@@ -109,7 +109,7 @@ export const useUssdLocalizedMenus = () => {
     try {
       const { data, pending, error, status } =
         await useFetch<LocalizedUssdMenu>(
-          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/edit-localized-menu-byId/${menuId}`,
+          `${__USSD_API_BASE_URL__}/api/v1/localized-menu/edit-localized-menu-byId/${menuId}`,
           {
             method: "PUT",
             // headers: {
@@ -142,7 +142,7 @@ export const useUssdLocalizedMenus = () => {
         error,
         status: statusCode,
       } = await useFetch<LocalizedUssdMenu>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/update-enable-disable?menuId=${id}&status=${status}`,
+        `${__USSD_API_BASE_URL__}/api/v1/localized-menu/update-enable-disable?menuId=${id}&status=${status}`,
         {
           method: "PUT",
           // headers: {
@@ -169,7 +169,7 @@ export const useUssdLocalizedMenus = () => {
     try {
       const { data, pending, error, status } =
         await useFetch<LocalizedUssdMenu>(
-          `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/localized-menu/${menuId}`,
+          `${__USSD_API_BASE_URL__}/api/v1/localized-menu/${menuId}`,
           {
             method: "DELETE",
             // headers: {
@@ -190,6 +190,31 @@ export const useUssdLocalizedMenus = () => {
     }
   };
 
+
+  const cacheLocalizedMenusToRedis: () => ApiResult<LocalizedUssdMenu[]> = async () => {
+    try {
+      const { data, pending, error, status } = await useFetch<LocalizedUssdMenu[]>(
+        `${__USSD_API_BASE_URL__}/api/v1/redis/cache-toRedis-localize-menu`,
+        {
+          method: "GET",
+          // headers: {
+          //   Authorization: `Bearer ${store.accessToken}`,
+          // },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? data.value : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
   return {
     isLoading,
     getUssdLocalizedMenus,
@@ -199,5 +224,6 @@ export const useUssdLocalizedMenus = () => {
     updateUssdLocalizedMenuStatus,
     deleteUssdLocalizedMenu,
     isSubmitting,
+    cacheLocalizedMenusToRedis,
   };
 };

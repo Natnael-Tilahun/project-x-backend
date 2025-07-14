@@ -67,7 +67,7 @@ watch(
     <div
       class="flex flex-col lg:flex-row gap-5 space-y-0justify-start lg:justify-between"
     >
-      <UiTabsList class="md:justify-start w-full bg-slate-200 dark:bg-gray-700">
+      <UiTabsList class="md:justify-start w-full bg-slate-200 dark:bg-gray-800">
         <UiTabsTrigger value="overview"> Overview </UiTabsTrigger>
         <!-- <UiTabsTrigger value="analytics" disabled> Analytics </UiTabsTrigger>
         <UiTabsTrigger value="reports" disabled> Reports </UiTabsTrigger>

@@ -34,11 +34,12 @@ export const useMerchantTransactions = () => {
   };
 
   const getMerchantTransactionById: (
+    merchantId: string,
     id: string
-  ) => ApiResult<MerchantTransaction> = async (id) => {
+  ) => ApiResult<MerchantTransaction> = async (merchantId, id) => {
     try {
       const { data, pending, error, status } = await fetch<MerchantTransaction>(
-        `/api/v1/internal/merchants/transaction/${id}`
+        `/api/v1/internal/merchants/${merchantId}/transaction/${id}`
       );
 
       isLoading.value = pending.value;

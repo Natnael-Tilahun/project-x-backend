@@ -13,11 +13,10 @@ import { newUssdMenuNamesFormSchema } from "~/validations/newUssdMenuNamesFormSc
 import type { UssdMenuList } from "~/types";
 import { PermissionConstants } from "~/constants/permissions";
 
-const { storeUssdMenusToCache, changeUssdMenusToCacheStatus, isLoading } =
+const { storeUssdMenusToCache, changeUssdMenusToCacheStatus, isLoading, cacheThirdPartyMenuListToRedis, removeAllCacheOnMemoryAndOnRedisDb } =
   useUssdMenus();
 const isError = ref(false);
 const data = ref<UssdMenuList>();
-const storeAllUssdMenu = ref(false);
 
 const form = useForm({
   validationSchema: newUssdMenuNamesFormSchema,
@@ -26,7 +25,8 @@ const form = useForm({
 const storeUssdMenu = async () => {
   try {
     isLoading.value = true;
-    data.value = await storeUssdMenusToCache();
+    const response = await storeUssdMenusToCache();
+    console.log(response);
     toast({
       title: "Ussd Menu Stored to Cache",
       description: "Ussd Menu stored to cache successfully",
@@ -91,6 +91,48 @@ const stopRedisCache = async () => {
     isLoading.value = false;
   }
 };
+
+const cacheThirdPartyMenuListToRedisHandler = async () => {
+  try {
+    isLoading.value = true;
+    const response = await cacheThirdPartyMenuListToRedis();
+    toast({
+      title: "Third Party Menu List Stored to Cache",
+      description: "Third Party Menu List stored to cache successfully",
+    });
+  } catch (err) {
+    console.error("Error fetching third party menu list:", err);
+    toast({
+      title: "Error Storing Third Party Menu List to Cache",
+      description: "Error storing third party menu list to cache",
+      variant: "destructive",
+    });
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const removeAllCacheOnMemoryAndOnRedisDbHandler = async () => {
+  try {
+    isLoading.value = true;
+    const response = await removeAllCacheOnMemoryAndOnRedisDb();
+    toast({
+      title: "All Cache Removed",
+      description: "All cache removed successfully",
+    });
+  } catch (err) {
+    console.error("Error removing all cache:", err);
+    toast({
+      title: "Error Removing All Cache",
+      description: "Error removing all cache",
+      variant: "destructive",
+    });
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
 </script>
 
 <template>
@@ -103,76 +145,61 @@ const stopRedisCache = async () => {
     </div>
 
     <UiCard class="w-full flex border-[1px] rounded-lg h-full p-6 pb-20">
-      <form class="grid grid-cols-2 gap-6 w-full">
-        <FormField v-slot="{ value, handleChange }" name="storeAllUssdMenu">
-          <FormItem
-            class="flex flex-row items-end justify-between rounded-lg border pb-2 px-4 w-full gap-10 self-end"
-          >
-            <FormLabel class="text-base">
-              Store All Ussd Menu to Cache
-            </FormLabel>
-            <FormControl>
-              <UiSwitch
-                :disabled="
-                  !useHasPermissions(PermissionConstants.UPDATE_USSD_MENU_CACHE_MANAGEMENT)
-                "
-                :checked="storeAllUssdMenu"
-                @update:checked="
-                  (checked) => {
-                    storeAllUssdMenu = checked;
-                    storeUssdMenu();
-                  }
-                "
-              />
-            </FormControl>
-          </FormItem>
-        </FormField>
+      <form class="grid md:grid-cols-2 gap-6 w-full">
+        <div class="flex flex-row justify-between border p-2 rounded-lg items-center gap-2 border-green-500">
+          <UiLabel class="text-base">
+            Store All Ussd Menu to Cache
+          </UiLabel>
+          <UiButton class="w-fit self-end px-5 bg-green-500" size="sm" :disabled="!useHasPermissions(PermissionConstants.UPDATE_USSD_MENU_CACHE_MANAGEMENT) || isLoading
+            " @click="storeUssdMenu()">
+            <Icon name="svg-spinners:8-dots-rotate" v-if="isLoading" class="mr-2 h-4 w-4 animate-spin"></Icon>
+            Store All Ussd Menu to Cache
+          </UiButton>
+        </div>
 
-        <FormField v-slot="{ value, handleChange }" name="startRedisCache">
-          <FormItem
-            class="flex flex-row items-end justify-between rounded-lg border border-green-500 pb-2 px-4 w-full gap-10 self-end"
-          >
-            <FormLabel class="text-base"> Start Redis Scheduler </FormLabel>
-            <FormControl>
-              <UiSwitch
-                :disabled="
-                  !useHasPermissions(PermissionConstants.UPDATE_USSD_MENU_CACHE_MANAGEMENT)
-                "
-                class="data-[state=checked]:bg-green-500"
-                :checked="value"
-                @update:checked="
-                  (checked) => {
-                    handleChange;
-                    startRedisCache();
-                  }
-                "
-              />
-            </FormControl>
-          </FormItem>
-        </FormField>
+        <div class="flex flex-row justify-between border p-2 rounded-lg items-center gap-2 border-green-500">
+          <UiLabel class="text-base">
+            Start Redis Scheduler
+          </UiLabel>
+          <UiButton class="w-fit self-end px-5 bg-green-500" size="sm" :disabled="!useHasPermissions(PermissionConstants.UPDATE_USSD_MENU_CACHE_MANAGEMENT) || isLoading
+            " @click="startRedisCache()">
+            <Icon name="svg-spinners:8-dots-rotate" v-if="isLoading" class="mr-2 h-4 w-4 animate-spin"></Icon>
+            Start Redis Scheduler
+          </UiButton>
+        </div>
 
-        <FormField v-slot="{ value, handleChange }" name="stopRedisCache">
-          <FormItem
-            class="flex flex-row items-end justify-between rounded-lg border border-red-500 pb-2 px-4 w-full gap-10 self-end"
-          >
-            <FormLabel class="text-base"> Stop Redis Scheduler </FormLabel>
-            <FormControl>
-              <UiSwitch
-                :disabled="
-                  !useHasPermissions(PermissionConstants.UPDATE_USSD_MENU_CACHE_MANAGEMENT)
-                "
-                class="data-[state=checked]:bg-red-500"
-                :checked="value"
-                @update:checked="
-                  (checked) => {
-                    handleChange;
-                    stopRedisCache();
-                  }
-                "
-              />
-            </FormControl>
-          </FormItem>
-        </FormField>
+        <div class="flex flex-row justify-between border p-2 rounded-lg items-center gap-2 border-red-500">
+          <UiLabel class="text-base">
+            Stop Redis Scheduler
+          </UiLabel>
+          <UiButton class="w-fit self-end px-5 bg-red-500" size="sm" :disabled="!useHasPermissions(PermissionConstants.UPDATE_USSD_MENU_CACHE_MANAGEMENT) || isLoading
+            " @click="stopRedisCache()">
+            <Icon name="svg-spinners:8-dots-rotate" v-if="isLoading" class="mr-2 h-4 w-4 animate-spin"></Icon>
+            Stop Redis Scheduler
+          </UiButton>
+        </div>
+
+        <div class="flex flex-row justify-between border p-2 rounded-lg items-center gap-2 border-green-500">
+          <UiLabel class="text-base">
+            Cache Third Party Menu List to Redis
+          </UiLabel>
+          <UiButton class="w-fit self-end px-5 bg-green-500" size="sm" :disabled="!useHasPermissions(PermissionConstants.UPDATE_USSD_MENU_CACHE_MANAGEMENT) || isLoading
+            " @click="cacheThirdPartyMenuListToRedisHandler()">
+            <Icon name="svg-spinners:8-dots-rotate" v-if="isLoading" class="mr-2 h-4 w-4 animate-spin"></Icon>
+            Cache Third Party Menu List to Redis
+          </UiButton>
+        </div>
+
+        <div class="flex flex-row justify-between border p-2 rounded-lg items-center gap-2 border-red-500">
+          <UiLabel class="text-base">
+            Remove All Cache on Memory and on Redis Db
+          </UiLabel>
+          <UiButton class="w-fit self-end px-5 bg-red-500" size="sm" :disabled="!useHasPermissions(PermissionConstants.UPDATE_USSD_MENU_CACHE_MANAGEMENT) || isLoading
+            " @click="removeAllCacheOnMemoryAndOnRedisDbHandler()">
+            <Icon name="svg-spinners:8-dots-rotate" v-if="isLoading" class="mr-2 h-4 w-4 animate-spin"></Icon>
+            Remove All Cache on Memory and on Redis Db
+          </UiButton>
+        </div>
       </form>
     </UiCard>
   </div>

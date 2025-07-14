@@ -323,7 +323,7 @@ const isAllSelected = computed(() => {
                 "
                 class="h-5 w-5"
                 :disabled="
-                  !store.permissions.includes('CREATE_CONTRACT_ACCOUNTS')
+                  !store.permissions.includes('CREATE_CONTRACT_ACCOUNT')
                 "
               />
               {{ !isAllSelected ? "Select All" : "Deselect All" }}
@@ -359,9 +359,9 @@ const isAllSelected = computed(() => {
                 class="h-5 w-5"
                 :disabled="
                   (isAccountSelected(account) &&
-                    !store.permissions.includes('DELETE_CONTRACT_ACCOUNTS')) ||
+                    !store.permissions.includes('DELETE_CONTRACT_ACCOUNT')) ||
                   (!isAccountSelected(account) &&
-                    !store.permissions.includes('CREATE_CONTRACT_ACCOUNTS'))
+                    !store.permissions.includes('CREATE_CONTRACT_ACCOUNT'))
                 "
               />
               <div class="flex-1 grid grid-cols-4 gap-4 py-2">
@@ -479,9 +479,9 @@ const isAllSelected = computed(() => {
                 class="h-5 w-5"
                 :disabled="
                   (isAccountSelected(account) &&
-                    !store.permissions.includes('DELETE_CONTRACT_ACCOUNTS')) ||
+                    !store.permissions.includes('DELETE_CONTRACT_ACCOUNT')) ||
                   (!isAccountSelected(account) &&
-                    !store.permissions.includes('CREATE_CONTRACT_ACCOUNTS'))
+                    !store.permissions.includes('CREATE_CONTRACT_ACCOUNT'))
                 "
               />
               <!-- <UiAccordionTrigger class="ml-auto hover:no-underline"> -->

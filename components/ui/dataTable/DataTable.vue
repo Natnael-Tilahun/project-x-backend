@@ -69,9 +69,9 @@ console.log(
   <div class="space-y-4">
     <slot name="toolbar" :table="table" />
     <!-- <DataTableToolbar :table="table" /> -->
-    <div class="border rounded-md">
+    <div class="border rounded-md dark:border-gray-600">
       <UiTable>
-        <UiTableHeader class="bg-secondary">
+        <UiTableHeader class="bg-secondary dark:bg-gray-900 dark:text-gray-100">
           <UiTableRow
             v-for="headerGroup in table.getHeaderGroups()"
             :key="headerGroup.id"
@@ -85,7 +85,7 @@ console.log(
             </UiTableHead>
           </UiTableRow>
         </UiTableHeader>
-        <UiTableBody class="text-secondary-foreground bg-background">
+        <UiTableBody class="text-secondary-foreground bg-background dark:bg-gray-800 dark:text-gray-100">
           <template v-if="table.getRowModel().rows?.length">
             <UiTableRow
               v-for="row in table.getRowModel().rows"

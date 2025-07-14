@@ -17,7 +17,7 @@ export const useUssdMenus = () => {
   ) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdMenuList[]>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-lists/menu-names`,
+        `${__USSD_API_BASE_URL__}/api/v1/menu-lists/menu-names`,
         {
           method: "GET",
           // headers: {
@@ -44,7 +44,7 @@ export const useUssdMenus = () => {
   ) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdMenuList[]>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-lists/menu-names-with-child`,
+        `${__USSD_API_BASE_URL__}/api/v1/menu-lists/menu-names-with-child`,
         {
           method: "GET",
           // headers: {
@@ -68,7 +68,7 @@ export const useUssdMenus = () => {
   const getUssdMenuById: (id: string) => ApiResult<UssdMenuList> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdMenuList>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-lists/menu-names-by-id/${id}`,
+        `${__USSD_API_BASE_URL__}/api/v1/menu-lists/menu-names-by-id/${id}`,
         {
           method: "GET",
           // headers: {
@@ -92,7 +92,7 @@ export const useUssdMenus = () => {
   const createNewUssdMenu: (ussdMenuData: any) => ApiResult<UssdMenuList> = async (ussdMenuData) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdMenuList>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-lists/menu-names`,
+        `${__USSD_API_BASE_URL__}/api/v1/menu-lists/menu-names`,
         {
           method: "POST",
           // headers: {
@@ -119,7 +119,7 @@ export const useUssdMenus = () => {
   ) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdMenuList>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-lists/update-menu`,
+        `${__USSD_API_BASE_URL__}/api/v1/menu-lists/update-menu`,
         {
           method: "PUT",
           // headers: {
@@ -147,7 +147,7 @@ export const useUssdMenus = () => {
   ) => {
     try {
       const { data, pending, error, status: statusCode } = await useFetch<UssdMenuList>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-lists/${id}/${status}`,
+        `${__USSD_API_BASE_URL__}/api/v1/menu-lists/${id}/${status}`,
         {
           method: "PUT",
           // headers: {
@@ -171,7 +171,7 @@ export const useUssdMenus = () => {
   const deleteUssdMenu: (ussdMenuId: string) => ApiResult<UssdMenuList> = async (ussdMenuId) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdMenuList>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-lists/menu-names/${ussdMenuId}`,
+        `${__USSD_API_BASE_URL__}/api/v1/menu-lists/menu-names/${ussdMenuId}`,
         {
           method: "DELETE",
           // headers: {
@@ -195,7 +195,7 @@ export const useUssdMenus = () => {
   const storeUssdMenusToCache: () => ApiResult<UssdMenuList[]> = async () => {
     try {
       const { data, pending, error, status } = await useFetch<UssdMenuList[]>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/menu-catch/store-all-to-catch`,
+        `${__USSD_API_BASE_URL__}/api/v1/menu-catch/store-all-to-catch`,
         {
           method: "GET",
           // headers: {
@@ -219,7 +219,7 @@ export const useUssdMenus = () => {
   const changeUssdMenusToCacheStatus: (status: any) => ApiResult<UssdMenuList[]> = async (status) => {
     try {
       const { data, pending, error, status: statusCode } = await useFetch<UssdMenuList[]>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/command`,
+        `${__USSD_API_BASE_URL__}/api/v1/command`,
         {
           method: "POST",
           // headers: {
@@ -241,6 +241,78 @@ export const useUssdMenus = () => {
     }
   };
 
+  const cacheUssdMenusToRedis: () => ApiResult<UssdMenuList[]> = async () => {
+    try {
+      const { data, pending, error, status } = await useFetch<UssdMenuList[]>(
+        `${__USSD_API_BASE_URL__}/api/v1/redis/cache-toRedis-default-menu`,
+        {
+          method: "GET",
+          // headers: {
+          //   Authorization: `Bearer ${store.accessToken}`,
+          // },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? data.value : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  const cacheThirdPartyMenuListToRedis: () => ApiResult<UssdMenuList[]> = async () => {
+    try {
+      const { data, pending, error, status } = await useFetch<UssdMenuList[]>(
+        `${__USSD_API_BASE_URL__}/api/v1/redis/cache-third-party-menu-list-to-redis`,
+        {
+          method: "GET",
+          // headers: {
+          //   Authorization: `Bearer ${store.accessToken}`,
+          // },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? data.value : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  const removeAllCacheOnMemoryAndOnRedisDb: () => ApiResult<any> = async () => {
+    try {
+      const { data, pending, error, status } = await useFetch<any>(
+        `${__USSD_API_BASE_URL__}/api/v1/redis/remove-all-cache-onmemory-and-onredisdb`,
+        {
+          method: "GET",
+          // headers: {
+          //   Authorization: `Bearer ${store.accessToken}`,
+          // },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? data.value : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
   return {
     isLoading,
     getUssdMenus,
@@ -253,5 +325,8 @@ export const useUssdMenus = () => {
     isSubmitting,
     storeUssdMenusToCache,
     changeUssdMenusToCacheStatus,
+    cacheUssdMenusToRedis,
+    cacheThirdPartyMenuListToRedis,
+    removeAllCacheOnMemoryAndOnRedisDb,
   };
 };

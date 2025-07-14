@@ -1,4 +1,4 @@
-import type { DefaultMessage, Menu } from "~/types";
+import type { DefaultMessage, LocalizedDefaultMessage, Menu } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
@@ -13,7 +13,7 @@ export const useUssdDefaultMessage = () => {
   ) => {
     try {
       const { data, pending, error, status } = await useFetch<DefaultMessage[]>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/default-messages?page=${page}&size=${size}`,
+        `${__USSD_API_BASE_URL__}/api/v1/default-messages?page=${page}&size=${size}`,
         {
           method: "GET",
           // headers: {
@@ -37,7 +37,7 @@ export const useUssdDefaultMessage = () => {
   const getUssdDefaultMessageById: (id: string) => ApiResult<DefaultMessage> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<DefaultMessage>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/default-messages/${id}`,
+        `${__USSD_API_BASE_URL__}/api/v1/default-messages/${id}`,
         {
           method: "GET",
           // headers: {
@@ -61,7 +61,7 @@ export const useUssdDefaultMessage = () => {
   const createNewUssdDefaultMessage: (defaultMessageData: any) => ApiResult<DefaultMessage> = async (defaultMessageData) => {
     try {
       const { data, pending, error, status } = await useFetch<DefaultMessage>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/default-messages`,
+        `${__USSD_API_BASE_URL__}/api/v1/default-messages`,
         {
           method: "POST",
           // headers: {
@@ -89,7 +89,7 @@ export const useUssdDefaultMessage = () => {
   ) => {
     try {
       const { data, pending, error, status } = await useFetch<DefaultMessage>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/default-messages/update-default-message/${defaultMessageId}`,
+        `${__USSD_API_BASE_URL__}/api/v1/default-messages/update-default-message/${defaultMessageId}`,
         {
           method: "PUT",
           // headers: {
@@ -114,7 +114,7 @@ export const useUssdDefaultMessage = () => {
   const deleteUssdDefaultMessage: (defaultMessageId: string) => ApiResult<DefaultMessage> = async (defaultMessageId) => {
     try {
       const { data, pending, error, status } = await useFetch<DefaultMessage>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/default-messages/${defaultMessageId}`,
+        `${__USSD_API_BASE_URL__}/api/v1/default-messages/${defaultMessageId}`,
         {
           method: "DELETE",
           // headers: {
@@ -135,6 +135,30 @@ export const useUssdDefaultMessage = () => {
     }
   };
 
+  const cacheDefaultMessagesToRedis: () => ApiResult<DefaultMessage[]> = async () => {
+    try {
+      const { data, pending, error, status } = await useFetch<DefaultMessage[]>(
+        `${__USSD_API_BASE_URL__}/api/v1/redis/cache-toRedis-default-messages`,
+        {
+          method: "GET",
+          // headers: {
+          //   Authorization: `Bearer ${store.accessToken}`,
+          // },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? data.value : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
   return {
     isLoading,
     getUssdDefaultMessages,
@@ -143,5 +167,6 @@ export const useUssdDefaultMessage = () => {
     updateUssdDefaultMessage,
     deleteUssdDefaultMessage,
     isSubmitting,
+    cacheDefaultMessagesToRedis,
   };
 };
