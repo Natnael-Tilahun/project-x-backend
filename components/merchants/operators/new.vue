@@ -10,7 +10,6 @@ import {
 import { newMerchantOperatorFormSchem } from "~/validations/newMerchantOperatorFormSchem";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
-import { AppVersionStatus } from "@/global-types";
 import { getIdFromPath, splitPath } from "~/lib/utils";
 import { PermissionConstants } from "~/constants/permissions";
 import type {
@@ -27,16 +26,11 @@ const loading = ref(false);
 const data = ref<MerchantOperators>();
 const branchesData = ref<MerchantBranch[]>([]);
 const merchantRolesData = ref<MerchantOperatorRole[]>([]);
-
-const operatorId = ref<string>("");
 const merchantId = ref<string>("");
-const route = useRoute();
-const fullPath = ref(route.path);
-const pathSegments = ref([]);
+  const isSubmitting = ref(false);
 
 merchantId.value = getIdFromPath();
 
-const isSubmitting = ref(false);
 
 const form = useForm({
   validationSchema: newMerchantOperatorFormSchem,
@@ -52,8 +46,7 @@ const fetchOperatorRolesData = async () => {
     isError.value = false;
     loading.value = true;
     const response = await getMerchantOperatorRoles();
-    merchantRolesData.value = response.content;
-    console.log(merchantRolesData.value);
+    merchantRolesData.value = response;
   } catch (err) {
     console.error("Error fetching operator", err);
     isError.value = true;
@@ -67,7 +60,7 @@ const fetchMerchantsData = async () => {
     isError.value = false;
     loading.value = true;
     const response = await getMerchantBranches(merchantId.value, 0, 1000);
-    branchesData.value = response.content;
+    branchesData.value = response;
   } catch (err) {
     console.error("Error fetching branches", err);
     isError.value = true;

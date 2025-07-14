@@ -6,7 +6,6 @@ import { getIdFromPath } from "~/lib/utils";
 import { columns as tableColumns } from "~/components/merchants/operators/columns"; // Renamed to avoid conflict
 import { PermissionConstants } from "~/constants/permissions";
 
-const {getStaffAssignmentByStaffId } = useStaffAssignments();
 const {getMerchantOperators} = useMerchantOperators()
 const route = useRoute();
 const fullPath = ref(route.path);
@@ -21,7 +20,7 @@ const fetchMerchantOperatorsData = async () => {
     isLoading.value = true;
     const merchantOperators = await getMerchantOperators(merchantId.value, 0,10000);
     // Sort integrations by name alphabetically
-    data.value = merchantOperators?.content?.sort((a:MerchantOperators, b:MerchantOperators) => {
+    data.value = merchantOperators?.sort((a:MerchantOperators, b:MerchantOperators) => {
       if (a?.fullName && b?.fullName) {
         return a?.fullName.toLowerCase().localeCompare(b?.fullName.toLowerCase());
       }

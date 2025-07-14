@@ -15,6 +15,7 @@ import type {
   MerchantOperatorRole,
   MerchantOperators,
 } from "~/types";
+import { getIdFromPath } from "~/lib/utils";
 
 const { resetMerchantOperatorPassword, isLoading } = useMerchantOperators();
 
@@ -23,6 +24,8 @@ const loading = ref(false);
 const data = ref<MerchantOperators>();
 const merchantOperatorId = ref("");
 const openEditTeminationModal = ref(false);
+const merchantId = ref<string>("")
+merchantId.value = getIdFromPath()
 
 const setOpenEditTerminationModal = (value: boolean) => {
   openEditTeminationModal.value = value;
@@ -52,6 +55,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       newPassword: values.newPassword,
     };
     data.value = await resetMerchantOperatorPassword(
+      merchantId.value,
       merchantOperatorId.value,
       updatedData
     );

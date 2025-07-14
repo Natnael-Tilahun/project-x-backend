@@ -21,7 +21,6 @@ const {
   getMerchantById,
   getMerchantAccountsId,
   updateMerchant,
-  updateMerchantAccounts,
   isLoading,
   isSubmitting,
 } = useMerchants();
@@ -61,14 +60,11 @@ const fetchMerchantData = async () => {
     data.value = await getMerchantById(merchantId.value);
     coreCustomerId.value = data.value?.coreCustomerId || ""
     const response = await getMerchantAccountsId(merchantId.value) || []
-    selectedAccounts.value = response && response?.map((account) => account.accountNumber) || []
+    selectedAccounts.value =  response && response?.map((account) => account.accountNumber) || []
     let a = {
       ...data.value,
     };
     form.setValues(a);
-    if (data.value?.coreCustomerId) {
-      await fetchMerchantAccountsData(coreCustomerId.value);
-    }
   } catch (err) {
     console.error("Error fetching merchant:", err);
     isError.value = true;
@@ -84,25 +80,7 @@ const fetchSelectedMerchantAccountsData = async () => {
     loading.value = true;
     isError.value = false;
     const response = await getMerchantAccountsId(merchantId.value) || []
-    console.log("response", response);
     selectedAccounts.value = response && response?.map((account) => account.accountNumber) || []
-  } catch (err) {
-    console.error("Error fetching merchant accounts:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-    loading.value = false;
-  }
-};
-
-const fetchMerchantAccountsData = async (coreCustomerId: string) => {
-  try {
-    isLoading.value = true;
-    loading.value = true;
-    isError.value = false;
-    if (coreCustomerId) {
-      accountsData.value = (await getCoreAccountsByCustomerId(coreCustomerId)) || []
-    }
   } catch (err) {
     console.error("Error fetching merchant accounts:", err);
     isError.value = true;
@@ -115,6 +93,7 @@ const fetchMerchantAccountsData = async (coreCustomerId: string) => {
 onMounted(async () => {
   // await fetchSelectedMerchantAccountsData();
   await fetchMerchantData();
+  // await fetchSelectedMerchantAccountsData()
 });
 
 const refetch = async () => {
@@ -142,36 +121,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   }
 });
 
-
-
-function handleAccountToggle(accountId: string) {
-  const idx = selectedAccounts.value.indexOf(accountId);
-  if (idx === -1) {
-    selectedAccounts.value.push(accountId);
-  } else {
-    selectedAccounts.value.splice(idx, 1);
-  }
-}
-
-const updateSelectedAccounts = async () => {
-  try {    
-  isUpdatingAccounts.value = true;
-  const data = {
-    accountNumbers: selectedAccounts.value
-  }
-  await updateMerchantAccounts(merchantId.value, data)
-  toast({
-    title: "Accounts Updated",
-    description: `Updated accounts: ${data.accountNumbers.join(", ")}`,
-  });
-  isUpdatingAccounts.value = false;
-  } catch (error) {
-    console.error("Error updating accounts:", error);
-    // isError.value = true;
-  } finally {
-    isUpdatingAccounts.value = false;
-  }
-}
 
 watch(
   () => route.query.activeTab,
@@ -384,7 +333,7 @@ watch(
           <UiCard class="w-full p-6">
             <form @submit="onSubmit">
               <div class="grid grid-cols-2 gap-6">
-                <FormField
+                <!-- <FormField
                   v-slot="{ componentField }"
                   name="defaultPaymentReceivingAccountNumber"
                 >
@@ -399,6 +348,42 @@ watch(
                         v-bind="componentField"
                       />
                     </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField> -->
+                <FormField
+                  v-slot="{ componentField }"
+                  name="defaultPaymentReceivingAccountNumber"
+                >
+                  <FormItem>
+                    <FormLabel>
+                      Default Payment Receiving Account Number
+                      <span class="text-red-500">*</span></FormLabel
+                    >
+                    <UiSelect v-bind="componentField">
+                      <FormControl>
+                        <UiSelectTrigger>
+                          <UiSelectValue
+                            placeholder="Select a default payment receiving account number"
+                          />
+                        </UiSelectTrigger>
+                      </FormControl>
+                      <UiSelectContent>
+                        <UiSelectGroup v-if="selectedAccounts.length > 0">
+                          <UiSelectItem
+                            v-for="item in selectedAccounts"
+                            :value="item"
+                          >
+                            {{ item }}
+                          </UiSelectItem>
+                        </UiSelectGroup>
+                        <UiSelectGroup v-else>
+                          <UiSelectItem value="No accounts found">
+                            No accounts found
+                          </UiSelectItem>
+                        </UiSelectGroup>
+                      </UiSelectContent>
+                    </UiSelect>
                     <FormMessage />
                   </FormItem>
                 </FormField>
@@ -697,82 +682,38 @@ watch(
                   </FormItem>
                 </FormField>
 
-                <div class="flex flex-col gap-2">
+
+
+                <div class="flex flex-col gap-2 w-full">
                   <UiLabel>Merchant Accounts</UiLabel>
 
-                  <UiPopover class="flex flex-col">
-                    <UiPopoverTrigger asChild>
-                      <div
-                        variant="outline"
-                        role="combobox"
-                        class="w-full text-sm text-left border flex items-center justify-between px-4 py-2 no-wrap whitespace-nowrap overflow-x-scroll rounded-md"
-                        :class="{
-                          'text-muted-foreground':
-                            selectedAccounts.length === 0,
-                        }"
-                      >
-                        <span v-if="selectedAccounts.length">
-                          {{
-                            accountsData
-                              .filter((acc) =>
-                                selectedAccounts?.includes(acc.accountNumber)
-                              )
-                              .map((acc) => acc.accountNumber)
-                              .join(", ")
-                          }}
-                        </span>
-                        <span v-else> Select account(s) </span>
-                        <Icon
-                          name="material-symbols:unfold-more-rounded"
-                          class="ml-2 h-4 w-4 shrink-0 opacity-50"
-                        />
-                      </div>
-                    </UiPopoverTrigger>
-                    <UiPopoverContent class="w-full self-start p-0">
-                      <UiCommand>
-                        <UiCommandInput placeholder="Search accounts..." />
-                        <UiCommandList>
-                          <UiCommandEmpty>No accounts found.</UiCommandEmpty>
-                          <UiCommandGroup>
-                            <UiCommandItem
-                              v-for="account in accountsData"
-                              :key="account.accountNumber"
-                              :value="account.accountNumber"
-                              @select="() => handleAccountToggle(account.accountNumber)"
-                            >
-                            <UiCheckbox
-                                  :checked="
-                                    selectedAccounts?.includes(account.accountNumber)
-                                  "
-                                  class="ml-auto mr-2"
-                                />
-                              <div class="flex items-center w-full">
-                                <span>
-                                  {{ account.accountNumber }} -
-                                  {{ account?.accountTitle1	 }}
-                                </span>
-                              </div>
-                            </UiCommandItem>
-                          </UiCommandGroup>
-                        </UiCommandList>
-                      </UiCommand>
-                      <div class="p-2 border-t flex w-full justify-end">
+                  <UiPermissionGuard
+                  :permission="PermissionConstants.UPDATE_MERCHANT"
+                >
+                  <div class="flex items-center w-full">
+                    <UiSheet class="w-full">
+                      <UiSheetTrigger class="w-full">
                         <UiButton
                           size="sm"
-                          class="w-full"
-                          :disabled="selectedAccounts.length === 0 || isUpdatingAccounts"
-                          @click="updateSelectedAccounts"
+                          type="button"
+                          class="font-medium cursor-pointer px-2  py-1 bg-[#8C2A7C]/15 text-primary hover:bg-[#8C2A7C]/20 w-full"
                         >
-                        <Icon
-                        name="svg-spinners:8-dots-rotate"
-                        v-if="isUpdatingAccounts"
-                        class="mr-2 h-4 w-4 animate-spin"
-                      ></Icon>
-                          Update Accounts
+                          <Icon name="lucide:shield" class="h-4 w-4 mr-2" />
+                          Accounts
                         </UiButton>
-                      </div>
-                    </UiPopoverContent>
-                  </UiPopover>
+                      </UiSheetTrigger>
+                      <UiSheetContent
+                        class="md:min-w-[75%] sm:min-w-full flex flex-col h-full overflow-y-auto"
+                      >
+                        <MerchantsAccounts
+                          :selectedAccounts="selectedAccounts"
+                          :coreCustomerIdProps="coreCustomerId"
+                          @refetch="refetch"
+                        />
+                      </UiSheetContent>
+                    </UiSheet>
+                  </div>
+                </UiPermissionGuard>
                 </div>
 
                 <UiPermissionGuard

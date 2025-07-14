@@ -74,7 +74,7 @@ const closeMenuNav = () => {
 <template>
   <div
     :class="{ dark: isDarkMode }"
-    class="w-full min-h-screen bg-background grid grid-cols-12 lg:grid-cols-9 xl:grid-cols-7"
+    class="w-full min-h-screen bg-background dark:bg-gray-900 dark:text-gray-100 grid grid-cols-12 lg:grid-cols-9 xl:grid-cols-7"
   >
     <!-- ' hidden  border-4 border-white   md:backdrop md:w-[250px]' -->
     <!-- 'text-green-300 w-2/3  border-4 border-white z-50 absolute top-0 md:block  md:backdrop md:w-[250px] ' -->
@@ -95,10 +95,10 @@ const closeMenuNav = () => {
     />
 
     <div
-      class="col-span-full md:col-span-9 bg-secondary shadow-none lg:col-span-7 xl:col-span-6 md:flex"
+      class="col-span-full md:col-span-9 bg-secondary shadow-none dark:bg-gray-900 lg:col-span-7 xl:col-span-6 md:flex"
       :class="[
         {
-          'w-full   h-full top-0 left-0   flex-col md:flex':
+          'w-full   h-full top-0 left-0 flex-col md:flex':
             !isSidebarCollapsed,
         },
         {
@@ -109,7 +109,7 @@ const closeMenuNav = () => {
       <!-- Page Header -->
       <div class="border-b shadow-none bg-popover text-popover-foreground">
         <div
-          class="flex h-16 items-center px-3 md:px-8 bg-primary text-primary-foreground shadow-xl"
+          class="flex h-16 items-center px-3 md:px-8 bg-primary dark:bg-gray-800 text-primary-foreground shadow-xl"
         >
           <!-- <DashboardMainNav class="mx-6" /> -->
           <div class="flex items-center gap-3 md:gap-2">
@@ -194,7 +194,7 @@ const closeMenuNav = () => {
 
       <!-- Page Main Content -->
       <div
-        class="space-y-10 md:space-y-0 p-5 shadow-none bg-secondary md:p-8 pt-6"
+        class="space-y-10 md:space-y-0 p-5 shadow-none bg-secondary dark:bg-gray-900 dark:text-gray-100 md:p-8 pt-6"
       >
         <slot />
       </div>

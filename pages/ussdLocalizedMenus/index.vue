@@ -4,8 +4,9 @@ import { columns as tableColumns } from "~/components/ussdLocalizedMenus/columns
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { LocalizedUssdMenu } from "~/types";
 import { PermissionConstants } from "~/constants/permissions";
+import { toast } from "~/components/ui/toast";
 
-const { getUssdLocalizedMenus } = useUssdLocalizedMenus();
+const { getUssdLocalizedMenus, cacheLocalizedMenusToRedis } = useUssdLocalizedMenus();
 const keyword = ref<string>("");
 const data = ref<LocalizedUssdMenu[]>([]);
 const isLoading = ref(false);
@@ -24,6 +25,29 @@ const getUssdLocalizedMenusData = async () => {
     data.value = [...sortedData];
   } catch (error) {
     console.error("Error fetching ussd localized menus:", error);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const cacheLocalizedMenusToRedisData = async () => {
+  try {
+    isLoading.value = true;
+    isError.value = false;
+    const ussdLocalizedMenus = await cacheLocalizedMenusToRedis();
+    await getUssdLocalizedMenusData();
+    toast({
+      title: "Localized Menus cached to redis successfully",
+      description: "Localized Menus cached to redis successfully",
+    });
+  } catch (error) {
+    console.error("Error caching localized menus to redis:", error);
+    toast({
+      title: "Failed to cache localized menus to redis",
+      description: "Failed to cache localized menus to redis",
+      variant: "destructive",
+    });
     isError.value = true;
   } finally {
     isLoading.value = false;
@@ -55,6 +79,7 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError && !isLoading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
+  <div class="flex flex-col justify-end md:flex-row gap-4">
     <UiPermissionGuard :permission="PermissionConstants.CREATE_USSD_LOCALIZED_MENU">
       <NuxtLink to="/ussdLocalizedMenus/new" class="w-fit self-end">
         <UiButton class="w-fit self-end px-5"
@@ -63,6 +88,18 @@ const columns = computed(() => tableColumns(refetch));
         >
       </NuxtLink>
     </UiPermissionGuard>
+    <UiPermissionGuard :permission="PermissionConstants.CREATE_USSD_LOCALIZED_MENU">
+        <UiButton class="w-fit self-end px-5" :disabled="isLoading" @click="cacheLocalizedMenusToRedisData"
+          ><Icon v-if="!isLoading" name="material-symbols:refresh" size="24" class="mr-2"></Icon>
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="isLoading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Cache Localized Menus to Redis</UiButton
+        >
+    </UiPermissionGuard>
+  </div>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <div class="flex items-center gap-4">
