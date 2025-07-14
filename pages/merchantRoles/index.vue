@@ -15,7 +15,8 @@ const fetchMerchantRoleData = async () => {
   try {
     isLoading.value = true;
      const response = await getMerchantOperatorRoles(); // Call your API function to fetch roles
-     data.value = response.content
+     console.log(response);
+     data.value = response
   } catch (err) {
     console.error("Error fetching merchant roles:", err);
     isError.value = true;

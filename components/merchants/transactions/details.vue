@@ -1,43 +1,29 @@
 <script lang="ts" setup>
-import { useForm } from "vee-validate";
-import {
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { newMerchantBranchFormSchem } from "~/validations/newMerchantBranchFormSchem";
 import { ref } from "vue";
 import { getIdFromPath } from "~/lib/utils";
 import { PermissionConstants } from "~/constants/permissions";
-import type { MerchantBranch, MerchantTransaction } from "~/types";
+import type {  MerchantTransaction } from "~/types";
 const { getMerchantTransactionById } = useMerchantTransactions();
 
 const isError = ref(false);
 const loading = ref(false);
-const data = ref<MerchantTransaction>();
+const transactionData = ref<MerchantTransaction>();
 const merchantId = ref<string>("");
 const transactionId = ref<string>("");
-const isSubmitting = ref(false);
 const route = useRoute();
 merchantId.value = getIdFromPath();
 transactionId.value = route.query.transactionId;
 
-const form = useForm({
-  validationSchema: newMerchantBranchFormSchem,
-});
+const formatDate = (date: string) => {
+  return new Date(date).toLocaleString();
+};
+
 
 const fetchTransactionData = async () => {
   try {
     isError.value = false;
     loading.value = true;
-    data.value = await getMerchantTransactionById(transactionId.value);
-    if (data.value) {
-      form.setValues({
-        ...data.value,
-      });
-    }
+    transactionData.value = await getMerchantTransactionById(merchantId.value, transactionId.value);
   } catch (err) {
     console.error("Error fetching transaction", err);
     isError.value = true;
@@ -61,10 +47,110 @@ const refetch = async () => {
       <UiLoading />
     </div>
     <UiCard
-      v-else-if="data && !isError"
-      class="w-full flex border-[1px] rounded-lg h-full"
+      v-else-if="transactionData && !isError"
+      class="w-full flex border-[1px] rounded-lg h-full p-6 grid lg:grid-cols-5 gap-8"
     >
-      <div class="text-sm md:text-base p-6 basis-full">
+    <div class="w-full   lg:col-span-2 ">
+        <MerchantsTransactionsTransactionDetail :transactionDetails="transactionData"  />
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 md:col-span-2 lg:col-span-3  gap-6 w-full">
+        <MerchantsTransactionsTransactionDetailItem
+          label="Merchant Transaction Id"
+          :value="transactionData.merchantTransactionId"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Merchant Id"
+          :value="transactionData.merchantId"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Merchant Name"
+          :value="transactionData.merchantName"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Merchant City"
+          :value="transactionData.merchantCity"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Merchant Branch Id"
+          :value="transactionData.merchantBranchId"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Merchant Branch Name"
+          :value="transactionData.merchantBranchName"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Operator Id"
+          :value="transactionData.operatorId"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Operator Name"
+          :value="transactionData.operatorName"
+        />
+
+        <MerchantsTransactionsTransactionDetailItem
+          label="Amount"
+          :value="transactionData.amount + ' ' + transactionData.currencyCode"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Currency Code"
+          :value="transactionData.currencyCode"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="PaymentReference"
+          :value="transactionData.paymentReference"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Tip Amount"
+          :value="transactionData.tipAmount"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Dynamic Id"
+          :value="transactionData.dynamicId"
+        />
+
+        <MerchantsTransactionsTransactionDetailItem
+          label="Transaction Status"
+          :value="transactionData.paymentStatus"
+          :status="true"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Expiration Date"
+          :value="formatDate(transactionData.expirationDate)"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Transaction Initiator"
+          :value="transactionData.transactionInitiator"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="MbTransaction Id"
+          :value="transactionData.mbTransactionId"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Core Transaction Id"
+          :value="transactionData.coreTransactionId"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Merchant Account Number"
+          :value="transactionData.merchantAccountNumber"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Payer AccountNumber"
+          :value="transactionData.payerAccountNumber"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Payer Id"
+          :value="transactionData.payerId"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Payer Name"
+          :value="transactionData.payerName"
+        />
+        <MerchantsTransactionsTransactionDetailItem
+          label="Payer Phone"
+          :value="transactionData.payerPhone"
+        />
+      </div>
+      <!-- <div class="text-sm md:text-base p-6 basis-full ">
         <form>
           <div class="grid grid-cols-2 gap-6">
             <FormField v-slot="{ componentField }" name="branchName">
@@ -201,10 +287,10 @@ const refetch = async () => {
             </UiPermissionGuard>
           </div>
         </form>
-      </div>
+      </div> -->
     </UiCard>
-    <div v-else-if="data == null || data == undefined">
-      <UiNoResultFound title="Sorry, No application found." />
+    <div v-else-if="transactionData == null || transactionData == undefined">
+      <UiNoResultFound title="Sorry, No transaction found." />
     </div>
     <div v-else-if="isError">
       <ErrorMessage :retry="refetch" title="Something went wrong." />

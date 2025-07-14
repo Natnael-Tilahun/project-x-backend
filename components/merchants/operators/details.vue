@@ -10,7 +10,6 @@ import {
 import { merchantOperatorFormSchem } from "~/validations/merchantOperatorFormSchem";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
-import {  AppVersionStatus } from "@/global-types";
 import { getIdFromPath, splitPath } from "~/lib/utils";
 import { PermissionConstants } from "~/constants/permissions";
 import type {  MerchantBranch, MerchantOperatorRole, MerchantOperators } from "~/types";
@@ -50,6 +49,7 @@ const fetchOperatorData = async () => {
     isError.value = false
     loading.value = true;
     data.value = await getMerchantOperatorById(
+      merchantId.value,
       operatorId.value
     );
 
@@ -71,7 +71,7 @@ const fetchOperatorRolesData = async () => {
     isError.value = false
     loading.value = true;
    const response = await getMerchantOperatorRoles();
-    merchantRolesData.value = response.content
+    merchantRolesData.value = response
     console.log(merchantRolesData.value)
   } catch (err) {
     console.error("Error fetching operator", err);
@@ -89,7 +89,7 @@ const fetchMerchantsData = async () => {
     const response = await getMerchantBranches(
       merchantId.value,0,1000
     )
-    branchesData.value = response.content
+    branchesData.value = response
   } catch (err) {
     console.error("Error fetching branches", err);
     isError.value = true;
@@ -119,6 +119,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       ...values,
     };
     data.value = await updateMerchantOperator(
+      merchantId.value,
       operatorId.value,
       updatedData
     );

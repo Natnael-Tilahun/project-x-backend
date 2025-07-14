@@ -1,6 +1,6 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
-import type { UssdLanguage } from "~/types";
+import type { DefaultMessage, UssdLanguage } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
@@ -17,7 +17,7 @@ export const useUssdLanguages = () => {
   ) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdLanguage[]>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/language`,
+        `${__USSD_API_BASE_URL__}/api/v1/language`,
         {
           method: "GET",
           // headers: {
@@ -41,7 +41,7 @@ export const useUssdLanguages = () => {
   const getUssdLanguageById: (id: string) => ApiResult<UssdLanguage> = async (id) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdLanguage>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/language/${id}`,
+        `${__USSD_API_BASE_URL__}/api/v1/language/${id}`,
         {
           method: "GET",
           // headers: {
@@ -65,7 +65,7 @@ export const useUssdLanguages = () => {
   const createNewUssdLanguage: (ussdLanguageData: any) => ApiResult<UssdLanguage> = async (ussdLanguageData) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdLanguage>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/language`,
+        `${__USSD_API_BASE_URL__}/api/v1/language`,
         {
           method: "POST",
           // headers: {
@@ -93,7 +93,7 @@ export const useUssdLanguages = () => {
   ) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdLanguage>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/language/${ussdLanguageId}/${ussdLanguageStatus}`,
+        `${__USSD_API_BASE_URL__}/api/v1/language/${ussdLanguageId}/${ussdLanguageStatus}`,
         {
           method: "PUT",
           // headers: {
@@ -118,7 +118,7 @@ export const useUssdLanguages = () => {
   const deleteUssdLanguage: (ussdLanguageId: string) => ApiResult<UssdLanguage> = async (ussdLanguageId) => {
     try {
       const { data, pending, error, status } = await useFetch<UssdLanguage>(
-        `${runtimeConfig.public.USSD_API_BASE_URL}/api/v1/language/${ussdLanguageId}`,
+        `${__USSD_API_BASE_URL__}/api/v1/language/${ussdLanguageId}`,
         {
           method: "DELETE",
           // headers: {
@@ -139,6 +139,30 @@ export const useUssdLanguages = () => {
     }
   };
 
+  const cacheLanguagesToRedis: () => ApiResult<UssdLanguage[]> = async () => {
+    try {
+      const { data, pending, error, status } = await useFetch<UssdLanguage[]>(
+        `${__USSD_API_BASE_URL__}/api/v1/redis/cache-toRedis-languages`,
+        {
+          method: "GET",
+          // headers: {
+          //   Authorization: `Bearer ${store.accessToken}`,
+          // },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? data.value : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
   return {
     isLoading,
     getUssdLanguages,
@@ -147,5 +171,6 @@ export const useUssdLanguages = () => {
     updateUssdLanguageStatus,
     deleteUssdLanguage,
     isSubmitting,
+    cacheLanguagesToRedis,
   };
 };

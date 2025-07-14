@@ -627,7 +627,7 @@ const refetchPage = async () => {
                               >
                                 <!-- Permissions button -->
                                 <UiPermissionGuard
-                                  permission="VIEW_USER_ACCOUNTS_PERMISSIONS"
+                                  permission="VIEW_USER_ACCOUNTS_PERMISSION"
                                 >
                                   <div class="flex items-center">
                                     <UiSheet>

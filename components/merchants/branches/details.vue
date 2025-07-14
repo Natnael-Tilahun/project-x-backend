@@ -71,7 +71,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     isSubmitting.value = true;
     loading.value = true;
-    console.log(values);
     const updatedData = {
       ...values,
       address: {
