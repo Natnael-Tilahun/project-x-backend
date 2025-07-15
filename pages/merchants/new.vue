@@ -26,9 +26,12 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     isLoading.value = true;
     const newValues = {
-      ...values
+      ...values,
+      taxPayerExpiryDate: values.taxPayerExpiryDate ? new Date(values.taxPayerExpiryDate).toISOString(): "",
+      taxPayerIssueDate: values.taxPayerIssueDate ? new Date(values.taxPayerIssueDate).toISOString(): "",
+      tradeLicenseExpiryDate: values.tradeLicenseExpiryDate ? new Date(values.tradeLicenseExpiryDate).toISOString(): "",
+      tradeLicenseIssueDate: values.tradeLicenseIssueDate ? new Date(values.tradeLicenseIssueDate).toISOString(): "",
     }
-    console.log("newValues: ", newValues);
     data.value = await createNeweMerchant(newValues); // Call your API function to fetch profile
     navigateTo(`/merchants/${data.value.merchantId}`);
     console.log("New Merchant data; ", data.value);
@@ -105,7 +108,7 @@ onBeforeUnmount(() => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="businessNumber">
+            <!-- <FormField v-slot="{ componentField }" name="businessNumber">
               <FormItem>
                 <FormLabel> Business Number </FormLabel>
                 <FormControl>
@@ -117,7 +120,7 @@ onBeforeUnmount(() => {
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            </FormField>
+            </FormField> -->
             <FormField v-slot="{ componentField }" name="businessType">
               <FormItem>
                 <FormLabel> Business Type </FormLabel>
@@ -287,7 +290,7 @@ onBeforeUnmount(() => {
                 <FormMessage />
               </FormItem>
             </FormField>
-            <FormField v-slot="{ componentField }" name="taxPayerExpiryDate">
+            <!-- <FormField v-slot="{ componentField }" name="taxPayerExpiryDate">
               <FormItem>
                 <FormLabel> Tax Payer Expiry Date </FormLabel>
                 <FormControl>
@@ -299,8 +302,8 @@ onBeforeUnmount(() => {
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            </FormField>
-            <FormField v-slot="{ componentField }" name="defaultPaymentReceivingAccountNumber">
+            </FormField> -->
+            <!-- <FormField v-slot="{ componentField }" name="defaultPaymentReceivingAccountNumber">
               <FormItem>
                 <FormLabel>Default Payment Receiving Account Number </FormLabel>
                 <FormControl>
@@ -312,7 +315,7 @@ onBeforeUnmount(() => {
                 </FormControl>
                 <FormMessage />
               </FormItem>
-            </FormField>
+            </FormField> -->
             <div class="col-span-full w-full py-4 flex justify-between">
               <UiButton
                 :disabled="isSubmitting"

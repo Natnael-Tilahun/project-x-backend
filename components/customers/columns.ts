@@ -82,14 +82,14 @@ export const columns = (refetch: RefetchFunction): ColumnDef<Customer>[] => [
       return coreCustomerId ? h("p", coreCustomerId) : h("p", "-");
     },
   },
-  {
-    accessorKey: "branchId",
-    header: "Branch Id",
-    cell: ({ row }) => {
-      const branchId = row.getValue("branchId");
-      return branchId ? h("p", branchId) : h("p", "-");
-    },
-  },
+  // {
+  //   accessorKey: "branchId",
+  //   header: "Branch Id",
+  //   cell: ({ row }) => {
+  //     const branchId = row.getValue("branchId");
+  //     return branchId ? h("p", branchId) : h("p", "-");
+  //   },
+  // },
   {
     accessorKey: "status",
     header: "Status",
@@ -108,14 +108,14 @@ export const columns = (refetch: RefetchFunction): ColumnDef<Customer>[] => [
         : h("p", "-");
     },
   },
-  {
-    accessorKey: "staffMember",
-    header: "Staff Member",
-    cell: ({ row }) => {
-      const staffMember = row.getValue("staffMember");
-      return staffMember != null ? h("p", staffMember) : h("p", "-");
-    },
-  },
+  // {
+  //   accessorKey: "staffMember",
+  //   header: "Staff Member",
+  //   cell: ({ row }) => {
+  //     const staffMember = row.getValue("staffMember");
+  //     return staffMember != null ? h("p", staffMember) : h("p", "-");
+  //   },
+  // },
   // {
   //   accessorKey: "status",
   //   header: "Status",

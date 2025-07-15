@@ -242,9 +242,9 @@ const handleRemoveImage = () => {
 const updateProductMenu = async () => {
   try {
     productMenuLoading.value = true;
-    const updatedValues = form.values.dynamicPaymentMenus.map((menu: any) => ({
-      id: menu.id,
-    }));
+    const updatedValues = {
+      productIds: form.values.dynamicPaymentMenus.map((menu: any) => menu.id)
+    }
     await updateProductMenus(menuId.value, updatedValues);
     toast({
       title: "Product Menu Updated",

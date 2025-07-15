@@ -1,7 +1,7 @@
 import type { ColumnDef } from "@tanstack/vue-table";
 
 import { Checkbox } from "~/components/ui/checkbox";
-import { Badge } from "../ui/badge";
+import { Badge } from "~/components/ui/badge";
 import MerchantsOperatorsDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { MerchantOperators, StaffAssignment } from "~/types";
@@ -103,14 +103,14 @@ export const columns = (
   },
   {
     accessorKey: "active",
-    header: "Status",
+    header: "Is Active",
     cell: ({ row }) => {
       const active = row.getValue("active");
       return active !== null
         ? h(
-            "div",
+            Badge,
             {
-              class: "whitespace-nowrap truncate hover:w-full font-medium",
+              class: active ? "bg-green-600" : "bg-red-600",
             },
             row.getValue("active")
           )
