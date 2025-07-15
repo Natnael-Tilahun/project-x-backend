@@ -117,23 +117,6 @@ export const columns = (refetch: RefetchFunction): ColumnDef<Merchant>[] => [
     },
   },
   {
-    accessorKey: "faxNumber",
-    header: "Fax Number",
-    cell: ({ row }) => {
-      const faxNumber = row.getValue("faxNumber");
-      return faxNumber
-        ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            row.getValue("faxNumber")
-          )
-        : h("p", "-");
-    },
-  },
-  {
     accessorKey: "tradeLicenseNumber",
     header: "Trade License Number",
     cell: ({ row }) => {
@@ -146,23 +129,6 @@ export const columns = (refetch: RefetchFunction): ColumnDef<Merchant>[] => [
                 "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
             },
             row.getValue("tradeLicenseNumber")
-          )
-        : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "tradeLicenseExpiryDate",
-    header: "Trade License Expiry Date",
-    cell: ({ row }) => {
-      const tradeLicenseExpiryDate = row.getValue("tradeLicenseExpiryDate");
-      return tradeLicenseExpiryDate
-        ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            row.getValue("tradeLicenseExpiryDate")
           )
         : h("p", "-");
     },
@@ -185,40 +151,6 @@ export const columns = (refetch: RefetchFunction): ColumnDef<Merchant>[] => [
     },
   },
   {
-    accessorKey: "taxPayerIssueDate",
-    header: "Tax Payer Issue Date",
-    cell: ({ row }) => {
-      const taxPayerIssueDate = row.getValue("taxPayerIssueDate");
-      return taxPayerIssueDate
-        ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            row.getValue("taxPayerIssueDate")
-          )
-        : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "taxPayerExpiryDate",
-    header: "Tax Payer Expiry Date",
-    cell: ({ row }) => {
-      const taxPayerExpiryDate = row.getValue("taxPayerExpiryDate");
-      return taxPayerExpiryDate
-        ? h(
-            "div",
-            {
-              class:
-                "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
-            },
-            row.getValue("taxPayerExpiryDate")
-          )
-        : h("p", "-");
-    },
-  },
-  {
     accessorKey: "shortCode",
     header: "Short Code",
     cell: ({ row }) => {
@@ -226,36 +158,36 @@ export const columns = (refetch: RefetchFunction): ColumnDef<Merchant>[] => [
       return shortCode ? h("p", shortCode) : h("p", "-");
     },
   },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status");
-      return status ? h(Badge, status) : h(Badge, "-");
-    },
-  },
   // {
   //   accessorKey: "status",
   //   header: "Status",
   //   cell: ({ row }) => {
   //     const status = row.getValue("status");
-  //     if (status == "Active") {
-  //       return h(Badge, { class: "bg-green-600 " }, row.getValue("status"));
-  //     } else if (status == "New") {
-  //       return h(Badge, { class: "bg-blue-500 " }, row.getValue("status"));
-  //     } else if (status == "Locked") {
-  //       return h(Badge, { class: "bg-red-500 " }, row.getValue("status"));
-  //     } else if (status == "processing") {
-  //       return h(Badge, { class: "bg-yellow-500 " }, row.getValue("status"));
-  //     } else if (status == "UnEnrolled") {
-  //       return h(Badge, { class: "bg-blue-500 " }, row.getValue("status"));
-  //     } else if (status == "Suspended") {
-  //       return h(Badge, { class: "bg-orange-700 " }, row.getValue("status"));
-  //     } else {
-  //       return h("div", { class: "" }, row.getValue("status"));
-  //     }
+  //     return status ? h(Badge, status) : h(Badge, "-");
   //   },
   // },
+  {
+    accessorKey: "status",
+    header: "Status",
+    cell: ({ row }) => {
+      const status = row.getValue("status");
+      if (status == "ACTIVATED") {
+        return h(Badge, { class: "bg-green-600 " }, row.getValue("status"));
+      } else if (status == "New") {
+        return h(Badge, { class: "bg-blue-500 " }, row.getValue("status"));
+      } else if (status == "BLOCKED") {
+        return h(Badge, { class: "bg-red-500 " }, row.getValue("status"));
+      } else if (status == "PENDING") {
+        return h(Badge, { class: "bg-yellow-500 " }, row.getValue("status"));
+      } else if (status == "INACTIVE") {
+        return h(Badge, { class: "bg-blue-500 " }, row.getValue("status"));
+      } else if (status == "DEACTIVATED") {
+        return h(Badge, { class: "bg-orange-700 " }, row.getValue("status"));
+      } else {
+        return h("div", { class: "" }, row.getValue("status"));
+      }
+    },
+  },
   {
     header: "Actions",
     id: "actions",

@@ -398,7 +398,7 @@ onMounted(() => {
               </div>
 
               <div>
-                <p class="text-sm text-muted-foreground">Created Date</p>
+                <p class="text-sm text-muted-foreground">Initial Login Date</p>
                 <p class="font-medium">
                   {{
                     device.createdDate
@@ -414,7 +414,7 @@ onMounted(() => {
                 </p>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">Last Modified Date</p>
+                <p class="text-sm text-muted-foreground">Last Login Date</p>
                 <p class="font-medium">
                   {{
                     device.lastModifiedDate

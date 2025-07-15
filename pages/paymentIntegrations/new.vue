@@ -23,7 +23,7 @@ import {
   PaymentCategory,
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import type { Charge, PaymentIntegration } from "~/types";
+import type { Charge, Customer, PaymentIntegration } from "~/types";
 import ChargeSelect from "~/components/charges/ChargeSelect.vue";
 
 const route = useRoute();
@@ -35,6 +35,7 @@ const {
   isLoading,
 } = usePaymentIntegrations();
 const { getCharges, isLoading: isChargeLoading } = useCharges();
+const {getCoreCustomerByAccountNumber} = useCustomers()
 
 const openItems = ref("serviceDefinition");
 const fullPath = ref(route.fullPath);
@@ -49,6 +50,13 @@ const activeTab = route.query.activeTab as string;
 openItems.value = activeTab || "serviceDefinition";
 const chargesData = ref<Charge[]>([]);
 const paymentIntegrationName = ref<string>("Create New Payment Integration");
+const pendingUpdateData = ref<any>(null);
+const openEditModal = ref(false);
+const accountsInfoData = ref<Customer>()
+
+const setOpenEditModal = (value: boolean) => {
+  openEditModal.value = value;
+}
 
 // Watch for changes in the route's query parameters
 watch(
@@ -72,23 +80,13 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       ...values,
       chargeId: values.chargeId,
     };
-    data.value = await createNewPaymentIntegration(newValues); // Call your API function to fetch profile
-    form.setValues(data.value);
-    paymentIntegrationId.value = data.value.id;
-    paymentIntegrationName.value = data.value.companyName;
-    // openItems.value = "newOperation";
-    navigateTo({
-      path: `/paymentIntegrations/${data.value.id}`,
-      query: {
-        activeTab: "paymentOperations",
-      },
-    });
-
-    console.log("Created Payment Integration data; ", data.value);
-    toast({
-      title: "Payment Integration Created",
-      description: "Payment Integration created successfully",
-    });
+    pendingUpdateData.value = newValues;
+    if (values?.accountNumber) {
+      await fetchAccountsInfoData(values?.accountNumber); // This can throw if invalid
+    }
+    else {
+      confirmCreatePaymentIntegration();
+    }
   } catch (err: any) {
     console.error("Error creating payment integration:", err);
     isError.value = true;
@@ -118,6 +116,53 @@ const fetchChargeData = async () => {
 onMounted(() => {
   fetchChargeData();
 });
+
+const fetchAccountsInfoData = async (accountNumber: string) => {
+  try {
+    // loading.value = true;
+    // isError.value = false;
+    if (accountNumber) {
+      const result = await getCoreCustomerByAccountNumber(accountNumber);
+      accountsInfoData.value = result ? result : null;
+      setOpenEditModal(true); // Show confirmation dialog
+    }
+  } catch (err) {
+    isError.value = true;
+    console.error("Error fetching accounts info:", err);
+    setOpenEditModal(false);
+  } finally {
+    // loading.value = false;
+  }
+};
+
+const confirmCreatePaymentIntegration = async () => {
+  if (!pendingUpdateData.value) return;
+  try {
+    loading.value = true;
+    data.value = await createNewPaymentIntegration(pendingUpdateData.value);
+    form.setValues(data.value);
+    paymentIntegrationId.value = data.value.id;
+    paymentIntegrationName.value = data.value.companyName;
+    // openItems.value = "newOperation";
+    navigateTo({
+      path: `/paymentIntegrations/${data.value.id}`,
+      query: {
+        activeTab: "paymentOperations",
+      },
+    });
+    toast({
+      title: "Payment Integration Created",
+      description: "Payment Integration created successfully",
+    });
+    setOpenEditModal(false); // Close dialog
+  } catch (err: any) {
+    console.error("Error creating payment integration:", err);
+    isError.value = true
+  } finally {
+    loading.value = false;
+    pendingUpdateData.value = null;
+  }
+};
 </script>
 
 <template>
@@ -1024,4 +1069,41 @@ onMounted(() => {
       </UiTabsContent>
     </UiTabs>
   </div>
+
+  <UiAlertDialog :open="openEditModal" :onOpenChange="setOpenEditModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure to set this account number as the collection account?</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          This will update the account number and set this account number as the collection account for this payment integration.
+          <br><br>
+          <p class="text-base text-muted-foreground font-medium mb-1">
+            Account Name: <span class="text-primary font-bold">{{ accountsInfoData?.fullName }}</span>
+          </p>
+          <p class="text-base text-muted-foreground font-medium mb-1">
+            Account Number: <span class="text-primary font-bold">{{ form.values?.accountNumber }}</span>
+          </p>
+          <p class="text-base text-muted-foreground font-medium mb-1">
+            Customer ID: <span class="text-primary font-bold">{{ accountsInfoData?.customerId }}</span>
+          </p>
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenEditModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction
+          @click="confirmCreatePaymentIntegration"
+          :disabled="loading"
+        >
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="loading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
 </template>

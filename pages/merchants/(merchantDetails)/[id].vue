@@ -63,6 +63,10 @@ const fetchMerchantData = async () => {
     selectedAccounts.value =  response && response?.map((account) => account.accountNumber) || []
     let a = {
       ...data.value,
+      taxPayerExpiryDate: data.value?.taxPayerExpiryDate ? new Date(data.value?.taxPayerExpiryDate).toISOString().split('T')[0] : "",
+      taxPayerIssueDate: data.value?.taxPayerIssueDate ? new Date(data.value?.taxPayerIssueDate).toISOString().split('T')[0] : "",
+      tradeLicenseExpiryDate: data.value?.tradeLicenseExpiryDate ? new Date(data.value?.tradeLicenseExpiryDate).toISOString().split('T')[0] : "",
+      tradeLicenseIssueDate: data.value?.tradeLicenseIssueDate ? new Date(data.value?.tradeLicenseIssueDate).toISOString().split('T')[0] : "",
     };
     form.setValues(a);
   } catch (err) {
@@ -106,7 +110,14 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     submitting.value = true;
     isSubmitting.value = true;
-    data.value = await updateMerchant(values.merchantId, values); // Call your API function to fetch profile
+    const newValues = {
+      ...values,
+      taxPayerExpiryDate: values.taxPayerExpiryDate ? new Date(values.taxPayerExpiryDate).toISOString(): "",
+      taxPayerIssueDate: values.taxPayerIssueDate ? new Date(values.taxPayerIssueDate).toISOString(): "",
+      tradeLicenseExpiryDate: values.tradeLicenseExpiryDate ? new Date(values.tradeLicenseExpiryDate).toISOString(): "",
+      tradeLicenseIssueDate: values.tradeLicenseIssueDate ? new Date(values.tradeLicenseIssueDate).toISOString(): "",
+    }
+    data.value = await updateMerchant(values.merchantId, newValues); // Call your API function to fetch profile
     navigateTo(`/merchants/${data.value.merchantId}`);
     toast({
       title: "Merchant Created",
@@ -430,7 +441,7 @@ watch(
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField v-slot="{ componentField }" name="businessNumber">
+                <!-- <FormField v-slot="{ componentField }" name="businessNumber">
                   <FormItem>
                     <FormLabel> Business Number </FormLabel>
                     <FormControl>
@@ -442,7 +453,7 @@ watch(
                     </FormControl>
                     <FormMessage />
                   </FormItem>
-                </FormField>
+                </FormField> -->
                 <FormField v-slot="{ componentField }" name="merchantLevel">
                   <FormItem>
                     <FormLabel> Merchant Level </FormLabel>
@@ -665,7 +676,7 @@ watch(
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
+                <!-- <FormField
                   v-slot="{ componentField }"
                   name="taxPayerExpiryDate"
                 >
@@ -680,9 +691,7 @@ watch(
                     </FormControl>
                     <FormMessage />
                   </FormItem>
-                </FormField>
-
-
+                </FormField> -->
 
                 <div class="flex flex-col gap-2 w-full">
                   <UiLabel>Merchant Accounts</UiLabel>

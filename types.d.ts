@@ -59,6 +59,8 @@ interface User {
   login: string;
   email?: string | null;
   phone: string;
+  fullName?: string | null;
+  coreCustomerId?: string | null;
   nationalId?: string | null;
   activated?: boolean;
   langKey?: string | null;
@@ -84,11 +86,13 @@ interface User {
   lastModifiedDate?: string | null;
   isEnrolled?: boolean | null;
   authorities?: string[] | null;
+  roles?: string[] | null;
   blockExpirationTime?: string;
   blockLevel?: integer;
   staff?: boolean;
   customer?: boolean;
   operator?: boolean;
+  staffMember?: boolean;
 }
 
 interface Device {

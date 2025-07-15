@@ -151,9 +151,9 @@ export const useMenus = () => {
   ) => ApiResult<Menu> = async (menuId, menuData) => {
     try {
       const { data, pending, error, status } = await fetch<Menu>(
-        `/api/v1/internal/menus/${menuId}/add-children`,
+        `/api/v1/internal/menus/${menuId}/children`,
         {
-          method: "POST",
+          method: "PUT",
           body: menuData,
         }
       );
