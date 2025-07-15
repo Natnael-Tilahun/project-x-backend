@@ -23,7 +23,7 @@ import {
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { useDocuments } from "~/composables/useDocuments";
-import type { PaymentIntegration, ApiOperation, Charge } from "~/types";
+import type { PaymentIntegration, ApiOperation, Charge, Customer } from "~/types";
 import ChargeSelect from "~/components/charges/ChargeSelect.vue";
 import { PermissionConstants } from "~/constants/permissions";
 
@@ -36,6 +36,7 @@ const {
 } = usePaymentIntegrations();
 const { uploadFile, getFile } = useDocuments(); // Get the upload function
 const {getCharges, isLoading:isChargeLoading} = useCharges()
+const {getCoreCustomerByAccountNumber} = useCustomers()
 
 const openItems = ref("IntegrationDetails");
 const fullPath = ref(route.fullPath);
@@ -56,6 +57,13 @@ const imagePreview = ref(null);
 const selectedFile = ref(null);
 const uploadLoading = ref(false);
 const chargesData = ref<Charge[]>([])
+const accountsInfoData = ref<Customer>()
+const openEditModal = ref(false);
+const pendingUpdateData = ref<any>(null);
+
+const setOpenEditModal = (value: boolean) => {
+  openEditModal.value = value;
+}
 
 // Add a ref for the file input
 const fileInput = ref(null);
@@ -78,8 +86,9 @@ const form = useForm<PaymentIntegration>({
 
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
-    loading.value = true;
-    const data = {
+    // loading.value = true;
+    // Prepare the data as before
+    const dataToUpdate = {
       ...values,
       maximumAmount:
         values?.maximumAmountVariableType == MaximumAmountVariableType.FIXED &&
@@ -92,19 +101,18 @@ const onSubmit = form.handleSubmit(async (values: any) => {
           ? values?.minimumAmount
           : null,
     };
-    data.value = await updatePaymentIntegration(values.id, data); // Call your API function to fetch profile
-    // form.setValues(data.value);
-    openItems.value = "paymentOperations";
-    toast({
-      title: "Payment Integration Updated",
-      description: "Payment Integration updated successfully",
-    });
-    await refetch();
+    pendingUpdateData.value = dataToUpdate; // Save for confirmation
+    if (values?.accountNumber && values?.accountNumber != data.value?.accountNumber) {
+      await fetchAccountsInfoData(values?.accountNumber); // This can throw if invalid
+    }
+    else {
+      confirmUpdatePaymentIntegration();
+    }
   } catch (err: any) {
-    console.error("Error updating payment integration:", err);
+    console.error("Error preparing update:", err);
     isError.value = true;
   } finally {
-    loading.value = false;
+    // loading.value = false;
   }
 });
 
@@ -146,6 +154,7 @@ onMounted(async () => {
 });
 
 const refetch = async () => {
+  isError.value = false;
   await getPaymentIntegrationData();
 };
 
@@ -263,6 +272,49 @@ const fetchChargeData = async () => {
   loading.value = false;
 }
 }
+
+// Fetch all merchant accounts
+const fetchAccountsInfoData = async (accountNumber: string) => {
+  try {
+    loading.value = true;
+    isError.value = false;
+    if (accountNumber) {
+      const result = await getCoreCustomerByAccountNumber(accountNumber);
+      accountsInfoData.value = result ? result : null;
+      console.log("accountsInfoData:", accountsInfoData.value);
+      setOpenEditModal(true); // Show confirmation dialog
+    }
+  } catch (err) {
+    isError.value = true;
+    console.error("Error fetching accounts info:", err);
+    setOpenEditModal(false);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const confirmUpdatePaymentIntegration = async () => {
+  if (!pendingUpdateData.value) return;
+  try {
+    loading.value = true;
+    data.value = await updatePaymentIntegration(pendingUpdateData.value.id, pendingUpdateData.value);
+    openItems.value = "paymentOperations";
+    toast({
+      title: "Payment Integration Updated",
+      description: "Payment Integration updated successfully",
+    });
+    setOpenEditModal(false); // Close dialog
+    await refetch();
+  } catch (err: any) {
+    console.error("Error updating payment integration:", err);
+    isError.value = true;
+
+  } finally {
+    loading.value = false;
+    pendingUpdateData.value = null;
+  }
+};
+
 
 onMounted(() => {
   fetchChargeData();
@@ -1294,6 +1346,43 @@ onMounted(() => {
       </UiPermissionGuard>
     </UiTabs>
   </div>
+
+  <UiAlertDialog :open="openEditModal" :onOpenChange="setOpenEditModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure to set this account number as the collection account?</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          This will update the account number and set this account number as the collection account for this payment integration.
+          <br><br>
+          <p class="text-base text-muted-foreground font-medium mb-1">
+            Account Name: <span class="text-primary font-bold">{{ accountsInfoData?.fullName }}</span>
+          </p>
+          <p class="text-base text-muted-foreground font-medium mb-1">
+            Account Number: <span class="text-primary font-bold">{{ form.values?.accountNumber }}</span>
+          </p>
+          <p class="text-base text-muted-foreground font-medium mb-1">
+            Customer ID: <span class="text-primary font-bold">{{ accountsInfoData?.customerId }}</span>
+          </p>
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenEditModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction
+          @click="confirmUpdatePaymentIntegration"
+          :disabled="loading"
+        >
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="loading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
 </template>
 
 <style lang="css" scoped></style>

@@ -3,11 +3,16 @@ import type { Row } from "@tanstack/vue-table";
 import { toast } from "@/components/ui/toast";
 import { getIdFromPath } from "~/lib/utils";
 import { PermissionConstants } from "~/constants/permissions";
+import type { ContractCoreCustomer } from "~/types";
 
-const { deleteContractCoreCustomer, isLoading } = useContractsCoreCustomers();
+const { deleteContractCoreCustomer,getContractCoreCustomers, isLoading } = useContractsCoreCustomers();
+
 const loading = ref(isLoading.value);
 const isError = ref(false);
-const contractId = ref(getIdFromPath());
+const contractId = ref<string>("");
+contractId.value = getIdFromPath();
+const data = ref<ContractCoreCustomer[]>([]); 
+
 const openEditModal = ref(false);
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
@@ -49,6 +54,25 @@ async function deleteContractCoreCustomers(id: string) {
     setOpenEditModal(false);
   }
 }
+
+const fetchData = async () => {
+  try {
+    isLoading.value = true;
+    loading.value = true;
+    const contracts = await getContractCoreCustomers(contractId.value, 0, 100000000);
+    data.value = contracts ? contracts : [];
+  } catch (err: any) {
+    console.error("Error fetching contract core customers:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
+};
+
+onMounted(() => {
+  fetchData();
+});
 </script>
 
 <template>
@@ -70,7 +94,7 @@ async function deleteContractCoreCustomers(id: string) {
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>
   <UiPermissionGuard :permission="PermissionConstants.DELETE_CONTRACT_CORE_CUSTOMER" >
-      <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600">
+      <UiDropdownMenuItem @click="setOpenEditModal(true)" class="text-red-600" :disabled="data.length <= 1">
         Delete
         <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
       </UiDropdownMenuItem>

@@ -234,6 +234,19 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
           </div>
         </div>
         <div class="space-y-1">
+          <h1 class="text-muted-foreground">Full Name</h1>
+          <div
+            @click="copyToClipboard(data?.fullName)"
+            class="flex items-center gap-4 cursor-pointer justify-between border p-2 bg-muted rounded-md"
+          >
+            <p>{{ data?.fullName || "Not Setted" }}</p>
+            <Icon
+              name="material-symbols:content-copy"
+              class="h-5 w-5 text-primary"
+            ></Icon>
+          </div>
+        </div>
+        <div class="space-y-1">
           <h1 class="text-muted-foreground">Username</h1>
           <div
             @click="copyToClipboard(data?.login)"
@@ -253,6 +266,19 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
             class="flex items-center gap-4 cursor-pointer justify-between border p-2 bg-muted rounded-md"
           >
             <p>{{ data?.phone || "Not Setted" }}</p>
+            <Icon
+              name="material-symbols:content-copy"
+              class="h-5 w-5 text-primary"
+            ></Icon>
+          </div>
+        </div>
+        <div class="space-y-1">
+          <h1 class="text-muted-foreground">Core Customer Id</h1>
+          <div
+            @click="copyToClipboard(data?.coreCustomerId)"
+            class="flex items-center gap-4 cursor-pointer justify-between border p-2 bg-muted rounded-md"
+          >
+            <p>{{ data?.coreCustomerId || "Not Setted" }}</p>
             <Icon
               name="material-symbols:content-copy"
               class="h-5 w-5 text-primary"
@@ -316,6 +342,14 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
           <p class="border p-2 bg-muted rounded-md">
             {{
               data?.isUserAccountLocked != null ? data.isUserAccountLocked : "-"
+            }}
+          </p>
+        </div>
+        <div class="space-y-0">
+          <h1 class="text-muted-foreground">Is Staff Member</h1>
+          <p class="border p-2 bg-muted rounded-md">
+            {{
+              data?.staffMember != null ? data.staffMember : "-"
             }}
           </p>
         </div>
@@ -450,7 +484,7 @@ const newUserOnSubmit = newCustomerForm.handleSubmit(async (values: any) => {
           <ul class="border py-3 px-6 bg-muted rounded-md">
             <li
               class="list-disc"
-              v-for="(item, index) in data?.authorities"
+              v-for="(item, index) in data?.roles"
               :key="index"
             >
               {{ item }}

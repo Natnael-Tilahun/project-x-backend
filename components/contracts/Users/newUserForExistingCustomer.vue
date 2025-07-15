@@ -4,7 +4,7 @@ const openItems = ref("accounts");
 import { useForm } from "vee-validate";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
-import { newContractUserFormSchema } from "~/validations/newContractUserFormSchema";
+import { newContractUserForExistingCustomerFormSchema } from "~/validations/newContractUserForExistingCustomerFormSchema";
 import {
   FormControl,
   FormField,
@@ -52,7 +52,7 @@ if (props.contractProps) {
 }
 
 const form = useForm({
-  validationSchema: newContractUserFormSchema,
+  validationSchema: newContractUserForExistingCustomerFormSchema,
   initialValues: {
     isPrimaryUser: false,
     enable: true,
@@ -101,6 +101,8 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       customerId: data.value?.id,
       serviceDefinitionRoleId: values.serviceDefinitionRoleId,
     };
+
+    console.log("newValues: ", newValues);
 
     const response = await createNewContractForExistingUser(
       contractId.value,

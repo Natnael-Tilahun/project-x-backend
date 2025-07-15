@@ -5,6 +5,7 @@ import MerchantsBranchesDataTableRowActionsVue from "./DataTableRowActions.vue";
 import { NuxtLink } from "#components";
 import type { MerchantBranch, MerchantTransaction } from "~/types";
 import { h } from "vue"; // Import inject
+import { Badge } from "~/components/ui/badge";
 
 // Type for the refetch function
 type RefetchFunction = () => Promise<void>;
@@ -111,6 +112,26 @@ export const columns = (
             row.getValue("paymentStatus")
           )
         : h("p", "-");
+    },
+  },
+  {
+    accessorKey: "paymentStatus",
+    header: "Payment Status",
+    cell: ({ row }) => {
+      const paymentStatus = row.getValue("paymentStatus");
+      if (paymentStatus == "COMPLETED") {
+        return h(Badge, { class: "bg-green-600 " }, row.getValue("paymentStatus"));
+      } else if (paymentStatus == "FAILED" || paymentStatus == "CANCELLED" || paymentStatus == "EXPIRED") {
+        return h(Badge, { class: "bg-red-500 " }, row.getValue("paymentStatus"));
+      } else if (paymentStatus == "PENDING") {
+        return h(Badge, { class: "bg-yellow-500 " }, row.getValue("paymentStatus"));
+      } else if (paymentStatus == "REFUNDED") {
+        return h(Badge, { class: "bg-blue-500 " }, row.getValue("paymentStatus"));
+      } else if (paymentStatus == "NONE") {
+        return h(Badge, row.getValue("paymentStatus"));
+      } else {
+        return h("div", { class: "" }, row.getValue("paymentStatus"));
+      }
     },
   },
   {
