@@ -32,6 +32,7 @@ import {
 import JSONTree from "@/components/JSONTree.vue";
 import type { ApiOperation } from "~/types";
 import { PermissionConstants } from "~/constants/permissions";
+import ErrorValidation from "./ErrorValidation.vue";
 
 const openItems = ref("configuration");
 
@@ -371,6 +372,33 @@ const testingOperation = async () => {
             <FormMessage />
           </FormItem>
         </FormField>
+        <!-- <UiPermissionGuard :permission=PermissionConstants.READ_API_OPERATION_ERROR_VALIDATION > -->
+                  <UiSheet>
+                    <div class="flex flex-col gap-2">
+                      <UiLabel>Error Validation</UiLabel>
+                      <UiSheetTrigger>
+                        <UiButton
+                          class="w-full"
+                          variant="outline"
+                          type="button"
+                          size="sm"
+                        >
+                          Error Validation
+                        </UiButton>
+                      </UiSheetTrigger>
+                    </div>
+
+                    <UiSheetContent
+                      class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
+                    >
+                      <ErrorValidation
+                        :errorValidationConfig="data?.errorValidationConfig"
+                        :operationIdProps="operationId"
+                        @refetch="refetch"
+                      />
+                    </UiSheetContent>
+                  </UiSheet>
+                  <!-- </UiPermissionGuard> -->
 
         <div class="col-span-full w-full">
           <FormField

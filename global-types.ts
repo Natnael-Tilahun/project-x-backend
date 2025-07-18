@@ -543,3 +543,8 @@ export enum MerchantStatus {
   INACTIVE="INACTIVE", 
   BLOCKED="BLOCKED"
 }
+
+export enum LogicalErrorType {
+  RULE = "RULE",
+  RULE_GROUP = "RULE_GROUP",
+}
