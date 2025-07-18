@@ -1,4 +1,4 @@
-import { MerchantStatus, PaymentStatus, TransactionAmountType, TransactionInitiator } from "@/global-types";
+import { LogicalErrorType, MerchantStatus, PaymentStatus, TransactionAmountType, TransactionInitiator } from "@/global-types";
 import {
   Visibility,
   PaymentOperationType,
@@ -434,6 +434,7 @@ interface ApiOperation {
   integrationOperations?: string;
   apiIntegrationId?: string | null;
   apiOperationPath?: string;
+  errorValidationConfig?: ErrorValidationConfig;
 }
 
 interface ApiIntegration {
@@ -493,6 +494,45 @@ interface ResponseOutput {
   apiOperationId?: string | null;
   integrationFieldMappings?: [IntegrationFieldMapping];
   validationConfig?: ValidationConfig | null;
+}
+
+interface ErrorValidationConfig {
+  logicalErrorDefinitionSet: LogicalErrorDefinition[];
+}
+
+// LogicalRule type
+export interface LogicalRule {
+  jsonPath: string;
+  operator: Operators;
+  expectedValue?: any;
+  expectedDataType: DataType;
+  errorCode: string;
+  errorMessage: string;
+  errorMessageFromPath?: boolean;
+}
+
+// LogicalRuleGroup type
+export interface LogicalRuleGroup {
+  type: LogicalOperators;
+  rules: LogicalRule[];
+  errorCode: string;
+  errorMessage: string;
+  errorMessageFromPath: boolean;
+}
+
+// LogicalErrorDefinition type
+export interface LogicalErrorDefinition {
+  name: string;
+  logicalErrorType: LogicalErrorType;
+  rule?: LogicalRule;
+  ruleGroup?: LogicalRuleGroup;
+  rollback: boolean;
+  priority: number;
+}
+
+// The main set type
+export interface LogicalErrorDefinitionSet {
+  logicalErrorDefinitionSet: LogicalErrorDefinition[];
 }
 
 enum ValueSource {
@@ -1190,3 +1230,4 @@ export interface SearchResult {
   parentMenu?: string;
   permission?: string
 }
+
