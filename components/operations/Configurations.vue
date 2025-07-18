@@ -29,7 +29,6 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import JSONTree from "@/components/JSONTree.vue";
 import type { ApiOperation } from "~/types";
 import { PermissionConstants } from "~/constants/permissions";
 import ErrorValidation from "./ErrorValidation.vue";
@@ -600,20 +599,17 @@ const testingOperation = async () => {
                       />
                     </UiButton>
                   </div>
-                  <pre
-                    class="bg-muted rounded-lg p-4 text-sm overflow-x-auto h-full w-full flex justify-center"
-                  >
-                    <JSONTree v-if="testResponse?.operationRequest" :jsonData="formattedOperationRequest" /> 
-                    <div v-else>
-                      No content
-                    </div>
-                    <!-- <code>{{ testResponse?.operationRequest ? formattedOperationRequest : 'No content' }}</code> -->
-                  </pre>
+                  <div class="bg-muted rounded-lg p-4 text-sm overflow-x-auto h-full w-full flex justify-center">
+                    <JsonInspector
+                      v-if="testResponse?.operationRequest"
+                      :data="formattedOperationRequest"
+                    />
+                    <div v-else>No content</div>
+                  </div>
                 </div>
               </ResizablePanel>
               <ResizableHandle with-handle />
               <ResizablePanel :min-size="10" :default-size="25">
-                <!-- <JSONTree :jsonData="jsonData" /> -->
                 <div
                   class="h-full w-full flex flex-col gap-2 p-2 overflow-y-auto"
                 >
@@ -633,13 +629,10 @@ const testingOperation = async () => {
                   <pre
                     class="bg-muted rounded-lg p-4 text-sm overflow-x-auto h-full w-full flex"
                   >
-                  <JSONTree v-if="testResponse?.operationResponse" :jsonData="formattedOperationResponse" />
-                  <div v-else>
-                      No content
-                    </div>
-                    <!-- <div>
-                      {{ testResponse?.operationResponse ? formattedOperationResponse : 'No content' }}
-                     </div> -->
+                  <JsonInspector
+                    v-if="testResponse?.operationResponse"
+                    :data="formattedOperationResponse"
+                  />
                   </pre>
                 </div>
               </ResizablePanel>
@@ -664,9 +657,10 @@ const testingOperation = async () => {
                   <pre
                     class="bg-muted rounded-lg p-4 text-sm overflow-x-auto h-full w-full flex"
                   >
-                  <JSONTree v-if="testResponse?.rawRequest" :jsonData="formattedRawRequest" />
-                  <div v-else> No content</div>
-                    <!-- <code>{{ formattedRawRequest || 'No content' }}</code> -->
+                  <JsonInspector
+                    v-if="testResponse?.rawRequest"
+                    :data="formattedRawRequest"
+                  />
                   </pre>
                 </div>
               </ResizablePanel>
@@ -691,9 +685,10 @@ const testingOperation = async () => {
                   <pre
                     class="bg-muted rounded-lg p-4 text-sm overflow-x-auto h-full w-full flex justify-cente"
                   >
-                  <JSONTree v-if="testResponse?.rawResponse" :jsonData="formattedRawResponse" />
-                  <div v-else> No content</div>
-                    <!-- <code>{{ testResponse?.rawResponse ? formattedRawResponse : 'No content' }}</code> -->
+                  <JsonInspector
+                    v-if="testResponse?.rawResponse"
+                    :data="formattedRawResponse"
+                  />
                   </pre>
                 </div>
               </ResizablePanel>

@@ -32,6 +32,17 @@
     --input: 220 13% 91%;
     --ring: 262.1 83.3% 57.8%;
     --radius: 0.5rem;
+
+    --json-key: #9b22b0;
+    --json-string: #4caf50;
+    --json-number: #f44336;
+    --json-boolean: #03a9f4;
+    --json-null: #888;
+    --json-brace: #495057;
+    --json-primary-hover: #0056b3;
+    --json-guide: #e9ecef;
+    --json-hover-bg: #ffd700;
+
   }
 
   .dark {
