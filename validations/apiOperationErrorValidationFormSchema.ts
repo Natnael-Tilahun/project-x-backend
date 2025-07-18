@@ -9,8 +9,19 @@ const logicalRuleSchema = z.object({
   expectedValue: z.any(),
   expectedDataType: z.nativeEnum(DataType),
   errorCode: z.string().min(1, "Error code is required"),
-  errorMessage: z.string().min(1, "Error message is required"),
+  errorMessage: z.string().nullable().optional(), // allow optional and nullable
   errorMessageFromPath: z.boolean().optional(),
+}).superRefine((data, ctx) => {
+  if (!data.errorMessageFromPath) {
+    // If errorMessageFromPath is false or undefined, errorMessage is required and not null/empty
+    if (!data.errorMessage || data.errorMessage.trim() === "") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Error message is required when errorMessageFromPath is false",
+        path: ["errorMessage"],
+      });
+    }
+  }
 });
 
 // LogicalRuleGroup schema
@@ -28,8 +39,8 @@ const logicalErrorDefinitionSchema = z.object({
   logicalErrorType: z.nativeEnum(LogicalErrorType),
   rollback: z.boolean(),
   priority: z.number().int().min(1, "Priority is required"),
-  rule: logicalRuleSchema.optional(),
-  ruleGroup: logicalRuleGroupSchema.optional(),
+  rule: logicalRuleSchema.optional().nullable(),
+  ruleGroup: logicalRuleGroupSchema.optional().nullable(),
 }).superRefine((data, ctx) => {
   if (data.logicalErrorType === "RULE") {
     if (!data.rule) {
