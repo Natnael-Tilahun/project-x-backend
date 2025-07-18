@@ -1,4 +1,4 @@
-import type { ApiOperation } from "~/types";
+import type { ApiOperation, ValidationConfig } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
@@ -133,6 +133,29 @@ export const useOperations = () => {
     }
   };
 
+  const updateOperationErrorValidation: (id: string, validationConfig: ValidationConfig) => ApiResult<ApiOperation> = async (id, validationConfig) => {
+    try {
+      const { data, pending, error, status } = await fetch<ApiOperation>(
+        `/api/v1/internal/api-operations/${id}/error-validation`,
+        {
+          method: "PUT",
+          body: validationConfig
+        }
+      );
+
+      isSubmitting.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as ApiOperation) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+
   return {
     isLoading,
     getOperations,
@@ -142,5 +165,6 @@ export const useOperations = () => {
     updateOperation,
     isSubmitting,
     testOperation,
+    updateOperationErrorValidation,
   };
 };
