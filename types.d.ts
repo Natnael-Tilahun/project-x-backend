@@ -1,4 +1,4 @@
-import { LogicalErrorType, MerchantStatus, PaymentStatus, TransactionAmountType, TransactionInitiator } from "@/global-types";
+import { LimitType, LogicalErrorType, MerchantStatus, PaymentStatus, TransactionAmountType, TransactionInitiator } from "@/global-types";
 import {
   Visibility,
   PaymentOperationType,
@@ -623,6 +623,7 @@ interface PaymentIntegration {
   reEnquirePaymentDetailBeforePayment?: boolean | null;
   singleFormPayment?: boolean | null;
   isImage?: boolean | null;
+  limitType:LimitType
   dailyLimitPerAccount?: number | null;
   limitPerTransaction?: number | null;
   category?: PaymentCategory | null;
