@@ -10,9 +10,11 @@ import {
   MinimumAmountVariableType,
   CreditAccountNumberVariableType,
   PaymentCategory,
+  LimitType,
 } from "@/global-types";
 
 const IntegrationTypeSchema = z.nativeEnum(PaymentIntegrationType);
+const LimitTypeSchema = z.nativeEnum(LimitType)
 const TransactionAmountTypeSchema = z.nativeEnum(TransactionAmountType);
 const VisibilitySchema = z.nativeEnum(Visibility);
 const PaymentOperationTypeSchema = z
@@ -75,6 +77,7 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     minimumAmountVariableType: MinimumAmountVariableTypeSchema,
     creditAccountNumberVariableType: CreditAccountNumberVariableTypeSchema,
     isImage: z.boolean().optional().nullable(),
+    limitType: LimitTypeSchema,
     dailyLimitPerAccount: z.number().optional().nullable(),
     limitPerTransaction: z.number().optional().nullable(),
     category: PaymentCategorySchema,

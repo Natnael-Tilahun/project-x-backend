@@ -548,3 +548,8 @@ export enum LogicalErrorType {
   RULE = "RULE",
   RULE_GROUP = "RULE_GROUP",
 }
+
+export enum LimitType {
+  LIMITED="LIMITED",
+  LIMITLESS="LIMITLESS"
+}

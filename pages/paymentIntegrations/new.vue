@@ -21,6 +21,7 @@ import {
   MinimumAmountVariableType,
   CreditAccountNumberVariableType,
   PaymentCategory,
+  LimitType,
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Charge, Customer, PaymentIntegration } from "~/types";
@@ -380,6 +381,35 @@ const confirmCreatePaymentIntegration = async () => {
               </FormItem>
             </FormField>
             <FormField
+              :model-value="data?.limitType"
+              v-slot="{ componentField }"
+              name="limitType"
+            >
+              <FormItem>
+                <FormLabel> Limit Type </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a limit type" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(LimitType)"
+                        :key="item"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField
+            v-if="form.values.limitType == LimitType.LIMITED"
               :model-value="data?.dailyLimitPerAccount"
               v-slot="{ componentField }"
               name="dailyLimitPerAccount"
@@ -397,6 +427,7 @@ const confirmCreatePaymentIntegration = async () => {
               </FormItem>
             </FormField>
             <FormField
+            v-if="form.values.limitType == LimitType.LIMITED"
               :model-value="data?.limitPerTransaction"
               v-slot="{ componentField }"
               name="limitPerTransaction"
@@ -414,6 +445,7 @@ const confirmCreatePaymentIntegration = async () => {
               </FormItem>
             </FormField>
             <FormField
+            v-if="form.values.limitType == LimitType.LIMITED"
               :model-value="data?.maxTransactionsPerDay"
               v-slot="{ componentField }"
               name="maxTransactionsPerDay"
