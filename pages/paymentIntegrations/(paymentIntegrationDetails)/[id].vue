@@ -20,6 +20,7 @@ import {
   CreditAccountNumberVariableType,
   Visibility,
   PaymentCategory,
+  LimitType,
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { useDocuments } from "~/composables/useDocuments";
@@ -598,7 +599,7 @@ onMounted(() => {
                   name="defaultLanguageCode"
                 >
                   <FormItem>
-                    <FormLabel> Default Language Code </FormLabel>
+                    <FormLabel> Default Language Code {{ form.values.limitType }} </FormLabel>
                     <FormControl>
                       <UiInput
                         type="text"
@@ -627,6 +628,35 @@ onMounted(() => {
                   </FormItem>
                 </FormField>
                 <FormField
+              :model-value="data?.limitType"
+              v-slot="{ componentField }"
+              name="limitType"
+            >
+              <FormItem>
+                <FormLabel> Limit Type </FormLabel>
+                <UiSelect v-bind="componentField">
+                  <FormControl>
+                    <UiSelectTrigger>
+                      <UiSelectValue placeholder="Select a limit type" />
+                    </UiSelectTrigger>
+                  </FormControl>
+                  <UiSelectContent>
+                    <UiSelectGroup>
+                      <UiSelectItem
+                        v-for="item in Object.values(LimitType)"
+                        :key="item"
+                        :value="item"
+                      >
+                        {{ item }}
+                      </UiSelectItem>
+                    </UiSelectGroup>
+                  </UiSelectContent>
+                </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+                <FormField
+            v-if="form.values.limitType == LimitType.LIMITED"
                   :model-value="data?.dailyLimitPerAccount"
                   v-slot="{ componentField }"
                   name="dailyLimitPerAccount"
@@ -644,6 +674,7 @@ onMounted(() => {
                   </FormItem>
                 </FormField>
                 <FormField
+            v-if="form.values.limitType == LimitType.LIMITED"
                   :model-value="data?.limitPerTransaction"
                   v-slot="{ componentField }"
                   name="limitPerTransaction"
@@ -661,6 +692,7 @@ onMounted(() => {
                   </FormItem>
                 </FormField>
                 <FormField
+            v-if="form.values.limitType == LimitType.LIMITED"
                 :model-value="data?.maxTransactionsPerDay"
                 v-slot="{ componentField }"
                 name="maxTransactionsPerDay"
