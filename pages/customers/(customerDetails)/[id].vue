@@ -15,6 +15,7 @@ const {
   getCoreAccountsByCustomerId,
   isLoading,
 } = useCustomers();
+
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
 const customerId = ref<string>("");
@@ -28,14 +29,6 @@ const accountCustomerId = ref<string>();
 const coreCustomerId = ref<string>();
 const tooltipText = ref<string>("Copy to clipboard");
 const tooltipOpen = ref<boolean>(true);
-const openEditModal = ref(false);
-const openLinkModal = ref(false);
-const setOpenEditModal = (value: boolean) => {
-  openEditModal.value = value;
-};
-const setOpenLinkModal = (value: boolean) => {
-  openLinkModal.value = value;
-};
 
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
@@ -45,19 +38,6 @@ customerId.value = pathSegments.value[pathLength - 1];
 function splitPath(path: any) {
   return path.split("/").filter(Boolean);
 }
-
-const displayApiDataOnLabel = (data: any) => {
-  if (data == null || data == "") {
-    return "-";
-  }
-  if (data == false) {
-    return "false";
-  }
-  if (data == true) {
-    return "true";
-  }
-  return data; // Default case if customerActivated is undefined or any other value
-};
 
 const copyToClipboard = (data: any) => {
   navigator.clipboard.writeText(data);
@@ -76,7 +56,6 @@ try {
   isLoading.value = true;
   loading.value = true;
   data.value = await getCustomerById(customerId.value); // Call your API function to fetch roles
-  console.log("customerId.value data: ", data.value);
   accountCustomerId.value = data.value?.coreCustomerId;
 } catch (err) {
   console.error("Error fetching customers:", err);
@@ -253,6 +232,14 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
             Devices
           </UiTabsTrigger>
           </UiPermissionGuard>
+          <!-- <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_LOGIN_HISTORY > -->
+        <UiTabsTrigger
+            value="loginHistory"
+            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+          >
+          Login History
+          </UiTabsTrigger>
+          <!-- </UiPermissionGuard> -->
                <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_CONTRACT >
                 <UiTabsTrigger
             value="contracts"
@@ -483,6 +470,12 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
           <CustomersDevices />
         </UiTabsContent>
         </UiPermissionGuard>
+
+        <!-- <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_DEVICE > -->
+            <UiTabsContent value="loginHistory" class="space-y-4 py-8">
+          <CustomersLoginHistory />
+        </UiTabsContent>
+        <!-- </UiPermissionGuard> -->
 
         <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_CONTRACT >
           <UiTabsContent value="contracts" class="space-y-4 py-8">

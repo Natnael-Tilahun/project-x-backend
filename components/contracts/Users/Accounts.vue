@@ -625,10 +625,7 @@ const refetchPage = async () => {
                               <div
                                 class="flex gap-2 self-center justify-end items-center w-full"
                               >
-                                <!-- Permissions button -->
-                                <UiPermissionGuard
-                                  permission="VIEW_USER_ACCOUNTS_PERMISSION"
-                                >
+
                                   <div class="flex items-center">
                                     <UiSheet>
                                       <UiSheetTrigger>
@@ -662,7 +659,6 @@ const refetchPage = async () => {
                                       </UiSheetContent>
                                     </UiSheet>
                                   </div>
-                                </UiPermissionGuard>
 
                                 <!-- Remove button -->
                                 <UiButton
