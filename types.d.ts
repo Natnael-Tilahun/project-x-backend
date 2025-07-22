@@ -134,6 +134,15 @@ interface Device {
   deviceStatus?: DeviceStatus;
 }
 
+interface LoginHistory{
+  expires?:	string;
+  userAgent?:	string
+  deviceId?:	string
+  createdDate?:	string
+  lastModifiedDate?:	string
+  used?:	boolean
+}
+
 interface UserInput {
   username: string;
   password: string;
