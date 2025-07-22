@@ -1,7 +1,7 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
-import type { CoreCustomerSummery, Customer, Device, User } from "~/types";
+import type { CoreCustomerSummery, Customer, Device, LoginHistory, User } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
@@ -319,6 +319,25 @@ export const useCustomers = () => {
     }
   };
 
+  const getCustomerLoginHistory: (
+    customerId: string
+  ) => ApiResult<LoginHistory[]> = async (customerId) => {
+    try {
+      const { data, pending, error, status } = await fetch<LoginHistory[]>(
+        `/api/v1/internal/customers/${customerId}/login-history`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+      return data.value ? (data.value as unknown as LoginHistory[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   const getCustomerDevicesByDeviceId: (
     customerId: string,
     deviceId: string
@@ -403,5 +422,6 @@ export const useCustomers = () => {
     suspendCustomerDevicesByDeviceId,
     restoreCustomerDevicesByDeviceId,
     getCoreAccountsByAccount,
+    getCustomerLoginHistory
   };
 };

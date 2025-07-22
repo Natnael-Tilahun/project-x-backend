@@ -377,7 +377,8 @@ const testingOperation = async () => {
                       <UiLabel>Error Validation</UiLabel>
                       <UiSheetTrigger>
                         <UiButton
-                          class="w-full"
+                        class="font-medium w-full cursor-pointer px-2 h-fit py-2 bg-[#8C2A7C]/15 text-primary hover:bg-[#8C2A7C]/20"
+
                           variant="outline"
                           type="button"
                           size="sm"
