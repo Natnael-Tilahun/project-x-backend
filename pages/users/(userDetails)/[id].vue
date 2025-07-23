@@ -70,7 +70,22 @@ try {
             PIN Reset
           </UiTabsTrigger>
           </UiPermissionGuard>
-   
+          <UiPermissionGuard :permission=PermissionConstants.READ_USER_DEVICE >
+        <UiTabsTrigger
+            value="devices"
+            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+          >
+            Devices
+          </UiTabsTrigger>
+          </UiPermissionGuard>
+          <!-- <UiPermissionGuard :permission=PermissionConstants.RESET_USER_PIN > -->
+          <UiTabsTrigger
+            value="loginHistory"
+            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+          >
+            Login History
+          </UiTabsTrigger>
+          <!-- </UiPermissionGuard> -->
         </UiTabsList>
 
         <UiPermissionGuard :permission=PermissionConstants.READ_USER >
@@ -380,6 +395,18 @@ try {
           <UsersPinReset />
         </UiTabsContent>
         </UiPermissionGuard>
+
+        <UiPermissionGuard :permission=PermissionConstants.READ_USER_DEVICE >
+            <UiTabsContent value="devices" class="space-y-4 py-8">
+          <UsersDevices/>
+        </UiTabsContent>
+        </UiPermissionGuard>
+
+        <!-- <UiPermissionGuard :permission=PermissionConstants.RESET_USER_PIN > -->
+        <UiTabsContent value="loginHistory" class="space-y-4 py-8">
+          <UsersLoginHistory />
+        </UiTabsContent>
+        <!-- </UiPermissionGuard> -->
       </UiTabs>
     </UiCard>
   </div>

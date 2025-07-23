@@ -7,57 +7,27 @@ import { DeviceStatus } from "~/global-types";
 import { getIdFromPath } from "~/lib/utils";
 import type { Device } from "~/types";
 
-// const { getUserDevices, suspendDevicesByDeviceId, restoreDevicesByDeviceId, isLoading } = useUsers();
 const {
-  getCustomerDevices,
-  suspendCustomerDevicesByDeviceId,
-  restoreCustomerDevicesByDeviceId,
+  getStaffDevices,
+  suspendStaffDevicesByDeviceId,
+  restoreStaffDevicesByDeviceId,
   isLoading,
-} = useCustomers();
+} = useStaffs();
 
 const data = ref<Device[]>();
 const loading = ref(isLoading.value);
 const isError = ref(false);
-const accountsData = ref<any>();
-const coreCustomerId = ref<string>();
-const tooltipText = ref<string>("Copy to clipboard");
-const tooltipOpen = ref<boolean>(true);
 const selectedDevices = ref<Device[]>([]);
-const selectedDeviceId = ref<string>("");
-const showDeviceDetails = ref(false);
 const customerId = ref<string>();
 const route = useRoute();
 // Update the interface to match the actual data structure
-customerId.value = getIdFromPath(route.fullPath);
+customerId.value = getIdFromPath(route.path);
 const openEditModal = ref(false);
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
 };
 const selectedDeviceSuspended = ref("");
 const deviceId = ref<string>("");
-
-const displayApiDataOnLabel = (data: any) => {
-  if (data == null || data == "") {
-    return "-";
-  }
-  if (data == false) {
-    return "false";
-  }
-  if (data == true) {
-    return "true";
-  }
-  return data; // Default case if customerActivated is undefined or any other value
-};
-
-const copyToClipboard = (data: any) => {
-  navigator.clipboard.writeText(data);
-  tooltipText.value = "Copied to clipboard";
-  tooltipOpen.value = true;
-  setTimeout(() => {
-    tooltipOpen.value = false;
-    tooltipText.value = "Copy to clipboard";
-  }, 2000); // Reset the tooltip text after 2 seconds
-};
 
 const handleDeviceSelect = (device: Device) => {
   const index = selectedDevices.value.findIndex(
@@ -79,7 +49,7 @@ const fetchDevices = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    data.value = await getCustomerDevices(customerId.value as string); // Call your API function to fetch roles
+    data.value = await getStaffDevices(customerId.value as string); // Call your API function to fetch roles
     console.log("Devices data: ", data.value);
   } catch (err) {
     console.error("Error fetching devices:", err);
@@ -95,12 +65,12 @@ const manageDevice = async () => {
     isLoading.value = true;
     loading.value = true;
     if (selectedDeviceSuspended.value == DeviceStatus.SUSPENDED) {
-      await restoreCustomerDevicesByDeviceId(
+      await restoreStaffDevicesByDeviceId(
         customerId.value as string,
         deviceId.value
       );
     } else {
-      await suspendCustomerDevicesByDeviceId(
+      await suspendStaffDevicesByDeviceId(
         customerId.value as string,
         deviceId.value
       );
@@ -474,8 +444,6 @@ onMounted(() => {
           </UiAccordionContent>
         </UiAccordionItem>
       </UiAccordion>
-      <!-- </div> -->
-      <!-- <UiButton class="w-fit self-end px-8">UnLink</UiButton> -->
     </UiCard>
 
     <UiCard
