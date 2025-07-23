@@ -8,10 +8,10 @@ import { getIdFromPath } from "~/lib/utils";
 import type { Device, LoginHistory } from "~/types";
 
 const {
-  getCustomerDevices,
-  getCustomerLoginHistory,
+  getUserDevices,
+  getUsersLoginHistory,
   isLoading,
-} = useCustomers();
+} = useUsers();
 
 const deviceData = ref<Device[]>();
 const loginHistoryData = ref<LoginHistory[]>();
@@ -21,7 +21,7 @@ const selectedDevice = ref<Device>()
 const customerId = ref<string>();
 const route = useRoute();
 // Update the interface to match the actual data structure
-customerId.value = getIdFromPath(route.fullPath);
+customerId.value = getIdFromPath(route.path);
 const deviceId = ref<string>("");
 
 const handleDeviceSelect = (deviceId: string) => {
@@ -36,7 +36,7 @@ const fetchDevices = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    deviceData.value = await getCustomerDevices(customerId.value as string); // Call your API function to fetch roles
+    deviceData.value = await getUserDevices(customerId.value as string); // Call your API function to fetch roles
   } catch (err) {
     console.error("Error fetching devices:", err);
     isError.value = true;
@@ -50,12 +50,13 @@ const fetchLoginHistories = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    const response = await getCustomerLoginHistory(customerId.value as string, {
+    loginHistoryData.value = await getUsersLoginHistory(customerId.value as string,
+    {
       page: 0,
       size: 20,
       sort: ["lastModifiedDate,desc"]
-    }); // Call your API function to fetch roles
-    loginHistoryData.value = response
+    }
+    ); // Call your API function to fetch roles
   } catch (err) {
     console.error("Error fetching lgoin histories:", err);
     isError.value = true;
@@ -69,6 +70,7 @@ onMounted(() => {
   fetchDevices();
   fetchLoginHistories()
 });
+
 </script>
 
 <template>
@@ -101,18 +103,17 @@ onMounted(() => {
           <div class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors"
             :class="{ 'bg-muted/50': isDeviceSelected(device?.deviceId) }"
             @click.stop="handleDeviceSelect(device?.deviceId)">
-
-            <div class="w-full" ref="parent">
+            <div class="w-full">
               <UiAccordionTrigger
                 class="hover:no-underline grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-4 items-center w-full">
                 <!-- Equal width columns -->
                 <div class="flex flex-col gap-1 items-start min-w-0">
                   <p class="text-sm text-muted-foreground">Device ID</p>
-                  <p class="font-medium text-sm text-left">
+                  <p class="font-medium truncate text-sm text-left">
                     {{ device.deviceId || "-" }}
                   </p>
                 </div>
-                <div class="flex flex-col gap-1 items-start min-w-0">
+                <div class="flex flex-col gap-1 items-start min-w-0 ">
                   <p class="text-sm text-muted-foreground">Login From</p>
                   <p class="font-medium text-sm text-left ">
                     {{ device.userAgent || "-" }}
@@ -121,21 +122,20 @@ onMounted(() => {
                 <div class="flex flex-col gap-1 items-start min-w-0">
                   <p class="text-sm text-muted-foreground">Last Login Time</p>
                   <p class="font-medium text-sm text-left">
-                    {{
-                      device?.lastModifiedDate
-                        ? new Date(device.lastModifiedDate).toLocaleString('en-US', {
-                          // weekday: 'short',
-                          year: 'numeric',
-                          month: 'short',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          second: '2-digit',
-                          hour12: true
-                        })
-                        : "-"
-                    }}
-                    ( {{ formatDistanceToNow(new Date(device?.lastModifiedDate), { addSuffix: true }) }} )
+                    {{ device?.lastModifiedDate
+                      ? new Date(device.lastModifiedDate).toLocaleString('en-US', {
+                        // weekday: 'short',
+                        year: 'numeric',
+                        month: 'short',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true
+                      })
+                    : "-" }}
+                                        ( {{ formatDistanceToNow(new Date(device?.lastModifiedDate), { addSuffix: true }) }} )
+
                   </p>
                 </div>
                 <div class="flex flex-col gap-1 items-start min-w-0">
@@ -152,7 +152,7 @@ onMounted(() => {
                         second: '2-digit',
                         hour12: true
                       })
-                      : "-" }}
+                    : "-" }}
                   </p>
                 </div>
               </UiAccordionTrigger>
@@ -372,7 +372,7 @@ onMounted(() => {
                 </p>
               </div>
             </div>
-            <div class="p-6 text-center border-t text-muted-foreground" v-else>
+            <div class="p-4 text-center border-t text-muted-foreground" v-else>
               No device detail to be shown
             </div>
           </UiAccordionContent>
@@ -382,7 +382,7 @@ onMounted(() => {
 
     <UiCard v-else-if="loginHistoryData && loginHistoryData.length === 0 && !loading && !isError"
       class="w-full p-6 text-center">
-      <p class="text-muted-foreground">No login history found for this customer</p>
+      <p class="text-muted-foreground">No login history found for this staff</p>
     </UiCard>
     <div v-if="isError && !loading">
       <ErrorMessage :retry="fetchDevices" title="Something went wrong." />

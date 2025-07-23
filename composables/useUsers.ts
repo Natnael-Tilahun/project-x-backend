@@ -1,4 +1,4 @@
-import type { Customer, Device, User, UserInput } from "~/types";
+import type { Customer, Device, LoginHistory, User, UserInput } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
@@ -316,6 +316,31 @@ export const useUsers = () => {
     }
   };
 
+  const getUsersLoginHistory: (
+    customerId: string,
+    options?: { page?: number; size?: number; sort?: string[] }
+  ) => ApiResult<LoginHistory[]> = async (customerId, options = {}) => {
+    try {
+      const params: any = {};
+      if (options.page !== undefined) params.page = options.page;
+      if (options.size !== undefined) params.size = options.size;
+      if (options.sort) params.sort = options.sort;
+      const { data, pending, error, status } = await fetch<LoginHistory[]>(
+        `/api/v1/internal/users/${customerId}/login-history`,
+        { params }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+      return data.value ? (data.value as unknown as LoginHistory[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return {
     isLoading,
     getUsers,
@@ -334,6 +359,7 @@ export const useUsers = () => {
     getUserDevicesByDeviceId,
     suspendDevicesByDeviceId,
     restoreDevicesByDeviceId,
+    getUsersLoginHistory
   };
 };
 
