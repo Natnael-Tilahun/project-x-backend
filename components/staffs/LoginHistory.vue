@@ -8,10 +8,10 @@ import { getIdFromPath } from "~/lib/utils";
 import type { Device, LoginHistory } from "~/types";
 
 const {
-  getCustomerDevices,
-  getCustomerLoginHistory,
+  getStaffDevices,
+  getStaffLoginHistory,
   isLoading,
-} = useCustomers();
+} = useStaffs();
 
 const deviceData = ref<Device[]>();
 const loginHistoryData = ref<LoginHistory[]>();
@@ -21,7 +21,7 @@ const selectedDevice = ref<Device>()
 const customerId = ref<string>();
 const route = useRoute();
 // Update the interface to match the actual data structure
-customerId.value = getIdFromPath(route.fullPath);
+customerId.value = getIdFromPath(route.path);
 const deviceId = ref<string>("");
 
 const handleDeviceSelect = (deviceId: string) => {
@@ -36,7 +36,7 @@ const fetchDevices = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    deviceData.value = await getCustomerDevices(customerId.value as string); // Call your API function to fetch roles
+    deviceData.value = await getStaffDevices(customerId.value as string); // Call your API function to fetch roles
   } catch (err) {
     console.error("Error fetching devices:", err);
     isError.value = true;
@@ -50,12 +50,7 @@ const fetchLoginHistories = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    const response = await getCustomerLoginHistory(customerId.value as string, {
-      page: 0,
-      size: 20,
-      sort: ["lastModifiedDate,desc"]
-    }); // Call your API function to fetch roles
-    loginHistoryData.value = response
+    loginHistoryData.value = await getStaffLoginHistory(customerId.value as string); // Call your API function to fetch roles
   } catch (err) {
     console.error("Error fetching lgoin histories:", err);
     isError.value = true;
@@ -98,7 +93,7 @@ onMounted(() => {
       <UiAccordion type="single" collapsible v-model:value="openItems">
         <UiAccordionItem v-for="(device, index) in loginHistoryData" :key="device.deviceId" :value="`item-${index + 1}`"
           class="border rounded-lg mb-4 data-[state=open]:bg-muted/50">
-          <div class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors"
+          <div class="flex items-center px-6 hover:bg-muted/50 cursor-pointer transition-colors"
             :class="{ 'bg-muted/50': isDeviceSelected(device?.deviceId) }"
             @click.stop="handleDeviceSelect(device?.deviceId)">
 
@@ -106,41 +101,40 @@ onMounted(() => {
               <UiAccordionTrigger
                 class="hover:no-underline grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-4 items-center w-full">
                 <!-- Equal width columns -->
-                <div class="flex flex-col gap-1 items-start min-w-0">
+                <div class="flex flex-col items-start min-w-0">
                   <p class="text-sm text-muted-foreground">Device ID</p>
-                  <p class="font-medium text-sm text-left">
+                  <p class="font-medium truncate text-base text-left">
                     {{ device.deviceId || "-" }}
                   </p>
                 </div>
-                <div class="flex flex-col gap-1 items-start min-w-0">
+                <div class="flex flex-col items-start min-w-0">
                   <p class="text-sm text-muted-foreground">Login From</p>
-                  <p class="font-medium text-sm text-left ">
+                  <p class="font-medium text-base text-left ">
                     {{ device.userAgent || "-" }}
                   </p>
                 </div>
-                <div class="flex flex-col gap-1 items-start min-w-0">
+                <div class="flex flex-col items-start min-w-0">
                   <p class="text-sm text-muted-foreground">Last Login Time</p>
-                  <p class="font-medium text-sm text-left">
-                    {{
-                      device?.lastModifiedDate
-                        ? new Date(device.lastModifiedDate).toLocaleString('en-US', {
-                          // weekday: 'short',
-                          year: 'numeric',
-                          month: 'short',
-                          day: '2-digit',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                          second: '2-digit',
-                          hour12: true
-                        })
-                        : "-"
-                    }}
-                    ( {{ formatDistanceToNow(new Date(device?.lastModifiedDate), { addSuffix: true }) }} )
+                  <p class="font-medium truncate text-base text-left">
+                    {{ device?.lastModifiedDate
+                      ? new Date(device.lastModifiedDate).toLocaleString('en-US', {
+                        // weekday: 'short',
+                        year: 'numeric',
+                        month: 'short',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        second: '2-digit',
+                        hour12: true
+                      })
+                    : "-" }}
+                                                            ( {{ formatDistanceToNow(new Date(device?.lastModifiedDate), { addSuffix: true }) }} )
+
                   </p>
                 </div>
-                <div class="flex flex-col gap-1 items-start min-w-0">
+                <div class="flex flex-col items-start min-w-0">
                   <p class="text-sm text-muted-foreground">Login Expired Time</p>
-                  <p class="font-medium text-sm text-left">
+                  <p class="font-medium truncate text-base text-left">
                     {{ device?.expires
                       ? new Date(device.expires).toLocaleString('en-US', {
                         // weekday: 'short',
@@ -151,10 +145,24 @@ onMounted(() => {
                         minute: '2-digit',
                         second: '2-digit',
                         hour12: true
-                      })
-                      : "-" }}
+                    })
+                    : "-"}}
                   </p>
                 </div>
+                <!-- <div class="flex flex-col items-center">
+                  <p class="text-sm text-muted-foreground">Status</p>
+                  <UiBadge
+                    class="font-medium"
+                    :class="{
+                      'bg-red-500': device.deviceStatus === DeviceStatus.SUSPENDED,
+                      'bg-green-500': device.deviceStatus === DeviceStatus.ACTIVE,
+                      'bg-orange-500': device.deviceStatus === DeviceStatus.INACTIVE,
+                      'bg-gray-300': device.deviceStatus === DeviceStatus.UNENEOLLED || device.deviceStatus === DeviceStatus.NEW || device.deviceStatus === DeviceStatus.PENDING || device.deviceStatus === DeviceStatus.NONE,
+                    }"
+                  >
+                    {{ device.deviceStatus }}
+                  </UiBadge>
+                </div> -->
               </UiAccordionTrigger>
             </div>
           </div>
@@ -378,11 +386,13 @@ onMounted(() => {
           </UiAccordionContent>
         </UiAccordionItem>
       </UiAccordion>
+      <!-- </div> -->
+      <!-- <UiButton class="w-fit self-end px-8">UnLink</UiButton> -->
     </UiCard>
 
     <UiCard v-else-if="loginHistoryData && loginHistoryData.length === 0 && !loading && !isError"
       class="w-full p-6 text-center">
-      <p class="text-muted-foreground">No login history found for this customer</p>
+      <p class="text-muted-foreground">No login history found for this staff</p>
     </UiCard>
     <div v-if="isError && !loading">
       <ErrorMessage :retry="fetchDevices" title="Something went wrong." />
@@ -390,4 +400,3 @@ onMounted(() => {
   </div>
 </template>
 
-<style lang="css" scoped></style>

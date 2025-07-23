@@ -1,4 +1,4 @@
-import type { Contract, Staff } from "~/types";
+import type { Contract, Device, LoginHistory, Staff } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
@@ -215,6 +215,104 @@ export const useStaffs = () => {
     }
   };
 
+
+  const getStaffDevices: (userId: string) => ApiResult<Device[]> = async (userId) => {
+    try {
+      const { data, pending, error, status } = await fetch<Device[]>(
+        `/api/v1/internal/users/${userId}/devices`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Device[]) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  const getStaffDevicesByDeviceId: (userId: string, deviceId: string) => ApiResult<User> = async (userId, deviceId) => {
+    try {
+      const { data, pending, error, status } = await fetch<User>(
+        `/api/v1/internal/users/${userId}/devices/${deviceId}`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as User) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  const suspendStaffDevicesByDeviceId: (userId: string, deviceId: string) => ApiResult<User> = async (userId, deviceId) => {
+    try {
+      const { data, pending, error, status } = await fetch<User>(
+        `/api/v1/internal/users/${userId}/devices/${deviceId}/suspend`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as User) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  const restoreStaffDevicesByDeviceId: (userId: string, deviceId: string) => ApiResult<User> = async (userId, deviceId) => {
+    try {
+      const { data, pending, error, status } = await fetch<User>(
+        `/api/v1/internal/users/${userId}/devices/${deviceId}/restore`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as User) : null;
+    } catch (err) {
+      throw err
+    }
+  };
+
+  const getStaffLoginHistory: (
+    customerId: string,
+    options?: { page?: number; size?: number; sort?: string[] }
+  ) => ApiResult<LoginHistory[]> = async (customerId, options = {}) => {
+    try {
+      const params: any = {};
+      if (options.page !== undefined) params.page = options.page;
+      if (options.size !== undefined) params.size = options.size;
+      if (options.sort) params.sort = options.sort;
+      const { data, pending, error, status } = await fetch<LoginHistory[]>(
+        `/api/v1/internal/users/${customerId}/login-history`,
+        { params }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+      return data.value ? (data.value as unknown as LoginHistory[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return {
     isLoading,
     getStaffs,
@@ -226,6 +324,11 @@ export const useStaffs = () => {
     activateStaff,
     deactivateStaff,
     resetStaffPassword,
+    getStaffDevices,
+    getStaffDevicesByDeviceId,
+    suspendStaffDevicesByDeviceId,
+    restoreStaffDevicesByDeviceId,
+    getStaffLoginHistory,
     isSubmitting,
   };
 };

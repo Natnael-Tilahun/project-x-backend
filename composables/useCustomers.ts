@@ -320,11 +320,18 @@ export const useCustomers = () => {
   };
 
   const getCustomerLoginHistory: (
-    customerId: string
-  ) => ApiResult<LoginHistory[]> = async (customerId) => {
+    customerId: string,
+    options?: { page?: number; size?: number; sort?: string[] }
+  ) => ApiResult<LoginHistory[]> = async (customerId, options = {}) => {
     try {
+      const params: any = {};
+      if (options.page !== undefined) params.page = options.page;
+      if (options.size !== undefined) params.size = options.size;
+      if (options.sort) params.sort = options.sort;
+
       const { data, pending, error, status } = await fetch<LoginHistory[]>(
-        `/api/v1/internal/customers/${customerId}/login-history`
+        `/api/v1/internal/customers/${customerId}/login-history`,
+        { params }
       );
 
       isLoading.value = pending.value;

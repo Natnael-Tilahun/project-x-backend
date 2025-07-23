@@ -448,10 +448,12 @@ const isAllSelected = computed(() => {
                 <p class="text-sm text-muted-foreground">Currency</p>
                 <p class="font-medium">{{ account?.currencyCode }}</p>
               </div>
+              <UiPermissionGuard :permission="PermissionConstants.VIEW_ACCOUNT_BALANCE">
               <div>
                 <p class="text-sm text-muted-foreground">Available Balance</p>
                 <p class="font-medium">{{ account?.availableBalance }}</p>
               </div>
+              </UiPermissionGuard>
               <div>
                 <p class="text-sm text-muted-foreground">Last Updated</p>
                 <p class="font-medium">

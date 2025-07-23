@@ -222,6 +222,22 @@ watch(
           Reset Password
         </UiTabsTrigger>
         </UiPermissionGuard>
+        <UiPermissionGuard :permission=PermissionConstants.READ_STAFF_DEVICE >
+        <UiTabsTrigger
+            value="devices"
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+            >
+            Devices
+          </UiTabsTrigger>
+          </UiPermissionGuard>
+                   <!-- <UiPermissionGuard :permission=PermissionConstants.RESET_STAFF_PIN > -->
+                    <UiTabsTrigger
+            value="loginHistory"
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+          >
+            Login History
+          </UiTabsTrigger>
+          <!-- </UiPermissionGuard> -->
       </UiTabsList>
       <UiPermissionGuard :permission=PermissionConstants.READ_STAFF>
         <UiTabsContent
@@ -358,6 +374,16 @@ watch(
         <ResetPassword :email="data?.emailAddress || ''" :staffId="staffId" />
       </UiTabsContent>
       </UiPermissionGuard>
+      <UiPermissionGuard :permission=PermissionConstants.READ_STAFF_DEVICE >
+            <UiTabsContent value="devices" class="space-y-4 py-8">
+          <StaffsDevices/>
+        </UiTabsContent>
+        </UiPermissionGuard>
+                <!-- <UiPermissionGuard :permission=PermissionConstants.RESET_STAFF_PIN > -->
+                  <UiTabsContent value="loginHistory" class="space-y-4 py-8">
+          <StaffsLoginHistory />
+        </UiTabsContent>
+        <!-- </UiPermissionGuard> -->
     </UiTabs>
     <div v-else-if="data == null || data == undefined">
       <UiNoResultFound title="Sorry, No staff found." />
