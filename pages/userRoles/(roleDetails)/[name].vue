@@ -39,9 +39,17 @@ const isError = ref(false);
 const data = ref<Role | null>(null);
 const route = useRoute();
 const name: string = route.params.name as string;
-
 const addLoading = ref(false);
 const deleteLoading = ref(false);
+const openDeletePermissionModal = ref(false);
+const setOpenDeletePermissionModal = (value: boolean) => {
+  openDeletePermissionModal.value = value;
+};
+
+const openAddPermissionModal = ref(false);
+const setOpenAddPermissionModal = (value: boolean) => {
+  openAddPermissionModal.value = value;
+};
 
 interface FormValues {
   name: string;
@@ -278,6 +286,7 @@ const addSelectedPermissions = async () => {
     });
     await refetch();
     selectedToAdd.value = [];
+    setOpenAddPermissionModal(false)
   } catch (err) {
     isError.value = true;
     toast({
@@ -306,6 +315,7 @@ const deleteSelectedPermissions = async () => {
     });
     await refetch();
     selectedToDelete.value = [];
+    setOpenDeletePermissionModal(false)
   } catch (err) {
     isError.value = true;
     toast({
@@ -499,7 +509,7 @@ function unselectAllSelected() {
                     type="button"
                       class="ml-auto w-fit bg-green-600"
                       :disabled="selectedToAdd.length === 0 || addLoading"
-                    @click="addSelectedPermissions"
+                    @click="setOpenAddPermissionModal(true)"
                   >
                     <Icon
                       name="material-symbols:add"
@@ -599,7 +609,7 @@ function unselectAllSelected() {
                 type="button"
                   class="mt-2 w-full bg-green-600"
                   :disabled="!selectedToAdd.length || isUpdating || addLoading"
-                  @click.prevent="addSelectedPermissions"
+                  @click.prevent="setOpenAddPermissionModal(true)"
                 >
                 <Icon
                       name="material-symbols:add"
@@ -666,7 +676,7 @@ function unselectAllSelected() {
                   type="button"
                     class="ml-auto w-fit bg-red-600 text-white"
                     :disabled="!selectedToDelete.length || isUpdating || deleteLoading"
-                    @click.prevent="deleteSelectedPermissions"
+                    @click.prevent="setOpenDeletePermissionModal(true)"
                   >
                     <Icon
                       name="svg-spinners:8-dots-rotate"
@@ -753,7 +763,7 @@ function unselectAllSelected() {
                     type="button"
                     class="mt-2 w-full bg-red-600 text-white"
                     :disabled="!selectedToDelete.length || isUpdating || deleteLoading"
-                    @click.prevent="deleteSelectedPermissions"
+                    @click.prevent="setOpenDeletePermissionModal(true)"
                   >
                   <Icon
                       name="svg-spinners:8-dots-rotate"
@@ -788,4 +798,54 @@ function unselectAllSelected() {
       <ErrorMessage :retry="refetch" title="Something went wrong." />
     </div>
   </form>
+
+  <UiAlertDialog :open="openDeletePermissionModal" :onOpenChange="setOpenDeletePermissionModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          This action cannot be undone. This will permanently remove permissions from this system role.
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenDeletePermissionModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction class="bg-red-500" @click="deleteSelectedPermissions()">
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="deleteLoading"
+            :disabled="deleteLoading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
+
+  <UiAlertDialog :open="openAddPermissionModal" :onOpenChange="setOpenAddPermissionModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          This action cannot be undone. This will permanently add permissions for this system role.
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenAddPermissionModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction class="bg-green-500" @click="addSelectedPermissions()">
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="addLoading"
+            :disabled="addLoading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
 </template>
