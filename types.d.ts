@@ -640,6 +640,33 @@ interface PaymentIntegration {
   maxTransactionsPerDay?: number | null;
 }
 
+interface ThirdPartyTransactionDetail{
+  id:	string
+  legacyId?:	string
+  amount:	string
+  creditAccountNumber?:	string
+  minimumAmount?:	number
+  maximumAmount?:	number
+  computedPaymentDetail?:	string
+  computedPaymentDetailShort?:	string
+  computedConfirmationTemplate?:	string
+  computedConfirmationTemplateShort?:	string
+  computedPaymentCompletedMessage?:	string
+  computedPaymentCompletedMessageShort?:	string
+  enquiryFormData: any
+  enquiryApiResponseData: any
+  paymentFormData: any
+  notifyWebhookApiResponseData:any
+  enquiryApiRequest?:	string
+  enquiryApiOperationId?:	string
+  enquiryApiRequestAndResponseRaw: any
+  notifyWebhookApiRequestAndResponseRaw: any
+  notifyApiRequest?:	string
+  notifyApiOperation?:	string
+  paymentIntegrationId?:	string
+  customerId?:	string
+}
+
 interface Menu {
   id?: string;
   legacyId?: string | null;
