@@ -402,6 +402,38 @@ onMounted(() => {
             New Payment Operation
           </UiTabsTrigger>
         </UiPermissionGuard>
+        <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_INTEGRATION>
+          <UiTabsTrigger
+            value="IntegrationTransactions"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'IntegrationTransactions',
+                },
+              })
+            "
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+          >
+          Integration Transactions
+          </UiTabsTrigger>
+          <UiTabsTrigger
+            value="transactionDetails"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'transactionDetails',
+                },
+              })
+            "
+            :disabled="openItems != 'transactionDetails'"
+            :class="openItems == 'transactionDetails' ? '' : 'hidden'"
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+          >
+            Transaction Details
+          </UiTabsTrigger>
+        </UiPermissionGuard>
       </UiTabsList>
 
       <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_INTEGRATION>
@@ -1374,6 +1406,20 @@ onMounted(() => {
           <PaymentOperationsNewPaymentOperation
             :integrationId="integrationId"
           />
+        </UiTabsContent>
+      </UiPermissionGuard>
+      <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_INTEGRATION>
+        <UiTabsContent
+          value="IntegrationTransactions"
+          class="text-base bg-background p-6 rounded-lg"
+        >
+          <PaymentIntegrationsTransactions />
+        </UiTabsContent>
+        <UiTabsContent
+          value="transactionDetails"
+          class="text-base bg-background px-6 rounded-lg"
+        >
+          <PaymentIntegrationsTransactionsDetails transactionDataProps="data" />
         </UiTabsContent>
       </UiPermissionGuard>
     </UiTabs>
