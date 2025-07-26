@@ -20,7 +20,8 @@ export default defineNuxtConfig({
     public: {
       // Only expose non-sensitive configuration to client
       HOME_URL:
-        process.env.HOME_URL || "https://https://digtalbankinguat.cbe.com.et/",
+        process.env.HOME_URL || "Mbadmin.cbe.com.et",
+        // "https://https://digtalbankinguat.cbe.com.et/",
       persistedState: {
         storage: "cookies",
         debug: false,
