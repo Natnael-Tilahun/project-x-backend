@@ -30,8 +30,17 @@ const selectedPermissions = ref<string[]>([]);
 const permissionsData = ref<Permission[]>([]);
 const isError = ref(false);
 const loading = ref(isLoading.value);
-
 const initialPermissions = ref<string[]>([]);
+
+const openDeletePermissionModal = ref(false);
+const setOpenDeletePermissionModal = (value: boolean) => {
+  openDeletePermissionModal.value = value;
+};
+
+const openAddPermissionModal = ref(false);
+const setOpenAddPermissionModal = (value: boolean) => {
+  openAddPermissionModal.value = value;
+};
 
 const fetchContractPermissionsData = async () => {
   try {
@@ -104,6 +113,7 @@ const addSelectedPermissions = async () => {
     });
     await refetch();
     selectedToAdd.value = [];
+    setOpenAddPermissionModal(false)
   } catch (err) {
     isError.value = true;
   } finally {
@@ -127,6 +137,7 @@ const deleteSelectedPermissions = async () => {
     });
     await refetch();
     selectedToDelete.value = [];
+    setOpenDeletePermissionModal(false)
   } catch (err) {
     isError.value = true;
   } finally {
@@ -210,7 +221,7 @@ const unselectAllAssigned = () => {
                   <UiButton
                     class="ml-auto w-fit bg-green-600"
                     :disabled="selectedToAdd.length === 0 || addLoading"
-                    @click="addSelectedPermissions"
+                    @click="setOpenAddPermissionModal(true)"
                   >
                     <Icon
                       name="material-symbols:add"
@@ -285,7 +296,7 @@ const unselectAllAssigned = () => {
                 <UiButton
                   class="mt-4 w-full bg-green-600"
                   :disabled="selectedToAdd.length === 0 || addLoading"
-                  @click="addSelectedPermissions"
+                  @click="setOpenAddPermissionModal(true)"
                 >
                   <Icon
                     name="material-symbols:add"
@@ -356,7 +367,7 @@ const unselectAllAssigned = () => {
                     size="sm"
                     class="w-fit ml-auto bg-red-600 text-white"
                     :disabled="selectedToDelete.length === 0 || deleteLoading"
-                    @click="deleteSelectedPermissions"
+                    @click="setOpenDeletePermissionModal(true)"
                   >
                     <Icon
                       name="heroicons:trash"
@@ -431,7 +442,7 @@ const unselectAllAssigned = () => {
                 <UiButton
                   class="mt-4 w-full bg-red-600 text-white"
                   :disabled="selectedToDelete.length === 0 || deleteLoading"
-                  @click="deleteSelectedPermissions"
+                  @click="setOpenDeletePermissionModal(true)"
                 >
                   <Icon
                     name="heroicons:trash"
@@ -468,6 +479,57 @@ const unselectAllAssigned = () => {
       </UiSheetDescription>
     </UiSheetHeader>
   </UiSheet>
+
+  <UiAlertDialog :open="openDeletePermissionModal" :onOpenChange="setOpenDeletePermissionModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          This action cannot be undone. This will permanently remove permissions from this core customers, inherited accounts and contract users.
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenDeletePermissionModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction class="bg-red-500" @click="deleteSelectedPermissions()">
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="deleteLoading"
+            :disabled="deleteLoading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
+
+  <UiAlertDialog :open="openAddPermissionModal" :onOpenChange="setOpenAddPermissionModal">
+    <UiAlertDialogContent>
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
+        <UiAlertDialogDescription>
+          This action cannot be undone. This will permanently add permissions for this core customers, inherited accounts and contract users.
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenAddPermissionModal(false)">
+          Cancel
+        </UiAlertDialogCancel>
+        <UiAlertDialogAction class="bg-green-500" @click="addSelectedPermissions()">
+          <Icon
+            name="svg-spinners:8-dots-rotate"
+            v-if="addLoading"
+            :disabled="addLoading"
+            class="mr-2 h-4 w-4 animate-spin"
+          ></Icon>
+          Continue
+        </UiAlertDialogAction>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
+  
 </template>
 
 <style lang="css" scoped></style>
