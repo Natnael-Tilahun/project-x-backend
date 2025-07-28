@@ -245,6 +245,45 @@ export const useCustomers = () => {
     }
   };
 
+  const resetPassphrase: (id: string) => ApiResult<Customer> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<Customer>(
+        `/api/v1/internal/customers/${id}/reset-passphrase`,
+        { method: "GET" }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Customer) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const unlockCustomer: (id: string) => ApiResult<Customer> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<Customer>(
+        `/api/v1/internal/customers/${id}/unlock-customer`,
+        { method: "GET" }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Customer) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+
   const createNeweCustomer: (customerData: any) => ApiResult<Customer> = async (
     customerData
   ) => {
@@ -421,6 +460,8 @@ export const useCustomers = () => {
     linkCoreBankCustomer,
     unLinkCoreBankCustomer,
     resetPin,
+    resetPassphrase,
+    unlockCustomer,
     createNeweCustomer,
     deleteCustomerById,
     searchCustomers,
