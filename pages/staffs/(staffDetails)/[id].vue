@@ -17,6 +17,7 @@ import type { Staff } from "~/types";
 import { dateFormatter } from "~/lib/utils";
 import ResetPassword from "~/components/staffs/ResetPassword.vue";
 import { PermissionConstants } from "~/constants/permissions";
+import UnlockStaff from "~/components/staffs/UnlockStaff.vue";
 const route = useRoute();
 const {
   getStaffById,
@@ -222,6 +223,22 @@ watch(
           Reset Password
         </UiTabsTrigger>
         </UiPermissionGuard>
+        <!-- <UiPermissionGuard :permission=PermissionConstants.UNLOCK_STAFF >
+        <UiTabsTrigger
+          value="unlockStaff"
+          @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'unlockStaff',
+              },
+            })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+        >
+          Unlock Staff
+        </UiTabsTrigger>
+        </UiPermissionGuard> -->
         <UiPermissionGuard :permission=PermissionConstants.READ_STAFF_DEVICE >
         <UiTabsTrigger
             value="devices"
@@ -374,6 +391,14 @@ watch(
         <ResetPassword :email="data?.emailAddress || ''" :staffId="staffId" />
       </UiTabsContent>
       </UiPermissionGuard>
+      <!-- <UiPermissionGuard :permission=PermissionConstants.UNLOCK_STAFF >
+      <UiTabsContent
+        value="unlockStaff"
+        class="text-base bg-background rounded-lg p-6"
+      >
+        <UnlockStaff :email="data?.emailAddress || ''" :staffId="staffId" />
+      </UiTabsContent>
+      </UiPermissionGuard> -->
       <UiPermissionGuard :permission=PermissionConstants.READ_STAFF_DEVICE >
             <UiTabsContent value="devices" class="space-y-4 py-8">
           <StaffsDevices/>

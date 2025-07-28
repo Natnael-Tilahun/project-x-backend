@@ -2,6 +2,8 @@
 const openItems = ref(["item-1"]);
 
 import { ref } from "vue";
+import PassphraseReset from "~/components/customers/PassphraseReset.vue";
+import UnlockCustomer from "~/components/customers/UnlockCustomer.vue";
 import { toast } from "~/components/ui/toast";
 import { PermissionConstants } from "~/constants/permissions";
 import type { Customer } from "~/types";
@@ -223,6 +225,22 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
           >
             PIN Reset
           </UiTabsTrigger>
+          <UiPermissionGuard :permission=PermissionConstants.RESET_CUSTOMER_PASSPHRASE >
+          <UiTabsTrigger
+            value="passphraseReset"
+            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+          >
+            Passphrase Reset
+          </UiTabsTrigger>
+        </UiPermissionGuard>
+        <UiPermissionGuard :permission=PermissionConstants.UNLOCK_CUSTOMER >
+          <UiTabsTrigger
+            value="unlockCustomer"
+            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+          >
+            Unlock Customer
+          </UiTabsTrigger>
+        </UiPermissionGuard>
         </UiPermissionGuard>
         <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_DEVICE >
         <UiTabsTrigger
@@ -463,6 +481,14 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
 
         <UiTabsContent value="pinReset" class="space-y-4 py-8">
           <CustomersPinReset :phone="data?.phone" :customerId="customerId" :coreCustomerId="data?.coreCustomerId" />
+        </UiTabsContent>
+
+        <UiTabsContent value="passphraseReset" class="space-y-4 py-8">
+          <PassphraseReset :phone="data?.phone" :customerId="customerId" :coreCustomerId="data?.coreCustomerId" />
+        </UiTabsContent>
+
+        <UiTabsContent value="unlockCustomer" class="space-y-4 py-8">
+          <UnlockCustomer :phone="data?.phone" :customerId="customerId" :coreCustomerId="data?.coreCustomerId" />
         </UiTabsContent>
 
            <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_DEVICE >

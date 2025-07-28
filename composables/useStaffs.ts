@@ -215,6 +215,24 @@ export const useStaffs = () => {
     }
   };
 
+  const unlockUser: (id: string) => ApiResult<Staff> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<Staff>(
+        `/api/v1/internal/staff/${id}/unlock`,
+        { method: "POST" }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Staff) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
 
   const getStaffDevices: (userId: string) => ApiResult<Device[]> = async (userId) => {
     try {
@@ -324,6 +342,7 @@ export const useStaffs = () => {
     activateStaff,
     deactivateStaff,
     resetStaffPassword,
+    unlockUser,
     getStaffDevices,
     getStaffDevicesByDeviceId,
     suspendStaffDevicesByDeviceId,
