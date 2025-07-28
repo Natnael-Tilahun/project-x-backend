@@ -203,6 +203,25 @@ export const useUsers = () => {
     }
   };
 
+  const unlockUser: (id: string) => ApiResult<User> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<User>(
+        `/api/v1/internal/users/${id}/unlock`,
+        { method: "POST" }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as User) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   const createNewUser: (userData: UserInput) => ApiResult<User> = async (userData) => {
     try {
       const { data, pending, error, status } = await fetch<User>(
@@ -352,6 +371,7 @@ export const useUsers = () => {
     getUserAvailabilityByEmail,
     getCoreAccountsByCustomerId,
     resetUserPin,
+    unlockUser,
     createNewUser,
     deleteUserById,
     searchUsers,

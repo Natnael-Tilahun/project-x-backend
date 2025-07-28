@@ -3,6 +3,7 @@ const openItems = ref(["item-1"]);
 
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
+import UnlockUser from "~/components/users/UnlockUser.vue";
 import { PermissionConstants } from "~/constants/permissions";
 import { getIdFromPath } from "~/lib/utils";
 import type { User } from "~/types";
@@ -70,6 +71,14 @@ try {
             PIN Reset
           </UiTabsTrigger>
           </UiPermissionGuard>
+          <!-- <UiPermissionGuard :permission=PermissionConstants.UNLOCK_USER > -->
+          <UiTabsTrigger
+            value="unlockUser"
+            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+          >
+            Unlock User
+          </UiTabsTrigger>
+          <!-- </UiPermissionGuard> -->
           <UiPermissionGuard :permission=PermissionConstants.READ_USER_DEVICE >
         <UiTabsTrigger
             value="devices"
@@ -395,6 +404,13 @@ try {
           <UsersPinReset />
         </UiTabsContent>
         </UiPermissionGuard>
+
+
+        <!-- <UiPermissionGuard :permission=PermissionConstants.UNLOCK_USER > -->
+        <UiTabsContent value="unlockUser" class="space-y-4 py-8">
+          <UnlockUser />
+        </UiTabsContent>
+        <!-- </UiPermissionGuard> -->
 
         <UiPermissionGuard :permission=PermissionConstants.READ_USER_DEVICE >
             <UiTabsContent value="devices" class="space-y-4 py-8">
