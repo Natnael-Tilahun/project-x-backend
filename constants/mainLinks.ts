@@ -182,13 +182,17 @@ export const mainLinks: MenuItem[] = [
       ],
     },
     {
-      title: "Logs & Reports",
+      title: "Logs & Health Reports",
       icon: "iconoir:reports-solid",
       size: "22",
       showDropdown: false,
       dropdown: [
-        { title: "Logs", link: "/logs", permission: PermissionConstants.READ_ADMIN_CONSOLE_LOG },
-        // { title: "Reports", link: "/reports" },
+        // { title: "Logs", link: "/logs", permission: PermissionConstants.READ_ADMIN_CONSOLE_LOG },
+        { title: "Logs", link: "/logs", permission:PermissionConstants.READ_ADMIN_CONSOLE_LOG},
+        { title: "Health", link: "/health", permission:""},
+        { title: "Api", link: "/docs", permission:""},
+        { title: "Configuration", link: "/configuration", permission:""}
+          // permission: PermissionConstants.READ_HEALTH        // { title: "Reports", link: "/reports" },
       ],
     },
   ];
