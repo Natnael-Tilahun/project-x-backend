@@ -1,70 +1,108 @@
 <template>
-  <div>
-    <h2>
-      <span id="health-page-heading" data-cy="healthPageHeading">Health</span>
-      <UiButton class="btn btn-primary float-right" @click="refresh" :disabled="updatingHealth">
-        <Icon name="svg-spinners:8-dots-rotate" v-if="updatingHealth" class="mr-2 h-4 w-4 animate-spin"></Icon>
+    <div v-if="isLoading" class="py-10 flex justify-center items-center">
+    <UiLoading />
+  </div>
+  <div v-else-if="healthData && !isError" class="w-full space-y-6">
+  <div class="space-y-6">
+    <div class="flex justify-between items-center">
+      <h1 id="health-page-heading" class="text-2xl font-medium" data-cy="healthPageHeading">Health</h1>
+      <UiButton class="btn btn-primary float-right" @click="refresh" :disabled="isLoading">
+        <Icon name="svg-spinners:8-dots-rotate" v-if="isLoading" class="mr-2 h-4 w-4 animate-spin"></Icon>
         <Icon v-else name="majesticons:refresh" class="h-6 w-6 mr-2"></Icon>
         <span>Refresh</span>
       </UiButton>
-    </h2>
+    </div>
     <div class="table-responsive">
-      <table id="healthCheck" class="table table-striped" aria-describedby="Health check">
-        <thead>
-          <tr>
-            <th scope="col">Service</th>
-            <th class="text-center" scope="col">Status</th>
-            <th class="text-center" scope="col">Details</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="health in healthData" :key="health.name">
-            <td>
+      <UiTable id="healthCheck" class="border rounded-xl table-striped" aria-describedby="Health check">
+        <UiTableHeader class="bg-blue-100 rounded-xl">
+          <UiTableRow>
+            <UiTableHead scope="col">Service</UiTableHead>
+            <UiTableHead class="text-center" scope="col">Status</UiTableHead>
+            <UiTableHead class="text-center" scope="col">Details</UiTableHead>
+          </UiTableRow>
+        </UiTableHeader>
+        <UiTableBody>
+          <UiTableRow v-for="health in healthData" :key="health.name">
+            <UiTableCell>
               <span>{{ getBaseName(health.name) }}</span>
               {{ getSubSystemName(health.name) }}
-            </td>
-            <td class="text-center">
-              <span class="badge" :class="getBadgeClass(health.status)">
+            </UiTableCell>
+            <UiTableCell class="text-center">
+              <UiBadge :class="getBadgeClass(health.status)">
                 {{ health.status }}
-              </span>
-            </td>
-            <td class="text-center">
-              <a class="hand" @click="showHealth(health)" v-if="health.details || health.error">
-                <font-awesome-icon icon="eye"></font-awesome-icon>
-              </a>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    <div v-if="showModal" class="modal-backdrop">
-      <div class="modal">
-        <div class="modal-header">
-          <h4 v-if="currentHealth" class="modal-title" id="showHealthLabel">
-            <span>{{ getBaseName(currentHealth.name) }}</span>
-            {{ getSubSystemName(currentHealth.name) }}
-          </h4>
-          <button type="button" class="close" @click="closeModal">&times;</button>
-        </div>
-        <health-modal :current-health="currentHealth" />
-      </div>
+              </UiBadge>
+            </UiTableCell>
+            <UiTableCell class="flex justify-center ">
+              <Icon v-if="health.details || health.error" name="material-symbols:visibility-rounded"
+                class="absolute flex  items-center w-6 h-6 cursor-pointer text-primary"
+                @click="showHealth(health)" />
+            </UiTableCell>
+          </UiTableRow>
+        </UiTableBody>
+      </UiTable>
     </div>
   </div>
+</div>
+  <div v-else-if="isError">
+    <ErrorMessage :retry="refresh" title="Something went wrong." />
+  </div>
+  <UiAlertDialog :open="openEditModal" :onOpenChange="setOpenEditModal">
+    <UiAlertDialogContent class="max-w-5xl overflow-x-auto">
+      <UiAlertDialogHeader>
+        <UiAlertDialogTitle class="text-2xl border-b">{{ getBaseName(currentHealth.name) }}</UiAlertDialogTitle>
+        <UiAlertDialogDescription class="w-full">
+          <div class="space-y-" v-if="currentHealth && currentHealth.details">
+            <h5 class="text-lg font-medium">Properties</h5>
+            <div class="table-responsive">
+              <UiTable class="w-full border" aria-describedby="Health">
+                <UiTableHeader class="bg-blue-100 rounded-xl">
+                  <UiTableRow>
+                    <UiTableHead class="text-left" scope="col">Name</UiTableHead>
+                    <UiTableHead class="text-left" scope="col">Value</UiTableHead>
+                  </UiTableRow>
+                </UiTableHeader>
+                <UiTableBody>
+                  <UiTableRow v-for="(value, key) in currentHealth.details" :key="key">
+                    <UiTableCell class="text-left">{{ key }}</UiTableCell>
+                    <UiTableCell class="text-left">{{ readableValue(value) }}</UiTableCell>
+                  </UiTableRow>
+                </UiTableBody>
+              </UiTable>
+            </div>
+          </div>
+          <div v-else class="border p-6 text-center rounded-lg">
+            <h1>No details for this health</h1>
+          </div>
+          <div class="space-y-4" v-if="currentHealth && currentHealth.error">
+            <h4>Error</h4>
+            <pre>{{ currentHealth.error }}</pre>
+          </div>
+        </UiAlertDialogDescription>
+      </UiAlertDialogHeader>
+      <UiAlertDialogFooter>
+        <UiAlertDialogCancel @click="setOpenEditModal(false)">
+          Close
+        </UiAlertDialogCancel>
+      </UiAlertDialogFooter>
+    </UiAlertDialogContent>
+  </UiAlertDialog>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import HealthModal from '~/components/health/HealthModal.vue';
 import { useLoggers } from '~/composables/useLoggers';
 
 const { getHealth } = useLoggers();
 
 const healthData = ref<any[]>([]);
 const currentHealth = ref<any>(null);
-const updatingHealth = ref(false);
-const showModal = ref(false);
 const isLoading = ref(false)
+const openEditModal = ref(false);
+const isError = ref(false)
 
+const setOpenEditModal = (value: boolean) => {
+  openEditModal.value = value;
+};
 // --- Health transformation logic (from HealthService) ---
 function getBaseName(name: string): string {
   if (name) {
@@ -85,7 +123,7 @@ function getSubSystemName(name: string): string {
 }
 
 function getBadgeClass(statusState: string) {
-  return statusState === 'UP' ? 'badge-success' : 'badge-danger';
+  return statusState === 'UP' ? 'bg-green-500' : 'bg-red-500';
 }
 
 function addHealthObject(result: any[], isLeaf: boolean, healthObject: any, name: string) {
@@ -184,7 +222,7 @@ function transformHealthData(data: any): any[] {
 // --- End health transformation logic ---
 
 async function refresh() {
-  updatingHealth.value = true;
+  isLoading.value = true;
   try {
     const res = await getHealth();
     if (res && res.components) {
@@ -198,56 +236,32 @@ async function refresh() {
     } else {
       healthData.value = [];
     }
+    isError.value = true;
   } finally {
-    updatingHealth.value = false;
+    isLoading.value = false;
   }
 }
 
 function showHealth(health: any) {
   currentHealth.value = health;
-  showModal.value = true;
-}
-
-function closeModal() {
-  showModal.value = false;
+  setOpenEditModal(true)
 }
 
 onMounted(() => {
   refresh();
 });
+
+function readableValue(value: any): string {
+  if (currentHealth.value?.name === 'diskSpace') {
+    const val = value / 1073741824;
+    if (val > 1) {
+      return `${val.toFixed(2)} GB`;
+    }
+    return `${(value / 1048576).toFixed(2)} MB`;
+  }
+  if (typeof value === 'object') {
+    return JSON.stringify(value);
+  }
+  return value?.toString?.() ?? '';
+}
 </script>
-
-<style scoped>
-.modal-backdrop {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  z-index: 1000;
-}
-
-.modal {
-  background: #fff;
-  margin: 5% auto;
-  padding: 1rem;
-  border-radius: 8px;
-  max-width: 600px;
-  position: relative;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.close {
-  background: none;
-  border: none;
-  font-size: 2rem;
-  line-height: 1;
-  cursor: pointer;
-}
-</style>

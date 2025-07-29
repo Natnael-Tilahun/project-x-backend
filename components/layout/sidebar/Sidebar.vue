@@ -7,9 +7,9 @@
       class="flex w-full items-center h-16 justify-between px-3 py-0 border-b"
     >
       <h1
-        class="lg:text-3xl text-xl font-black px-4 md:px-5 text-primary self-center"
+        class="lg:text-2xl whitespace-nowrap text-center w-full text-xl font-black px-4 text-primary self-center"
       >
-        Project-X
+        CBE MB
       </h1>
       <Icon
         name="material-symbols:cancel"
