@@ -966,7 +966,7 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
                             }}
                           </p>
                         </div>
-                        <div>
+                        <!-- <div>
                           <p class="text-sm text-muted-foreground">
                             Cleared Balance
                           </p>
@@ -974,7 +974,7 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
                             {{ account.onlineClearedBalance }}
                             {{ account.currency }}
                           </p>
-                        </div>
+                        </div> -->
                         <div>
                           <p class="text-sm text-muted-foreground">
                             Last Updated
