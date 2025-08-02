@@ -141,6 +141,15 @@ interface LoginHistory{
   createdDate?:	string
   lastModifiedDate?:	string
   used?:	boolean
+  country?:	string
+  city?:	string
+  state?:	string
+  timeZone?:	string
+  timeZoneOffset?:	string
+  isp?:	string
+  ipAddress?:	string
+  locale?:	string
+
 }
 
 interface UserInput {
