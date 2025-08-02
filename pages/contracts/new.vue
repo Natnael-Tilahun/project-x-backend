@@ -1000,7 +1000,7 @@ const isPhoneExistHandler = (value) => {
                             }}
                           </p>
                         </div>
-                        <div>
+                        <!-- <div>
                           <p class="text-sm text-muted-foreground">
                             Cleared Balance
                           </p>
@@ -1008,7 +1008,7 @@ const isPhoneExistHandler = (value) => {
                             {{ account.onlineClearedBalance }}
                             {{ account.currency }}
                           </p>
-                        </div>
+                        </div> -->
                         <div>
                           <p class="text-sm text-muted-foreground">
                             Last Updated

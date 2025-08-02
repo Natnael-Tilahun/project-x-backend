@@ -190,12 +190,12 @@ const isAccountSelected = (account: Account) => {
                   <p class="text-sm text-muted-foreground">Account Title</p>
                   <p class="font-medium">{{ account.accountTitle1 }}</p>
                 </div>
-                <div>
+                <!-- <div>
                   <p class="text-sm text-muted-foreground">Balance</p>
                   <p class="font-medium">
                     {{ account.onlineActualBalance }} {{ account.currency }}
                   </p>
-                </div>
+                </div> -->
                 <div>
                   <p class="text-sm text-muted-foreground">Opening Date</p>
                   <p class="font-medium">
@@ -231,18 +231,18 @@ const isAccountSelected = (account: Account) => {
                   {{ displayApiDataOnLabel(account.jointAccountHolder2) }}
                 </p>
               </div>
-              <div>
+              <!-- <div>
                 <p class="text-sm text-muted-foreground">Cleared Balance</p>
                 <p class="font-medium">
                   {{ account.onlineClearedBalance }} {{ account.currency }}
                 </p>
-              </div>
-              <div>
+              </div> -->
+              <!-- <div>
                 <p class="text-sm text-muted-foreground">Working Balance</p>
                 <p class="font-medium">
                   {{ account.workingBalance }} {{ account.currency }}
                 </p>
-              </div>
+              </div> -->
               <div>
                 <p class="text-sm text-muted-foreground">Last Updated</p>
                 <p class="font-medium">
