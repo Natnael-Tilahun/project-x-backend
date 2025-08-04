@@ -20,7 +20,11 @@ import {
   CreditAccountNumberVariableType,
   PaymentIntegrationType,
 } from "@/global-types";
-import type { ApiOperation, PaymentIntegration, PaymentOperation } from "~/types";
+import type {
+  ApiOperation,
+  PaymentIntegration,
+  PaymentOperation,
+} from "~/types";
 import { PermissionConstants } from "~/constants/permissions";
 
 const route = useRoute();
@@ -31,8 +35,7 @@ const {
   isLoading,
 } = usePaymentOperations();
 const { getOperations } = useOperations();
-const { getPaymentIntegrationPaymentOperations } =
-  usePaymentIntegrations();
+const { getPaymentIntegrationPaymentOperations } = usePaymentIntegrations();
 const { getIntegrations } = useIntegrations();
 
 const fullPath = ref(route.fullPath);
@@ -73,16 +76,16 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     const formData = {
       ...values,
       maximumAmountEnquiryPath:
-        integrationData?.maximumAmountVariableType ==
-          MaximumAmountVariableType.FIXED &&
-        integrationData?.transactionAmountType ==
+        integrationData.value?.maximumAmountVariableType ==
+          MaximumAmountVariableType.DYNAMIC &&
+        integrationData.value?.transactionAmountType ==
           TransactionAmountType.USER_DEFINED
           ? values?.maximumAmountEnquiryPath
           : null,
       minimumAmountEnquiryPath:
-        integrationData?.minimumAmountVariableType ==
-          MinimumAmountVariableType.FIXED &&
-        integrationData?.transactionAmountType ==
+        integrationData.value?.minimumAmountVariableType ==
+          MinimumAmountVariableType.DYNAMIC &&
+        integrationData.value?.transactionAmountType ==
           TransactionAmountType.USER_DEFINED
           ? values?.minimumAmountEnquiryPath
           : null,
@@ -209,12 +212,14 @@ const fetchData = async () => {
 
     // selectedApiIntegration.value = data.value.apiOperationId;
     selectedApiOperations.value = apiOperations.value.filter(
-      (operation:ApiOperation) =>
-      {
-        return operation?.id === data.value.apiOperationId
+      (operation: ApiOperation) => {
+        return operation?.id === data.value.apiOperationId;
       }
     );
-    selectedApiIntegration.value = apiIntegrations.value.filter(integration => (integration.id === selectedApiOperations.value[0]?.apiIntegrationId))[0]?.id
+    selectedApiIntegration.value = apiIntegrations.value.filter(
+      (integration) =>
+        integration.id === selectedApiOperations.value[0]?.apiIntegrationId
+    )[0]?.id;
     route.query.formId = data.value?.form?.id;
     formId.value = data.value?.form?.id;
 
@@ -592,7 +597,13 @@ watch(
           >
             <FormItem>
               <FormLabel> API Operation </FormLabel>
-              <UiSelect :required="integrationData?.integrationType !== PaymentIntegrationType.INTERNAL_TRANSFER" v-bind="componentField">
+              <UiSelect
+                :required="
+                  integrationData?.integrationType !==
+                  PaymentIntegrationType.INTERNAL_TRANSFER
+                "
+                v-bind="componentField"
+              >
                 <FormControl>
                   <UiSelectTrigger>
                     <UiSelectValue placeholder="Select an API operation" />
@@ -703,27 +714,29 @@ watch(
                 <FormMessage />
               </FormItem>
             </FormPropsField> -->
-            <UiPermissionGuard :permission="PermissionConstants.UPDATE_PAYMENT_OPERATION" >
-          <div class="col-span-full w-full py-4 flex justify-end gap-4">
-            <UiButton
-              :disabled="loading"
-              variant="outline"
-              type="button"
-              size="sm"
-              @click="$router.go(-1)"
-            >
-              Cancel
-            </UiButton>
-            <UiButton :disabled="loading" size="sm" type="submit">
-              <Icon
-                name="svg-spinners:8-dots-rotate"
-                v-if="loading"
-                class="mr-2 h-4 w-4 animate-spin"
-              ></Icon>
+          <UiPermissionGuard
+            :permission="PermissionConstants.UPDATE_PAYMENT_OPERATION"
+          >
+            <div class="col-span-full w-full py-4 flex justify-end gap-4">
+              <UiButton
+                :disabled="loading"
+                variant="outline"
+                type="button"
+                size="sm"
+                @click="$router.go(-1)"
+              >
+                Cancel
+              </UiButton>
+              <UiButton :disabled="loading" size="sm" type="submit">
+                <Icon
+                  name="svg-spinners:8-dots-rotate"
+                  v-if="loading"
+                  class="mr-2 h-4 w-4 animate-spin"
+                ></Icon>
 
-              Update
-            </UiButton>
-          </div>
+                Update
+              </UiButton>
+            </div>
           </UiPermissionGuard>
         </div>
       </div>
@@ -736,29 +749,29 @@ watch(
             value="info"
             >Info</UiTabsTrigger
           > -->
-<UiPermissionGuard :permission="PermissionConstants.READ_FORM" >
-          <UiTabsTrigger
-            :disabled="
-              operationId == '' ||
-              operationId == null ||
-              operationId == undefined
-            "
-            class="text-lg font-normal min-w-[100px] data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-0 data-[state=inactive]:border rounded-t-lg rounded-b-none data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted"
-            value="form"
-            >Form</UiTabsTrigger
-          >
+          <UiPermissionGuard :permission="PermissionConstants.READ_FORM">
+            <UiTabsTrigger
+              :disabled="
+                operationId == '' ||
+                operationId == null ||
+                operationId == undefined
+              "
+              class="text-lg font-normal min-w-[100px] data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-0 data-[state=inactive]:border rounded-t-lg rounded-b-none data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted"
+              value="form"
+              >Form</UiTabsTrigger
+            >
           </UiPermissionGuard>
-<UiPermissionGuard :permission="PermissionConstants.READ_FIELD" >
-          <UiTabsTrigger
-            :disabled="
-              operationId == '' ||
-              operationId == null ||
-              operationId == undefined
-            "
-            class="text-lg font-normal min-w-[100px] data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-0 data-[state=inactive]:border rounded-t-lg rounded-b-none data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted"
-            value="fields"
-            >Fields</UiTabsTrigger
-          >
+          <UiPermissionGuard :permission="PermissionConstants.READ_FIELD">
+            <UiTabsTrigger
+              :disabled="
+                operationId == '' ||
+                operationId == null ||
+                operationId == undefined
+              "
+              class="text-lg font-normal min-w-[100px] data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-0 data-[state=inactive]:border rounded-t-lg rounded-b-none data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted"
+              value="fields"
+              >Fields</UiTabsTrigger
+            >
           </UiPermissionGuard>
           <UiTabsTrigger
             class="text-lg font-normal min-w-[100px] data-[state=active]:border data-[state=active]:text-primary data-[state=active]:border-primary data-[state=active]:border-b-0 data-[state=inactive]:border rounded-t-lg rounded-b-none data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted"
@@ -776,24 +789,24 @@ watch(
             "
           />
         </UiTabsContent>
-<UiPermissionGuard :permission="PermissionConstants.READ_FORM" >
-        <UiTabsContent class="p-6" value="form">
-          <PaymentOperationsForms
-            @refresh="refetch"
-            :operationIdProps="operationId"
-          />
-        </UiTabsContent>
+        <UiPermissionGuard :permission="PermissionConstants.READ_FORM">
+          <UiTabsContent class="p-6" value="form">
+            <PaymentOperationsForms
+              @refresh="refetch"
+              :operationIdProps="operationId"
+            />
+          </UiTabsContent>
         </UiPermissionGuard>
-<UiPermissionGuard :permission="PermissionConstants.READ_FIELD" >
-        <UiTabsContent
-          class="text-base h-full px-6 py-4 space-y-2"
-          value="fields"
-        >
-          <PaymentOperationsFields
-            :fields="data?.form?.fields"
-            :formIdProps="formId"
-          />
-        </UiTabsContent>
+        <UiPermissionGuard :permission="PermissionConstants.READ_FIELD">
+          <UiTabsContent
+            class="text-base h-full px-6 py-4 space-y-2"
+            value="fields"
+          >
+            <PaymentOperationsFields
+              :fields="data?.form?.fields"
+              :formIdProps="formId"
+            />
+          </UiTabsContent>
         </UiPermissionGuard>
       </UiTabs>
     </form>

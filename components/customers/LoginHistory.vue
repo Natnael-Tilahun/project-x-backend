@@ -96,11 +96,11 @@ onMounted(() => {
       </div>
 
       <UiAccordion type="single" collapsible v-model:value="openItems">
-        <UiAccordionItem v-for="(device, index) in loginHistoryData" :key="device.deviceId" :value="`item-${index + 1}`"
+        <UiAccordionItem v-for="(history, index) in loginHistoryData" :key="history.deviceId" :value="`item-${index + 1}`"
           class="border rounded-lg mb-4 data-[state=open]:bg-muted/50">
           <div class="flex items-center px-4 hover:bg-muted/50 cursor-pointer transition-colors"
-            :class="{ 'bg-muted/50': isDeviceSelected(device?.deviceId) }"
-            @click.stop="handleDeviceSelect(device?.deviceId)">
+            :class="{ 'bg-muted/50': isDeviceSelected(history?.deviceId) }"
+            @click.stop="handleDeviceSelect(history?.deviceId)">
 
             <div class="w-full" ref="parent">
               <UiAccordionTrigger
@@ -109,21 +109,21 @@ onMounted(() => {
                 <div class="flex flex-col gap-1 items-start min-w-0">
                   <p class="text-sm text-muted-foreground">Device ID</p>
                   <p class="font-medium text-sm text-left">
-                    {{ device.deviceId || "-" }}
+                    {{ history.deviceId || "-" }}
                   </p>
                 </div>
                 <div class="flex flex-col gap-1 items-start min-w-0">
                   <p class="text-sm text-muted-foreground">Login From</p>
                   <p class="font-medium text-sm text-left ">
-                    {{ device.userAgent || "-" }}
+                    {{ history.userAgent || "-" }}
                   </p>
                 </div>
                 <div class="flex flex-col gap-1 items-start min-w-0">
                   <p class="text-sm text-muted-foreground">Last Login Time</p>
                   <p class="font-medium text-sm text-left">
                     {{
-                      device?.lastModifiedDate
-                        ? new Date(device.lastModifiedDate).toLocaleString('en-US', {
+                      history?.lastModifiedDate
+                        ? new Date(history.lastModifiedDate).toLocaleString('en-US', {
                           // weekday: 'short',
                           year: 'numeric',
                           month: 'short',
@@ -135,14 +135,14 @@ onMounted(() => {
                         })
                         : "-"
                     }}
-                    ( {{ formatDistanceToNow(new Date(device?.lastModifiedDate), { addSuffix: true }) }} )
+                    ( {{ formatDistanceToNow(new Date(history?.lastModifiedDate), { addSuffix: true }) }} )
                   </p>
                 </div>
                 <div class="flex flex-col gap-1 items-start min-w-0">
                   <p class="text-sm text-muted-foreground">Login Expired Time</p>
                   <p class="font-medium text-sm text-left">
-                    {{ device?.expires
-                      ? new Date(device.expires).toLocaleString('en-US', {
+                    {{ history?.expires
+                      ? new Date(history.expires).toLocaleString('en-US', {
                         // weekday: 'short',
                         year: 'numeric',
                         month: 'short',
@@ -160,220 +160,102 @@ onMounted(() => {
           </div>
 
           <UiAccordionContent class="px-0 pb-4">
-            <div v-if="selectedDevice" class="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-4 px-8 py-4 border-t">
+            <div  class="grid grid-cols-2 md:grid-cols-4 gap-y-4 px-4 py-4 border-t">
               <div>
                 <p class="text-sm text-muted-foreground">Device ID</p>
                 <p class="font-medium text-wrap">
-                  {{ selectedDevice?.deviceId || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">ID</p>
-                <p class="font-medium text-wrap">
-                  {{ selectedDevice.id || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Device Name</p>
-                <p class="font-medium w-full break-words whitespace-normal">
-                  {{ selectedDevice.deviceName || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Device Type</p>
-                <p class="font-medium">
-                  {{ selectedDevice.deviceType || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">OS Version</p>
-                <p class="font-medium">
-                  {{ selectedDevice.osVersion || "-" }}
+                  {{ history?.deviceId || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Country</p>
-                <p class="font-medium">
-                  {{ selectedDevice.country || "-" }}
+                <p class="font-medium w-full break-words whitespace-normal">
+                  {{ history.country || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">City</p>
                 <p class="font-medium">
-                  {{ selectedDevice.city || "-" }}
+                  {{ history.city || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">State</p>
                 <p class="font-medium">
-                  {{ selectedDevice.state || "-" }}
+                  {{ history.state || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Time Zone</p>
                 <p class="font-medium">
-                  {{ selectedDevice.timeZone || "-" }}
+                  {{ history.timeZone || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">ISP</p>
                 <p class="font-medium">
-                  {{ selectedDevice.isp || "-" }}
+                  {{ history.isp || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">IP Address</p>
                 <p class="font-medium">
-                  {{ selectedDevice.ipAddress || "-" }}
+                  {{ history.ipAddress || "-" }}
                 </p>
               </div>
               <div>
                 <p class="text-sm text-muted-foreground">Locale</p>
                 <p class="font-medium">
-                  {{ selectedDevice.locale || "-" }}
+                  {{ history.locale || "-" }}
                 </p>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">User Agent</p>
-                <p class="font-medium">
-                  {{ device.userAgent || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Request Source</p>
-                <p class="font-medium">
-                  {{ selectedDevice.requestSource || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">App Version</p>
-                <p class="font-medium">
-                  {{ selectedDevice.appVersion || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Platform</p>
-                <p class="font-medium">
-                  {{ selectedDevice.platform || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">OS Family</p>
-                <p class="font-medium">
-                  {{ selectedDevice.osFamily || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Device Family</p>
-                <p class="font-medium">
-                  {{ selectedDevice.deviceFamily || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">User Agent Family</p>
-                <p class="font-medium">
-                  {{ selectedDevice.userAgentFamily || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Created By</p>
-                <p class="font-medium">
-                  {{ selectedDevice.createdBy || "-" }}
-                </p>
-              </div>
-
-              <div>
-                <p class="text-sm text-muted-foreground">Initial Login Date</p>
+                <p class="text-sm text-muted-foreground">Created Date</p>
                 <p class="font-medium">
                   {{
-                    device.createdDate
-                      ? new Date(device.createdDate).toLocaleDateString()
-                      : "-"
-                  }}
+                      history?.createdDate
+                        ? new Date(history.createdDate).toLocaleString('en-US', {
+                          // weekday: 'short',
+                          year: 'numeric',
+                          month: 'short',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit',
+                          hour12: true
+                        })
+                        : "-"
+                    }}
+                    ( {{ formatDistanceToNow(new Date(history?.createdDate), { addSuffix: true }) }} )
                 </p>
               </div>
               <div>
-                <p class="text-sm text-muted-foreground">Last Modified By</p>
-                <p class="font-medium">
-                  {{ selectedDevice.lastModifiedBy || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Last Login Date</p>
+                <p class="text-sm text-muted-foreground">Last Modified Date</p>
                 <p class="font-medium">
                   {{
-                    device.lastModifiedDate
-                      ? new Date(device.lastModifiedDate).toLocaleDateString()
-                      : "-"
-                  }}
+                      history?.lastModifiedDate
+                        ? new Date(history.lastModifiedDate).toLocaleString('en-US', {
+                          // weekday: 'short',
+                          year: 'numeric',
+                          month: 'short',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit',
+                          hour12: true
+                        })
+                        : "-"
+                    }}
+                    ( {{ formatDistanceToNow(new Date(history?.lastModifiedDate), { addSuffix: true }) }} )
                 </p>
               </div>
-
+ 
               <div>
-                <p class="text-sm text-muted-foreground">Application Name</p>
+                <p class="text-sm text-muted-foreground">Used</p>
                 <p class="font-medium">
-                  {{ selectedDevice.applicationName || "-" }}
+                  {{ history.used || "-" }}
                 </p>
               </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Application Id</p>
-                <p class="font-medium text-wrap">
-                  {{ selectedDevice.applicationId || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">
-                  application Version Id
-                </p>
-                <p class="font-medium text-wrap">
-                  {{ selectedDevice.applicationVersionId || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Package Name</p>
-                <p class="font-medium text-wrap">
-                  {{ selectedDevice.packageName || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Version Number</p>
-                <p class="font-medium">
-                  {{ selectedDevice.versionNumber || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Build Number</p>
-                <p class="font-medium">
-                  {{ selectedDevice.buildNumber || "-" }}
-                </p>
-              </div>
-              <div class="flex-col items-start w-full flex-wrap">
-                <p class="text-sm text-muted-foreground">Build Signature</p>
-                <p class="font-medium w-full break-words whitespace-normal">
-                  {{ selectedDevice.buildSignature || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Installer Store</p>
-                <p class="font-medium text-wrap">
-                  {{ selectedDevice.installerStore || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Install Time</p>
-                <p class="font-medium">
-                  {{ selectedDevice.installTime || "-" }}
-                </p>
-              </div>
-              <div>
-                <p class="text-sm text-muted-foreground">Last Update Time</p>
-                <p class="font-medium">
-                  {{ selectedDevice.lastUpdateTime || "-" }}
-                </p>
-              </div>
-            </div>
-            <div class="p-6 text-center border-t text-muted-foreground" v-else>
-              No device detail to be shown
             </div>
           </UiAccordionContent>
         </UiAccordionItem>
