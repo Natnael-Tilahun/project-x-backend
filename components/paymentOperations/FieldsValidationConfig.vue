@@ -155,7 +155,10 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       ...formFields.value,
       validationConfig: {
         validationRules:
-          values?.validationRules?.map((rule) => {
+        values?.validationRules.length == 1 &&
+        values.logicalOperator == "NONE" && values.validationRules[0].against == "" && values.validationRules[0].errorMessage == "" && values.validationRules[0].operator == null ?
+        []
+          :values?.validationRules?.map((rule) => {
             const fieldCount = getOperatorAgainstFieldCount(rule.operator);
             return {
               operator: rule.operator,
