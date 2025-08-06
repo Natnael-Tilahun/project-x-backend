@@ -57,6 +57,7 @@ interface FormValues {
   description?: string;
   enforce2fa?: boolean;
   disabled: boolean;
+  effectiveToAllBranch?:boolean
 }
 
 const groupedPermissions = () => {
@@ -215,6 +216,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     name: values.name,
     description: values.description,
     enforce2fa: values.enforce2fa,
+    effectiveToAllBranch: values.effectiveToAllBranch,
     enabled: values.enabled,
     scope: RoleScope.MERCHANT,
   };
@@ -401,10 +403,22 @@ function unselectAllSelected() {
 
             <UiAccordionContent class="w-full">
               <div class="grid grid-cols-1 rounded-xl gap-2 w-full p-6 border">
-                <div class="grid grid-cols-2 gap-2 items-center">
+                <div class="flex justify-between gap-2 items-center">
                   <FormField v-slot="{ value, handleChange }" name="enforce2fa">
                     <FormItem>
                       <FormLabel> Enforce 2fa</FormLabel>
+                      <FormControl>
+                        <UiSwitch
+                          :checked="value"
+                          @update:checked="handleChange"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ value, handleChange }" name="effectiveToAllBranch">
+                    <FormItem>
+                      <FormLabel> Effective To All Branch</FormLabel>
                       <FormControl>
                         <UiSwitch
                           :checked="value"

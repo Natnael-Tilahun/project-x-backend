@@ -9,6 +9,7 @@ export const newUserRoleformSchema = toTypedSchema(
       .regex(/^[A-Za-z0-9_]+$/, "Name must only contain letters, numbers, and underscores"),
     enabled: z.boolean().default(false).optional(),
     enforce2fa: z.boolean().default(false).optional(),
+    effectiveToAllBranch: z.boolean().default(false).optional(),
     description: z.string().min(4).max(200),
     scope: z.string(),
     // permission: z.array(z.string()).optional()

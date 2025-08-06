@@ -373,6 +373,7 @@ interface MerchantOperatorRole{
   name:	string
   description?:	string
   enabled?:	boolean
+  effectiveToAllBranch?:boolean
 }
 
 interface MerchantTransaction{

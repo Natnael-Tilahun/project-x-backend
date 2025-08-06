@@ -24,6 +24,7 @@ export const rolesFormSchema = toTypedSchema(
     name: z.string({ required_error: "Name is required." }),
     description: z.string().optional(),
     enforce2fa: z.boolean().optional().default(true),
+    effectiveToAllBranch: z.boolean().default(false).optional(),
     enabled: z.boolean().optional().default(true),
     scope: scopeSchema,
     permissions: z.array(z.any()).optional(),

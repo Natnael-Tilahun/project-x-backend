@@ -27,6 +27,7 @@ const form = useForm({
     description: "",
     enabled: true,
     enforce2fa: false,
+    effectiveToAllBranch: false,
     scope: RoleScope.MERCHANT
   },
 });
@@ -113,6 +114,16 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
               >
                 <FormLabel class="text-base"> Enforce 2fa </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value" @update:checked="handleChange" />
+                </FormControl>
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ value, handleChange }" name="effectiveToAllBranch">
+              <FormItem
+                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
+              >
+                <FormLabel class="text-base"> Effective To All Branch </FormLabel>
                 <FormControl>
                   <UiSwitch :checked="value" @update:checked="handleChange" />
                 </FormControl>
