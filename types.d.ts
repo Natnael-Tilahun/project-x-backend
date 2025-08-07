@@ -175,6 +175,7 @@ interface Role {
   enforce2fa: boolean;
   permissionUsageData?: Permission[];
   scope: RoleScope;
+  effectiveToAllBranch?: boolean
 }
 
 interface Permission {

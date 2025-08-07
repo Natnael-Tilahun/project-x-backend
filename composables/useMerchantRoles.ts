@@ -31,7 +31,7 @@ export const useMerchantRoles = () => {
   const deleteMerchantOperatorRoleById: (id: string) => ApiResult<any> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
-        `/api/v1/internal/merchants/operator-roles/delete/${id}`,
+        `/api/v1/internal/merchants/operator-roles/${id}`,
         { method: "DELETE" }
       );
 

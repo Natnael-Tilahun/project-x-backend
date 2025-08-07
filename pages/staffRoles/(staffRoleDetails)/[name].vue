@@ -109,8 +109,8 @@ try {
     const formValues: { [key: string]: any } = {
       name: fetchedData.name,
       description: fetchedData.description,
-      enforce2fa: fetchedData.enforce2fa,
-      enabled: fetchedData.enabled,
+      enforce2fa: fetchedData.enforce2fa || false,
+      enabled: fetchedData.enabled || false,
       scope: fetchedData.scope,
     };
 
