@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { LogicalOperators, Operators } from "@/global-types";
+import type { ResponseOutput, ValidationRule } from "~/types";
 
 interface ResponseOutputValidations {
   logicalOperator: LogicalOperators;
@@ -105,6 +106,9 @@ const onSubmit = form.handleSubmit(async (values) => {
       id: responseOutputId.value,
       validationConfig: {
         validationRules:
+        values?.validationRules.length == 1 &&
+        values.logicalOperator == "NONE" && values.validationRules[0].against == "" && values.validationRules[0].errorMessage == "" && values.validationRules[0].operator == null ?
+        []:
           values?.validationRules?.map((rule) => {
             const fieldCount = getOperatorAgainstFieldCount(rule.operator);
             return {
