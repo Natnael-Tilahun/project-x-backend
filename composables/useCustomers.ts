@@ -1,7 +1,7 @@
 import { Toast, ToastAction, toast, useToast } from "~/components/ui/toast";
 import { useAuthUser } from "./useAuthUser";
 import { useApi } from "./useApi";
-import type { CoreCustomerSummery, Customer, Device, LoginHistory, User } from "~/types";
+import type { CoreCustomerSummery, Customer, CustomerGroup, CustomerGroupMember, Device, LoginHistory, User } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
@@ -449,6 +449,68 @@ export const useCustomers = () => {
     }
   };
 
+  const getCustomerGroupByCustomerId: (id: string) => ApiResult<CustomerGroupMember> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
+        `/api/v1/internal/customers/${id}/groups`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as CustomerGroupMember) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const createCustomerGroupByCustomerId: (id: string, groupData:any) => ApiResult<CustomerGroupMember> = async (id,groupData) => {
+    try {
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
+        `/api/v1/internal/customers/${id}/groups`,
+        {
+          method: "POST",
+          body: groupData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as CustomerGroupMember) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const deleteCustomerGroupByCustomerId: (id: string, groupData:any) => ApiResult<CustomerGroupMember> = async (id,groupData) => {
+    try {
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
+        `/api/v1/internal/customers/${id}/groups`,
+        {
+          method: "DELETE",
+          body: groupData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as CustomerGroupMember) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return {
     isLoading,
     getCustomers,
@@ -470,6 +532,9 @@ export const useCustomers = () => {
     suspendCustomerDevicesByDeviceId,
     restoreCustomerDevicesByDeviceId,
     getCoreAccountsByAccount,
-    getCustomerLoginHistory
+    getCustomerLoginHistory,
+    getCustomerGroupByCustomerId,
+    createCustomerGroupByCustomerId,
+    deleteCustomerGroupByCustomerId
   };
 };

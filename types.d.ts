@@ -52,6 +52,7 @@ import {
   PaymentIntegrationType,
   PermissionCategory,
   PermissionScope,
+  CustomerGroupType
 } from "@/global-types";
 
 interface User {
@@ -317,6 +318,25 @@ interface Address {
   city: string;
   businessEmail: string;
   postalNumber: string;
+}
+
+interface CustomerGroup{
+  id?:string;
+  groupCode:	string
+  groupName:	string
+  description?:	string;
+  groupType: CustomerGroupType
+  priorityLevel?: number
+  isActive: boolean
+}
+
+interface CustomerGroupMember{
+  id?:string
+  assignedAt:	string
+  assignedBy?:	string
+  isActive:	boolean
+  group?:	CustomerGroup
+  customer?:	Customer
 }
 
 interface Merchant {

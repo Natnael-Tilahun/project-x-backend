@@ -1,4 +1,4 @@
-import type { PaymentIntegration, PaymentOperation, ThirdPartyTransactionDetail } from "~/types";
+import type { CustomerGroupMember, PaymentIntegration, PaymentOperation, ThirdPartyTransactionDetail } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
@@ -296,6 +296,68 @@ export const usePaymentIntegrations = () => {
     }
   };
 
+  const getCustomerGroupByIntegrationId: (id: string) => ApiResult<CustomerGroupMember> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
+        `/api/v1/internal/payment-integrations/${id}/groups`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as CustomerGroupMember) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const createCustomerGroupByIntegrationId: (id: string, groupData:any) => ApiResult<CustomerGroupMember> = async (id,groupData) => {
+    try {
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
+        `/api/v1/internal/payment-integrations/${id}/groups`,
+        {
+          method: "POST",
+          body: groupData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as CustomerGroupMember) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const deleteCustomerGroupByIntegrationId: (id: string, groupData:any) => ApiResult<CustomerGroupMember> = async (id,groupData) => {
+    try {
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
+        `/api/v1/internal/payment-integrations/${id}/groups`,
+        {
+          method: "DELETE",
+          body: groupData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as CustomerGroupMember) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return {
     isLoading,
     getPaymentIntegrations,
@@ -310,6 +372,9 @@ export const usePaymentIntegrations = () => {
     getThirdPartyPaymentTransactionsByCustomerId,
     getThirdPartyPaymentTransactionsByCustomerAndIntegrationId,
     getTransactionsDetailsByTransactionId,
+    getCustomerGroupByIntegrationId,
+    createCustomerGroupByIntegrationId,
+    deleteCustomerGroupByIntegrationId,
     isSubmitting,
   };
 };

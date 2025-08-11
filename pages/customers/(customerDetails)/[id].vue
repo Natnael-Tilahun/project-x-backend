@@ -159,7 +159,6 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
   }
 };
 
-
 </script>
 
 <template>
@@ -266,6 +265,13 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
             Contracts
           </UiTabsTrigger>
           </UiPermissionGuard>
+          <UiTabsTrigger
+            value="CustomerGroups"
+            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+          >
+          Customer Groups
+          </UiTabsTrigger>
+          
         </UiTabsList>
         
 
@@ -505,12 +511,13 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
 
         <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_CONTRACT >
           <UiTabsContent value="contracts" class="space-y-4 py-8">
-          <!-- <UiCard class="flex justify-center items-center w-full p-6">
-       Customer Contracts
-          </UiCard> -->
           <CustomersContracts :coreCustomerId="data?.coreCustomerId || ''" :customerId="customerId"  />
         </UiTabsContent>
         </UiPermissionGuard>
+
+        <UiTabsContent value="CustomerGroups" class="space-y-4 py-8">
+          <CustomersCustomerGroups />
+        </UiTabsContent>
       </UiTabs>
     </UiCard>
   </div>
