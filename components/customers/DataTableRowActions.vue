@@ -25,6 +25,11 @@ function viewCustomerDetail(id: string) {
   navigator.clipboard.writeText(id);
 }
 
+function viewCustomerGroup(id: string) {
+  navigateTo(`/customers/${id}?activeTab=CustomerGroups`);
+  navigator.clipboard.writeText(id);
+}
+
 async function deleteCustomer(id: string) {
   try {
     isLoading.value = true;
@@ -62,6 +67,10 @@ async function deleteCustomer(id: string) {
       <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER >
       <UiDropdownMenuItem @click="viewCustomerDetail(row.original.id)"
         >View and Edit</UiDropdownMenuItem
+      >
+      <UiDropdownMenuSeparator />
+      <UiDropdownMenuItem @click="viewCustomerGroup(row.original.id)"
+        >Add to the group</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>

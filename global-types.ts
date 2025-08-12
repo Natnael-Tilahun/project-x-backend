@@ -561,3 +561,8 @@ export enum CustomerGroupType {
   VIP = "VIP", 
   PARTNER = "PARTNER"
 }
+
+export enum VisibilityScope{
+  PUBLIC="PUBLIC", 
+  GROUP_SPECIFIC="GROUP_SPECIFIC" 
+}

@@ -30,44 +30,24 @@ export const columns = (refetch: RefetchFunction): ColumnDef<CustomerGroupMember
     enableSorting: false,
     enableHiding: false,
   },
-  {
-    accessorKey: "id",
-    header: "Group Member",
-    cell: ({ row }) => {
-      const memberId = row.original?.id;
-      const groupId = row.original?.group?.id
-      const route = useRoute();
-      return memberId
-        ? h(
-            NuxtLink,
-            {
-              class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/customerGroups/${groupId}?activeTab=memberDetails&memberId=${memberId}`,
-            },
-            "View Details"
-          )
-        : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "group.groupName",
-    header: "Group Name",
-    cell: ({ row }) => {
-      const groupId = row.original.group?.id
-      return groupId
-        ? h(
-            NuxtLink,
-            {
-              class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/customerGroups/${groupId}?activeTab=groupDetails`,
-            },
-            "View Group"
-          )
-        : h("p", "-");
-    },
-  },
+  // {
+  //   accessorKey: "group.groupName",
+  //   header: "Group Name",
+  //   cell: ({ row }) => {
+  //     const groupId = row.original.group?.id
+  //     return groupId
+  //       ? h(
+  //           NuxtLink,
+  //           {
+  //             class:
+  //               "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+  //             to: `/customerGroups/${groupId}?activeTab=groupDetails`,
+  //           },
+  //           "View Group"
+  //         )
+  //       : h("p", "-");
+  //   },
+  // },
   {
     accessorKey: "customer.fullName",
     header: "Customer Fullname",
@@ -80,7 +60,7 @@ export const columns = (refetch: RefetchFunction): ColumnDef<CustomerGroupMember
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/customer/${customerId}`,
+              to: `/customers/${customerId}`,
             },
            "View Customer"
           )

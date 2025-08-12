@@ -121,6 +121,25 @@ export const useCustomerGroups = () => {
     }
   };
 
+  const deleteCustomerMember: (gromemberIdupId: string) => ApiResult<any> = async (memberId) => {
+    try {
+      const { data, pending, error, status } = await fetch<any>(
+        `/api/v1/internal/customer-groups/members/delete/${memberId}`,
+        { method: "DELETE" }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value;
+    } catch (err) {
+      throw err
+    }
+  };
+
   const addPaymentIntegrationsInTheGroup: (groupId: string, integraionsData:any) => ApiResult<CustomerGroup> = async (
     groupId,
     integraionsData
@@ -284,6 +303,7 @@ export const useCustomerGroups = () => {
     deleteMembersFromTheGroup,
     getCustomerGroupMemebersByGroupId,
     getCustomerGroupPaymentIntegrationsByGroupId,
+    deleteCustomerMember,
     isSubmitting,
   };
 };

@@ -291,6 +291,8 @@ const searchCoreAccountsByAccountNumberHandler = async () => {
     if (accountNumber.value) {
       const response = await getCoreAccountsByAccount(accountNumber.value);
       form.setFieldValue("name", response?.fullName);
+      form.setFieldValue("phone",response?.phone)
+
       haveExistingContract.value =
         response && response?.contractId ? true : false;
       if (haveExistingContract.value) {
@@ -561,7 +563,7 @@ const isPhoneExistHandler = (value) => {
                   <div class="flex items-center gap-4">
                     <UiInput
                       id="search"
-                      type="number"
+                      type="text"
                       placeholder="Search..."
                       class="md:w-[100px] lg:w-[300px]"
                       v-model="accountNumber"
@@ -1119,6 +1121,19 @@ const isPhoneExistHandler = (value) => {
                   <UiInput
                     type="text"
                     placeholder="Enter contract name"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField  v-slot="{ componentField }" name="phone">
+              <FormItem>
+                <FormLabel>Customer Phone </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    placeholder="Enter customer phone"
                     v-bind="componentField"
                   />
                 </FormControl>

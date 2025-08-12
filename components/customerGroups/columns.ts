@@ -34,8 +34,7 @@ export const columns = (refetch: RefetchFunction): ColumnDef<CustomerGroup>[] =>
     accessorKey: "groupName",
     header: "Group Name",
     cell: ({ row }) => {
-      const staffId = row.original.id;
-      const route = useRoute();
+      const groupId = row.original.id;
       const groupName = row.getValue("groupName");
       return groupName
         ? h(
@@ -43,7 +42,7 @@ export const columns = (refetch: RefetchFunction): ColumnDef<CustomerGroup>[] =>
             {
               class:
                 "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `${route.path}/${staffId}`,
+              to: `/customerGroups/${groupId}`,
             },
             row.getValue("groupName")
           )

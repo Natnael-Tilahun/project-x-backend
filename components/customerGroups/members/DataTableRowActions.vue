@@ -3,7 +3,7 @@ import type { Row } from "@tanstack/vue-table";
 import { toast } from "~/components/ui/toast";
 import { PermissionConstants } from "~/constants/permissions";
 import { getIdFromPath } from "~/lib/utils";
-const { deleteMembersFromTheGroup, isLoading } =
+const { deleteCustomerMember, isLoading } =
   useCustomerGroups();
 const loading = ref(isLoading.value);
 const isError = ref(false);
@@ -28,19 +28,19 @@ const props = defineProps<{
 const emit = defineEmits(['groupMemberDeleted']); // Added 'languageDeleted'
 
 function viewGroupDetail(id: string) {
-  navigateTo(`/customerGroups/${groupId.value}?activeTab=memberDetails/${id}&memberId=${id}`);
+  navigateTo(`/customers/${groupId.value}`);
   navigator.clipboard.writeText(id);
 }
 
-async function deletegroupMembers(id: string, customerId:string) {
+async function deletegroupMembers(id: string) {
   try {
     isLoading.value = true;
     loading.value = true;
-    customerIds.value.push(customerId)
-    const newValues ={
-      customerIds: customerIds.value
-    }
-    await deleteMembersFromTheGroup(id, newValues); // Call your API function to fetch roles
+    // customerIds.value.push(customerId)
+    // const newValues ={
+    //   customerIds: customerIds.value
+    // }
+    await deleteCustomerMember(id); // Call your API function to fetch roles
     console.log("Group member deleted successfully");
     toast({
       title: "Group member deleted successfully",
@@ -69,10 +69,10 @@ async function deletegroupMembers(id: string, customerId:string) {
         <span class="sr-only">Open menu</span>
       </UiButton>
     </UiDropdownMenuTrigger>
-    <UiDropdownMenuContent align="end" class="w-[160px]">
+    <UiDropdownMenuContent align="end" class="w-[220px]">
       <UiPermissionGuard :permission="PermissionConstants.READ_STAFF_ASSIGNMENT">
-        <UiDropdownMenuItem @click="viewGroupDetail(row.original.id)"
-          >View and Edit</UiDropdownMenuItem
+        <UiDropdownMenuItem @click="viewGroupDetail(row.original.customerId	)"
+          >View Customer</UiDropdownMenuItem
         >
         <UiDropdownMenuSeparator />
       </UiPermissionGuard>
@@ -81,7 +81,7 @@ async function deletegroupMembers(id: string, customerId:string) {
           @click="setOpenEditModal(true)"
           class="text-red-600"
         >
-          Delete
+          Remove from the group
           <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
         </UiDropdownMenuItem>
       </UiPermissionGuard>
@@ -100,7 +100,7 @@ async function deletegroupMembers(id: string, customerId:string) {
         <UiAlertDialogCancel @click="setOpenEditModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="deletegroupMembers(row.original.id, row.original.customer.id)">
+        <UiAlertDialogAction @click="deletegroupMembers(row.original.id)">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"

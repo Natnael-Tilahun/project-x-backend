@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-const openItems = ref(["item-1"]);
+const openItems = ref("profile");
 
 import { ref } from "vue";
 import PassphraseReset from "~/components/customers/PassphraseReset.vue";
@@ -31,6 +31,8 @@ const accountCustomerId = ref<string>();
 const coreCustomerId = ref<string>();
 const tooltipText = ref<string>("Copy to clipboard");
 const tooltipOpen = ref<boolean>(true);
+  const activeTab = route.query.activeTab as string;
+  openItems.value = activeTab || "profile";
 
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
@@ -159,6 +161,16 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
   }
 };
 
+// Watch for changes in the route's query parameters
+watch(
+  () => route.query.activeTab,
+  (newActiveTab) => {
+    if (newActiveTab) {
+      openItems.value = newActiveTab as string; // Update the active tab when the query param
+    }
+  }
+);
+
 </script>
 
 <template>
@@ -197,13 +209,21 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
     </div>
 
     <UiCard class="w-full p-6">
-      <UiTabs default-value="profile" class="space-y-0 w-full">
+      <UiTabs v-model="openItems" class="space-y-0 w-full">
         <UiTabsList
-          class="w-full bg-backgroung flex justify-start py- px-0 border-[1px]"
+          class="w-full overflow-x-auto bg-backgroung flex justify-start py- px-0 border-[1px]"
         >
         <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER >
           <UiTabsTrigger
             value="profile"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'profile',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Profile
@@ -220,6 +240,14 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
         <UiPermissionGuard :permission=PermissionConstants.RESET_CUSTOMER_PIN >
           <UiTabsTrigger
             value="pinReset"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'pinReset',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             PIN Reset
@@ -227,6 +255,14 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
           <UiPermissionGuard :permission=PermissionConstants.RESET_CUSTOMER_PASSPHRASE >
           <UiTabsTrigger
             value="passphraseReset"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'passphraseReset',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Passphrase Reset
@@ -235,6 +271,14 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
         <UiPermissionGuard :permission=PermissionConstants.UNLOCK_CUSTOMER >
           <UiTabsTrigger
             value="unlockCustomer"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'unlockCustomer',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Unlock Customer
@@ -244,6 +288,14 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
         <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_DEVICE >
         <UiTabsTrigger
             value="devices"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'devices',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Devices
@@ -252,6 +304,14 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
           <!-- <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_LOGIN_HISTORY > -->
         <UiTabsTrigger
             value="loginHistory"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'loginHistory',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
           Login History
@@ -260,6 +320,14 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_CONTRACT >
                 <UiTabsTrigger
             value="contracts"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'contracts',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Contracts
@@ -267,6 +335,14 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
           </UiPermissionGuard>
           <UiTabsTrigger
             value="CustomerGroups"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'CustomerGroups',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
           Customer Groups

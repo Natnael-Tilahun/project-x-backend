@@ -1,4 +1,4 @@
-import { LimitType, LogicalErrorType, MerchantStatus, PaymentStatus, TransactionAmountType, TransactionInitiator } from "@/global-types";
+import { LimitType, LogicalErrorType, MerchantStatus, PaymentStatus, TransactionAmountType, TransactionInitiator, VisibilityScope } from "@/global-types";
 import {
   Visibility,
   PaymentOperationType,
@@ -669,6 +669,7 @@ interface PaymentIntegration {
   category?: PaymentCategory | null;
   chargeId?: string | null;
   maxTransactionsPerDay?: number | null;
+  visibilityScope?: VisibilityScope
 }
 
 interface ThirdPartyTransactionDetail{
@@ -696,6 +697,8 @@ interface ThirdPartyTransactionDetail{
   notifyApiOperation?:	string
   paymentIntegrationId?:	string
   customerId?:	string
+  notifyStatus?: string
+  enquiryStatus?: string
 }
 
 interface Menu {

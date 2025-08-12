@@ -50,6 +50,10 @@ const formatDate = (date: string) => {
           :value="transactionData.minimumAmount" />
         <PaymentIntegrationsTransactionsTransactionDetailItem label="Maximum Amount"
           :value="transactionData.maximumAmount" />
+        <PaymentIntegrationsTransactionsTransactionDetailItem label="notifyStatus"
+          :value="transactionData.notifyStatus" />
+        <PaymentIntegrationsTransactionsTransactionDetailItem label="enquiryStatus"
+          :value="transactionData.enquiryStatus" />
         <PaymentIntegrationsTransactionsTransactionDetailItem label="Computed Payment Detail"
           :value="transactionData.computedPaymentDetail" />
         <PaymentIntegrationsTransactionsTransactionDetailItem label="Computed Payment Detail Short"

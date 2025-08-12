@@ -736,33 +736,39 @@ const confirmCreatePaymentIntegration = async () => {
             </FormField>
 
             <FormField
-              :model-value="data?.visibility"
-              v-slot="{ componentField }"
-              name="visibility"
-            >
-              <FormItem>
-                <FormLabel> Visibility </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a visibility" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in Object.values(Visibility)"
-                        :key="item"
-                        :value="item"
-                      >
-                        {{ item }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
-              </FormItem>
-            </FormField>
+                  :model-value="data?.visibilityScope"
+                  v-slot="{ componentField }"
+                  name="visibilityScope"
+                >
+                  <FormItem>
+                    <FormLabel> Visibility Scope</FormLabel>
+                    <UiSelect v-bind="componentField">
+                      <FormControl>
+                        <UiSelectTrigger>
+                          <UiSelectValue
+                            :placeholder="
+                              data?.visibilityScope	
+                                ? data?.visibilityScope	
+                                : 'Select a visibility scope'
+                            "
+                          />
+                        </UiSelectTrigger>
+                      </FormControl>
+                      <FormMessage />
+                      <UiSelectContent>
+                        <UiSelectGroup>
+                          <UiSelectItem
+                            v-for="item in Object.values(VisibilityScope)"
+                            :key="item"
+                            :value="item"
+                          >
+                            {{ item }}
+                          </UiSelectItem>
+                        </UiSelectGroup>
+                      </UiSelectContent>
+                    </UiSelect>
+                  </FormItem>
+                </FormField>
 
             <FormField
               :model-value="data?.chargeId"

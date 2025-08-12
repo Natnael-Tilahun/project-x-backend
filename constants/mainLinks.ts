@@ -39,7 +39,6 @@ export const mainLinks: MenuItem[] = [
       dropdown: [
         { title: "Customers", link: "/customers", permission: PermissionConstants.READ_CUSTOMER },
         { title: "Customer Groups", link: "/customerGroups", permission: PermissionConstants.READ_CUSTOMER },
-        { title: "Customer Group Members", link: "/customerGroupMembers", permission: PermissionConstants.READ_CUSTOMER },
       ],
     },
     {

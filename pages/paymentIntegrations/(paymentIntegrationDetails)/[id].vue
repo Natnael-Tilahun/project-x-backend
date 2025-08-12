@@ -21,6 +21,7 @@ import {
   Visibility,
   PaymentCategory,
   LimitType,
+  VisibilityScope,
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { useDocuments } from "~/composables/useDocuments";
@@ -434,6 +435,21 @@ onMounted(() => {
             Transaction Details
           </UiTabsTrigger>
         </UiPermissionGuard>
+        <UiTabsTrigger
+            value="CustomerGroups"
+            v-if="data?.visibilityScope != 'PUBLIC'"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'CustomerGroups',
+                },
+              })
+            "
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+          >
+          Allowed Customer Groups
+          </UiTabsTrigger>
       </UiTabsList>
 
       <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_INTEGRATION>
@@ -1032,20 +1048,20 @@ onMounted(() => {
                 </FormField>
 
                 <FormField
-                  :model-value="data?.visibility"
+                  :model-value="data?.visibilityScope"
                   v-slot="{ componentField }"
-                  name="visibility"
+                  name="visibilityScope"
                 >
                   <FormItem>
-                    <FormLabel> Visibility</FormLabel>
+                    <FormLabel> Visibility Scope</FormLabel>
                     <UiSelect v-bind="componentField">
                       <FormControl>
                         <UiSelectTrigger>
                           <UiSelectValue
                             :placeholder="
-                              data?.visibility	
-                                ? data?.visibility	
-                                : 'Select a visibility'
+                              data?.visibilityScope	
+                                ? data?.visibilityScope	
+                                : 'Select a visibility scope'
                             "
                           />
                         </UiSelectTrigger>
@@ -1054,7 +1070,7 @@ onMounted(() => {
                       <UiSelectContent>
                         <UiSelectGroup>
                           <UiSelectItem
-                            v-for="item in Object.values(Visibility)"
+                            v-for="item in Object.values(VisibilityScope)"
                             :key="item"
                             :value="item"
                           >
@@ -1422,6 +1438,9 @@ onMounted(() => {
           <PaymentIntegrationsTransactionsDetails transactionDataProps="data" />
         </UiTabsContent>
       </UiPermissionGuard>
+      <UiTabsContent value="CustomerGroups" class="space-y-4 py-8">
+          <PaymentIntegrationsCustomerGroups />
+        </UiTabsContent>
     </UiTabs>
   </div>
 

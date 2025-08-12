@@ -61,7 +61,7 @@ const columns = computed(() => tableColumns(refetch));
     <UiPermissionGuard :permission="PermissionConstants.CREATE_STAFF_ASSIGNMENT" >
     <NuxtLink to="/members/new" class="w-fit self-end">
       <UiButton class="w-fit self-end px-5"
-        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
+        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Add
         Group Member</UiButton
       >
     </NuxtLink>

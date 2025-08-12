@@ -16,13 +16,13 @@ const route = useRoute();
 // Composables
 const { getCustomerGroups } = useCustomerGroups();
 const {
-  getCustomerGroupByCustomerId,
-  createCustomerGroupByCustomerId,
-  deleteCustomerGroupByCustomerId,
-} = useCustomers();
+  getCustomerGroupByIntegrationId,
+  createCustomerGroupByIntegrationId,
+  deleteCustomerGroupByIntegrationId,
+} = usePaymentIntegrations();
 
 // State
-const customerId = ref<string>(getIdFromPath(route.path));
+const integrationId = ref<string>(getIdFromPath(route.path));
 const groupsData = ref<CustomerGroup[]>([]);
 const selectedGroups = ref<string[]>([]); // assigned group IDs
 const isError = ref(false);
@@ -43,11 +43,13 @@ const fetchGroupsData = async () => {
     loading.value = true;
     const response = await getCustomerGroups(0, 100000);
     groupsData.value =
-      response
+      (response
         ?.slice()
         ?.sort((a, b) =>
           (a.groupCode || "").toLowerCase().localeCompare((b.groupCode || "").toLowerCase())
-        ) || [];
+        ) || [])
+        // Normalize id to string to ensure comparisons work
+        .map((g: any) => ({ ...g, id: g?.id != null ? String(g.id) : g?.id }));
   } catch (err) {
     console.error("Error fetching groups:", err);
     isError.value = true;
@@ -56,22 +58,34 @@ const fetchGroupsData = async () => {
   }
 };
 
-// Fetch groups already assigned to this customer
-const fetchCustomerGroups = async () => {
+// Fetch groups already assigned to this integration
+const fetchIntegrationGroups = async () => {
   try {
     loading.value = true;
-    const response = await getCustomerGroupByCustomerId(customerId.value);
+    const response = await getCustomerGroupByIntegrationId(integrationId.value);
     // Normalize possible shapes into an array
-    const arr: CustomerGroupMember[] = Array.isArray(response)
-      ? response
-      : response
-      ? [response]
+    const raw: any = response as any;
+    const arr: any[] = Array.isArray(raw)
+      ? raw
+      : Array.isArray(raw?.content)
+      ? raw.content
+      : Array.isArray(raw?.groups)
+      ? raw.groups
+      : raw
+      ? [raw]
       : [];
+
     selectedGroups.value = arr
-      .map((m) => m?.group?.id)
-      .filter((id): id is string => Boolean(id));
+      .map((m: any) => {
+        if (typeof m === "string" || typeof m === "number") return String(m);
+        if (m?.group?.id != null) return String(m.group.id);
+        if (m?.id != null && (m?.groupName || m?.groupCode)) return String(m.id); // when API returns CustomerGroup directly
+        if (m?.groupId != null) return String(m.groupId);
+        return null;
+      })
+      .filter((id: any): id is string => Boolean(id));
   } catch (err) {
-    console.error("Error fetching customer groups:", err);
+    console.error("Error fetching integration groups:", err);
     isError.value = true;
   } finally {
     loading.value = false;
@@ -80,13 +94,13 @@ const fetchCustomerGroups = async () => {
 
 onMounted(async () => {
   await fetchGroupsData();
-  await fetchCustomerGroups();
+  await fetchIntegrationGroups();
 });
 
 const refetch = async () => {
   isError.value = false;
   await fetchGroupsData();
-  await fetchCustomerGroups();
+  await fetchIntegrationGroups();
 };
 
 // Selection state
@@ -115,14 +129,14 @@ const addSelectedGroups = async () => {
   if (selectedToAdd.value.length === 0) return;
   try {
     isSubmitting.value = true;
-    await createCustomerGroupByCustomerId(customerId.value, {
+    await createCustomerGroupByIntegrationId(integrationId.value, {
       groupIds: selectedToAdd.value,
     });
     toast({
       title: "Groups Added",
-      description: "Selected groups have been assigned to the customer.",
+      description: "Selected groups have been assigned to the payment integration.",
     });
-    await fetchCustomerGroups();
+    await fetchIntegrationGroups();
     selectedToAdd.value = [];
     setOpenAddGroupModal(false);
   } catch (err) {
@@ -137,14 +151,14 @@ const deleteSelectedGroups = async () => {
   if (selectedToDelete.value.length === 0) return;
   try {
     isSubmitting.value = true;
-    await deleteCustomerGroupByCustomerId(customerId.value, {
+    await deleteCustomerGroupByIntegrationId(integrationId.value, {
       groupIds: selectedToDelete.value,
     });
     toast({
       title: "Groups Removed",
-      description: "Selected groups have been removed from the customer.",
+      description: "Selected groups have been removed from the payment integration.",
     });
-    await fetchCustomerGroups();
+    await fetchIntegrationGroups();
     selectedToDelete.value = [];
     setOpenDeleteGroupModal(false);
   } catch (err) {
@@ -382,7 +396,7 @@ const deleteSelectedGroups = async () => {
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
-          This action cannot be undone. Selected groups will be removed from the customer.
+          This action cannot be undone. Selected groups will be removed from the payment integration.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>
@@ -403,7 +417,7 @@ const deleteSelectedGroups = async () => {
       <UiAlertDialogHeader>
         <UiAlertDialogTitle>Are you absolutely sure?</UiAlertDialogTitle>
         <UiAlertDialogDescription>
-          This action will assign the selected groups to the customer.
+          This action will assign the selected groups to the payment integration.
         </UiAlertDialogDescription>
       </UiAlertDialogHeader>
       <UiAlertDialogFooter>

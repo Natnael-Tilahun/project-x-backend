@@ -30,68 +30,68 @@ export const columns = (refetch: RefetchFunction): ColumnDef<CustomerGroupMember
     enableSorting: false,
     enableHiding: false,
   },
+  // {
+  //   accessorKey: "id",
+  //   header: "Group Member",
+  //   cell: ({ row }) => {
+  //     const memberId = row.original?.id;
+  //     const groupId = row.original?.group?.id
+  //     const route = useRoute();
+  //     return memberId
+  //       ? h(
+  //           NuxtLink,
+  //           {
+  //             class:
+  //               "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+  //             to: `/customerGroups/${groupId}?activeTab=memberDetails&memberId=${memberId}`,
+  //           },
+  //           "View Details"
+  //         )
+  //       : h("p", "-");
+  //   },
+  // },
   {
-    accessorKey: "id",
-    header: "Group Member",
+    accessorKey: "companyName",
+    header: "Company Name",
     cell: ({ row }) => {
-      const memberId = row.original?.id;
-      const groupId = row.original?.group?.id
+      const companyName	 = row.getValue("companyName");
+      const integrationId	 = row.original.id;
+      return companyName
+          ? h(
+                      NuxtLink,
+                      {
+                        class:
+                          "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
+                        to: `/paymentIntegrations/${integrationId}`,
+                      },
+                      row.getValue("companyName")
+                    )
+        : h("p", "-");
+    },
+  },
+  {
+    accessorKey: "integrationName",
+    header: "Integration Name",
+    cell: ({ row }) => {
+      const integrationName	 = row.original.integrationName	;
       const route = useRoute();
-      return memberId
-        ? h(
-            NuxtLink,
-            {
-              class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/customerGroups/${groupId}?activeTab=memberDetails&memberId=${memberId}`,
-            },
-            "View Details"
-          )
+      return integrationName
+      ? h(
+        "div",
+        {
+          class:
+            "max-w-[100px] whitespace-nowrap truncate hover:w-full font-medium",
+        },
+        row.getValue("integrationName")
+      )
         : h("p", "-");
     },
   },
   {
-    accessorKey: "group.groupName",
-    header: "Group Name",
+    accessorKey: "enabled",
+    header: "Enabled",
     cell: ({ row }) => {
-      const groupId = row.original.group?.id
-      return groupId
-        ? h(
-            NuxtLink,
-            {
-              class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/customerGroups/${groupId}?activeTab=groupDetails`,
-            },
-            "View Group"
-          )
-        : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "customer.fullName",
-    header: "Customer Fullname",
-    cell: ({ row }) => {
-      const customerId = row.original.customer?.id;
-      const route = useRoute();
-      return customerId
-        ? h(
-            NuxtLink,
-            {
-              class:
-                "font-medium text-primary w-fit whitespace-nowrap truncate hover:w-full",
-              to: `/customer/${customerId}`,
-            },
-           "View Customer"
-          )
-        : h("p", "-");
-    },
-  },
-  {
-    accessorKey: "isActive",
-    header: "Status",
-    cell: ({ row }) => {
-      const isActive = row.getValue("isActive");
+      const isActive = row.getValue("enabled");
       if (isActive) {
         return h(Badge, { class: " bg-green-600 " }, "Active");
       } else return h(Badge, { class: "bg-red-500 " }, "Inactive");

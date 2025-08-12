@@ -27,19 +27,19 @@ const props = defineProps<{
 const emit = defineEmits(['groupMemberDeleted']); // Added 'languageDeleted'
 
 function viewGroupDetail(id: string) {
-  navigateTo(`/customerGroups/${groupId.value}?activeTab=integrationDetails/${id}&memberId=${id}`);
+  navigateTo( `/paymentIntegrations/${id}`);
   navigator.clipboard.writeText(id);
 }
 
-async function deletegroupMembers(id: string, customerId:string) {
+async function deletegroupMembers(id: string) {
   try {
     isLoading.value = true;
     loading.value = true;
-    integrationsIds.value.push(customerId)
+    integrationsIds.value.push(id)
     const newValues ={
-      integrationsIds: integrationsIds.value
+      paymentIntegrationIds: integrationsIds.value
     }
-    await deletePaymentIntegrationsFromTheGroup(id, newValues); // Call your API function to fetch roles
+    await deletePaymentIntegrationsFromTheGroup(groupId.value, newValues); // Call your API function to fetch roles
     console.log("Group member deleted successfully");
     toast({
       title: "Group member deleted successfully",
@@ -68,10 +68,10 @@ async function deletegroupMembers(id: string, customerId:string) {
         <span class="sr-only">Open menu</span>
       </UiButton>
     </UiDropdownMenuTrigger>
-    <UiDropdownMenuContent align="end" class="w-[160px]">
+    <UiDropdownMenuContent align="end" class="w-[220px]">
       <UiPermissionGuard :permission="PermissionConstants.READ_STAFF_ASSIGNMENT">
         <UiDropdownMenuItem @click="viewGroupDetail(row.original.id)"
-          >View and Edit</UiDropdownMenuItem
+          >View Integration</UiDropdownMenuItem
         >
         <UiDropdownMenuSeparator />
       </UiPermissionGuard>
@@ -80,7 +80,7 @@ async function deletegroupMembers(id: string, customerId:string) {
           @click="setOpenEditModal(true)"
           class="text-red-600"
         >
-          Delete
+          Remove from the group
           <UiDropdownMenuShortcut>⌘⌫</UiDropdownMenuShortcut>
         </UiDropdownMenuItem>
       </UiPermissionGuard>
@@ -99,7 +99,7 @@ async function deletegroupMembers(id: string, customerId:string) {
         <UiAlertDialogCancel @click="setOpenEditModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction @click="deletegroupMembers(row.original.id, row.original.integration.id)">
+        <UiAlertDialogAction @click="deletegroupMembers(row.original.id)">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"

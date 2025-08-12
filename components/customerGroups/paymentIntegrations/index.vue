@@ -3,8 +3,7 @@ import { ref, onMounted } from "vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { CustomerGroupMember } from "~/types";
 import { getIdFromPath } from "~/lib/utils";
-import { columns as tableColumns } from "~/components/customerGroups/members/columns"; // Renamed to avoid conflict
-import { PermissionConstants } from "~/constants/permissions";
+import { columns as tableColumns } from "~/components/customerGroups/paymentIntegrations/columns"; // Renamed to avoid conflict
 
 const {getCustomerGroupPaymentIntegrationsByGroupId } = useCustomerGroups();
 const isLoading = ref(false);
@@ -58,14 +57,6 @@ const columns = computed(() => tableColumns(refetch));
     v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
-    <UiPermissionGuard :permission="PermissionConstants.CREATE_STAFF_ASSIGNMENT" >
-    <NuxtLink to="/members/new" class="w-fit self-end">
-      <UiButton class="w-fit self-end px-5"
-        ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create
-        Group Member</UiButton
-      >
-    </NuxtLink>
-    </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
       </template>
