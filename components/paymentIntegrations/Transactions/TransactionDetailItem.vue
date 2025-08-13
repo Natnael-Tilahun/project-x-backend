@@ -4,29 +4,34 @@
     <span v-if="!status" class="text-sm font-medium">
       {{ value ?? "-" }}
     </span>
-    <span
+    <UiBadge
       v-else
-      :class="[
-        'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium ',
-        {
-          'bg-green-100 text-green-800 w-fit':
-            String(value).toLowerCase() === 'completed',
-          'bg-yellow-100 text-yellow-800 w-fit':
-            String(value).toLowerCase() === 'pending',
-          'bg-red-100 text-red-800 w-fit':
-            String(value).toLowerCase() === 'failed' || String(value).toLowerCase() === 'expired',
-        },
-      ]"
+      variant="outline"
+      class="inline-flex items-center w-fit rounded-full text-xs font-medium"
+      :class="getBadgeClass(value) || ''"
     >
       {{ value ?? "-" }}
-    </span>
+    </UiBadge>
   </div>
 </template>
 
 <script setup lang="ts">
+
 defineProps<{
   label: string;
   value: string | number | null;
   status?: boolean;
 }>();
+
+function getBadgeClass(statusState: string) {
+  if(String(statusState).toLowerCase() === 'completed' || String(statusState).toUpperCase() == 'SUCCESS'){
+    return  ('bg-green-500')
+  }
+  else if(String(statusState).toLowerCase() === 'pending'){
+    return ('bg-yellow-500')
+  }
+  else if(String(statusState).toLowerCase() === 'failed' || String(statusState).toLowerCase() === 'expired'){
+    return ('bg-red-500')
+  }
+}
 </script>

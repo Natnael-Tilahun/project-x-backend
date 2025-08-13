@@ -234,6 +234,48 @@ export const usePaymentIntegrations = () => {
     }
   };
 
+  const getThirdPartyPaymentTransactionsByDebitAccountNumberAndIntegrationId: (
+    debitAccountNumber: string,
+    id: string
+  ) => ApiResult<ThirdPartyTransactionDetail[]> = async (debitAccountNumber, id) => {
+    try {
+      const { data, pending, error, status } = await fetch<ThirdPartyTransactionDetail[]>(
+        `/api/v1/internal/third-party-payment-transactions/debit-account/${debitAccountNumber}/integration/${id}`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as ThirdPartyTransactionDetail[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const getThirdPartyPaymentTransactionsByCustomerIdAndIntegrationId: (
+    customerId: string,
+    id: string
+  ) => ApiResult<ThirdPartyTransactionDetail[]> = async (customerId, id) => {
+    try {
+      const { data, pending, error, status } = await fetch<ThirdPartyTransactionDetail[]>(
+        `/api/v1/internal/third-party-payment-transactions/customer/${customerId}/integration/${id}`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as ThirdPartyTransactionDetail[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   const getTransactionsDetailsByTransactionId: (
     id: string
   ) => ApiResult<ThirdPartyTransactionDetail> = async (id) => {
@@ -275,13 +317,12 @@ export const usePaymentIntegrations = () => {
     }
   };
 
-  const getThirdPartyPaymentTransactionsByCustomerAndIntegrationId: (
-    customerId: string,
-    integrationId:string
-  ) => ApiResult<ThirdPartyTransactionDetail[]> = async (customerId, integrationId) => {
+  const getThirdPartyPaymentTransactionsByCoreTransactionId: (
+    id: string
+  ) => ApiResult<ThirdPartyTransactionDetail[]> = async (id) => {
     try {
       const { data, pending, error, status } = await fetch<ThirdPartyTransactionDetail[]>(
-        `/api/v1/internal/third-party-payment-transactions/customer/${customerId}/integration/${integrationId}`
+        `/api/v1/internal/third-party-payment-transactions/core-transaction/${id}`
       );
 
       isLoading.value = pending.value;
@@ -369,12 +410,14 @@ export const usePaymentIntegrations = () => {
     exportPaymentIntegration,
     importPaymentIntegration,
     getThirdPartyPaymentTransactionsByPaymentIntegrationId,
+    getThirdPartyPaymentTransactionsByDebitAccountNumberAndIntegrationId,
     getThirdPartyPaymentTransactionsByCustomerId,
-    getThirdPartyPaymentTransactionsByCustomerAndIntegrationId,
     getTransactionsDetailsByTransactionId,
     getCustomerGroupByIntegrationId,
     createCustomerGroupByIntegrationId,
     deleteCustomerGroupByIntegrationId,
+    getThirdPartyPaymentTransactionsByCustomerIdAndIntegrationId,
+    getThirdPartyPaymentTransactionsByCoreTransactionId,
     isSubmitting,
   };
 };

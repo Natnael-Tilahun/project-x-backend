@@ -59,13 +59,21 @@ export const columns = (refetch: RefetchFunction): ColumnDef<ThirdPartyTransacti
     },
   },
   {
-    accessorKey: "creditAccountNumber",
-    header: "Credit Account Number",
+    accessorKey: "debitAccountNumber",
+    header: "Debit Account Number",
     cell: ({ row }) => {
-      const creditAccountNumber	 = row.getValue("creditAccountNumber");
-      return creditAccountNumber	 ? h("p", creditAccountNumber	) : h("p", "-");
+      const debitAccountNumber = row.getValue("debitAccountNumber");
+      return debitAccountNumber	 ? h("p", debitAccountNumber) : h("p", "-");
     },
   },
+  {
+    accessorKey: "customerId",
+    header: "Customer Id",
+    cell: ({ row }) => {
+      const customerId	 = row.getValue("customerId");
+      return customerId	 ? h("p", customerId	) : h("p", "-");
+    },
+  },	
   {
     accessorKey: "amount",
     header: "amount",

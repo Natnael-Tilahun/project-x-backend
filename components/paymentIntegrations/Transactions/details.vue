@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { toast } from "~/components/ui/toast";
 import { formatAccountNumber } from "~/lib/formatAccountNumber";
 import type { ThirdPartyTransactionDetail } from "~/types";
 
@@ -23,14 +24,23 @@ const formatDate = (date: string) => {
   return new Date(date).toLocaleString();
 };
 
+const reversalHandler = () => {
+  toast({
+    title: "Not implimented yet."
+  })
+}
 </script>
 
 <template>
   <div class="w-full flex flex-col gap-4">
+    <div class="w-full flex items-center justify-between">
+
     <div class="pt-4">
       <h1 class="md:text-2xl text-lg font-medium">Transaction Details</h1>
       <p class="text-sm text-muted-foreground">View transaction information</p>
     </div>
+    <UiButton @click="reversalHandler">Reverse</UiButton>
+  </div>
 
     <UiCard v-if="isLoading" class="p-6 ">
       <div class="grid md:grid-cols-2 gap-6 ">
@@ -38,11 +48,23 @@ const formatDate = (date: string) => {
       </div>
     </UiCard>
 
-    <UiCard v-else-if="transactionData" class="p-6 grid lg:grid-cols-3 gap-8 w-full">
-      <div class="md:col-span-2 md:grid grid-cols-2 w-full space-y-2">
+    <UiCard v-else-if="transactionData" class="p-6 grid lg:grid-cols-2 gap-8 w-full">
+      <div class="md:col-span-2 md:grid grid-cols-2 gap-x-8 gap-y-4 w-full">
 
         <PaymentIntegrationsTransactionsTransactionDetailItem label="Transaction Id" :value="transactionData.id" />
+        <PaymentIntegrationsTransactionsTransactionDetailItem label="Core Transaction Id" :value="transactionData.coreTransactionId" />
+        <PaymentIntegrationsTransactionsTransactionDetailItem label="Mb Transaction Id" :value="transactionData.mbTransactionId" />
         <PaymentIntegrationsTransactionsTransactionDetailItem label="Legacy Id" :value="transactionData.legacyId" />
+        <PaymentIntegrationsTransactionsTransactionDetailItem label="Debit Account Number"
+        :value="(transactionData.debitAccountNumber	)" />
+        <NuxtLink @click="
+          navigateTo({
+            path: `/customers/${transactionData.customerId}`
+          })
+          " class="w-full text-primary font-semibold cursor-pointer">
+          <PaymentIntegrationsTransactionsTransactionDetailItem label="Customer Id"
+            :value="transactionData.customerId" />
+        </NuxtLink>
         <PaymentIntegrationsTransactionsTransactionDetailItem label="Credit Account Number"
           :value="(transactionData.creditAccountNumber)" />
         <PaymentIntegrationsTransactionsTransactionDetailItem label="Amount" :value="transactionData.amount" />
@@ -50,10 +72,18 @@ const formatDate = (date: string) => {
           :value="transactionData.minimumAmount" />
         <PaymentIntegrationsTransactionsTransactionDetailItem label="Maximum Amount"
           :value="transactionData.maximumAmount" />
-        <PaymentIntegrationsTransactionsTransactionDetailItem label="notifyStatus"
+        <PaymentIntegrationsTransactionsTransactionDetailItem label="Notify Status" :status=true
           :value="transactionData.notifyStatus" />
-        <PaymentIntegrationsTransactionsTransactionDetailItem label="enquiryStatus"
+        <PaymentIntegrationsTransactionsTransactionDetailItem label="Enquiry Status" :status=true
           :value="transactionData.enquiryStatus" />
+          <PaymentIntegrationsTransactionsTransactionDetailItem
+            label="Created Date"
+            :value="transactionData.createdDate ? new Date(transactionData?.createdDate).toLocaleString(undefined, { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '-'"
+          />
+          <PaymentIntegrationsTransactionsTransactionDetailItem
+            label="Last Modified Date"
+            :value="transactionData.lastModifiedDate	 ? new Date(transactionData?.lastModifiedDate	).toLocaleString(undefined, { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '-'"
+          />
         <PaymentIntegrationsTransactionsTransactionDetailItem label="Computed Payment Detail"
           :value="transactionData.computedPaymentDetail" />
         <PaymentIntegrationsTransactionsTransactionDetailItem label="Computed Payment Detail Short"
@@ -87,14 +117,6 @@ const formatDate = (date: string) => {
           " class="w-full text-primary font-semibold cursor-pointer">
           <PaymentIntegrationsTransactionsTransactionDetailItem label="Payment Integration Id"
             :value="transactionData.paymentIntegrationId" />
-        </NuxtLink>
-        <NuxtLink @click="
-          navigateTo({
-            path: `/customers/${transactionData.customerId}`
-          })
-          " class="w-full text-primary font-semibold cursor-pointer">
-          <PaymentIntegrationsTransactionsTransactionDetailItem label="Customer Id"
-            :value="transactionData.customerId" />
         </NuxtLink>
 
       </div>

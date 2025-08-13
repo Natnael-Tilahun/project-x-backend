@@ -721,6 +721,7 @@ interface Menu {
   isImage?: boolean | null;
   isSystemMenu?: boolean | null;
   systemMenuType?: SystemMenuType | null;
+  visibilityScope?: VisibilityScope
 }
 
 interface Local {

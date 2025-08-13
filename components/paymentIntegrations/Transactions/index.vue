@@ -7,7 +7,8 @@ import { PermissionConstants } from "~/constants/permissions";
 
 const {
   getThirdPartyPaymentTransactionsByPaymentIntegrationId,
-  getThirdPartyPaymentTransactionsByCustomerAndIntegrationId
+  getThirdPartyPaymentTransactionsByCustomerIdAndIntegrationId,
+  getThirdPartyPaymentTransactionsByDebitAccountNumberAndIntegrationId
 } = usePaymentIntegrations();
 
 const route = useRoute();
@@ -18,7 +19,14 @@ const isError = ref(false);
 const data = ref<ThirdPartyTransactionDetail[]>([]);
 integrationId.value = route.params.id as string;
 const customerId = ref<string>("")
+const debitAccountNumber = ref<string>("")
 const isLoading = ref<boolean>(false)
+const selectedSearchOption = ref<string>("customerId")
+
+const searchOptions = [
+  { label: "Search by customer ID", value: "customerId" },
+  { label: "Search by debit account number", value: "debitAccountNumber" }
+]
 
 const getAllPaymentTransactions = async () => {
   try {
@@ -40,6 +48,7 @@ onMounted(() => {
 });
 
 const refetch = async () => {
+  isError.value = false
   await getAllPaymentTransactions();
 };
 
@@ -52,13 +61,26 @@ const columns = computed(() => tableColumns(refetch));
 const searchHandler = async () => {
   try {
     isLoading.value = true;
-    const response = await getThirdPartyPaymentTransactionsByCustomerAndIntegrationId(customerId.value, integrationId.value); // Call your API function to fetch roles
+    let response;
+    
+    if (selectedSearchOption.value === "customerId") {
+      response = await getThirdPartyPaymentTransactionsByCustomerIdAndIntegrationId(
+        customerId.value, 
+        integrationId.value
+      );
+    } else if (selectedSearchOption.value === "debitAccountNumber") {
+      response = await getThirdPartyPaymentTransactionsByDebitAccountNumberAndIntegrationId(
+        debitAccountNumber.value, 
+        integrationId.value
+      );
+    }
+    
     if (response) {
-      data.value = response
+      data.value = response;
     }
   } catch (err: any) {
-    console.error("Error fetching customer transactions for this integration:", err.message);
-    if (err.message == "transaction not found") {
+    console.error("Error fetching transactions:", err.message);
+    if (err.message === "transaction not found") {
       data.value = [];
     } else {
       isError.value = true;
@@ -66,6 +88,12 @@ const searchHandler = async () => {
   } finally {
     isLoading.value = false;
   }
+};
+
+const clearSearch = () => {
+  customerId.value = "";
+  debitAccountNumber.value = "";
+  getAllPaymentTransactions();
 };
 </script>
 
@@ -82,23 +110,57 @@ const searchHandler = async () => {
   >
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
-        <!-- <div class="flex items-center gap-4">
+        <div class="flex items-center gap-4">
+          <UiSelect v-model="selectedSearchOption">
+            <FormControl>
+              <UiSelectTrigger class="min-w-[200px] px-4">
+                <UiSelectValue placeholder="Select search option" />
+              </UiSelectTrigger>
+            </FormControl>
+            <UiSelectContent>
+              <UiSelectGroup>
+                <UiSelectItem
+                  v-for="option in searchOptions"
+                  :key="option.value"
+                  :value="option.value"
+                >
+                  {{ option.label }}
+                </UiSelectItem>
+              </UiSelectGroup>
+            </UiSelectContent>
+          </UiSelect>
+          
           <UiInput
+            v-if="selectedSearchOption === 'customerId'"
             type="search"
             @keyup.enter="searchHandler"
-            placeholder="Search by customer id or account number"
+            placeholder="Enter customer ID"
             class="md:w-[200px] lg:w-[350px]"
             v-model="customerId"
           />
-          <UiButton @click="searchHandler">
+          
+          <UiInput
+            v-else-if="selectedSearchOption === 'debitAccountNumber'"
+            type="search"
+            @keyup.enter="searchHandler"
+            placeholder="Enter debit account number"
+            class="md:w-[200px] lg:w-[350px]"
+            v-model="debitAccountNumber"
+          />
+          
+          <UiButton @click="searchHandler" :disabled="!customerId && !debitAccountNumber">
             <Icon
               name="svg-spinners:8-dots-rotate"
               v-if="isLoading"
               class="mr-2 h-4 w-4 animate-spin"
-            ></Icon>
-            Search</UiButton
-          >
-        </div>   -->
+            />
+            Search
+          </UiButton>
+          
+          <UiButton variant="outline" @click="clearSearch">
+            Clear
+          </UiButton>
+        </div>  
       </template>
     </UiDataTable>
   </div>

@@ -7,7 +7,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { PaginationType, MenuLayoutType } from "@/global-types";
+import { PaginationType, MenuLayoutType, VisibilityScope } from "@/global-types";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 import { menuFormSchema } from "~/validations/menuFormSchema";
@@ -507,6 +507,39 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 <FormMessage />
               </FormItem>
             </FormField>
+            <FormField
+                  v-slot="{ componentField }"
+                  name="visibilityScope"
+                >
+                  <FormItem>
+                    <FormLabel> Visibility Scope</FormLabel>
+                    <UiSelect v-bind="componentField">
+                      <FormControl>
+                        <UiSelectTrigger>
+                          <UiSelectValue
+                            :placeholder="
+                              data?.visibilityScope	
+                                ? data?.visibilityScope	
+                                : 'Select a visibility scope'
+                            "
+                          />
+                        </UiSelectTrigger>
+                      </FormControl>
+                      <FormMessage />
+                      <UiSelectContent>
+                        <UiSelectGroup>
+                          <UiSelectItem
+                            v-for="item in Object.values(VisibilityScope)"
+                            :key="item"
+                            :value="item"
+                          >
+                            {{ item }}
+                          </UiSelectItem>
+                        </UiSelectGroup>
+                      </UiSelectContent>
+                    </UiSelect>
+                  </FormItem>
+                </FormField>
             <FormField
               :model-value="data?.enabled"
               v-slot="{ value, handleChange }"
