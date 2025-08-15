@@ -1133,6 +1133,7 @@ const isPhoneExistHandler = (value) => {
                 <FormControl>
                   <UiInput
                     type="text"
+                    disabled
                     placeholder="Enter customer phone"
                     v-bind="componentField"
                   />

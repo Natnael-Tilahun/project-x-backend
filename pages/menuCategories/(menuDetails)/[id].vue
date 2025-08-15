@@ -926,7 +926,7 @@ watch(
                   <FormMessage />
                 </FormItem>
               </FormField>
-  <UiPermissionGuard permission="UPDATE_INTEGRATION_MENUS" >
+  <UiPermissionGuard permission="UPDATE_INTEGRATION_MENU" >
               <div class="col-span-full w-full py-4 flex justify-between">
                 <UiButton
                   :disabled="submitting"

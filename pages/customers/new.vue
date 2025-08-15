@@ -1195,6 +1195,7 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
                 <FormControl>
                   <UiInput
                     type="text"
+                    disabled
                     placeholder="Enter customer phone"
                     v-bind="componentField"
                   />
