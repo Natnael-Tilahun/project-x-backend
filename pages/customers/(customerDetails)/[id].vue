@@ -6,6 +6,7 @@ import PassphraseReset from "~/components/customers/PassphraseReset.vue";
 import UnlockCustomer from "~/components/customers/UnlockCustomer.vue";
 import { toast } from "~/components/ui/toast";
 import { PermissionConstants } from "~/constants/permissions";
+import { getIdFromPath } from "~/lib/utils";
 import type { Customer } from "~/types";
 
 const route = useRoute();
@@ -34,9 +35,7 @@ const tooltipOpen = ref<boolean>(true);
   const activeTab = route.query.activeTab as string;
   openItems.value = activeTab || "profile";
 
-pathSegments.value = splitPath(fullPath.value);
-const pathLength = pathSegments.value.length;
-customerId.value = pathSegments.value[pathLength - 1];
+customerId.value = getIdFromPath();
 
 
 function splitPath(path: any) {

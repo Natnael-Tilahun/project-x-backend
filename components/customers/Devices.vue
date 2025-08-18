@@ -28,7 +28,7 @@ const showDeviceDetails = ref(false);
 const customerId = ref<string>();
 const route = useRoute();
 // Update the interface to match the actual data structure
-customerId.value = getIdFromPath(route.fullPath);
+customerId.value = getIdFromPath();
 const openEditModal = ref(false);
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
