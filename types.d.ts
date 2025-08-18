@@ -1303,3 +1303,8 @@ export interface SearchResult {
   permission?: string
 }
 
+export interface AccountCategory {
+  categoryCode: string;
+  shortName: string;
+  description: string;
+}

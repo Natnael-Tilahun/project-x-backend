@@ -127,6 +127,14 @@ export const mainLinks: MenuItem[] = [
       showDropdown: true,
     },
     {
+      title: "Account Categories",
+      icon: "material-symbols:account-balance-wallet",
+      link: "/accountCategories",
+      size: "22",
+      // permission: PermissionConstants.READ_ACCOUNT_CATEGORY,
+      showDropdown: true,
+    },
+    {
       title: "Service Management",
       icon: "material-symbols:work",
       size: "22",
