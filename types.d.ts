@@ -670,6 +670,7 @@ interface PaymentIntegration {
   chargeId?: string | null;
   maxTransactionsPerDay?: number | null;
   visibilityScope?: VisibilityScope
+  coreTransactionReasonTemplate?: string | null
 }
 
 interface ThirdPartyTransactionDetail{

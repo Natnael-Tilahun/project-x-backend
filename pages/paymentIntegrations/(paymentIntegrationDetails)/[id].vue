@@ -1267,6 +1267,26 @@ onMounted(() => {
                   </FormItem>
                 </FormField>
 
+
+            <FormField
+              :model-value="data?.coreTransactionReasonTemplate"
+              v-slot="{ componentField }"
+              name="coreTransactionReasonTemplate"
+            >
+              <FormItem>
+                <FormLabel> Core Banking Narative</FormLabel>
+                <FormControl>
+                  <UiTextarea
+                    placeholder="Enter Payment core banking narative"
+                    class="resize-y col-span-full"
+                    rows="0"
+                    v-bind="componentField"
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+
                 <FormField
                   :model-value="data?.isDraft"
                   v-slot="{ value, handleChange }"

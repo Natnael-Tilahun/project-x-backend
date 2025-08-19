@@ -82,6 +82,7 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     limitPerTransaction: z.number().optional().nullable(),
     category: PaymentCategorySchema,
     maxTransactionsPerDay: z.number().optional().nullable(),
+    coreTransactionReasonTemplate:  z.string().optional().nullable(),
   })
 );
 
