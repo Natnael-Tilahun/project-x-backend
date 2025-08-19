@@ -3,30 +3,15 @@ import type { Role } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
+import { usePagination } from "./usePagination";
 
 export const useStaffRoles = () => {
-  const isLoading = ref<boolean>(false);
+  // Removed isLoading ref
   const isUpdating = ref<boolean>(false);
   const { getRefreshToken, getAuthorities } = useAuth();
   const { fetch } = useApi();
+  const { page, size, sort, data, total, loading, error, fetchData, onPageChange, onSizeChange, onSortChange } = usePagination<Role>('/api/v1/internal/staff-roles/list');
 
-  const getStaffRoles: () => ApiResult<Role[]> = async () => {
-    try {
-      const { data, pending, error, status } = await fetch<Role[]>(
-        '/api/v1/internal/staff-roles/list'
-      );
-
-      isLoading.value = pending.value;
-
-      if (status.value === "error") {
-        handleApiError(error);
-      }
-
-      return data.value ? (data.value as unknown as Role[]) : null;
-    } catch (err) {
-      throw err
-    }
-  };
 
   const deleteStaffRoleById: (id: string) => ApiResult<any> = async (id) => {
     try {
@@ -35,12 +20,11 @@ export const useStaffRoles = () => {
         { method: "DELETE" }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after deletion
       return data.value;
     } catch (err) {
       throw err
@@ -53,8 +37,7 @@ export const useStaffRoles = () => {
         `/api/v1/internal/staff-roles/${name}/permissions`
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         if (error.value?.statusCode == 401) {
           await getRefreshToken().catch(e => {
@@ -81,12 +64,11 @@ export const useStaffRoles = () => {
         }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after creation
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
@@ -110,6 +92,7 @@ export const useStaffRoles = () => {
       }
 
       await getAuthorities();
+      fetchData(); // Refresh data after update
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
@@ -133,6 +116,7 @@ export const useStaffRoles = () => {
       }
 
       await getAuthorities();
+      fetchData(); // Refresh data after permission creation
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
@@ -156,6 +140,7 @@ export const useStaffRoles = () => {
       }
 
       await getAuthorities();
+      fetchData(); // Refresh data after permission deletion
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
@@ -178,6 +163,7 @@ export const useStaffRoles = () => {
       }
 
       await getAuthorities();
+      fetchData(); // Refresh data after status update
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
@@ -185,9 +171,19 @@ export const useStaffRoles = () => {
   };
 
   return {
-    isLoading,
+    // isLoading, // Removed
     isUpdating,
-    getStaffRoles,
+    page,
+    size,
+    sort,
+    staffRoles: data, // Alias data to staffRoles
+    total,
+    loading,
+    error,
+    fetchStaffRoles: fetchData, // Alias fetchData
+    onPageChange,
+    onSizeChange,
+    onSortChange,
     getStaffRolePermissions,
     deleteStaffRoleById,
     createNewStaffRole,

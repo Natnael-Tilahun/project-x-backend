@@ -16,13 +16,12 @@ const {
   activateCustomerById,
   deActivateCustomerById,
   getCoreAccountsByCustomerId,
-  isLoading,
 } = useCustomers();
 
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
 const customerId = ref<string>("");
-const loading = ref(isLoading.value);
+const loading = ref(false);
 const isError = ref(false);
 const data = ref<Customer>();
 const coreData = ref<any>();
@@ -56,7 +55,6 @@ const copyToClipboard = (data: any) => {
 };
 
 try {
-  isLoading.value = true;
   loading.value = true;
   data.value = await getCustomerById(customerId.value); // Call your API function to fetch roles
   accountCustomerId.value = data.value?.coreCustomerId;
@@ -64,7 +62,6 @@ try {
   console.error("Error fetching customers:", err);
   isError.value = true;
 } finally {
-  isLoading.value = false;
   loading.value = false;
 }
 

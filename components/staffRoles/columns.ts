@@ -12,24 +12,6 @@ type RefetchFunction = () => Promise<void>;
 
 export const columns = (refetch: RefetchFunction): ColumnDef<Role>[] => [
   {
-    id: "select",
-    header: ({ table }) =>
-      h(Checkbox, {
-        checked: table.getIsAllPageRowsSelected(),
-        "onUpdate:checked": (value: boolean) =>
-          table.toggleAllPageRowsSelected(!!value),
-        ariaLabel: "Select all",
-      }),
-    cell: ({ row }) =>
-      h(Checkbox, {
-        checked: row.getIsSelected(),
-        "onUpdate:checked": (value: boolean) => row.toggleSelected(!!value),
-        ariaLabel: "Select row",
-      }),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
     accessorKey: "name",
     header: "Role Name",
     cell: ({ row }) => {

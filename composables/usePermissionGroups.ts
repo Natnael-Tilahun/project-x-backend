@@ -3,13 +3,31 @@ import type { PermissionGroup } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
+import { usePagination } from "./usePagination";
 
 export const usePermissionGroups = () => {
+  // Server pagination for listing
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<PermissionGroup>('/api/v1/internal/permission-groups');
+
+  // Legacy flags for create/update/delete operations
   const isLoading = ref<boolean>(false);
   const isUpdating = ref<boolean>(false);
   const { getRefreshToken } = useAuth();
   const { fetch } = useApi();
 
+  // Legacy getter retained for any other usage that expects the full array
   const getPermissionGroups: () => ApiResult<PermissionGroup[]> = async () => {
     try {
       const { data, pending, error, status } = await fetch<PermissionGroup[]>(
@@ -41,6 +59,8 @@ export const usePermissionGroups = () => {
         handleApiError(error);
       }
 
+      // Refresh paginated data after deletion
+      await fetchData();
       return data.value;
     } catch (err) {
       throw err
@@ -87,6 +107,8 @@ export const usePermissionGroups = () => {
         handleApiError(error);
       }
 
+      // Refresh paginated data after creation
+      await fetchData();
       return data.value ? (data.value as unknown as PermissionGroup) : null;
     } catch (err) {
       throw err
@@ -109,6 +131,8 @@ export const usePermissionGroups = () => {
         handleApiError(error);
       }
 
+      // Refresh paginated data after update
+      await fetchData();
       return data.value ? (data.value as unknown as PermissionGroup) : null;
     } catch (err) {
       throw err
@@ -116,6 +140,20 @@ export const usePermissionGroups = () => {
   };
 
   return {
+    // Server pagination API
+    page,
+    size,
+    sort,
+    permissionGroups: data,
+    total,
+    loading,
+    error,
+    fetchPermissionGroups: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
+    // Legacy/auxiliary APIs
     isLoading,
     isUpdating,
     getPermissionGroups,

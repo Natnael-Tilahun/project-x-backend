@@ -2,8 +2,23 @@ import { useApi } from "./useApi";
 import type { Account, Merchant } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
+import { usePagination } from "./usePagination";
 
 export const useMerchants = () => {
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<Merchant>('/api/v1/internal/merchants');
+
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
@@ -41,6 +56,7 @@ export const useMerchants = () => {
         handleApiError(error);
       }
 
+      await fetchData();
       return data.value ? (data.value as unknown as Merchant) : null;
     } catch (err) {
       throw err
@@ -81,6 +97,7 @@ export const useMerchants = () => {
         handleApiError(error);
       }
 
+      await fetchData();
       return data.value ? (data.value as unknown as Merchant) : null;
     } catch (err) {
       throw err
@@ -122,6 +139,7 @@ export const useMerchants = () => {
         handleApiError(error);
       }
 
+      await fetchData();
       return data.value;
     } catch (err) {
       throw err
@@ -144,6 +162,7 @@ export const useMerchants = () => {
         handleApiError(error);
       }
 
+      await fetchData();
       return data.value ? (data.value as unknown as any) : null;
     } catch (err) {
       throw err
@@ -166,6 +185,7 @@ export const useMerchants = () => {
         handleApiError(error);
       }
 
+      await fetchData();
       return data.value ? (data.value as unknown as any) : null;
     } catch (err) {
       throw err
@@ -173,6 +193,20 @@ export const useMerchants = () => {
   };
 
   return {
+    // Server pagination API
+    page,
+    size,
+    sort,
+    merchants: data,
+    total,
+    loading,
+    error,
+    fetchMerchants: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
+    // Legacy/auxiliary APIs
     isLoading,
     getMerchants,
     getMerchantById,

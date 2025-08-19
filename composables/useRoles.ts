@@ -4,33 +4,20 @@ import type { Role } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
+import { usePagination } from "./usePagination"; // Import usePagination
 
 export const useRoles = () => {
+  const { page, size, sort, data, total, loading, error, fetchData, onPageChange, onSizeChange, onSortChange } = usePagination<Role>('/api/v1/internal/roles/list'); // Integrate usePagination
+
   const authUser = useAuthUser();
   const userAdmin = useState<boolean>("userAdmin", () => false);
-  const isLoading = ref<boolean>(false);
+  const isLoading = ref<boolean>(false); // Remove or re-evaluate if still needed
   const isUpdating = ref<boolean>(false);
   const { getRefreshToken, getAuthorities } = useAuth();
   const { toast } = useToast();
   const { fetch } = useApi();
 
-  const getSystemRoles: () => ApiResult<Role[]> = async () => {
-    try {
-      const { data, pending, error, status } = await fetch<Role[]>(
-        '/api/v1/internal/roles/list'
-      );
-
-      isLoading.value = pending.value;
-
-      if (status.value === "error") {
-        handleApiError(error);
-      }
-
-      return data.value ? (data.value as unknown as Role[]) : null;
-    } catch (err) {
-      throw err
-    }
-  };
+  // getSystemRoles function is replaced by usePagination's fetchData
 
   const deleteSystemRoleById: (id: string) => ApiResult<any> = async (id) => {
     try {
@@ -39,12 +26,11 @@ export const useRoles = () => {
         { method: "DELETE" }
       );
 
-      isLoading.value = pending.value;
-
+      // isLoading.value = pending.value; // Remove or re-evaluate
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after deletion
       return data.value;
     } catch (err) {
       throw err
@@ -74,7 +60,6 @@ export const useRoles = () => {
       throw err
     }
   };
-
   const createNewSystemRole: (roleDetail: Role) => ApiResult<Role> = async (roleDetail) => {
     try {
       const { data, pending, error, status } = await fetch<Role>(
@@ -85,12 +70,12 @@ export const useRoles = () => {
         }
       );
 
-      isLoading.value = pending.value;
+      // isLoading.value = pending.value; // Remove or re-evaluate
 
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after creation
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
@@ -114,6 +99,7 @@ export const useRoles = () => {
       }
 
       await getAuthorities();
+      fetchData(); // Refresh data after update
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
@@ -139,6 +125,7 @@ export const useRoles = () => {
       }
 
       await getAuthorities();
+      fetchData(); // Refresh data after status update
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
@@ -162,6 +149,7 @@ export const useRoles = () => {
       }
 
       await getAuthorities();
+      fetchData(); // Refresh data after permission creation
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
@@ -170,8 +158,7 @@ export const useRoles = () => {
 
   const deleteSystemRolePermissions: (roleName: string, permissionsData: any) => ApiResult<Role> = async (roleName, permissionsData) => {
     try {
-      const { data, pending, error, status } = await fetch<Role>(
-        `/api/v1/internal/roles/${roleName}/permissions`,
+      const { data, pending, error, status } = await fetch<Role>(`/api/v1/internal/roles/${roleName}/permissions`,
         {
           method: "DELETE",
           body: permissionsData
@@ -185,17 +172,27 @@ export const useRoles = () => {
       }
 
       await getAuthorities();
+      fetchData(); // Refresh data after permission deletion
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
     }
   };
 
-
   return {
-    isLoading,
+    isLoading, // Remove or re-evaluate
     isUpdating,
-    getSystemRoles,
+    page,
+    size,
+    sort,
+    systemRoles: data, // Alias data to systemRoles
+    total,
+    loading,
+    error,
+    fetchSystemRoles: fetchData, // Alias fetchData
+    onPageChange,
+    onSizeChange,
+    onSortChange,
     getSystemRolePermissions,
     deleteSystemRoleById,
     createNewSystemRole,

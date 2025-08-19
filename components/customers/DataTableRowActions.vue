@@ -3,8 +3,7 @@ import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { PermissionConstants } from "~/constants/permissions";
 
-const { deleteCustomerById, isLoading } = useCustomers();
-const loading = ref(isLoading.value);
+const { deleteCustomerById, loading: isLoading } = useCustomers();
 const isError = ref(false);
 const openEditModal = ref(false);
 const setOpenEditModal = (value: boolean) => {
@@ -33,7 +32,6 @@ function viewCustomerGroup(id: string) {
 async function deleteCustomer(id: string) {
   try {
     isLoading.value = true;
-    loading.value = true;
     await deleteCustomerById(id); // Call your API function to fetch roles
     console.log("Customer deleted successfully");
     toast({
@@ -46,7 +44,6 @@ async function deleteCustomer(id: string) {
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
     setOpenEditModal(false);
   }
 }

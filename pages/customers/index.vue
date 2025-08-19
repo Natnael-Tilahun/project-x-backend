@@ -1,50 +1,39 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, provide } from "vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Customer } from "~/types";
-import { columns as tableColumns } from "~/components/customers/columns"; // Renamed to avoid conflict
+import { columns as tableColumns } from "~/components/customers/columns";
 import { PermissionConstants } from "~/constants/permissions";
+import { useCustomers } from "~/composables/useCustomers"; // Import useCustomers
+import ServerPagination from "~/components/ui/ServerPagination.vue"; // Import ServerPagination
 
-const { getCustomers, searchCustomers, isLoading } = useCustomers();
-const loading = ref(isLoading.value);
-const isError = ref(false);
-const data = ref<Customer[]>();
+const {
+  page,
+  size,
+  sort,
+  customers: data, // Renamed to data for existing template usage
+  total,
+  loading: isLoading, // Renamed to isLoading for existing template usage
+  error: isError, // Renamed to isError for existing template usage
+  fetchCustomers: fetchData, // Renamed to fetchData for existing template usage
+  onPageChange,
+  onSizeChange,
+  onSortChange,
+  searchCustomers
+} = useCustomers();
+
 const keyword = ref<string>("");
-
-const refetch = async () => {
-  data.value = []
-};
-
-const fetchData = async () => {
-  try {
-    isLoading.value = true;
-    loading.value = true;
-    const customers = await getCustomers(0, 10000000000) || []// Call your API function to fetch roles
-    // Sort integrations by name alphabetically, handling null values
-    data.value = customers.sort((a: Customer, b: Customer) => {
-      // Handle cases where fullName might be null
-      const nameA = a.fullName?.toLowerCase() || "";
-      const nameB = b.fullName?.toLowerCase() || "";
-      return nameA.localeCompare(nameB);
-    });
-  } catch (err: any) {
-    console.error("Error fetching customers:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-    loading.value = false;
-  }
-};
-
-// await useAsyncData("customersData", async () => {
-//   await fetchData();
-// });
+const loading = ref(isLoading.value);
 
 const searchHandler = async () => {
   try {
     isLoading.value = true;
     loading.value = true;
-    data.value = await searchCustomers(keyword.value); // Call your API function to fetch roles
+    if (keyword.value && keyword.value.trim().length > 0) {
+      data.value = await searchCustomers(keyword.value.trim());
+    } else {
+      data.value = [] as any;
+    }
   } catch (err: any) {
     console.error("Error fetching customers:", err);
     isError.value = true;
@@ -54,11 +43,11 @@ const searchHandler = async () => {
   }
 };
 
-// Provide the refetch function
-provide('refetchCustomers', refetch);
+// Provide the fetchCustomers function for columns
+provide('refetchCustomers', fetchData);
 
-// Generate columns by passing the refetch function
-const columns = computed(() => tableColumns(refetch));
+// Generate columns by passing the fetchCustomers function
+const columns = computed(() => tableColumns(fetchData));
 </script>
 
 <!-- Render DataTable only if data is available -->
@@ -73,7 +62,7 @@ const columns = computed(() => tableColumns(refetch));
           v-model="keyword"
           @keyup.enter="searchHandler"
         />
-        <UiButton :disabled="keyword.length <= 4"  @click="searchHandler">
+        <UiButton :disabled="keyword.length <= 4 || isLoading"  @click="searchHandler">
           <Icon
             name="svg-spinners:8-dots-rotate"
             v-if="isLoading"
@@ -93,7 +82,7 @@ const columns = computed(() => tableColumns(refetch));
     </div>
 
     <UiCard
-      v-if="!data"
+      v-if="(!data || data.length === 0) && !isLoading && !isError"
       class="px-6 py-12 flex flex-col gap-1 items-center mt-6"
     >
       <h1 class="text-lg">Please search the customer first</h1>
@@ -102,21 +91,22 @@ const columns = computed(() => tableColumns(refetch));
       </p>
     </UiCard>
 
-    <div v-if="loading" class="py-10 flex justify-center w-full">
+    <div v-if="isLoading" class="py-10 flex justify-center w-full">
       <UiLoading />
     </div>
 
     <div
-      v-else-if="data && !isError"
+      v-else-if="data && data.length > 0 && !isError"
       class="py-5 flex flex-col space-y-6 mx-auto"
     >
       <UiDataTable :columns="columns" :data="data">
         <template v-slot:toolbar="{ table }"> </template>
       </UiDataTable>
+      
     </div>
 
     <div v-if="isError">
-      <ErrorMessage :retry="refetch" title="Something went wrong." />
+      <ErrorMessage :retry="fetchData" title="Something went wrong." />
     </div>
   </div>
 </template>

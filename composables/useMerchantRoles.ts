@@ -3,30 +3,13 @@ import type { Role } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
+import { usePagination } from "./usePagination"; // Import usePagination
 
 export const useMerchantRoles = () => {
-  const isLoading = ref<boolean>(false);
   const isUpdating = ref<boolean>(false);
   const { getRefreshToken, getAuthorities } = useAuth();
   const { fetch } = useApi();
-
-  const getMerchantOperatorRoles: () => ApiResult<Role[]> = async () => {
-    try {
-      const { data, pending, error, status } = await fetch<Role[]>(
-        '/api/v1/internal/merchants/operator-roles'
-      );
-
-      isLoading.value = pending.value;
-
-      if (status.value === "error") {
-        handleApiError(error);
-      }
-
-      return data.value ? (data.value as unknown as Role[]) : null;
-    } catch (err) {
-      throw err
-    }
-  };
+  const { page, size, sort, data, total, loading, error, fetchData, onPageChange, onSizeChange, onSortChange } = usePagination<Role>('/api/v1/internal/merchants/operator-roles');
 
   const deleteMerchantOperatorRoleById: (id: string) => ApiResult<any> = async (id) => {
     try {
@@ -35,12 +18,10 @@ export const useMerchantRoles = () => {
         { method: "DELETE" }
       );
 
-      isLoading.value = pending.value;
-
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after deletion
       return data.value;
     } catch (err) {
       throw err
@@ -52,8 +33,6 @@ export const useMerchantRoles = () => {
       const { data, pending, error, status } = await fetch<Role>(
         `/api/v1/internal/merchants/operator-roles/${name}`
       );
-
-      isLoading.value = pending.value;
 
       if (status.value === "error") {
         if (error.value?.statusCode == 401) {
@@ -76,8 +55,6 @@ export const useMerchantRoles = () => {
       const { data, pending, error, status } = await fetch<Role>(
         `/api/v1/internal/merchants/operator-roles/${name}/permissions`
       );
-
-      isLoading.value = pending.value;
 
       if (status.value === "error") {
         if (error.value?.statusCode == 401) {
@@ -105,12 +82,10 @@ export const useMerchantRoles = () => {
         }
       );
 
-      isLoading.value = pending.value;
-
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after creation
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
@@ -134,6 +109,7 @@ export const useMerchantRoles = () => {
       }
 
       await getAuthorities();
+      fetchData(); // Refresh data after update
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
@@ -157,6 +133,7 @@ export const useMerchantRoles = () => {
       }
 
       await getAuthorities();
+      fetchData(); // Refresh data after permission creation
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
@@ -180,6 +157,7 @@ export const useMerchantRoles = () => {
       }
 
       await getAuthorities();
+      fetchData(); // Refresh data after permission deletion
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
@@ -202,6 +180,7 @@ export const useMerchantRoles = () => {
       }
 
       await getAuthorities();
+      fetchData(); // Refresh data after status update
       return data.value ? (data.value as unknown as Role) : null;
     } catch (err) {
       throw err
@@ -209,9 +188,18 @@ export const useMerchantRoles = () => {
   };
 
   return {
-    isLoading,
     isUpdating,
-    getMerchantOperatorRoles,
+    page,
+    size,
+    sort,
+    merchantOperatorRoles: data, // Alias data to merchantOperatorRoles
+    total,
+    loading,
+    error,
+    fetchMerchantOperatorRoles: fetchData, // Alias fetchData
+    onPageChange,
+    onSizeChange,
+    onSortChange,
     getMerchantOperatorRolePermissions,
     deleteMerchantOperatorRoleById,
     createNewMerchantOperatorRole,

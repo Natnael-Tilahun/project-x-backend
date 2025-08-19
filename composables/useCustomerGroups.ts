@@ -2,8 +2,25 @@ import type { Contract, CustomerGroup, CustomerGroupMember, Device, LoginHistory
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
+import { usePagination } from "./usePagination";
 
 export const useCustomerGroups = () => {
+  // Server pagination for listing groups
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<CustomerGroup>("/api/v1/internal/customer-groups");
+
+  // Legacy flags for mutations
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
@@ -70,7 +87,7 @@ export const useCustomerGroups = () => {
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      await fetchData();
       return data.value ? (data.value as unknown as CustomerGroup) : null;
     } catch (err) {
       throw err
@@ -95,7 +112,7 @@ export const useCustomerGroups = () => {
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      await fetchData();
       return data.value ? (data.value as unknown as CustomerGroup) : null;
     } catch (err) {
       throw err
@@ -114,7 +131,7 @@ export const useCustomerGroups = () => {
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      await fetchData();
       return data.value;
     } catch (err) {
       throw err
@@ -291,6 +308,20 @@ export const useCustomerGroups = () => {
   };
 
   return {
+    // Server pagination API
+    page,
+    size,
+    sort,
+    customerGroups: data,
+    total,
+    loading,
+    error,
+    fetchCustomerGroups: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
+    // Legacy/auxiliary APIs
     isLoading,
     getCustomerGroups,
     getCustomerGroupById,
