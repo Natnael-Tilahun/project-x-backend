@@ -41,14 +41,15 @@ export const useApi = () => {
     const url = `${baseUrl}${endpoint}${queryString}`;
 
     try {
-      const response = await $fetch(url, {
+      const response = await $fetch.raw<T>(url, {
         method,
         body,
         headers: getHeaders(includeAuth),
       });
 
       return {
-        data: ref(response),
+        data: ref((response as any)._data as T),
+        headers: (response as any).headers as Headers,
         pending: ref(false),
         error: ref(null),
         status: ref("success"),

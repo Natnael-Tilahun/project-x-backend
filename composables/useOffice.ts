@@ -1,8 +1,23 @@
 import { useApi } from "./useApi";
 import type { Office } from "~/types";
 import { handleApiError } from "~/types/api";
+import { usePagination } from "./usePagination";
 
 export const useOffice = () => {
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<Office>('/api/v1/internal/offices');
+
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
@@ -74,6 +89,7 @@ export const useOffice = () => {
         throw new Error("No Office with this Office id received");
       }
 
+      await fetchData();
       return data.value as unknown as Office;
     } catch (err) {
       throw err;
@@ -100,6 +116,7 @@ export const useOffice = () => {
         throw new Error("No Office with this Office id received");
       }
 
+      await fetchData();
       return data.value as unknown as Office;
     } catch (err) {
       throw err;
@@ -119,6 +136,7 @@ export const useOffice = () => {
         handleApiError(error)
       }
 
+      await fetchData();
       return data.value;
     } catch (err) {
       throw err;
@@ -126,6 +144,20 @@ export const useOffice = () => {
   };
 
   return {
+    // Server pagination API
+    page,
+    size,
+    sort,
+    offices: data,
+    total,
+    loading,
+    error,
+    fetchOffices: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
+    // Legacy/auxiliary APIs
     isLoading,
     getOffices,
     getOfficeById,

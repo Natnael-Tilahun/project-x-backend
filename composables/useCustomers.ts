@@ -4,38 +4,16 @@ import { useApi } from "./useApi";
 import type { CoreCustomerSummery, Customer, CustomerGroup, CustomerGroupMember, Device, LoginHistory, User } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
+import { usePagination } from "./usePagination"; // Import usePagination
 
 export const useCustomers = () => {
-  const isLoading = ref<boolean>(false);
+  const { page, size, sort, data, total, loading, error, fetchData, onPageChange, onSizeChange, onSortChange } = usePagination<Customer>('/api/v1/internal/customers/list', { autoFetch: false });
+
+  // Removed isLoading ref and usePagesInfoStore related refs
   const { fetch } = useApi();
   const { toast } = useToast();
-  const { pageNumber, pageSize } = usePagesInfoStore();
-  const pageNumbers = ref<number>(pageNumber);
-  const pageSizes = ref<number>(pageSize);
 
-  const getCustomers: (
-    page?: number,
-    size?: number
-  ) => ApiResult<Customer[]> = async (page, size) => {
-    try {
-      const { data, pending, error, status } = await fetch<Customer[]>(
-        "/api/v1/internal/customers/list",
-        {
-          params: { page, size },
-        }
-      );
-
-      isLoading.value = pending.value;
-
-      if (status.value === "error") {
-        handleApiError(error);
-      }
-
-      return data.value ? (data.value as unknown as Customer[]) : null;
-    } catch (err) {
-      throw err;
-    }
-  };
+  // getCustomers function is replaced by usePagination's fetchData
 
   const getCustomerById: (id: string) => ApiResult<Customer> = async (id) => {
     try {
@@ -43,8 +21,7 @@ export const useCustomers = () => {
         `/api/v1/internal/customers/${id}`
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
@@ -63,8 +40,7 @@ export const useCustomers = () => {
         `/api/v1/internal/customers/core/${accountNumber}`
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
@@ -83,8 +59,7 @@ export const useCustomers = () => {
         `/api/v1/internal/core/accounts/customer/${customerId}`
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
@@ -103,8 +78,7 @@ export const useCustomers = () => {
         `/api/v1/internal/contract-core-customers/by-core-account-number/${accountNumber}`
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
@@ -126,8 +100,7 @@ export const useCustomers = () => {
         }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
@@ -147,12 +120,11 @@ export const useCustomers = () => {
         { method: "POST" }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after operation
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
       throw err;
@@ -168,12 +140,11 @@ export const useCustomers = () => {
         { method: "POST" }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after operation
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
       throw err;
@@ -193,12 +164,11 @@ export const useCustomers = () => {
         }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after operation
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
       throw err;
@@ -214,12 +184,11 @@ export const useCustomers = () => {
         { method: "POST" }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after operation
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
       throw err;
@@ -233,12 +202,11 @@ export const useCustomers = () => {
         { method: "POST" }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after operation
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
       throw err;
@@ -252,12 +220,11 @@ export const useCustomers = () => {
         { method: "GET" }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after operation
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
       throw err;
@@ -271,12 +238,11 @@ export const useCustomers = () => {
         { method: "GET" }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after operation
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
       throw err;
@@ -296,12 +262,11 @@ export const useCustomers = () => {
         }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after operation
       return data.value ? (data.value as unknown as Customer) : null;
     } catch (err) {
       throw err;
@@ -315,12 +280,11 @@ export const useCustomers = () => {
         { method: "DELETE" }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after operation
       return data.value;
     } catch (err) {
       throw err;
@@ -335,8 +299,7 @@ export const useCustomers = () => {
         `/api/v1/internal/customers/${customerId}/devices`
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
@@ -373,8 +336,7 @@ export const useCustomers = () => {
         { params }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
@@ -389,12 +351,10 @@ export const useCustomers = () => {
     deviceId: string
   ) => ApiResult<User> = async (customerId, deviceId) => {
     try {
-      const { data, pending, error, status } = await fetch<User>(
-        `/api/v1/internal/customers/${customerId}/devices/${deviceId}`
+      const { data, pending, error, status } = await fetch<User>(`/api/v1/internal/customers/${customerId}/devices/${deviceId}`
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
@@ -410,17 +370,15 @@ export const useCustomers = () => {
     deviceId: string
   ) => ApiResult<User> = async (customerId, deviceId) => {
     try {
-      const { data, pending, error, status } = await fetch<User>(
-        `/api/v1/internal/customers/${customerId}/devices/${deviceId}/suspend`,
+      const { data, pending, error, status } = await fetch<User>(`/api/v1/internal/customers/${customerId}/devices/${deviceId}/suspend`,
         { method: "POST" }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after operation
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
       throw err;
@@ -432,17 +390,15 @@ export const useCustomers = () => {
     deviceId: string
   ) => ApiResult<User> = async (customerId, deviceId) => {
     try {
-      const { data, pending, error, status } = await fetch<User>(
-        `/api/v1/internal/customers/${customerId}/devices/${deviceId}/restore`,
+      const { data, pending, error, status } = await fetch<User>(`/api/v1/internal/customers/${customerId}/devices/${deviceId}/restore`,
         { method: "POST" }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after operation
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
       throw err;
@@ -451,12 +407,10 @@ export const useCustomers = () => {
 
   const getCustomerGroupByCustomerId: (id: string) => ApiResult<CustomerGroupMember> = async (id) => {
     try {
-      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
-        `/api/v1/internal/customers/${id}/groups`
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(`/api/v1/internal/customers/${id}/groups`
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
@@ -469,20 +423,18 @@ export const useCustomers = () => {
 
   const createCustomerGroupByCustomerId: (id: string, groupData:any) => ApiResult<CustomerGroupMember> = async (id,groupData) => {
     try {
-      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
-        `/api/v1/internal/customers/${id}/groups`,
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(`/api/v1/internal/customers/${id}/groups`,
         {
           method: "POST",
           body: groupData,
         }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after operation
       return data.value ? (data.value as unknown as CustomerGroupMember) : null;
     } catch (err) {
       throw err;
@@ -491,20 +443,18 @@ export const useCustomers = () => {
 
   const deleteCustomerGroupByCustomerId: (id: string, groupData:any) => ApiResult<CustomerGroupMember> = async (id,groupData) => {
     try {
-      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
-        `/api/v1/internal/customers/${id}/groups`,
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(`/api/v1/internal/customers/${id}/groups`,
         {
           method: "DELETE",
           body: groupData,
         }
       );
 
-      isLoading.value = pending.value;
-
+      // Removed isLoading.value = pending.value;
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      fetchData(); // Refresh data after operation
       return data.value ? (data.value as unknown as CustomerGroupMember) : null;
     } catch (err) {
       throw err;
@@ -512,8 +462,17 @@ export const useCustomers = () => {
   };
 
   return {
-    isLoading,
-    getCustomers,
+    page,
+    size,
+    sort,
+    customers: data, // Alias data to customers
+    total,
+    loading,
+    error,
+    fetchCustomers: fetchData, // Alias fetchData
+    onPageChange,
+    onSizeChange,
+    onSortChange,
     getCustomerById,
     getCoreCustomerByAccountNumber,
     getCoreAccountsByCustomerId,

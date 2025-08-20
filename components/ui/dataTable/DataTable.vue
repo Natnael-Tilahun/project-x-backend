@@ -8,13 +8,11 @@ import type {
 import {
   FlexRender,
   getCoreRowModel,
-  getPaginationRowModel,
   useVueTable,
   getSortedRowModel,
   getFilteredRowModel,
 } from "@tanstack/vue-table";
 import { valueUpdater } from "@/lib/utils";
-import DataTablePaginationVue from "./Pagination.vue";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -32,7 +30,6 @@ const table = useVueTable({
   data: props.data,
   columns: props.columns,
   getCoreRowModel: getCoreRowModel(),
-  getPaginationRowModel: getPaginationRowModel(),
   getSortedRowModel: getSortedRowModel(),
   onSortingChange: (updaterOrValue) => valueUpdater(updaterOrValue, sorting),
   onColumnFiltersChange: (updaterOrValue) =>
@@ -111,6 +108,6 @@ console.log(
       </UiTable>
     </div>
 
-    <DataTablePaginationVue :table="table" />
+    <!-- <DataTablePaginationVue :table="table" /> -->
   </div>
 </template>

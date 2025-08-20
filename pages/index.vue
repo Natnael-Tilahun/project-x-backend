@@ -2,39 +2,50 @@
 import DashboardDateRangePicker from "~/components/dashboard/DateRangePicker.vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Customer, Integration, Merchant, Staff } from "~/types";
+import { useCustomers } from "~/composables/useCustomers"; // Import useCustomers
 
 const authStore = useAuthStore(); // Make sure this is your Pinia auth store instance
 const { getStaffs } = useStaffs();
 const { getMerchants } = useMerchants();
-const { getCustomers } = useCustomers();
 const { getIntegrations } = useIntegrations();
 
-const isLoading = ref(true);
-const isError = ref(false);
+const { fetchCustomers, total: customerTotal, loading: customerLoading, error: customerError } = useCustomers(); // Destructure from useCustomers
+
+const isLoading = ref(true); // Keep for overall loading
+const isError = ref(false); // Keep for overall error
 const staffData = ref<Staff[]>([]);
 const merchantData = ref<Merchant[]>([]);
-const customerData = ref<Customer[]>([]);
+// const customerData = ref<Customer[]>([]); // Removed
 const integrationData = ref<Integration[]>([]);
 const staffNumber = computed(() => staffData.value.length);
 const merchantNumber = computed(() => merchantData.value.length);
-const customerNumber = computed(() => customerData.value.length);
+const customerNumber = computed(() => customerTotal.value); // Use customerTotal
 const integrationNumber = computed(() => integrationData.value.length);
 
 const fetchData = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
-    [
-      staffData.value,
-      merchantData.value,
-      customerData.value,
-      integrationData.value,
+    const [
+      staffs,
+      merchants,
+      // customers, // Removed
+      integrations,
     ] = await Promise.all([
       getStaffs().catch(() => []),
       getMerchants().catch(() => []),
-      getCustomers().catch(() => []),
+      // getCustomers().catch(() => []),
       getIntegrations().catch(() => []),
     ]);
+
+    staffData.value = staffs;
+    merchantData.value = merchants;
+    // customerData.value = customers; // Removed
+    integrationData.value = integrations;
+
+    // Manually trigger fetchCustomers to get the total count
+    await fetchCustomers();
+
     isError.value = false;
   } catch (error) {
     isError.value = true;
@@ -52,13 +63,13 @@ const refetch = async () => {
   await fetchData();
 };
 
-watch(
-  customerData,
-  (newData) => {
-    console.log("Customer Data in index.vue:", newData);
-  },
-  { immediate: true }
-);
+// watch(
+//   customerData,
+//   (newData) => {
+//     console.log("Customer Data in index.vue:", newData);
+//   },
+//   { immediate: true }
+// );
 </script>
 
 <template>
@@ -117,7 +128,7 @@ watch(
         v-else-if="
           !isLoading &&
           !isError &&
-          customerData &&
+          customerNumber &&
           merchantData &&
           staffData &&
           integrationData

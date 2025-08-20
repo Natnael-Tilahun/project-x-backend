@@ -2,30 +2,43 @@ import type { Permission } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
+import { usePagination } from "./usePagination";
 
 export const usePermissions = () => {
-  const isLoading = ref<boolean>(false);
-  const { pageNumber, pageSize } = usePagesInfoStore();
-  const pageNumbers = ref<number>(pageNumber);
-  const pageSizes = ref<number>(pageSize);
+  // Server pagination state (mirrors staffRoles implementation)
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<Permission>('/api/v1/internal/permissions');
+
+  // Keep legacy loading flag for ad-hoc fetchers below
+  const legacyIsLoading = ref<boolean>(false);
   const isUpdating = ref<boolean>(false);
   const { fetch } = useApi();
 
+  // Legacy list fetcher used by other forms (e.g. customer creation). Do not remove.
   const getPermissions: (page?: number, size?: number) => ApiResult<any> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         '/api/v1/internal/permissions',
         {
           params: {
-            page: page ,
-            // || pageNumbers.value,
-            size: size 
-            // || pageSizes.value
+            page: page,
+            size: size,
           }
         }
       );
 
-      isLoading.value = pending.value;
+      legacyIsLoading.value = pending.value;
 
       if (status.value === "error") {
         handleApiError(error);
@@ -43,7 +56,7 @@ export const usePermissions = () => {
         `/api/v1/internal/permissions/${code}`
       );
 
-      isLoading.value = pending.value;
+      legacyIsLoading.value = pending.value;
 
       if (status.value === "error") {
         handleApiError(error);
@@ -94,11 +107,25 @@ export const usePermissions = () => {
   };
 
   return {
-    isLoading,
+    // Server pagination API
+    page,
+    size,
+    sort,
+    permissions: data,
+    total,
+    loading,
+    error,
+    fetchPermissions: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
+    // Legacy/auxiliary APIs
+    isLoading: loading,
     isUpdating,
     getPermissions,
     getPermissionById,
-    enablePermission, 
-    disablePermission
+    enablePermission,
+    disablePermission,
   };
 };

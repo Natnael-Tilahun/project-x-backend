@@ -1,41 +1,31 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, provide } from "vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Role } from "~/types";
-import { columns as tableColumns } from "~/components/userRoles/columns"; // Renamed to avoid conflict
+import { columns as tableColumns } from "~/components/userRoles/columns";
 import { PermissionConstants } from "~/constants/permissions";
+import { useRoles } from "~/composables/useRoles"; // Import useRoles
+import ServerPagination from "~/components/ui/ServerPagination.vue"; // Import ServerPagination
 
-const { getSystemRoles,  } = useRoles();
-const isLoading = ref(false);
-const isError = ref(false);
-const data = ref<Role[]>([]);
-const { pageNumber } = usePagesInfoStore();
+const {
+  page,
+  size,
+  sort,
+  systemRoles: data, // Renamed to data for existing template usage
+  total,
+  loading: isLoading, // Renamed to isLoading for existing template usage
+  error: isError, // Renamed to isError for existing template usage
+  fetchSystemRoles: fetchData, // Renamed to fetchData for existing template usage
+  onPageChange,
+  onSizeChange,
+  onSortChange,
+} = useRoles();
 
-const fetchSystemRoleData = async () => {
-  try {
-    isLoading.value = true;
-    data.value = await getSystemRoles(); // Call your API function to fetch roles
-  } catch (err) {
-    console.error("Error fetching roles:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-  }
-};
+// Provide the fetchSystemRoles function for columns
+provide('refetchSystemRoles', fetchData);
 
-onMounted(() => {
-  fetchSystemRoleData();
-});
-
-const refetch = async () => {
-  await fetchSystemRoleData();
-};
-
-// Provide the refetch function
-provide('refetchSystemRoles', refetch);
-
-// Generate columns by passing the refetch function
-const columns = computed(() => tableColumns(refetch));
+// Generate columns by passing the fetchSystemRoles function
+const columns = computed(() => tableColumns(fetchData));
 </script>
 
 <template>
@@ -43,7 +33,7 @@ const columns = computed(() => tableColumns(refetch));
     <UiLoading />
   </div>
   <div
-    v-else-if="data && !isError"
+    v-else-if="data && data.length > 0 && !isError"
     class="py-4 flex flex-col space-y-10 mx-auto"
   >
     <UiPermissionGuard :permission=PermissionConstants.CREATE_ROLE >
@@ -54,7 +44,7 @@ const columns = computed(() => tableColumns(refetch));
       >
     </NuxtLink>
     </UiPermissionGuard>
-    <UiDataTable :columns="columns" :data="data">
+    <UiDataTable :columns="columns" :data="data" @update:page="onPageChange" @update:page-size="onSizeChange">
       <template v-slot:toolbar="{ table }">
         <div class="flex items-center justify-between">
           <div class="flex flex-1 items-center space-x-2">
@@ -71,9 +61,16 @@ const columns = computed(() => tableColumns(refetch));
         </div>
       </template>
     </UiDataTable>
+    <ServerPagination
+      :page="page"
+      :size="size"
+      :total="total"
+      :on-page-change="onPageChange"
+      :on-size-change="onSizeChange"
+    />
   </div>
 
   <div v-if="isError">
-    <ErrorMessage :retry="refetch" title="Something went wrong." />
+    <ErrorMessage :retry="fetchData" title="Something went wrong." />
   </div>
 </template>
