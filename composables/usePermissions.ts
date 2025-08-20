@@ -18,7 +18,7 @@ export const usePermissions = () => {
     onPageChange,
     onSizeChange,
     onSortChange,
-  } = usePagination<Permission>('/api/v1/internal/permissions');
+  } = usePagination<Permission>({endpoint:'/api/v1/internal/permissions',  sortValue:"code,asc"});
 
   // Keep legacy loading flag for ad-hoc fetchers below
   const legacyIsLoading = ref<boolean>(false);

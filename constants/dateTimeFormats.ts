@@ -5,6 +5,11 @@ export const dateTimeFormats = [
         "example": "2025-08-09T15:11:45"
     },
     {
+        "pattern": "YYYYMMDDHHMMSS",
+        "description": "ISO Date-Time",
+        "example": "2025-08-0915:11:45"
+    },
+    {
         "pattern": "yyyy-MM-dd HH:mm:ss",
         "description": "Date and time with space",
         "example": "2025-08-09 15:11:45"

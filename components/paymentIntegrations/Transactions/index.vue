@@ -1,62 +1,43 @@
 <script lang="ts" setup>
 import { ref } from "vue";
 import { columns as tableColumns } from "~/components/paymentIntegrations/Transactions/columns"; // Renamed to avoid conflict
+import ServerPagination from "~/components/ui/ServerPagination.vue";
 
-import type { PaymentOperation, ThirdPartyTransactionDetail } from "~/types";
 import { PermissionConstants } from "~/constants/permissions";
-
-const {
-  getThirdPartyPaymentTransactionsByPaymentIntegrationId,
-  getThirdPartyPaymentTransactionsByCustomerIdAndIntegrationId,
-  getThirdPartyPaymentTransactionsByDebitAccountNumberAndIntegrationId
-} = usePaymentIntegrations();
-
-const route = useRoute();
+import { getIdFromPath } from "~/lib/utils";
 
 const integrationId = ref<string>("");
-const loading = ref(false);
-const isError = ref(false);
-const data = ref<ThirdPartyTransactionDetail[]>([]);
-integrationId.value = route.params.id as string;
+integrationId.value = getIdFromPath()
 const customerId = ref<string>("")
 const debitAccountNumber = ref<string>("")
-const isLoading = ref<boolean>(false)
 const selectedSearchOption = ref<string>("customerId")
+
+const {
+  page,
+  size,
+  sort,
+  transactions: data,
+  total,
+  loading: isLoading,
+  error: isError,
+  fetchTransactions: fetchData,
+      onPageChange,
+  onSizeChange,
+  onSortChange,
+  getThirdPartyPaymentTransactionsByCustomerIdAndIntegrationId,
+  getThirdPartyPaymentTransactionsByDebitAccountNumberAndIntegrationId
+} = usePaymentIntegrationsTransactions(integrationId);
 
 const searchOptions = [
   { label: "Search by customer ID", value: "customerId" },
   { label: "Search by debit account number", value: "debitAccountNumber" }
 ]
 
-const getAllPaymentTransactions = async () => {
-  try {
-    loading.value = true;
-    const response = await getThirdPartyPaymentTransactionsByPaymentIntegrationId(
-      integrationId.value
-    );
-    data.value = response;
-  } catch (err) {
-    console.error("Error fetching payment integration transactions:", err);
-    isError.value = true;
-  } finally {
-    loading.value = false; // Reset loading state
-  }
-};
-
-onMounted(() => {
-  getAllPaymentTransactions();
-});
-
-const refetch = async () => {
-  isError.value = false
-  await getAllPaymentTransactions();
-};
-
 // Provide the refetch function
-provide('refetchApiTransactions', refetch);
+provide('refetchApiTransactions', fetchData);
 
 // Generate columns by passing the refetch function
-const columns = computed(() => tableColumns(refetch));
+const columns = computed(() => tableColumns(fetchData));
 
 const searchHandler = async () => {
   try {
@@ -93,19 +74,19 @@ const searchHandler = async () => {
 const clearSearch = () => {
   customerId.value = "";
   debitAccountNumber.value = "";
-  getAllPaymentTransactions();
+  fetchData()
 };
 </script>
 
 <template>
   <div
-    v-if="loading"
+    v-if="isLoading"
     class="py-10 flex justify-center w-full h-60 md:h-[500px] items-center"
   >
     <UiLoading />
   </div>
   <div
-    v-else-if="data && !isError && !loading"
+    v-else-if="data && !isError && !isLoading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
     <UiDataTable :columns="columns" :data="data">
@@ -163,8 +144,15 @@ const clearSearch = () => {
         </div>  
       </template>
     </UiDataTable>
+    <ServerPagination
+      :page="page"
+      :size="size"
+      :total="total"
+      :on-page-change="onPageChange"
+      :on-size-change="onSizeChange"
+    />
   </div>
-  <div v-if="isError && !loading">
-    <ErrorMessage :retry="refetch" title="Something went wrong." />
+  <div v-if="isError && !isLoading">
+    <ErrorMessage :retry="fetchData" title="Something went wrong." />
   </div>
 </template>

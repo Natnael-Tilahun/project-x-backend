@@ -9,7 +9,35 @@ export const useMerchantRoles = () => {
   const isUpdating = ref<boolean>(false);
   const { getRefreshToken, getAuthorities } = useAuth();
   const { fetch } = useApi();
-  const { page, size, sort, data, total, loading, error, fetchData, onPageChange, onSizeChange, onSortChange } = usePagination<Role>('/api/v1/internal/merchants/operator-roles');
+  const { page, size, sort, data, total, loading, error, fetchData, onPageChange, onSizeChange, onSortChange } = usePagination<Role>({endpoint:'/api/v1/internal/merchants/operator-roles', sortValue:"name,asc"});
+  const isLoading = ref<boolean>(false);
+
+  const getMerchantOperatorRoles: (
+    page?: number,
+    size?: number
+  ) => ApiResult<Role[]> = async (page, size) => {
+    try {
+      const { data, pending, error, status } = await fetch<Role[]>(
+        "/api/v1/internal/merchants/operator-roles",
+        {
+          params: {
+            page,
+            size,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Role[]) : null;
+    } catch (err) {
+      throw err
+    }
+  };
 
   const deleteMerchantOperatorRoleById: (id: string) => ApiResult<any> = async (id) => {
     try {
@@ -196,6 +224,7 @@ export const useMerchantRoles = () => {
     total,
     loading,
     error,
+    getMerchantOperatorRoles,
     fetchMerchantOperatorRoles: fetchData, // Alias fetchData
     onPageChange,
     onSizeChange,

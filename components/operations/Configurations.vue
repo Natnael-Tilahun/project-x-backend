@@ -3,7 +3,6 @@ import { copyToClipboard } from "~/lib/utils";
 import { useForm } from "vee-validate";
 import { ref, watch, onMounted, computed } from "vue";
 import { toast } from "~/components/ui/toast";
-import { useIntegrations } from "~/composables/useIntegrations";
 import { apiOperationFormSchema } from "~/validations/apiOperationFormSchema";
 import {
   FormControl,

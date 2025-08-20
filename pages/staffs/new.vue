@@ -14,7 +14,7 @@ import type { Office, Role, Staff } from "~/types";
 
 const { createNewStaff, isLoading } = useStaffs();
 const { getOffices, isLoading: isLoadingOffices } = useOffice();
-const { getStaffRoles, isLoading: isLoadingRoles } = useStaffRoles();
+const { getStaffRoles } = useStaffRoles();
 const { getStaffs, isLoading: isLoadingStaffs } = useStaffs();
 
 const isError = ref(false);

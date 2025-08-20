@@ -10,8 +10,36 @@ export const useStaffRoles = () => {
   const isUpdating = ref<boolean>(false);
   const { getRefreshToken, getAuthorities } = useAuth();
   const { fetch } = useApi();
-  const { page, size, sort, data, total, loading, error, fetchData, onPageChange, onSizeChange, onSortChange } = usePagination<Role>('/api/v1/internal/staff-roles/list');
+  const { page, size, sort, data, total, loading, error, fetchData, onPageChange, onSizeChange, onSortChange } = usePagination<Role>({endpoint:'/api/v1/internal/staff-roles/list', sortValue:"name,asc"});
+  const isLoading = ref<boolean>(false);
 
+
+  const getStaffRoles: (
+    page?: number,
+    size?: number
+  ) => ApiResult<Role[]> = async (page, size) => {
+    try {
+      const { data, pending, error, status } = await fetch<Role[]>(
+        "/api/v1/internal/staff-roles/list",
+        {
+          params: {
+            page,
+            size,
+          },
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as Role[]) : null;
+    } catch (err) {
+      throw err
+    }
+  };
 
   const deleteStaffRoleById: (id: string) => ApiResult<any> = async (id) => {
     try {
@@ -180,6 +208,7 @@ export const useStaffRoles = () => {
     total,
     loading,
     error,
+    getStaffRoles,
     fetchStaffRoles: fetchData, // Alias fetchData
     onPageChange,
     onSizeChange,

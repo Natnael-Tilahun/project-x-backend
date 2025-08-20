@@ -7,7 +7,7 @@ import { handleApiError } from "~/types/api";
 import { usePagination } from "./usePagination"; // Import usePagination
 
 export const useCustomers = () => {
-  const { page, size, sort, data, total, loading, error, fetchData, onPageChange, onSizeChange, onSortChange } = usePagination<Customer>('/api/v1/internal/customers/list', { autoFetch: false });
+  const { page, size, sort, data, total, loading, error, fetchData, onPageChange, onSizeChange, onSortChange } = usePagination<Customer>({endpoint:'/api/v1/internal/customers/list', options:{ autoFetch: false },  sortValue:"firstName,asc"});
 
   // Removed isLoading ref and usePagesInfoStore related refs
   const { fetch } = useApi();

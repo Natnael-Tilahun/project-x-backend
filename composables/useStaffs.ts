@@ -17,7 +17,7 @@ export const useStaffs = () => {
     onPageChange,
     onSizeChange,
     onSortChange,
-  } = usePagination<Staff>("/api/v1/internal/staff");
+  } = usePagination<Staff>({endpoint:"/api/v1/internal/staff", sortValue:"firstname,asc" });
 
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);

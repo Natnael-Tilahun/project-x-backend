@@ -1,60 +1,62 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import type { MerchantBranch } from "~/types";
 import { getIdFromPath } from "~/lib/utils";
 import { columns as tableColumns } from "~/components/merchants/branches/columns"; // Renamed to avoid conflict
 import { PermissionConstants } from "~/constants/permissions";
+import ServerPagination from "~/components/ui/ServerPagination.vue";
 
-const { getMerchantBranches } = useMerchantBranchs();
 const route = useRoute();
 const fullPath = ref(route.path);
-const isLoading = ref(false);
-const isError = ref(false);
-const data = ref<MerchantBranch[]>([]);
+
 const merchantId = ref<string>("");
 merchantId.value = getIdFromPath();
 
-const fetchMerchantBranchesData = async () => {
-  try {
-    isLoading.value = true;
-    const merchantBranches = await getMerchantBranches(
-      merchantId.value,
-      0,
-      10000
-    );
-    // Sort integrations by name alphabetically
-    data.value = merchantBranches?.sort(
-      (a: MerchantBranch, b: MerchantBranch) => {
-        if (a?.branchName && b?.branchName) {
-          return a?.branchName
-            .toLowerCase()
-            .localeCompare(b?.branchName.toLowerCase());
-        }
-        return 0; // Return 0 if either firstname is missing
-      }
-    );
-  } catch (err: any) {
-    console.error("Error fetching merchant branches:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-  }
-};
+const {
+  page,
+  size,
+  sort,
+  merchantOperators: data,
+  total,
+  loading: isLoading,
+  error: isError,
+  fetchMerchantOperators: fetchData,
+  onPageChange,
+  onSizeChange,
+  onSortChange,
+} = useMerchantBranchs(merchantId);
 
-const refetch = async () => {
-  await fetchMerchantBranchesData();
-};
-
-onMounted(() => {
-  fetchMerchantBranchesData();
-});
+// const fetchMerchantBranchesData = async () => {
+//   try {
+//     isLoading.value = true;
+//     const merchantBranches = await getMerchantBranches(
+//       merchantId.value,
+//       0,
+//       10000
+//     );
+//     // Sort integrations by name alphabetically
+//     data.value = merchantBranches?.sort(
+//       (a: MerchantBranch, b: MerchantBranch) => {
+//         if (a?.branchName && b?.branchName) {
+//           return a?.branchName
+//             .toLowerCase()
+//             .localeCompare(b?.branchName.toLowerCase());
+//         }
+//         return 0; // Return 0 if either firstname is missing
+//       }
+//     );
+//   } catch (err: any) {
+//     console.error("Error fetching merchant branches:", err);
+//     isError.value = true;
+//   } finally {
+//     isLoading.value = false;
+//   }
+// };
 
 // Provide the refetch function
-provide("refetchMerchantBranches", refetch);
+provide('refetchMerchantBranches', fetchData);
 
-// Generate columns by passing the refetch function
-const columns = computed(() => tableColumns(refetch));
+const columns = computed(() => tableColumns(fetchData));
 </script>
 
 <!-- Render DataTable only if data is available -->
@@ -62,28 +64,24 @@ const columns = computed(() => tableColumns(refetch));
   <div v-if="isLoading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
-  <div
-    v-else-if="data && !isError"
-    class="py-5 flex flex-col space-y-10 mx-auto"
-  >
-    <UiPermissionGuard
-      :permission="PermissionConstants.CREATE_STAFF_ASSIGNMENT"
-    >
+  <div v-else-if="data && !isError" class="py-5 flex flex-col space-y-10 mx-auto">
+    <UiPermissionGuard :permission="PermissionConstants.CREATE_STAFF_ASSIGNMENT">
       <NuxtLink :to="`${fullPath}?activeTab=newBranch`" class="w-fit self-end">
-        <UiButton class="w-fit self-end px-5"
-          ><Icon name="material-symbols:add" size="24" class="mr-2"></Icon
-          >Create New Branch</UiButton
-        >
+        <UiButton class="w-fit self-end px-5">
+          <Icon name="material-symbols:add" size="24" class="mr-2"></Icon>Create New Branch
+        </UiButton>
       </NuxtLink>
     </UiPermissionGuard>
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }"> </template>
     </UiDataTable>
+    <ServerPagination :page="page" :size="size" :total="total" :on-page-change="onPageChange"
+      :on-size-change="onSizeChange" />
   </div>
   <!-- <div v-else-if="data && !isError && data?.length <= 0">
     <UiNoResultFound title="Sorry, No customer found." />
   </div> -->
   <div v-if="isError">
-    <ErrorMessage :retry="refetch" title="Something went wrong." />
+    <ErrorMessage :retry="fetchData" title="Something went wrong." />
   </div>
 </template>

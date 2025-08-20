@@ -30,7 +30,7 @@ function getBadgeClass(statusState: string) {
   else if(String(statusState).toLowerCase() === 'pending'){
     return ('bg-yellow-500')
   }
-  else if(String(statusState).toLowerCase() === 'failed' || String(statusState).toLowerCase() === 'expired'){
+  else if(String(statusState).toLowerCase() === 'failed' || String(statusState).toLowerCase() === 'expired' || String(statusState).toLowerCase() === 'failure'){
     return ('bg-red-500')
   }
 }

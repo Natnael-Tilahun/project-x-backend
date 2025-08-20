@@ -1,68 +1,35 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useIntegrations } from "~/composables/useIntegrations";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import type { ApiIntegration } from "~/types";
 import { columns as tableColumns } from "~/components/integrations/columns"; // Renamed to avoid conflict
 import { PermissionConstants } from "~/constants/permissions";
+import ServerPagination from "~/components/ui/ServerPagination.vue";
 
-const { getIntegrations } = useIntegrations();
-const data = ref<ApiIntegration[]>([]);
-const isLoading = ref(false);
 const isDownloading = ref(false);
-const isError = ref(false);
-const router = useRouter(); // {{ edit_2 }}
 const openImportDialog = ref(false);
-
-const getApiIntegrationData = async () => {
-  try {
-    isLoading.value = true;
-    const integrations = await getIntegrations(0, 100);
-    // Sort integrations by name alphabetically
-    data.value =
-      integrations?.sort((a, b) =>
-        a.name.toLowerCase().localeCompare(b.name.toLowerCase())
-      ) ?? [];
-  } catch (error) {
-    console.error("Error fetching integrations:", error);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-onMounted(async () => {
-  await getApiIntegrationData();
-});
-
-const refetch = async () => {
-  await getApiIntegrationData();
-};
 
 const closeImportDialog = async () => {
   openImportDialog.value = false;
 };
 
-// const searchHandler = async () => {
-//   try {
-//     isLoading.value = true;
-//     loading.value = true;
-//     data.value = await searchIntegrations(keyword.value); // Call your API function to fetch roles
-//   } catch (err: any) {
-//     console.error("Error fetching integrations:", err);
-//     isError.value = true;
-//   } finally {
-//     isLoading.value = false;
-//     loading.value = false;
-//   }
-// };
+const {
+  page,
+  size,
+  sort,
+  offices: data,
+  total,
+  loading: isLoading,
+  error: isError,
+  fetchOffices: fetchData,
+  onPageChange,
+  onSizeChange,
+  onSortChange,
+} = useIntegrations();
 
-// Provide the refetch function
+provide('refetchApiIntegrations', fetchData);
 
-provide("refetchApiIntegrations", refetch);
 
-// Generate columns by passing the refetch function
-const columns = computed(() => tableColumns(refetch));
+const columns = computed(() => tableColumns(fetchData));
 </script>
 
 <!-- Render DataTable only if data is available -->
@@ -106,7 +73,7 @@ const columns = computed(() => tableColumns(refetch));
           >
             <IntegrationsImportIntegration
               @closeImportDialog="closeImportDialog"
-              @refresh="refetch"
+              @refresh="fetchData"
             />
           </UiSheetContent>
         </UiSheet>
@@ -134,11 +101,18 @@ const columns = computed(() => tableColumns(refetch));
         </div>
       </template>
     </UiDataTable>
+    <ServerPagination
+      :page="page"
+      :size="size"
+      :total="total"
+      :on-page-change="onPageChange"
+      :on-size-change="onSizeChange"
+    />
   </div>
   <!-- <div v-else-if="data && !isError && data?.length <= 0">
     <UiNoResultFound title="Sorry, No customer found." />
   </div> -->
   <div v-if="isError">
-    <ErrorMessage :retry="refetch" title="Something went wrong." />
+    <ErrorMessage :retry="fetchData" title="Something went wrong." />
   </div>
 </template>

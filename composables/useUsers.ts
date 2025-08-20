@@ -20,7 +20,7 @@ export const useUsers = () => {
     onSizeChange,
     onSortChange,
     onSearchChange,
-  } = usePagination<User>('/api/v1/internal/users');
+  } = usePagination<User>({endpoint:'/api/v1/internal/users', });
 
   // Legacy loading for direct operations
   const isLoading = ref<boolean>(false);

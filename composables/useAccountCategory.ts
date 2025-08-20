@@ -7,7 +7,7 @@ import { handleApiError } from "~/types/api";
 import { usePagination } from "./usePagination";
 
 export const useAccountCategory = () => {
-  const { page, size, sort, data, total, loading, error, fetchData, onPageChange, onSizeChange, onSortChange } = usePagination<AccountCategory>('/api/v1/internal/accounts-category');
+  const { page, size, sort, data, total, loading, error, fetchData, onPageChange, onSizeChange, onSortChange } = usePagination<AccountCategory>({endpoint: '/api/v1/internal/accounts-category', sortValue: "categoryCode,asc"});
 
   const isLoading = ref<boolean>(false); // Keep existing isLoading if it's used elsewhere
   const isSubmitting = ref<boolean>(false);

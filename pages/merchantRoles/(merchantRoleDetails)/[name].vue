@@ -25,13 +25,12 @@ const {
   updateMerchantOperatorRoleStatus,
   createMerchantOperatorRolePermissions,
   deleteMerchantOperatorRolePermissions,
-  isLoading,
   isUpdating,
 } = useMerchantRoles();
 const { getAuthorities } = useAuth();
 const {getPermissions} = usePermissions()
-const loading = ref(isLoading.value);
-const updating = ref(isLoading.value);
+const loading = ref(false);
+const updating = ref(false);
 const isError = ref(false);
 const data = ref<Role | null>(null);
 const permissionsData = ref<Permission[]>([])
@@ -128,7 +127,6 @@ try {
   isError.value = true;
 } finally {
   loading.value = false;
-  isLoading.value = false;
 }
 }
 
@@ -172,7 +170,6 @@ try {
   isError.value = true;
 } finally {
   loading.value = false;
-  isLoading.value = false;
 }
 }
 
@@ -205,12 +202,11 @@ try {
   isError.value = true;
 } finally {
   loading.value = false;
-  isLoading.value = false;
 }
 }
 
 const onSubmit = form.handleSubmit(async (values: any) => {
-  isLoading.value = true;
+  loading.value = true;
   const updatedRoleData = {
     name: values.name,
     description: values.description,

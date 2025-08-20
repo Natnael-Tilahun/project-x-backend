@@ -700,6 +700,8 @@ interface ThirdPartyTransactionDetail{
   customerId?:	string
   notifyStatus?: string
   enquiryStatus?: string
+  enquiryApiPayloadData?:any
+  notifyWebhookApiPayloadData?:any
 }
 
 interface Menu {

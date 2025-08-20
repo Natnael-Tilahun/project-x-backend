@@ -19,7 +19,7 @@ export const usePermissionGroups = () => {
     onPageChange,
     onSizeChange,
     onSortChange,
-  } = usePagination<PermissionGroup>('/api/v1/internal/permission-groups');
+  } = usePagination<PermissionGroup>({endpoint:'/api/v1/internal/permission-groups',  sortValue:"groupCode,asc"});
 
   // Legacy flags for create/update/delete operations
   const isLoading = ref<boolean>(false);

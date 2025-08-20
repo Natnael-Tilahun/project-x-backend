@@ -7,7 +7,7 @@ import { handleApiError } from "~/types/api";
 import { usePagination } from "./usePagination"; // Import usePagination
 
 export const useRoles = () => {
-  const { page, size, sort, data, total, loading, error, fetchData, onPageChange, onSizeChange, onSortChange } = usePagination<Role>('/api/v1/internal/roles/list'); // Integrate usePagination
+  const { page, size, sort, data, total, loading, error, fetchData, onPageChange, onSizeChange, onSortChange } = usePagination<Role>({endpoint:'/api/v1/internal/roles/list', sortValue:"name,asc"}); // Integrate usePagination
 
   const authUser = useAuthUser();
   const userAdmin = useState<boolean>("userAdmin", () => false);

@@ -9,29 +9,43 @@ export const useMenus = () => {
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
 
-  const getMenus: (page?: number, size?: number) => ApiResult<Menu[]> = async (
+  const {
     page,
-    size
-  ) => {
-    try {
-      const { data, pending, error, status } = await fetch<Menu[]>(
-        "/api/v1/internal/menus",
-        {
-          params: { page, size },
-        }
-      );
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<Menu>({endpoint:'/api/v1/internal/menus', sortValue:"menuName,asc"});
 
-      isLoading.value = pending.value;
+  // const getMenus: (page?: number, size?: number) => ApiResult<Menu[]> = async (
+  //   page,
+  //   size
+  // ) => {
+  //   try {
+  //     const { data, pending, error, status } = await fetch<Menu[]>(
+  //       "/api/v1/internal/menus",
+  //       {
+  //         params: { page, size },
+  //       }
+  //     );
 
-      if (status.value === "error") {
-        handleApiError(error);
-      }
+  //     isLoading.value = pending.value;
 
-      return data.value ? (data.value as unknown as Menu[]) : null;
-    } catch (err) {
-      throw err;
-    }
-  };
+  //     if (status.value === "error") {
+  //       handleApiError(error);
+  //     }
+
+  //     return data.value ? (data.value as unknown as Menu[]) : null;
+  //   } catch (err) {
+  //     throw err;
+  //   }
+  // };
 
   const getMenuById: (id: string) => ApiResult<Menu> = async (id) => {
     try {
@@ -254,7 +268,7 @@ export const useMenus = () => {
     }
   };
 
-  const createCustomerGroupByMenuId: (id: string, groupData:any) => ApiResult<CustomerGroupMember> = async (id,groupData) => {
+  const createCustomerGroupByMenuId: (id: string, groupData: any) => ApiResult<CustomerGroupMember> = async (id, groupData) => {
     try {
       const { data, pending, error, status } = await fetch<CustomerGroupMember>(
         `/api/v1/internal/menus/${id}/groups`,
@@ -276,7 +290,7 @@ export const useMenus = () => {
     }
   };
 
-  const deleteCustomerGroupByMenuId: (id: string, groupData:any) => ApiResult<CustomerGroupMember> = async (id,groupData) => {
+  const deleteCustomerGroupByMenuId: (id: string, groupData: any) => ApiResult<CustomerGroupMember> = async (id, groupData) => {
     try {
       const { data, pending, error, status } = await fetch<CustomerGroupMember>(
         `/api/v1/internal/menus/${id}/groups`,
@@ -299,8 +313,22 @@ export const useMenus = () => {
   };
 
   return {
+
+    // Server pagination API
+    page,
+    size,
+    sort,
+    offices: data,
+    total,
+    loading,
+    error,
+    fetchOffices: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
     isLoading,
-    getMenus,
+    // getMenus,
     getMenuById,
     getChildrensByParentId,
     createNewMenu,

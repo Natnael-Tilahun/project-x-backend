@@ -4,7 +4,18 @@ import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 import { usePagination } from "./usePagination";
 
-export const useCustomerGroups = () => {
+export const useCustomerGroups = (groupId: Ref<string>) => {
+
+  const endpoint = computed(() => {
+    if (!groupId?.value) return "/api/v1/internal/customer-groups";
+    return `/api/v1/internal/customer-groups/${groupId.value}/members`;
+  });
+
+  const sortValue = computed(() => {
+    if (!groupId?.value) return "groupName,asc";
+    return "id,asc";
+  });
+
   // Server pagination for listing groups
   const {
     page,
@@ -18,7 +29,7 @@ export const useCustomerGroups = () => {
     onPageChange,
     onSizeChange,
     onSortChange,
-  } = usePagination<CustomerGroup>("/api/v1/internal/customer-groups");
+  } = usePagination<CustomerGroup>({endpoint, sortValue});
 
   // Legacy flags for mutations
   const isLoading = ref<boolean>(false);

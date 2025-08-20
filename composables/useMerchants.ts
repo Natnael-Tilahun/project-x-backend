@@ -17,7 +17,7 @@ export const useMerchants = () => {
     onPageChange,
     onSizeChange,
     onSortChange,
-  } = usePagination<Merchant>('/api/v1/internal/merchants');
+  } = usePagination<Merchant>({endpoint:'/api/v1/internal/merchants',  sortValue:"businessName,asc"});
 
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);

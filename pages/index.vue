@@ -5,46 +5,35 @@ import type { Customer, Integration, Merchant, Staff } from "~/types";
 import { useCustomers } from "~/composables/useCustomers"; // Import useCustomers
 
 const authStore = useAuthStore(); // Make sure this is your Pinia auth store instance
-const { getStaffs } = useStaffs();
-const { getMerchants } = useMerchants();
+// const { getStaffs } = useStaffs();
+// const { getMerchants } = useMerchants();
 const { getIntegrations } = useIntegrations();
 
 const { fetchCustomers, total: customerTotal, loading: customerLoading, error: customerError } = useCustomers(); // Destructure from useCustomers
+const { fetchStaffs, total: staffTotal, loading: staffLoading, error: staffError } = useStaffs(); // Destructure from useCustomers
+const { fetchMerchants, total: merchantTotal, loading: merchantLoading, error: merchantError } = useMerchants(); // Destructure from useCustomers
+const { fetchIntegrations, total: integrationTotal, loading: integrationLoading, error: integrationError } = useIntegrations(); // Destructure from useCustomers
 
 const isLoading = ref(true); // Keep for overall loading
 const isError = ref(false); // Keep for overall error
 const staffData = ref<Staff[]>([]);
-const merchantData = ref<Merchant[]>([]);
+// const merchantData = ref<Merchant[]>([]);
 // const customerData = ref<Customer[]>([]); // Removed
-const integrationData = ref<Integration[]>([]);
-const staffNumber = computed(() => staffData.value.length);
-const merchantNumber = computed(() => merchantData.value.length);
+// const integrationData = ref<Integration[]>([]);
+const staffNumber = computed(() => staffTotal.value);
+const merchantNumber = computed(() => merchantTotal.value);
 const customerNumber = computed(() => customerTotal.value); // Use customerTotal
-const integrationNumber = computed(() => integrationData.value.length);
+const integrationNumber = computed(() => integrationTotal.value);
 
 const fetchData = async () => {
   isLoading.value = true;
   isError.value = false;
   try {
-    const [
-      staffs,
-      merchants,
-      // customers, // Removed
-      integrations,
-    ] = await Promise.all([
-      getStaffs().catch(() => []),
-      getMerchants().catch(() => []),
-      // getCustomers().catch(() => []),
-      getIntegrations().catch(() => []),
-    ]);
-
-    staffData.value = staffs;
-    merchantData.value = merchants;
-    // customerData.value = customers; // Removed
-    integrationData.value = integrations;
-
     // Manually trigger fetchCustomers to get the total count
     await fetchCustomers();
+    await fetchStaffs();
+    await fetchMerchants()
+    await fetchIntegrations()
 
     isError.value = false;
   } catch (error) {
@@ -63,13 +52,6 @@ const refetch = async () => {
   await fetchData();
 };
 
-// watch(
-//   customerData,
-//   (newData) => {
-//     console.log("Customer Data in index.vue:", newData);
-//   },
-//   { immediate: true }
-// );
 </script>
 
 <template>
@@ -129,9 +111,9 @@ const refetch = async () => {
           !isLoading &&
           !isError &&
           customerNumber &&
-          merchantData &&
-          staffData &&
-          integrationData
+          merchantNumber &&
+          staffNumber &&
+          integrationNumber
         "
         class="space-y-6"
       >

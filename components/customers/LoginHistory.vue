@@ -10,12 +10,11 @@ import type { Device, LoginHistory } from "~/types";
 const {
   getCustomerDevices,
   getCustomerLoginHistory,
-  isLoading,
 } = useCustomers();
 
 const deviceData = ref<Device[]>();
 const loginHistoryData = ref<LoginHistory[]>();
-const loading = ref(isLoading.value);
+const loading = ref(false);
 const isError = ref(false);
 const selectedDevice = ref<Device>()
 const customerId = ref<string>();
@@ -34,21 +33,18 @@ const isDeviceSelected = (device: string) => {
 
 const fetchDevices = async () => {
   try {
-    isLoading.value = true;
     loading.value = true;
     deviceData.value = await getCustomerDevices(customerId.value as string); // Call your API function to fetch roles
   } catch (err) {
     console.error("Error fetching devices:", err);
     isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
   }
 };
 
 const fetchLoginHistories = async () => {
   try {
-    isLoading.value = true;
     loading.value = true;
     const response = await getCustomerLoginHistory(customerId.value as string, {
       page: 0,
@@ -60,7 +56,6 @@ const fetchLoginHistories = async () => {
     console.error("Error fetching lgoin histories:", err);
     isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
   }
 };

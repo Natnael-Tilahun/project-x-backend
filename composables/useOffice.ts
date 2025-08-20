@@ -16,7 +16,7 @@ export const useOffice = () => {
     onPageChange,
     onSizeChange,
     onSortChange,
-  } = usePagination<Office>('/api/v1/internal/offices');
+  } = usePagination<Office>({endpoint:'/api/v1/internal/offices', sortValue:"name,asc"});
 
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);

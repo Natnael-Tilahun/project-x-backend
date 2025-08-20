@@ -5,7 +5,7 @@ import { formatAccountNumber } from "~/lib/formatAccountNumber";
 import type { ThirdPartyTransactionDetail } from "~/types";
 
 const route = useRoute();
-const { getTransactionsDetailsByTransactionId } = usePaymentIntegrations();
+const { getTransactionsDetailsByTransactionId } = usePaymentIntegrationsTransactions();
 const isLoading = ref(false);
 const transactionData = ref<ThirdPartyTransactionDetail | null>(null);
 const transactionId = ref<string | null>(null);
@@ -14,6 +14,7 @@ try {
   isLoading.value = true;
   transactionId.value = route.query.transactionId as string;
   transactionData.value = await getTransactionsDetailsByTransactionId(transactionId.value);
+  console.log("transaction data: ", transactionData.value)
 } catch (error) {
   console.error("Error fetching transaction details:", error);
 } finally {
@@ -52,18 +53,18 @@ const reversalHandler = () => {
       <div class="md:col-span-2 md:grid grid-cols-2 gap-x-8 gap-y-4 w-full">
 
         <PaymentIntegrationsTransactionsTransactionDetailItem label="Transaction Id" :value="transactionData.id" />
-        <PaymentIntegrationsTransactionsTransactionDetailItem label="Core Transaction Id" :value="transactionData.coreTransactionId" />
-        <PaymentIntegrationsTransactionsTransactionDetailItem label="Mb Transaction Id" :value="transactionData.mbTransactionId" />
-        <PaymentIntegrationsTransactionsTransactionDetailItem label="Legacy Id" :value="transactionData.legacyId" />
+        <PaymentIntegrationsTransactionsTransactionDetailItem label="Core Transaction Id" :value="transactionData?.coreTransactionId" />
+        <PaymentIntegrationsTransactionsTransactionDetailItem label="Mb Transaction Id" :value="transactionData?.mbTransactionId" />
+        <PaymentIntegrationsTransactionsTransactionDetailItem label="Legacy Id" :value="transactionData?.legacyId" />
         <PaymentIntegrationsTransactionsTransactionDetailItem label="Debit Account Number"
-        :value="(transactionData.debitAccountNumber	)" />
+        :value="(transactionData?.debitAccountNumber	)" />
         <NuxtLink @click="
           navigateTo({
             path: `/customers/${transactionData.customerId}`
           })
           " class="w-full text-primary font-semibold cursor-pointer">
           <PaymentIntegrationsTransactionsTransactionDetailItem label="Customer Id"
-            :value="transactionData.customerId" />
+            :value="transactionData?.customerId" />
         </NuxtLink>
         <PaymentIntegrationsTransactionsTransactionDetailItem label="Credit Account Number"
           :value="(transactionData.creditAccountNumber)" />
@@ -122,30 +123,49 @@ const reversalHandler = () => {
       </div>
 
       <div
-        class="bg-muted rounded-lg p-4 text-sm  w-full overflow-x-auto max-h-[500px] flex flex-col gap-2 col-span-full md:col-span-1">
+        class="bg-muted rounded-lg p-4 text-sm  w-full overflow-x-auto max-h-fit flex flex-col gap-2 col-span-full md:col-span-1">
         <h1>Enquiry Form Data</h1>
         <JsonInspector v-if="transactionData.enquiryFormData" :data="transactionData?.enquiryFormData" />
         <div v-else>No content</div>
       </div>
       <div
-        class="bg-muted rounded-lg p-4 text-sm  w-full overflow-x-auto max-h-[500px] flex flex-col gap-2 col-span-full md:col-span-1">
+        class="bg-muted rounded-lg p-4 text-sm  w-full overflow-x-auto max-h-fit flex flex-col gap-2 col-span-full md:col-span-1">
         <h1>Enquiry Api Response Data</h1>
         <JsonInspector v-if="transactionData.enquiryApiResponseData" :data="transactionData?.enquiryApiResponseData" />
         <div v-else>No content</div>
       </div>
       <div
-        class="bg-muted rounded-lg p-4 text-sm w-full overflow-x-auto max-h-[500px] flex flex-col gap-2 col-span-full md:col-span-1">
+        class="bg-muted rounded-lg p-4 text-sm w-full overflow-x-auto max-h-fit flex flex-col gap-2 col-span-full md:col-span-1">
         <h1>Enquiry Api Request And Response Raw</h1>
         <JsonInspector v-if="transactionData.enquiryApiRequestAndResponseRaw"
           :data="transactionData?.enquiryApiRequestAndResponseRaw" />
         <div v-else>No content</div>
       </div>
       <div
-        class="bg-muted rounded-lg p-4 text-sm overflow-x-auto max-h-[500px] w-full flex flex-col gap-2 col-span-full md:col-span-1">
+        class="bg-muted rounded-lg p-4 text-sm overflow-x-auto max-h-fit w-full flex flex-col gap-2 col-span-full md:col-span-1">
         <h1>Equiry Api Payload Data</h1>
         <JsonInspector v-if="transactionData.enquiryApiPayloadData" :data="transactionData?.enquiryApiPayloadData" />
         <div v-else>No content</div>
       </div>
+      <div
+        class="bg-muted rounded-lg p-4 text-sm overflow-x-auto max-h-fit w-full flex flex-col gap-2 col-span-full md:col-span-1">
+        <h1>Notify Webhook Api Response Data</h1>
+        <JsonInspector v-if="transactionData.notifyWebhookApiResponseData" :data="transactionData?.notifyWebhookApiResponseData" />
+        <div v-else>No content</div>
+      </div>	
+      <div
+        class="bg-muted rounded-lg p-4 text-sm overflow-x-auto max-h-fit w-full flex flex-col gap-2 col-span-full md:col-span-1">
+        <h1>Notify Webhook Api Request And Response Raw</h1>
+        <JsonInspector v-if="transactionData.notifyWebhookApiRequestAndResponseRaw" :data="transactionData?.notifyWebhookApiRequestAndResponseRaw" />
+        <div v-else>No content</div>
+      </div>	
+      <div
+        class="bg-muted rounded-lg p-4 text-sm overflow-x-auto max-h-fit w-full flex flex-col gap-2 col-span-full md:col-span-1">
+        <h1>Notify Webhook Api Payload Data</h1>
+        <JsonInspector v-if="transactionData.notifyWebhookApiPayloadData" :data="transactionData?.notifyWebhookApiPayloadData" />
+        <div v-else>No content</div>
+      </div>	
+      	
     </UiCard>
 
     <UiCard v-else class="p-6">
