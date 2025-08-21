@@ -13,7 +13,7 @@ import { toast } from "~/components/ui/toast";
 import { RoleScope } from "~/global-types";
 import type { Role } from "~/types";
 
-const { createNewStaffRole, isLoading } = await useStaffRoles();
+const { createNewStaffRole } = await useStaffRoles();
 const isError = ref(false);
 const data = ref<Role>();
 
@@ -34,7 +34,6 @@ const form = useForm({
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     isSubmitting.value = true;
-    isLoading.value = true;
     data.value = await createNewStaffRole(values); // Call your API function to fetch profile
     navigateTo(`/staffRoles`);
     console.log("New staff role data; ", data.value);
@@ -46,7 +45,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     console.error("Error creating new role:", err);
     isError.value = true;
   } finally {
-    isLoading.value = false;
     isSubmitting.value = false;
   }
 });

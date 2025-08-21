@@ -13,6 +13,7 @@ import { authConfigFormSchema } from "~/validations/authConfigFormSchema";
 const { getOperations } = useOperations();
 const { createNewAuthConfig, isLoading } = useAuthConfigs();
 import { AuthType } from "@/global-types";
+import type { ApiOperation, AuthConfiguration } from "~/types";
 
 const isError = ref(false);
 const data = ref<AuthConfiguration>();

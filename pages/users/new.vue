@@ -10,7 +10,8 @@ import {
 import { newCustomerformSchema } from "~/validations/newCustomerformSchema";
 import { ref, onBeforeUnmount } from "vue";
 import { toast } from "~/components/ui/toast";
-const { createNeweCustomer, isLoading } = useCustomers();
+import type { Customer } from "~/types";
+const { createNeweCustomer } = useCustomers();
 const isError = ref(false);
 const data = ref<Customer>();
 const isSubmitting = ref(false);
@@ -23,7 +24,6 @@ const form = useForm({
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     isSubmitting.value = true;
-    isLoading.value = true;
     data.value = await createNeweCustomer(values); // Call your API function to fetch profile
     navigateTo(`/customers/${data.value.id}`);
     console.log("New Customer data; ", data.value);
@@ -35,7 +35,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     console.error("Error creating new users:", err);
     isError.value = true;
   } finally {
-    isLoading.value = false;
     isSubmitting.value = false;
   }
 });

@@ -34,7 +34,6 @@ const {
   getCoreAccountsByCustomerId,
   getCoreAccountsByAccount,
   createNeweCustomer,
-  isLoading: isLoadingAccounts,
 } = useCustomers();
 const {
   getContractCoreCustomerAccounts,

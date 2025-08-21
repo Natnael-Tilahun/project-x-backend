@@ -26,7 +26,7 @@ const columns = computed(() => tableColumns(fetchData));
   <div v-if="isLoading" class="py-10 flex justify-center items-center">
     <UiLoading />
   </div>
-  <div v-else-if="data && data.length > 0 && !isError" class="py-4 flex flex-col space-y-10 mx-auto">
+  <div v-else-if="data && !isError" class="py-4 flex flex-col space-y-10 mx-auto">
     <UiDataTable :columns="columns" :data="data">
       <template v-slot:toolbar="{ table }">
         <div class="flex items-center justify-between">

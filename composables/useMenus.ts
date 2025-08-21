@@ -23,29 +23,29 @@ export const useMenus = () => {
     onSortChange,
   } = usePagination<Menu>({endpoint:'/api/v1/internal/menus', sortValue:"menuName,asc"});
 
-  // const getMenus: (page?: number, size?: number) => ApiResult<Menu[]> = async (
-  //   page,
-  //   size
-  // ) => {
-  //   try {
-  //     const { data, pending, error, status } = await fetch<Menu[]>(
-  //       "/api/v1/internal/menus",
-  //       {
-  //         params: { page, size },
-  //       }
-  //     );
+  const getMenus: (page?: number, size?: number) => ApiResult<Menu[]> = async (
+    page,
+    size
+  ) => {
+    try {
+      const { data, pending, error, status } = await fetch<Menu[]>(
+        "/api/v1/internal/menus",
+        {
+          params: { page, size },
+        }
+      );
 
-  //     isLoading.value = pending.value;
+      isLoading.value = pending.value;
 
-  //     if (status.value === "error") {
-  //       handleApiError(error);
-  //     }
+      if (status.value === "error") {
+        handleApiError(error);
+      }
 
-  //     return data.value ? (data.value as unknown as Menu[]) : null;
-  //   } catch (err) {
-  //     throw err;
-  //   }
-  // };
+      return data.value ? (data.value as unknown as Menu[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
 
   const getMenuById: (id: string) => ApiResult<Menu> = async (id) => {
     try {
@@ -328,7 +328,7 @@ export const useMenus = () => {
     onSortChange,
 
     isLoading,
-    // getMenus,
+    getMenus,
     getMenuById,
     getChildrensByParentId,
     createNewMenu,

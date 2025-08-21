@@ -25,7 +25,6 @@ const {
   isLoading,
   isSubmitting,
 } = useMerchants();
-const { getCoreAccountsByCustomerId } = useCustomers();
 
 const merchantId = ref<string>("");
 const loading = ref(isLoading.value);

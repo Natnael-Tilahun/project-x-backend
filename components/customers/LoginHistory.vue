@@ -136,18 +136,21 @@ onMounted(() => {
                 <div class="flex flex-col gap-1 items-start min-w-0">
                   <p class="text-sm text-muted-foreground">Login Expired Time</p>
                   <p class="font-medium text-sm text-left">
-                    {{ history?.expires
-                      ? new Date(history.expires).toLocaleString('en-US', {
-                        // weekday: 'short',
-                        year: 'numeric',
-                        month: 'short',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: true
-                      })
-                      : "-" }}
+                    {{
+                      history?.lastModifiedDate
+                        ? new Date(history.lastModifiedDate).toLocaleString('en-US', {
+                          // weekday: 'short',
+                          year: 'numeric',
+                          month: 'short',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit',
+                          hour12: true
+                        })
+                        : "-"
+                    }}
+                    ( {{ formatDistanceToNow(new Date(history?.lastModifiedDate), { addSuffix: true }) }} )
                   </p>
                 </div>
               </UiAccordionTrigger>

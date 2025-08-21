@@ -229,7 +229,7 @@ export const useIntegrations = () => {
     page,
     size,
     sort,
-    offices: data,
+    integrations: data,
     total,
     loading,
     error,

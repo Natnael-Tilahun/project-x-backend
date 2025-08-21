@@ -33,7 +33,7 @@ const handleSearch = () => onSearchChange(keyword.value);
   </div>
 
   <div
-    v-else-if="data && data.length > 0 && !isError"
+    v-else-if="data && !isError"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
     <UiPermissionGuard :permission=PermissionConstants.CREATE_USER >

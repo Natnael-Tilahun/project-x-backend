@@ -75,7 +75,7 @@ const columns = computed(() => tableColumns(refetch));
     <UiLoading />
   </div>
   <div
-    v-else-if="data && data.length > 0 && !isError && !pageIsLoading"
+    v-else-if="data && !isError && !pageIsLoading"
     class="py-5 flex flex-col space-y-10 mx-auto"
   >
   <div class="flex flex-col justify-end md:flex-row gap-4">

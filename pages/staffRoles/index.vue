@@ -35,7 +35,7 @@ const columns = computed(() => tableColumns(fetchData));
     <UiLoading />
   </div>
   <div
-    v-else-if="data && data.length > 0 && !isError"
+    v-else-if="data && !isError"
     class="py-4 flex flex-col space-y-10 mx-auto"
   >
     <UiPermissionGuard :permission=PermissionConstants.CREATE_STAFF_ROLE >

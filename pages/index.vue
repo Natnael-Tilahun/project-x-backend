@@ -5,21 +5,16 @@ import type { Customer, Integration, Merchant, Staff } from "~/types";
 import { useCustomers } from "~/composables/useCustomers"; // Import useCustomers
 
 const authStore = useAuthStore(); // Make sure this is your Pinia auth store instance
-// const { getStaffs } = useStaffs();
-// const { getMerchants } = useMerchants();
-const { getIntegrations } = useIntegrations();
 
-const { fetchCustomers, total: customerTotal, loading: customerLoading, error: customerError } = useCustomers(); // Destructure from useCustomers
-const { fetchStaffs, total: staffTotal, loading: staffLoading, error: staffError } = useStaffs(); // Destructure from useCustomers
-const { fetchMerchants, total: merchantTotal, loading: merchantLoading, error: merchantError } = useMerchants(); // Destructure from useCustomers
-const { fetchIntegrations, total: integrationTotal, loading: integrationLoading, error: integrationError } = useIntegrations(); // Destructure from useCustomers
+
+const { fetchCustomers, customers, total: customerTotal, loading: customerLoading, error: customerError } = useCustomers(); // Destructure from useCustomers
+const { fetchStaffs, staffs, total: staffTotal, loading: staffLoading, error: staffError } = useStaffs(); // Destructure from useCustomers
+const { fetchMerchants, merchants, total: merchantTotal, loading: merchantLoading, error: merchantError } = useMerchants(); // Destructure from useCustomers
+const { fetchIntegrations, integrations,  total: integrationTotal, loading: integrationLoading, error: integrationError } = useIntegrations(); // Destructure from useCustomers
 
 const isLoading = ref(true); // Keep for overall loading
 const isError = ref(false); // Keep for overall error
 const staffData = ref<Staff[]>([]);
-// const merchantData = ref<Merchant[]>([]);
-// const customerData = ref<Customer[]>([]); // Removed
-// const integrationData = ref<Integration[]>([]);
 const staffNumber = computed(() => staffTotal.value);
 const merchantNumber = computed(() => merchantTotal.value);
 const customerNumber = computed(() => customerTotal.value); // Use customerTotal
@@ -110,15 +105,15 @@ const refetch = async () => {
         v-else-if="
           !isLoading &&
           !isError &&
-          customerNumber &&
-          merchantNumber &&
-          staffNumber &&
-          integrationNumber
+          customers &&
+          merchants &&
+          staffs &&
+          integrations
         "
         class="space-y-6"
       >
         <div class="grid gap-4 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
-          <UiCard>
+          <UiCard >
             <UiCardHeader
               class="flex flex-row items-center justify-between space-y-0 pb-2"
             >

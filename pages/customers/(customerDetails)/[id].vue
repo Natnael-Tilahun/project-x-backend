@@ -67,7 +67,6 @@ try {
 
 const handleCustomerActivation = async () => {
   try {
-    isLoading.value = true;
     loading.value = true;
 
     if (data.value?.customerActivated) {
@@ -96,14 +95,12 @@ const handleCustomerActivation = async () => {
 
     isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
   }
 };
 
 const searchCoreAccountHandler = async () => {
   try {
-    isLoading.value = true;
     loading.value = true;
     coreData.value = "";
     if (accountNumber.value) {
@@ -125,7 +122,6 @@ const searchCoreAccountHandler = async () => {
     });
     isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
   }
 };
@@ -277,7 +273,7 @@ watch(
             "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
-            Unlock Customer
+            Unlock User
           </UiTabsTrigger>
         </UiPermissionGuard>
         </UiPermissionGuard>

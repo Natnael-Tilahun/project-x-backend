@@ -35,7 +35,6 @@ const { getPermissions } = usePermissions();
 const {
   getCoreAccountsByCustomerId,
   getCoreAccountsByAccount,
-  isLoading: isLoadingAccounts,
 } = useCustomers();
 const {
   getContractCoreCustomerAccounts,

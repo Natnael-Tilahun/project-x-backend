@@ -11,6 +11,7 @@ import { applicationFormSchema } from "~/validations/applicationFormSchema";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 import { Platform } from "@/global-types";
+import type { Application } from "~/types";
 const { createNewApplication, isLoading } = await useApplications();
 const isError = ref(false);
 const data = ref<Application>();

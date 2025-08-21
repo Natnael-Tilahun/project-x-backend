@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { AuthType } from "@/global-types";
+import type { ApiIntegration, ApiOperation, AuthConfiguration } from "~/types";
 
 const route = useRoute();
 const {

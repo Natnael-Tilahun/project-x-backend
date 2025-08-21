@@ -46,7 +46,7 @@ export function usePagination<T>({
       });
 
       const totalStr = response.headers?.get && response.headers.get('x-total-count');
-      data.value = response.data.value as unknown as T[];
+      data.value = response.data.value as unknown as T[] || [];
       total.value = parseInt(totalStr || '0', 10);
     } catch (e) {
       error.value = e;

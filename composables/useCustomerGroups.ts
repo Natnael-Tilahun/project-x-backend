@@ -4,7 +4,7 @@ import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 import { usePagination } from "./usePagination";
 
-export const useCustomerGroups = (groupId: Ref<string>) => {
+export const useCustomerGroups = (groupId?: Ref<string>) => {
 
   const endpoint = computed(() => {
     if (!groupId?.value) return "/api/v1/internal/customer-groups";

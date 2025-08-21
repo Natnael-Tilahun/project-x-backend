@@ -3,6 +3,7 @@ import { ref, onMounted } from "vue";
 import { columns } from "~/components/authConfigurations/columns";
 import { useAuthConfigs } from "~/composables/useAuthConfigs";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
+import type { AuthConfiguration } from "~/types";
 
 const { getAuthConfigs, isLoading } = useAuthConfigs();
 const keyword = ref<string>("");

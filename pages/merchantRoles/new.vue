@@ -13,7 +13,7 @@ import { toast } from "~/components/ui/toast";
 import { RoleScope } from "~/global-types";
 import type { Role } from "~/types";
 
-const { createNewMerchantOperatorRole, isLoading } = await useMerchantRoles();
+const { createNewMerchantOperatorRole } = await useMerchantRoles();
 const isError = ref(false);
 const data = ref<Role>();
 
@@ -35,7 +35,6 @@ const form = useForm({
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     isSubmitting.value = true;
-    isLoading.value = true;
     data.value = await createNewMerchantOperatorRole(values); // Call your API function to fetch profile
     navigateTo(`/merchantRoles`);
     console.log("New merchant role data; ", data.value);
@@ -47,7 +46,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     console.error("Error creating new merchant role:", err);
     isError.value = true;
   } finally {
-    isLoading.value = false;
     isSubmitting.value = false;
   }
 });
