@@ -22,6 +22,7 @@ import {
   CreditAccountNumberVariableType,
   PaymentCategory,
   LimitType,
+  VisibilityScope,
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Charge, Customer, PaymentIntegration } from "~/types";
