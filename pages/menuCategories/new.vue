@@ -11,6 +11,7 @@ import { PaginationType, MenuLayoutType, VisibilityScope } from "@/global-types"
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 import { menuFormSchema } from "~/validations/menuFormSchema";
+import type { Menu, PaymentIntegration } from "~/types";
 const { createNewMenu, getMenus, isLoading } = useMenus();
 const { getPaymentIntegrations } = usePaymentIntegrations();
 

@@ -1,8 +1,8 @@
 export const dateTimeFormats = [
     {
-        "pattern": "yyyy-MM-dd'T'HH:mm:ss",
-        "description": "ISO Date-Time",
-        "example": "2025-08-09T15:11:45"
+        "pattern": "yyyyMMddHHmmss",
+        "description": "ISO Date-Time without spaces",
+        "example": "20250809151145"
     },
     {
         "pattern": "YYYYMMDDHHMMSS",
