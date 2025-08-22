@@ -1,10 +1,16 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
+import { PhoneUtil } from "~/lib/phoneUtil";
 
 export const newContractFormSchema = toTypedSchema(
   z.object({
     id: z.string().optional().nullable(),
     name: z.string().nullable(),
+    phone: z
+    .string()
+    .refine(PhoneUtil.isPhoneNumber, {
+      message: "Enter a valid Ethiopian phone number",
+    }),
     permissionCodes: z.array(z.string()).optional().nullable(),
     serviceDefinitionId: z.string(),
     serviceDefinitionRoleId: z.string({message: "This field is required. Please, First select a service definition"}),

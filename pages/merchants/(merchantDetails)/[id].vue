@@ -16,6 +16,7 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Account, Merchant } from "~/types";
 import { PermissionConstants } from "~/constants/permissions";
 import { MerchantCategoryCode, MerchantStatus } from "~/global-types";
+import { getIdFromPath } from "~/lib/utils";
 const route = useRoute();
 const {
   getMerchantById,
@@ -24,10 +25,7 @@ const {
   isLoading,
   isSubmitting,
 } = useMerchants();
-const { getCoreAccountsByCustomerId } = useCustomers();
 
-const fullPath = ref(route.fullPath);
-const pathSegments = ref([]);
 const merchantId = ref<string>("");
 const loading = ref(isLoading.value);
 const submitting = ref(isLoading.value);
@@ -38,9 +36,7 @@ const isUpdatingAccounts = ref(false);
 const isError = ref(false);
 const data = ref<Merchant>();
 
-pathSegments.value = splitPath(fullPath.value);
-const pathLength = pathSegments.value.length;
-merchantId.value = pathSegments.value[pathLength - 1];
+merchantId.value = getIdFromPath()
 
 function splitPath(path: any) {
   return path.split("/").filter(Boolean);
@@ -60,6 +56,8 @@ const fetchMerchantData = async () => {
     data.value = await getMerchantById(merchantId.value);
     coreCustomerId.value = data.value?.coreCustomerId || ""
     const response = await getMerchantAccountsId(merchantId.value) || []
+    // const response = await fetchSelectedMerchantAccountsData() || []
+    console.log("reponse: ", response)
     selectedAccounts.value =  response && response?.map((account) => account.accountNumber) || []
     let a = {
       ...data.value,

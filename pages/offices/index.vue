@@ -1,61 +1,24 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import type { Office } from "~/types";
-import { columns as tableColumns } from "~/components/offices/columns"; // Renamed to avoid conflict
+import { columns as tableColumns } from "~/components/offices/columns";
 import { PermissionConstants } from "~/constants/permissions";
+import ServerPagination from "~/components/ui/ServerPagination.vue";
 
-const { getOffices, getOfficeById } = useOffice();
-const isLoading = ref(false);
-const isError = ref(false);
-const data = ref<Office[]>([]);
-const keyword = ref<string>("");
+const {
+  page,
+  size,
+  sort,
+  offices: data,
+  total,
+  loading: isLoading,
+  error: isError,
+  fetchOffices: fetchData,
+  onPageChange,
+  onSizeChange,
+  onSortChange,
+} = useOffice();
 
-const fetchOfficesData = async () => {
-  try {
-    isLoading.value = true;
-    const offices = await getOffices(0, 100000000);
-    // Sort integrations by name alphabetically
-    data.value = offices.sort((a:Office, b:Office) => {
-      if (a.name && b.name) {
-        return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-      }
-      return 0; // Return 0 if either firstname is missing
-    });
-  } catch (err: any) {
-    console.error("Error fetching offices:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-const refetch = async () => {
-  await fetchOfficesData();
-};
-
-onMounted(() => {
-  fetchOfficesData();
-});
-
-
-const searchHandler = async () => {
-  try {
-    isLoading.value = true;
-    data.value[0] = await getOfficeById(keyword.value); // Call your API function to fetch roles
-  } catch (err: any) {
-    console.error("Error fetching offices:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-  }
-};
-
-// Provide the refetch function
-provide('refetchStaffs', refetch);
-
-// Generate columns by passing the refetch function
-const columns = computed(() => tableColumns(refetch));
+const columns = computed(() => tableColumns(fetchData));
 </script>
 
 <!-- Render DataTable only if data is available -->
@@ -92,11 +55,18 @@ const columns = computed(() => tableColumns(refetch));
         </div>
       </template>
     </UiDataTable>
+    <ServerPagination
+      :page="page"
+      :size="size"
+      :total="total"
+      :on-page-change="onPageChange"
+      :on-size-change="onSizeChange"
+    />
   </div>
   <!-- <div v-else-if="data && !isError && data?.length <= 0">
     <UiNoResultFound title="Sorry, No customer found." />
   </div> -->
   <div v-if="isError">
-    <ErrorMessage :retry="refetch" title="Something went wrong." />
+    <ErrorMessage :retry="fetchData" title="Something went wrong." />
   </div>
 </template>

@@ -25,13 +25,13 @@ const {
   isLoading: isLoadingCreateNewContractAccount,
   isSubmitting,
 } = useContractsCoreCustomers();
-const { getCoreAccountsByCustomerId, isLoading } = useCustomers();
+const { getCoreAccountsByCustomerId } = useCustomers();
 
 const contractId = ref<string>("");
 contractId.value = getIdFromPath();
 
 
-const loading = ref(isLoading.value);
+const loading = ref(false);
 const submitting = ref(false);
 const isError = ref(false);
 const errorMessage = ref("");
@@ -175,7 +175,6 @@ const isAccountSelected = (account: Account | undefined) => {
 const addAccounts = async () => {
   try {
     submitting.value = true;
-    isLoading.value = true;
     const newValues = {
       coreAccounts: selectedAccounts.value.map((account: Account) => ({
         accountNumber: account.accountNumber,
@@ -199,7 +198,6 @@ const addAccounts = async () => {
     console.error("Error creating new contract account:", err.message);
     isError.value = true;
   } finally {
-    isLoading.value = false;
     submitting.value = false;
   }
 };

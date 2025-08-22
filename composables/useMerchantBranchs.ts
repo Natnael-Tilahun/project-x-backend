@@ -3,10 +3,29 @@ import type { MerchantBranch } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
-export const useMerchantBranchs = () => {
+export const useMerchantBranchs = (merchantId: Ref<string>) => {
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
+
+  const endpoint = computed(() => {
+    if (!merchantId?.value) return null;
+    return `/api/v1/internal/merchant-branches/merchant/${merchantId.value}`;
+  });
+
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<MerchantBranch[]>({endpoint, sortValue:"branchName,asc"});
 
   const getMerchantBranches: (
     merchantId: string,
@@ -123,6 +142,19 @@ export const useMerchantBranchs = () => {
   };
 
   return {
+    // Server pagination API
+    page,
+    size,
+    sort,
+    merchantOperators: data,
+    total,
+    loading,
+    error,
+    fetchMerchantOperators: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
     isLoading,
     getMerchantBranches,
     getMerchantBranchById,

@@ -2,8 +2,27 @@ import type { Customer, Device, LoginHistory, User, UserInput } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
+import { usePagination } from "./usePagination";
 
 export const useUsers = () => {
+  // Server pagination for users list
+  const {
+    page,
+    size,
+    sort,
+    search,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+    onSearchChange,
+  } = usePagination<User>({endpoint:'/api/v1/internal/users', });
+
+  // Legacy loading for direct operations
   const isLoading = ref<boolean>(false);
   const { fetch } = useApi();
 
@@ -196,7 +215,7 @@ export const useUsers = () => {
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      await fetchData();
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
       throw err
@@ -215,7 +234,7 @@ export const useUsers = () => {
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      await fetchData();
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
       throw err;
@@ -237,7 +256,7 @@ export const useUsers = () => {
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      await fetchData();
       return data.value ? (data.value as unknown as User) : null;
     } catch (err) {
       throw err
@@ -256,7 +275,7 @@ export const useUsers = () => {
       if (status.value === "error") {
         handleApiError(error);
       }
-
+      await fetchData();
       return data.value;
     } catch (err) {
       throw err
@@ -361,7 +380,23 @@ export const useUsers = () => {
   };
 
   return {
-    isLoading,
+    // Server pagination API
+    page,
+    size,
+    sort,
+    search,
+    users: data,
+    total,
+    loading,
+    error,
+    fetchUsers: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+    onSearchChange,
+
+    // Legacy/auxiliary APIs
+    isLoading: loading,
     getUsers,
     getUserById,
     getUserByUsername,

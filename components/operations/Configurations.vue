@@ -3,7 +3,6 @@ import { copyToClipboard } from "~/lib/utils";
 import { useForm } from "vee-validate";
 import { ref, watch, onMounted, computed } from "vue";
 import { toast } from "~/components/ui/toast";
-import { useIntegrations } from "~/composables/useIntegrations";
 import { apiOperationFormSchema } from "~/validations/apiOperationFormSchema";
 import {
   FormControl,
@@ -32,6 +31,7 @@ import {
 import type { ApiOperation } from "~/types";
 import { PermissionConstants } from "~/constants/permissions";
 import ErrorValidation from "./ErrorValidation.vue";
+import RequestBodyTemplateEditor from "./RequestBodyTemplateEditor.vue";
 
 const openItems = ref("configuration");
 
@@ -45,7 +45,7 @@ const loading = ref(false);
 const isError = ref(false);
 const data = ref<ApiOperation>();
 pathSegments.value = splitPath(fullPath.value);
-integrationId.value = route.params.id;
+integrationId.value = route.params.id as string;
 const operationId = (route.query.operationId as string) || "";
 const isPreview = ref<boolean>(false);
 const isShowResponse = ref<boolean>(false);
@@ -59,8 +59,8 @@ const form = useForm<ApiOperation>({
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     loading.value = true;
-    data.value = await updateOperation(operationId, values); // Call your API function to fetch profile
-    form.setValues(data.value);
+    await updateOperation(operationId, values);
+    await fetchData(); // ensure data.requestInputs is reloaded after update
     openItems.value = "operations";
     toast({
       title: "Operation Updated",
@@ -82,8 +82,11 @@ const fetchData = async () => {
   isError.value = false;
   try {
     loading.value = true;
-    data.value = await getOperationById(operationId);
-    form.setValues(data.value);
+    const fetched = await getOperationById(operationId);
+    if (fetched) {
+      data.value = fetched as unknown as ApiOperation;
+      form.setValues(data.value as any);
+    }
   } catch (err) {
     console.error("Error fetching operation:", err);
     isError.value = true;
@@ -104,8 +107,9 @@ const refetch = async () => {
   await fetchData();
 };
 
-function isJSON(data) {
+function isJSON(data: unknown): data is string {
   try {
+    if (typeof data !== 'string') return false;
     JSON.parse(data); // Attempt to parse the data
     return true; // It's valid JSON
   } catch (error) {
@@ -113,7 +117,7 @@ function isJSON(data) {
   }
 }
 
-const formattedContent = ref(null);
+const formattedContent = ref<any>(null);
 const isLoading = ref(false);
 
 async function updateFormattedContent() {
@@ -143,7 +147,13 @@ onMounted(async () => {
   await updateFormattedContent();
 });
 
-async function formatContent(content) {
+const availableVariables = computed<string[]>(() => {
+  const inputs = ((data.value as any)?.requestInputs as any[] | undefined) || [];
+  const names = inputs.map((i: any) => i?.inputName).filter(Boolean);
+  return Array.from(new Set(names));
+});
+
+async function formatContent(content: any) {
   if (!content) return "";
 
   if (isJSON(content)) {
@@ -172,7 +182,7 @@ const parseResponseData = (data: string) => {
     }
   } catch (err) {
     console.error("Error parsing response:", err);
-    return data;
+    return data as unknown as any;
   }
 };
 
@@ -424,11 +434,10 @@ const testingOperation = async () => {
                 </div>
               </div>
               <FormControl v-if="!isPreview" class="h-fit">
-                <UiTextarea
-                  placeholder="Enter request body template"
-                  class="resize-y"
-                  rows="8"
+                <RequestBodyTemplateEditor
                   v-bind="componentField"
+                  :variables="availableVariables"
+                  :request-inputs="data?.requestInputs"
                 />
               </FormControl>
               <FormMessage />

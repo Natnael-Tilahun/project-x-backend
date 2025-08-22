@@ -11,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { LogicalOperators, Operators } from "@/global-types";
+import type { RequestInput, ValidationRule } from "~/types";
 
 interface RequestInputValidations {
   logicalOperator: LogicalOperators;

@@ -4,6 +4,7 @@ import { PermissionConstants } from "~/constants/permissions";
 
 interface DataTableRowActionsProps<TData> {
   row: Row<TData>;
+  refetch: () => Promise<void>;
 }
 const props = defineProps<DataTableRowActionsProps<any>>();
 

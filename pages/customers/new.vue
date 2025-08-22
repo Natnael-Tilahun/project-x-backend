@@ -34,7 +34,6 @@ const {
   getCoreAccountsByCustomerId,
   getCoreAccountsByAccount,
   createNeweCustomer,
-  isLoading: isLoadingAccounts,
 } = useCustomers();
 const {
   getContractCoreCustomerAccounts,
@@ -291,6 +290,7 @@ const searchCoreAccountsByAccountNumberHandler = async () => {
     if (accountNumber.value) {
       const response = await getCoreAccountsByAccount(accountNumber.value);
       form.setFieldValue("name", response?.fullName)
+      form.setFieldValue("phone",response?.phone)
       haveExistingContract.value =
         response && response?.contractId ? true : false;
       if (haveExistingContract.value) {
@@ -526,8 +526,8 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
                   >
                   <div class="flex items-center gap-4">
                     <UiInput
+                      type="text"
                       id="search"
-                      type="number"
                       placeholder="Search..."
                       class="md:w-[100px] lg:w-[300px]"
                       v-model="accountNumber"
@@ -1185,6 +1185,20 @@ const createNewContractWithoutCustomerHandler = async (value: boolean) => {
                     </UiSelectGroup>
                   </UiSelectContent>
                 </UiSelect>
+                <FormMessage />
+              </FormItem>
+            </FormField>
+            <FormField  v-slot="{ componentField }" name="phone">
+              <FormItem>
+                <FormLabel>Customer Phone </FormLabel>
+                <FormControl>
+                  <UiInput
+                    type="text"
+                    disabled
+                    placeholder="Enter customer phone"
+                    v-bind="componentField"
+                  />
+                </FormControl>
                 <FormMessage />
               </FormItem>
             </FormField>

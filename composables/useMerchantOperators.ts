@@ -3,10 +3,31 @@ import type { MerchantOperators } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
-export const useMerchantOperators = () => {
+export const useMerchantOperators = (merchantId: Ref<string>) => {
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
+
+  const endpoint = computed(() => {
+    if (!merchantId?.value) return null;
+    return `/api/v1/internal/merchants/${merchantId.value}/operators`;
+  });
+
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<MerchantOperators[]>({endpoint,  sortValue:"firstName,asc"});
+
+  onSortChange('firstName,asc')
 
   const getMerchantOperators: (merchantId: string, page?: number, size?: number) => ApiResult<MerchantOperators[]> = async (merchantId, page, size) => {
     try {
@@ -28,7 +49,6 @@ export const useMerchantOperators = () => {
       throw err
     }
   };
-
   const getMerchantOperatorById: (merchantId: string, id: string) => ApiResult<MerchantOperators> = async (merchantId, id) => {
     try {
       const { data, pending, error, status } = await fetch<MerchantOperators>(
@@ -47,7 +67,7 @@ export const useMerchantOperators = () => {
     }
   };
 
-  const createNeweMerchantOperator: (merchantId: string, operatorData: any) => ApiResult<MerchantOperators> = async ( merchantId, operatorData) => {
+  const createNeweMerchantOperator: (merchantId: string, operatorData: any) => ApiResult<MerchantOperators> = async (merchantId, operatorData) => {
     try {
       const { data, pending, error, status } = await fetch<MerchantOperators>(
         `/api/v1/internal/merchants/${merchantId}/operators`,
@@ -69,7 +89,7 @@ export const useMerchantOperators = () => {
     }
   };
 
-  const resetMerchantOperatorPassword: (merchantId: string, operatorId: string, operatorData: any) => ApiResult<any> = async ( merchantId, operatorId, operatorData) => {
+  const resetMerchantOperatorPassword: (merchantId: string, operatorId: string, operatorData: any) => ApiResult<any> = async (merchantId, operatorId, operatorData) => {
     try {
       const { data, pending, error, status } = await fetch<any>(
         `/api/v1/internal/merchants/${merchantId}/operators/${operatorId}/password-reset`,
@@ -133,6 +153,19 @@ export const useMerchantOperators = () => {
   };
 
   return {
+    // Server pagination API
+    page,
+    size,
+    sort,
+    merchantOperators: data,
+    total,
+    loading,
+    error,
+    fetchMerchantOperators: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
     isLoading,
     getMerchantOperators,
     getMerchantOperatorById,

@@ -21,6 +21,7 @@ import {
   PaymentIntegrationType,
 } from "@/global-types";
 import type {
+  ApiIntegration,
   ApiOperation,
   PaymentIntegration,
   PaymentOperation,

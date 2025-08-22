@@ -8,6 +8,20 @@ export const useServiceDefinitions = () => {
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
 
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<ServiceDefinition>({endpoint:'/api/v1/internal/service-definitions',sortValue:"name,asc"});
+
   const getServiceDefinitions: (
     page?: number,
     size?: number
@@ -96,8 +110,8 @@ export const useServiceDefinitions = () => {
   };
 
   const createNewServiceDefinitionPermission: (
-    id:string,
-   permissionsData: any
+    id: string,
+    permissionsData: any
   ) => ApiResult<Permission[]> = async (id, permissionsData) => {
     try {
       const { data, pending, error, status } = await fetch<Permission[]>(
@@ -121,8 +135,8 @@ export const useServiceDefinitions = () => {
   };
 
   const deleteNewServiceDefinitionPermission: (
-    id:string,
-   permissionsData: any
+    id: string,
+    permissionsData: any
   ) => ApiResult<Permission[]> = async (id, permissionsData) => {
     try {
       const { data, pending, error, status } = await fetch<Permission[]>(
@@ -190,6 +204,20 @@ export const useServiceDefinitions = () => {
   };
 
   return {
+    // Server pagination API
+    page,
+    size,
+    sort,
+    offices: data,
+    total,
+    loading,
+    error,
+    fetchOffices: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
+
     isLoading,
     getServiceDefinitions,
     getServiceDefinitionById,

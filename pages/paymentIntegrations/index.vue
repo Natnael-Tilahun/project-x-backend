@@ -5,51 +5,51 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { columns as tableColumns } from "~/components/paymentIntegrations/columns"; // Renamed to avoid conflict
 import type { PaymentIntegration } from "~/types";
 import { PermissionConstants } from "~/constants/permissions";
+import ServerPagination from "~/components/ui/ServerPagination.vue"; // Import ServerPagination
 
-const { getPaymentIntegrations } = usePaymentIntegrations();
 const keyword = ref<string>("");
-const data = ref<PaymentIntegration[]>([]);
-const isLoading = ref(false);
-const isError = ref(false);
-const router = useRouter(); // {{ edit_2 }}
+const integrationData = ref<PaymentIntegration[]>([]);
 const openImportDialog = ref(false)
 const isDownloading = ref(false)
 
-const fetchPaymentIntegrationData = async () => {
-  try {
-    isLoading.value = true;
-    const paymentIntegrations = await getPaymentIntegrations(0, 1000);
-    // Sort integrations by name alphabetically
-    data.value = paymentIntegrations?.sort((a, b) =>
-      a?.integrationName
-        .toLowerCase()
-        .localeCompare(b?.integrationName.toLowerCase())
-    );
-  } catch (error) {
-    console.error("Error fetching payment integrations:", error);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-  }
-};
 
-onMounted(async () => {
-  await fetchPaymentIntegrationData();
-});
 
-const refetch = async () => {
-  await fetchPaymentIntegrationData();
-};
-
-// Provide the refetch function
-provide("refetchPaymentIntegrations", refetch);
-
-// Generate columns by passing the refetch function
-const columns = computed(() => tableColumns(refetch));
 
 const closeImportDialog = async () => {
   openImportDialog.value = false
 };
+
+
+
+const {
+  page,
+  size,
+  sort,
+  offices: data, // Renamed to data for existing template usage
+  total,
+  loading: isLoading, // Renamed to isLoading for existing template usage
+  error: isError, // Renamed to isError for existing template usage
+  fetchOffices: fetchData, // Renamed to fetchData for existing template usage
+  onPageChange,
+  onSizeChange,
+  onSortChange,
+} = usePaymentIntegrations();
+
+// if(!isLoading && !isError){
+//   integrationData.value = data.value?.sort((a, b) =>
+//       a?.integrationName
+//         .toLowerCase()
+//         .localeCompare(b?.integrationName.toLowerCase())
+//     );
+//  }
+ 
+
+
+// Provide the fetchSystemRoles function for columns
+provide('refetchPaymentIntegrations', fetchData);
+
+// Generate columns by passing the fetchSystemRoles function
+const columns = computed(() => tableColumns(fetchData));
 
 </script>
 
@@ -90,7 +90,7 @@ const closeImportDialog = async () => {
           <UiSheetContent
             class="md:min-w-[600px] sm:min-w-full flex flex-col h-full overflow-y-auto"
           >
-            <PaymentIntegrationsImportPaymentIntegration @closeImportDialog="closeImportDialog"  @refresh="refetch" />
+            <PaymentIntegrationsImportPaymentIntegration @closeImportDialog="closeImportDialog"  @refresh="fetchData" />
           </UiSheetContent>
         </UiSheet>
         <PaymentIntegrationsExportAllPaymentIntegrations />
@@ -115,11 +115,18 @@ const closeImportDialog = async () => {
         </div>
       </template>
     </UiDataTable>
+        <ServerPagination
+      :page="page"
+      :size="size"
+      :total="total"
+      :on-page-change="onPageChange"
+      :on-size-change="onSizeChange"
+    />
   </div>
   <!-- <div v-else-if="data && !isError && data?.length <= 0">
     <UiNoResultFound title="Sorry, No customer found." />
   </div> -->
   <div v-if="isError">
-    <ErrorMessage :retry="refetch" title="Something went wrong." />
+    <ErrorMessage :retry="fetchData" title="Something went wrong." />
   </div>
 </template>

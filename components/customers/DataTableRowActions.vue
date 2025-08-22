@@ -3,8 +3,7 @@ import type { Row } from "@tanstack/vue-table";
 import { toast } from "../ui/toast";
 import { PermissionConstants } from "~/constants/permissions";
 
-const { deleteCustomerById, isLoading } = useCustomers();
-const loading = ref(isLoading.value);
+const { deleteCustomerById, loading: isLoading } = useCustomers();
 const isError = ref(false);
 const openEditModal = ref(false);
 const setOpenEditModal = (value: boolean) => {
@@ -25,10 +24,14 @@ function viewCustomerDetail(id: string) {
   navigator.clipboard.writeText(id);
 }
 
+function viewCustomerGroup(id: string) {
+  navigateTo(`/customers/${id}?activeTab=CustomerGroups`);
+  navigator.clipboard.writeText(id);
+}
+
 async function deleteCustomer(id: string) {
   try {
     isLoading.value = true;
-    loading.value = true;
     await deleteCustomerById(id); // Call your API function to fetch roles
     console.log("Customer deleted successfully");
     toast({
@@ -41,7 +44,6 @@ async function deleteCustomer(id: string) {
     isError.value = true;
   } finally {
     isLoading.value = false;
-    loading.value = false;
     setOpenEditModal(false);
   }
 }
@@ -62,6 +64,10 @@ async function deleteCustomer(id: string) {
       <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER >
       <UiDropdownMenuItem @click="viewCustomerDetail(row.original.id)"
         >View and Edit</UiDropdownMenuItem
+      >
+      <UiDropdownMenuSeparator />
+      <UiDropdownMenuItem @click="viewCustomerGroup(row.original.id)"
+        >Add to the group</UiDropdownMenuItem
       >
       <UiDropdownMenuSeparator />
       </UiPermissionGuard>

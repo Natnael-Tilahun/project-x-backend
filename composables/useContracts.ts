@@ -11,6 +11,20 @@ export const useContracts = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<Contract>({endpoint:'/api/v1/internal/contracts', sortValue:"name,asc"});
+
   const getContracts: (
     page?: number,
     size?: number
@@ -305,6 +319,19 @@ export const useContracts = () => {
   };
 
   return {
+    // Server pagination API
+    page,
+    size,
+    sort,
+    offices: data,
+    total,
+    loading,
+    error,
+    fetchOffices: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
     isLoading,
     getContracts,
     getContractById,

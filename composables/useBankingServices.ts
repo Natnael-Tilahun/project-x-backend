@@ -11,6 +11,20 @@ export const useBankingServices = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<BankingService>({endpoint: '/api/v1/internal/banking-services', sortValue: "serviceName,asc"});
+
   const getBankingServices: (page?: number, size?: number) => ApiResult<BankingService[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<BankingService[]>(
@@ -114,6 +128,19 @@ export const useBankingServices = () => {
   };
 
   return {
+    // Server pagination API
+    page,
+    size,
+    sort,
+    offices: data,
+    total,
+    loading,
+    error,
+    fetchOffices: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
     isLoading,
     getBankingServices,
     getBankingServiceById,

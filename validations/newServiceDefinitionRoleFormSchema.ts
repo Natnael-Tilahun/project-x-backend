@@ -7,7 +7,7 @@ export const newServiceDefinitionRoleFormSchema = toTypedSchema(
     id: z.string().optional().nullable(),
     roleName: z.string(),
     roleDescription: z.string().optional().nullable(),
-    isDefault: z.boolean().optional().default(false),
+    isDefault: z.boolean().default(false).optional(),
     serviceDefinitionId: z.string().optional().nullable(),
     permissions: z.any().optional().nullable(),
   })

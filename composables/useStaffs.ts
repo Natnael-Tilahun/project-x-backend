@@ -1,9 +1,24 @@
-import type { Contract, Device, LoginHistory, Staff } from "~/types";
+import type { Contract, Device, LoginHistory, Staff, User } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
+import { usePagination } from "./usePagination";
 
 export const useStaffs = () => {
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<Staff>({endpoint:"/api/v1/internal/staff", sortValue:"firstname,asc" });
+
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
@@ -332,6 +347,18 @@ export const useStaffs = () => {
   };
 
   return {
+    page,
+    size,
+    sort,
+    staffs: data,
+    total,
+    loading,
+    error,
+    fetchStaffs: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
     isLoading,
     getStaffs,
     getStaffById,

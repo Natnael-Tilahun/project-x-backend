@@ -3,9 +3,28 @@ import type { MerchantTransaction } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
-export const useMerchantTransactions = () => {
+export const useMerchantTransactions = (merchantId: Ref<string>) => {
   const isLoading = ref<boolean>(false);
   const { fetch } = useApi();
+
+  const endpoint = computed(() => {
+    if (!merchantId?.value) return null;
+    return `/api/v1/internal/merchants/${merchantId.value}/transaction`;
+  });
+
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<MerchantTransaction[]>({endpoint,});
 
   const getMerchantTransactions: (
     merchantId: string,
@@ -102,6 +121,20 @@ export const useMerchantTransactions = () => {
   };
 
   return {
+    // Server pagination API
+    page,
+    size,
+    sort,
+    merchantOperators: data,
+    total,
+    loading,
+    error,
+    fetchMerchantOperators: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
+
     isLoading,
     getMerchantTransactionById,
     getMerchantTransactions,

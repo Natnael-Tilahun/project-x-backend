@@ -2,7 +2,6 @@
 import { useForm } from "vee-validate";
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
-import { useIntegrations } from "~/composables/useIntegrations";
 import { apiOperationFormSchema } from "~/validations/apiOperationFormSchema";
 import {
   FormControl,
@@ -12,6 +11,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { BodyType, HttpMethod } from "@/global-types";
+import type { ApiOperation } from "~/types";
 const openItems = ref("info");
 const route = useRoute();
 const router = useRouter();

@@ -3,8 +3,8 @@ import type { Row } from "@tanstack/vue-table";
 import { computed } from "vue";
 import { toast } from "../ui/toast";
 import { PermissionConstants } from "~/constants/permissions";
-const { deleteStaffRoleById, isLoading } = useStaffRoles();
-const loading = ref(isLoading.value);
+const { deleteStaffRoleById } = useStaffRoles();
+const loading = ref(false);
 const isError = ref(false);
 const { setIsUpdated } = usePagesInfoStore();
 const openEditModal = ref(false);
@@ -30,7 +30,6 @@ function viewRollDetails(name: string) {
 
 async function deleteRole(id: string) {
   try {
-    isLoading.value = true;
     loading.value = true;
     await deleteStaffRoleById(id); // Call your API function to fetch roles
     console.log("Staff Role deleted successfully");
@@ -44,7 +43,6 @@ async function deleteRole(id: string) {
     console.error("Error deleting stafff role:", err);
     isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
     setOpenEditModal(false);
   }
@@ -94,8 +92,8 @@ async function deleteRole(id: string) {
         <UiAlertDialogAction @click="deleteRole(row.original.name)">
           <Icon
             name="svg-spinners:8-dots-rotate"
-            v-if="isLoading"
-            :disabled="isLoading"
+            v-if="loading"
+            :disabled="loading"
             class="mr-2 h-4 w-4 animate-spin"
           ></Icon>
           Continue

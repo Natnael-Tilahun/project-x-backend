@@ -3,3 +3,10 @@ declare const __API_BASE_URL__: string;
 declare const __USSD_API_BASE_URL__: string;
 declare const __X_APP_ID__: string;
 declare const __X_APP_VERSION__: string;
+
+declare module 'xml2js';
+declare module '*.vue' {
+  import type { DefineComponent } from 'vue';
+  const component: DefineComponent<{}, {}, any>;
+  export default component;
+}

@@ -38,6 +38,7 @@ export const mainLinks: MenuItem[] = [
       showDropdown: false,
       dropdown: [
         { title: "Customers", link: "/customers", permission: PermissionConstants.READ_CUSTOMER },
+        { title: "Customer Groups", link: "/customerGroups", permission: PermissionConstants.READ_CUSTOMER },
       ],
     },
     {
@@ -123,6 +124,14 @@ export const mainLinks: MenuItem[] = [
       link: "/charges",
       size: "22",
       permission: PermissionConstants.READ_CHARGE,
+      showDropdown: true,
+    },
+    {
+      title: "Account Categories",
+      icon: "material-symbols:account-balance-wallet",
+      link: "/accountCategories",
+      size: "22",
+      // permission: PermissionConstants.READ_ACCOUNT_CATEGORY,
       showDropdown: true,
     },
     {

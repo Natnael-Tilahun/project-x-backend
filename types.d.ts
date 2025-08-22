@@ -1,4 +1,4 @@
-import { LimitType, LogicalErrorType, MerchantStatus, PaymentStatus, TransactionAmountType, TransactionInitiator } from "@/global-types";
+import { LimitType, LogicalErrorType, MerchantStatus, PaymentStatus, TransactionAmountType, TransactionInitiator, VisibilityScope } from "@/global-types";
 import {
   Visibility,
   PaymentOperationType,
@@ -52,6 +52,7 @@ import {
   PaymentIntegrationType,
   PermissionCategory,
   PermissionScope,
+  CustomerGroupType
 } from "@/global-types";
 
 interface User {
@@ -175,6 +176,7 @@ interface Role {
   enforce2fa: boolean;
   permissionUsageData?: Permission[];
   scope: RoleScope;
+  effectiveToAllBranch?: boolean
 }
 
 interface Permission {
@@ -318,6 +320,25 @@ interface Address {
   postalNumber: string;
 }
 
+interface CustomerGroup{
+  id?:string;
+  groupCode:	string
+  groupName:	string
+  description?:	string;
+  groupType: CustomerGroupType
+  priorityLevel?: number
+  isActive: boolean
+}
+
+interface CustomerGroupMember{
+  id?:string
+  assignedAt:	string
+  assignedBy?:	string
+  isActive:	boolean
+  group?:	CustomerGroup
+  customer?:	Customer
+}
+
 interface Merchant {
   coreAccountNumber:	string
   merchantId?: string;
@@ -373,6 +394,7 @@ interface MerchantOperatorRole{
   name:	string
   description?:	string
   enabled?:	boolean
+  effectiveToAllBranch?:boolean
 }
 
 interface MerchantTransaction{
@@ -647,6 +669,8 @@ interface PaymentIntegration {
   category?: PaymentCategory | null;
   chargeId?: string | null;
   maxTransactionsPerDay?: number | null;
+  visibilityScope?: VisibilityScope
+  coreTransactionReasonTemplate?: string | null
 }
 
 interface ThirdPartyTransactionDetail{
@@ -674,6 +698,10 @@ interface ThirdPartyTransactionDetail{
   notifyApiOperation?:	string
   paymentIntegrationId?:	string
   customerId?:	string
+  notifyStatus?: string
+  enquiryStatus?: string
+  enquiryApiPayloadData?:any
+  notifyWebhookApiPayloadData?:any
 }
 
 interface Menu {
@@ -696,6 +724,7 @@ interface Menu {
   isImage?: boolean | null;
   isSystemMenu?: boolean | null;
   systemMenuType?: SystemMenuType | null;
+  visibilityScope?: VisibilityScope
 }
 
 interface Local {
@@ -1277,3 +1306,8 @@ export interface SearchResult {
   permission?: string
 }
 
+export interface AccountCategory {
+  categoryCode: string;
+  shortName: string;
+  description: string;
+}

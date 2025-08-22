@@ -25,13 +25,12 @@ const {
   updateMerchantOperatorRoleStatus,
   createMerchantOperatorRolePermissions,
   deleteMerchantOperatorRolePermissions,
-  isLoading,
   isUpdating,
 } = useMerchantRoles();
 const { getAuthorities } = useAuth();
 const {getPermissions} = usePermissions()
-const loading = ref(isLoading.value);
-const updating = ref(isLoading.value);
+const loading = ref(false);
+const updating = ref(false);
 const isError = ref(false);
 const data = ref<Role | null>(null);
 const permissionsData = ref<Permission[]>([])
@@ -56,7 +55,9 @@ interface FormValues {
   name: string;
   description?: string;
   enforce2fa?: boolean;
-  disabled: boolean;
+  enabled: boolean;
+  effectiveToAllBranch?:boolean
+  scope?:string
 }
 
 const groupedPermissions = () => {
@@ -86,15 +87,15 @@ const form = useForm<FormValues>({
 
 const refetch = async () => {
   isError.value = false
-  await fetchStaffRoleData()
   await fetchMerchantRolePermissionData()
   await fetchPermissionData()
+  await fetchStaffRoleData()
 };
 
 onMounted(async() => {
- await fetchStaffRoleData();
  await fetchMerchantRolePermissionData()
  await fetchPermissionData()
+ await fetchStaffRoleData();
 });
 
 
@@ -108,11 +109,13 @@ try {
       name: fetchedData.name,
       description: fetchedData.description,
       enforce2fa: fetchedData.enforce2fa,
+      effectiveToAllBranch: fetchedData.effectiveToAllBranch || false, // force boolean
       enabled: fetchedData.enabled,
       scope: fetchedData.scope,
     };
 
-    form.setValues(formValues);
+    form.setValues({...form.values,
+      ...formValues});
   }
 } catch (err) {
   console.error("Error fetching roles:", err);
@@ -124,7 +127,6 @@ try {
   isError.value = true;
 } finally {
   loading.value = false;
-  isLoading.value = false;
 }
 }
 
@@ -132,11 +134,9 @@ const fetchMerchantRolePermissionData = async () => {
 try {
   loading.value = true;
   const fetchedData = await getMerchantOperatorRolePermissions(name); // Call your API function to fetch roles
-  console.log("data: ", fetchedData)
   if (fetchedData) {
     selectedPermissionCodes.value = fetchedData
     // data.value.permissionUsageData = fetchedData;
-    console.log("fomr values: ", selectedPermissionCodes.value)
     const formValues: { [key: string]: any } = {
       ...data.value
     };
@@ -159,8 +159,6 @@ try {
 
       formValues[groupName] = allSelected;
     });
-
-    form.setValues(formValues);
   }
 } catch (err) {
   console.error("Error fetching roles:", err);
@@ -172,7 +170,6 @@ try {
   isError.value = true;
 } finally {
   loading.value = false;
-  isLoading.value = false;
 }
 }
 
@@ -205,16 +202,16 @@ try {
   isError.value = true;
 } finally {
   loading.value = false;
-  isLoading.value = false;
 }
 }
 
 const onSubmit = form.handleSubmit(async (values: any) => {
-  isLoading.value = true;
+  loading.value = true;
   const updatedRoleData = {
     name: values.name,
     description: values.description,
     enforce2fa: values.enforce2fa,
+    effectiveToAllBranch: values.effectiveToAllBranch,
     enabled: values.enabled,
     scope: RoleScope.MERCHANT,
   };
@@ -370,13 +367,13 @@ function unselectAllSelected() {
               <div
                 class="flex items-center gap-4 border pb-1 pt-2 px-3 rounded-md"
               >
-                <UiPermissionGuard
+                <!-- <UiPermissionGuard
                   :permission="
                     data.enabled
                       ? PermissionConstants.DISABLE_MERCHANT_OPERATOR_ROLE
                       : PermissionConstants.ENABLE_MERCHANT_OPERATOR_ROLE
                   "
-                >
+                > -->
                   <UiBadge
                     class="font-bold px-2 py-1 mb-1"
                     :class="data.enabled ? 'bg-green-500' : 'bg-red-500'"
@@ -395,16 +392,28 @@ function unselectAllSelected() {
                       <FormMessage />
                     </FormItem>
                   </FormField>
-                </UiPermissionGuard>
+                <!-- </UiPermissionGuard> -->
               </div>
             </div>
 
             <UiAccordionContent class="w-full">
               <div class="grid grid-cols-1 rounded-xl gap-2 w-full p-6 border">
-                <div class="grid grid-cols-2 gap-2 items-center">
+                <div class="flex justify-between gap-2 items-center">
                   <FormField v-slot="{ value, handleChange }" name="enforce2fa">
                     <FormItem>
                       <FormLabel> Enforce 2fa</FormLabel>
+                      <FormControl>
+                        <UiSwitch
+                          :checked="value"
+                          @update:checked="handleChange"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                  <FormField v-slot="{ value, handleChange }" name="effectiveToAllBranch">
+                    <FormItem>
+                      <FormLabel> Effective To All Branch</FormLabel>
                       <FormControl>
                         <UiSwitch
                           :checked="value"

@@ -37,7 +37,7 @@ async function copyToClipboardWithFeedback(text: string, type: 'path' | 'value')
 </script>
 
 <template>
-  <div class="flex flex-col gap-2 w-full">
+  <div class="flex flex-col gap-2 w-full h-fit">
     <!-- Path/Value Viewer -->
     <div class="mb-2 p-2 rounded-md font-mono text-xs border bg-blue-50 border-blue-200 text-blue-800">
       <div v-if="selectedPath !== null" class="flex flex-col gap-1">
@@ -81,7 +81,7 @@ async function copyToClipboardWithFeedback(text: string, type: 'path' | 'value')
       <div v-else class="text-gray-400">Click a property to see its path and value.</div>
     </div>
     <!-- JSON Tree -->
-    <div class="font-mono text-sm overflow-auto whitespace-pre bg-white border h-full border-gray-200 rounded-md p-2">
+    <div class="font-mono text-sm overflow-auto whitespace-pre bg-white border max-h-[450px] border-gray-200 rounded-md p-2">
       <JsonNode
         :data="data"
         path="root"

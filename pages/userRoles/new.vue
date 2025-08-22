@@ -13,7 +13,7 @@ import { toast } from "~/components/ui/toast";
 import { RoleScope } from "~/global-types";
 import type { Role } from "~/types";
 
-const { createNewRole, isLoading } = await useRoles();
+const { createNewSystemRole, isLoading } = await useRoles();
 const isError = ref(false);
 const data = ref<Role>();
 
@@ -35,7 +35,7 @@ const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     isSubmitting.value = true;
     isLoading.value = true;
-    data.value = await createNewRole(values); // Call your API function to fetch profile
+    data.value = await createNewSystemRole(values); // Call your API function to fetch profile
     navigateTo(`/userRoles`);
     console.log("New role data; ", data.value);
     toast({

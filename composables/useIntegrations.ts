@@ -9,6 +9,22 @@ export const useIntegrations = () => {
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
 
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<ApiIntegration>({endpoint:'/api/v1/internal/api-integrations', sortValue: 'name,asc'});
+
+  onSortChange('name,asc')
+
   const getIntegrations: (
     page?: number,
     size?: number
@@ -209,6 +225,19 @@ export const useIntegrations = () => {
   };
 
   return {
+    // Server pagination API
+    page,
+    size,
+    sort,
+    integrations: data,
+    total,
+    loading,
+    error,
+    fetchIntegrations: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
     isLoading,
     getIntegrations,
     getIntegrationById,

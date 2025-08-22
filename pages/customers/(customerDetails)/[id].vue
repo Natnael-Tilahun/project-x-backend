@@ -1,11 +1,12 @@
 <script lang="ts" setup>
-const openItems = ref(["item-1"]);
+const openItems = ref("profile");
 
 import { ref } from "vue";
 import PassphraseReset from "~/components/customers/PassphraseReset.vue";
 import UnlockCustomer from "~/components/customers/UnlockCustomer.vue";
 import { toast } from "~/components/ui/toast";
 import { PermissionConstants } from "~/constants/permissions";
+import { getIdFromPath } from "~/lib/utils";
 import type { Customer } from "~/types";
 
 const route = useRoute();
@@ -15,13 +16,12 @@ const {
   activateCustomerById,
   deActivateCustomerById,
   getCoreAccountsByCustomerId,
-  isLoading,
 } = useCustomers();
 
 const fullPath = ref(route.fullPath);
 const pathSegments = ref([]);
 const customerId = ref<string>("");
-const loading = ref(isLoading.value);
+const loading = ref(false);
 const isError = ref(false);
 const data = ref<Customer>();
 const coreData = ref<any>();
@@ -31,10 +31,10 @@ const accountCustomerId = ref<string>();
 const coreCustomerId = ref<string>();
 const tooltipText = ref<string>("Copy to clipboard");
 const tooltipOpen = ref<boolean>(true);
+  const activeTab = route.query.activeTab as string;
+  openItems.value = activeTab || "profile";
 
-pathSegments.value = splitPath(fullPath.value);
-const pathLength = pathSegments.value.length;
-customerId.value = pathSegments.value[pathLength - 1];
+customerId.value = getIdFromPath();
 
 
 function splitPath(path: any) {
@@ -55,7 +55,6 @@ const copyToClipboard = (data: any) => {
 };
 
 try {
-  isLoading.value = true;
   loading.value = true;
   data.value = await getCustomerById(customerId.value); // Call your API function to fetch roles
   accountCustomerId.value = data.value?.coreCustomerId;
@@ -63,13 +62,11 @@ try {
   console.error("Error fetching customers:", err);
   isError.value = true;
 } finally {
-  isLoading.value = false;
   loading.value = false;
 }
 
 const handleCustomerActivation = async () => {
   try {
-    isLoading.value = true;
     loading.value = true;
 
     if (data.value?.customerActivated) {
@@ -98,14 +95,12 @@ const handleCustomerActivation = async () => {
 
     isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
   }
 };
 
 const searchCoreAccountHandler = async () => {
   try {
-    isLoading.value = true;
     loading.value = true;
     coreData.value = "";
     if (accountNumber.value) {
@@ -127,7 +122,6 @@ const searchCoreAccountHandler = async () => {
     });
     isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
   }
 };
@@ -159,6 +153,15 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
   }
 };
 
+// Watch for changes in the route's query parameters
+watch(
+  () => route.query.activeTab,
+  (newActiveTab) => {
+    if (newActiveTab) {
+      openItems.value = newActiveTab as string; // Update the active tab when the query param
+    }
+  }
+);
 
 </script>
 
@@ -198,13 +201,21 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
     </div>
 
     <UiCard class="w-full p-6">
-      <UiTabs default-value="profile" class="space-y-0 w-full">
+      <UiTabs v-model="openItems" class="space-y-0 w-full">
         <UiTabsList
-          class="w-full bg-backgroung flex justify-start py- px-0 border-[1px]"
+          class="w-full overflow-x-auto bg-backgroung flex justify-start py- px-0 border-[1px]"
         >
         <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER >
           <UiTabsTrigger
             value="profile"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'profile',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Profile
@@ -221,6 +232,14 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
         <UiPermissionGuard :permission=PermissionConstants.RESET_CUSTOMER_PIN >
           <UiTabsTrigger
             value="pinReset"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'pinReset',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             PIN Reset
@@ -228,6 +247,14 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
           <UiPermissionGuard :permission=PermissionConstants.RESET_CUSTOMER_PASSPHRASE >
           <UiTabsTrigger
             value="passphraseReset"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'passphraseReset',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Passphrase Reset
@@ -236,15 +263,31 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
         <UiPermissionGuard :permission=PermissionConstants.UNLOCK_CUSTOMER >
           <UiTabsTrigger
             value="unlockCustomer"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'unlockCustomer',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
-            Unlock Customer
+            Unlock User
           </UiTabsTrigger>
         </UiPermissionGuard>
         </UiPermissionGuard>
         <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_DEVICE >
         <UiTabsTrigger
             value="devices"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'devices',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Devices
@@ -253,6 +296,14 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
           <!-- <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_LOGIN_HISTORY > -->
         <UiTabsTrigger
             value="loginHistory"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'loginHistory',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
           Login History
@@ -261,11 +312,34 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
                <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_CONTRACT >
                 <UiTabsTrigger
             value="contracts"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'contracts',
+                },
+              })
+            "
             class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
           >
             Contracts
           </UiTabsTrigger>
           </UiPermissionGuard>
+          <UiTabsTrigger
+            value="CustomerGroups"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'CustomerGroups',
+                },
+              })
+            "
+            class="md:text-xl border data-[state=active]:border-b-4 data-[state=active]:border-b-primary data-[state=inactive]:bg-muted"
+          >
+          Customer Groups
+          </UiTabsTrigger>
+          
         </UiTabsList>
         
 
@@ -505,12 +579,13 @@ const searchCoreAccountsByCustomerIdHandler = async () => {
 
         <UiPermissionGuard :permission=PermissionConstants.READ_CUSTOMER_CONTRACT >
           <UiTabsContent value="contracts" class="space-y-4 py-8">
-          <!-- <UiCard class="flex justify-center items-center w-full p-6">
-       Customer Contracts
-          </UiCard> -->
           <CustomersContracts :coreCustomerId="data?.coreCustomerId || ''" :customerId="customerId"  />
         </UiTabsContent>
         </UiPermissionGuard>
+
+        <UiTabsContent value="CustomerGroups" class="space-y-4 py-8">
+          <CustomersCustomerGroups />
+        </UiTabsContent>
       </UiTabs>
     </UiCard>
   </div>
