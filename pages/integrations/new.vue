@@ -15,6 +15,7 @@ import {
 import { columns } from "~/components/operations/columns";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { IntegrationType, Auth, Protocol } from "@/global-types";
+import type { ApiIntegration, ApiOperation, AuthConfiguration } from "~/types";
 
 const route = useRoute();
 const {
@@ -33,7 +34,7 @@ const loading = ref(isLoading.value);
 const isError = ref(false);
 const data = ref<ApiIntegration>();
 const apiOperationsData = ref<ApiOperation>();
-const allAuthConfigs = ref<AuthConfig[]>();
+const allAuthConfigs = ref<AuthConfiguration[]>();
 pathSegments.value = splitPath(fullPath.value);
 const pathLength = pathSegments.value.length;
 const activeTab = route.query.activeTab as string;

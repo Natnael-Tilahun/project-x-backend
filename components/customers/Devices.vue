@@ -12,11 +12,10 @@ const {
   getCustomerDevices,
   suspendCustomerDevicesByDeviceId,
   restoreCustomerDevicesByDeviceId,
-  isLoading,
 } = useCustomers();
 
 const data = ref<Device[]>();
-const loading = ref(isLoading.value);
+const loading = ref(false);
 const isError = ref(false);
 const accountsData = ref<any>();
 const coreCustomerId = ref<string>();
@@ -28,7 +27,7 @@ const showDeviceDetails = ref(false);
 const customerId = ref<string>();
 const route = useRoute();
 // Update the interface to match the actual data structure
-customerId.value = getIdFromPath(route.fullPath);
+customerId.value = getIdFromPath();
 const openEditModal = ref(false);
 const setOpenEditModal = (value: boolean) => {
   openEditModal.value = value;
@@ -77,7 +76,6 @@ const isDeviceSelected = (device: Device) => {
 
 const fetchDevices = async () => {
   try {
-    isLoading.value = true;
     loading.value = true;
     data.value = await getCustomerDevices(customerId.value as string); // Call your API function to fetch roles
     console.log("Devices data: ", data.value);
@@ -85,14 +83,12 @@ const fetchDevices = async () => {
     console.error("Error fetching devices:", err);
     isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
   }
 };
 
 const manageDevice = async () => {
   try {
-    isLoading.value = true;
     loading.value = true;
     if (selectedDeviceSuspended.value == DeviceStatus.SUSPENDED) {
       await restoreCustomerDevicesByDeviceId(
@@ -124,7 +120,6 @@ const manageDevice = async () => {
     // });
     // isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
     setOpenEditModal(false);
   }

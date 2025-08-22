@@ -24,12 +24,11 @@ const {
   updateStaffRoleStatus,
   createStaffRolePermissions,
   deleteStaffRolePermissions,
-  isLoading,
   isUpdating,
 } = useStaffRoles();
 const { getAuthorities } = useAuth();
-const loading = ref(isLoading.value);
-const updating = ref(isLoading.value);
+const loading = ref(false);
+const updating = ref(false);
 const isError = ref(false);
 const data = ref<Role | null>(null);
 const route = useRoute();
@@ -109,8 +108,8 @@ try {
     const formValues: { [key: string]: any } = {
       name: fetchedData.name,
       description: fetchedData.description,
-      enforce2fa: fetchedData.enforce2fa,
-      enabled: fetchedData.enabled,
+      enforce2fa: fetchedData.enforce2fa || false,
+      enabled: fetchedData.enabled || false,
       scope: fetchedData.scope,
     };
 
@@ -145,12 +144,11 @@ try {
   isError.value = true;
 } finally {
   loading.value = false;
-  isLoading.value = false;
 }
 }
 
 const onSubmit = form.handleSubmit(async (values: any) => {
-  isLoading.value = true;
+  loading.value = true;
   const updatedPermissions =
     data.value?.permissionUsageData?.reduce(
       (acc: Record<string, boolean>, permission: Permission) => {

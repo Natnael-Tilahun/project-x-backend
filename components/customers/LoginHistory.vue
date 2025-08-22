@@ -10,18 +10,17 @@ import type { Device, LoginHistory } from "~/types";
 const {
   getCustomerDevices,
   getCustomerLoginHistory,
-  isLoading,
 } = useCustomers();
 
 const deviceData = ref<Device[]>();
 const loginHistoryData = ref<LoginHistory[]>();
-const loading = ref(isLoading.value);
+const loading = ref(false);
 const isError = ref(false);
 const selectedDevice = ref<Device>()
 const customerId = ref<string>();
 const route = useRoute();
 // Update the interface to match the actual data structure
-customerId.value = getIdFromPath(route.fullPath);
+customerId.value = getIdFromPath();
 const deviceId = ref<string>("");
 
 const handleDeviceSelect = (deviceId: string) => {
@@ -34,21 +33,18 @@ const isDeviceSelected = (device: string) => {
 
 const fetchDevices = async () => {
   try {
-    isLoading.value = true;
     loading.value = true;
     deviceData.value = await getCustomerDevices(customerId.value as string); // Call your API function to fetch roles
   } catch (err) {
     console.error("Error fetching devices:", err);
     isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
   }
 };
 
 const fetchLoginHistories = async () => {
   try {
-    isLoading.value = true;
     loading.value = true;
     const response = await getCustomerLoginHistory(customerId.value as string, {
       page: 0,
@@ -60,7 +56,6 @@ const fetchLoginHistories = async () => {
     console.error("Error fetching lgoin histories:", err);
     isError.value = true;
   } finally {
-    isLoading.value = false;
     loading.value = false;
   }
 };
@@ -141,18 +136,21 @@ onMounted(() => {
                 <div class="flex flex-col gap-1 items-start min-w-0">
                   <p class="text-sm text-muted-foreground">Login Expired Time</p>
                   <p class="font-medium text-sm text-left">
-                    {{ history?.expires
-                      ? new Date(history.expires).toLocaleString('en-US', {
-                        // weekday: 'short',
-                        year: 'numeric',
-                        month: 'short',
-                        day: '2-digit',
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        second: '2-digit',
-                        hour12: true
-                      })
-                      : "-" }}
+                    {{
+                      history?.lastModifiedDate
+                        ? new Date(history.lastModifiedDate).toLocaleString('en-US', {
+                          // weekday: 'short',
+                          year: 'numeric',
+                          month: 'short',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit',
+                          hour12: true
+                        })
+                        : "-"
+                    }}
+                    ( {{ formatDistanceToNow(new Date(history?.lastModifiedDate), { addSuffix: true }) }} )
                   </p>
                 </div>
               </UiAccordionTrigger>

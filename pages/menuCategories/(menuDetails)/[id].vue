@@ -13,7 +13,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import { MenuLayoutType, PaginationType, SystemMenuType } from "@/global-types";
+import { MenuLayoutType, PaginationType, SystemMenuType, VisibilityScope } from "@/global-types";
 import { useDocuments } from "~/composables/useDocuments";
 import IconPicker from "~/components/IconPicker.vue";
 import type { Menu, PaymentIntegration } from "~/types";
@@ -377,6 +377,21 @@ watch(
         >
           Children Menus
         </UiTabsTrigger>
+        <UiTabsTrigger
+            value="CustomerGroups"
+            v-if="data?.visibilityScope != 'PUBLIC'"
+            @click="
+              navigateTo({
+                path: route.path,
+                query: {
+                  activeTab: 'CustomerGroups',
+                },
+              })
+            "
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
+          >
+          Allowed Customer Groups
+          </UiTabsTrigger>
       </UiTabsList>
       <UiTabsContent
         value="menuDetails"
@@ -798,6 +813,39 @@ watch(
                 </FormItem>
               </FormField> -->
               <FormField
+                  v-slot="{ componentField }"
+                  name="visibilityScope"
+                >
+                  <FormItem>
+                    <FormLabel> Visibility Scope</FormLabel>
+                    <UiSelect v-bind="componentField">
+                      <FormControl>
+                        <UiSelectTrigger>
+                          <UiSelectValue
+                            :placeholder="
+                              data?.visibilityScope	
+                                ? data?.visibilityScope	
+                                : 'Select a visibility scope'
+                            "
+                          />
+                        </UiSelectTrigger>
+                      </FormControl>
+                      <FormMessage />
+                      <UiSelectContent>
+                        <UiSelectGroup>
+                          <UiSelectItem
+                            v-for="item in Object.values(VisibilityScope)"
+                            :key="item"
+                            :value="item"
+                          >
+                            {{ item }}
+                          </UiSelectItem>
+                        </UiSelectGroup>
+                      </UiSelectContent>
+                    </UiSelect>
+                  </FormItem>
+                </FormField>
+              <FormField
                 v-if="form.values.isSystemMenu"
                 v-slot="{ componentField }"
                 name="systemMenuType"
@@ -878,7 +926,7 @@ watch(
                   <FormMessage />
                 </FormItem>
               </FormField>
-  <UiPermissionGuard permission="UPDATE_INTEGRATION_MENUS" >
+  <UiPermissionGuard permission="UPDATE_INTEGRATION_MENU" >
               <div class="col-span-full w-full py-4 flex justify-between">
                 <UiButton
                   :disabled="submitting"
@@ -1188,6 +1236,9 @@ watch(
           </div>
         </UiCard>
       </UiTabsContent>
+      <UiTabsContent value="CustomerGroups" class="space-y-4 py-8">
+          <MenusCustomerGroups />
+        </UiTabsContent>
     </UiTabs>
     <div v-else-if="data == null || data == undefined">
       <UiNoResultFound class="w-full" title="Sorry, No menu found." />

@@ -11,6 +11,20 @@ export const useCharges = () => {
   const { fetch } = useApi();
   const { toast } = useToast();
 
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<Charge>({endpoint:'/api/v1/internal/charges', sortValue:"chargeCode,asc"});
+
   const getCharges: (page?: number, size?: number) => ApiResult<Charge[]> = async (page, size) => {
     try {
       const { data, pending, error, status } = await fetch<Charge[]>(
@@ -269,6 +283,19 @@ export const useCharges = () => {
   };
 
   return {
+    // Server pagination API
+    page,
+    size,
+    sort,
+    offices: data,
+    total,
+    loading,
+    error,
+    fetchOffices: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
     isLoading,
     isUpdating,
     getCharges,

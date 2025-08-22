@@ -5,13 +5,38 @@ import type { Application, AppVersion } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 
-export const useApplications = () => {
+export const useApplications = (applicationId?: Ref<string>) => {
   const authUser = useAuthUser();
   const userAdmin = useState<boolean>("userAdmin", () => false);
   const isLoading = ref<boolean>(false);
   const isUpdating = ref<boolean>(false);
   const { fetch } = useApi();
   const { toast } = useToast();
+
+  const endpoint = computed(() => {
+    if (!applicationId?.value) return '/api/v1/internal/applications';
+    return `/api/v1/internal/applications/${applicationId.value}/app-versions`;
+  });
+
+  const sortValue =  computed(() => {
+    if (!applicationId?.value) return "name,asc"
+    return "versionName,asc";
+  });
+
+  
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<Application>({endpoint, sortValue});
 
   const getApplications: () => ApiResult<Application[]> = async () => {
     try {
@@ -214,6 +239,19 @@ export const useApplications = () => {
   };
 
   return {
+    // Server pagination API
+    page,
+    size,
+    sort,
+    offices: data,
+    total,
+    loading,
+    error,
+    fetchOffices: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
     isLoading,
     isUpdating,
     getApplications,

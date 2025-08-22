@@ -1,5 +1,5 @@
 import { useApi } from "./useApi";
-import type { Menu } from "~/types";
+import type { CustomerGroupMember, Menu } from "~/types";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
 import axios from "axios";
@@ -8,6 +8,20 @@ export const useMenus = () => {
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
+
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<Menu>({endpoint:'/api/v1/internal/menus', sortValue:"menuName,asc"});
 
   const getMenus: (page?: number, size?: number) => ApiResult<Menu[]> = async (
     page,
@@ -236,7 +250,83 @@ export const useMenus = () => {
     }
   };
 
+  const getCustomerGroupByMenuId: (id: string) => ApiResult<CustomerGroupMember> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
+        `/api/v1/internal/menus/${id}/groups`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as CustomerGroupMember) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const createCustomerGroupByMenuId: (id: string, groupData: any) => ApiResult<CustomerGroupMember> = async (id, groupData) => {
+    try {
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
+        `/api/v1/internal/menus/${id}/groups`,
+        {
+          method: "POST",
+          body: groupData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as CustomerGroupMember) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const deleteCustomerGroupByMenuId: (id: string, groupData: any) => ApiResult<CustomerGroupMember> = async (id, groupData) => {
+    try {
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
+        `/api/v1/internal/menus/${id}/groups`,
+        {
+          method: "DELETE",
+          body: groupData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as CustomerGroupMember) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return {
+
+    // Server pagination API
+    page,
+    size,
+    sort,
+    offices: data,
+    total,
+    loading,
+    error,
+    fetchOffices: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
     isLoading,
     getMenus,
     getMenuById,
@@ -246,6 +336,9 @@ export const useMenus = () => {
     updateMenu,
     updateProductMenus,
     updateChildrenMenus,
+    getCustomerGroupByMenuId,
+    createCustomerGroupByMenuId,
+    deleteCustomerGroupByMenuId,
     importMenus,
     isSubmitting,
   };

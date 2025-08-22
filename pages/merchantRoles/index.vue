@@ -1,43 +1,31 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
+import { ref, onMounted, computed, provide } from "vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Role } from "~/types";
-import { columns as tableColumns } from "~/components/merchantRoles/columns"; // Renamed to avoid conflict
+import { columns as tableColumns } from "~/components/merchantRoles/columns";
 import { PermissionConstants } from "~/constants/permissions";
+import { useMerchantRoles } from "~/composables/useMerchantRoles"; // Import useMerchantRoles
+import ServerPagination from "~/components/ui/ServerPagination.vue"; // Import ServerPagination
 
-const { getMerchantOperatorRoles } = useMerchantRoles();
-const isLoading = ref();
-const isError = ref(false);
-const data = ref<Role[]>([]);
-const { pageNumber } = usePagesInfoStore();
+const {
+  page,
+  size,
+  sort,
+  merchantOperatorRoles: data, // Renamed to data for existing template usage
+  total,
+  loading: isLoading, // Renamed to isLoading for existing template usage
+  error: isError, // Renamed to isError for existing template usage
+  fetchMerchantOperatorRoles: fetchData, // Renamed to fetchData for existing template usage
+  onPageChange,
+  onSizeChange,
+  onSortChange,
+} = useMerchantRoles();
 
-const fetchMerchantRoleData = async () => {
-  try {
-    isLoading.value = true;
-     const response = await getMerchantOperatorRoles(); // Call your API function to fetch roles
-     console.log(response);
-     data.value = response
-  } catch (err) {
-    console.error("Error fetching merchant roles:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-  }
-};
+// Provide the fetchMerchantOperatorRoles function for columns
+provide('refetchMerchantRoles', fetchData);
 
-onMounted(() => {
-  fetchMerchantRoleData();
-});
-
-const refetch = async () => {
-  await fetchMerchantRoleData();
-};
-
-// Provide the refetch function
-provide('refetchMerchantRoles', refetch);
-
-// Generate columns by passing the refetch function
-const columns = computed(() => tableColumns(refetch));
+// Generate columns by passing the fetchMerchantOperatorRoles function
+const columns = computed(() => tableColumns(fetchData));
 </script>
 
 <template>
@@ -73,12 +61,19 @@ const columns = computed(() => tableColumns(refetch));
         </div>
       </template>
     </UiDataTable>
+    <ServerPagination
+      :page="page"
+      :size="size"
+      :total="total"
+      :on-page-change="onPageChange"
+      :on-size-change="onSizeChange"
+    />
   </div>
 
   <!-- <div v-else-if="data && !isError ">
     <UiNoResultFound title="Sorry, No role found." />
   </div> -->
   <div v-if="isError">
-    <ErrorMessage :retry="refetch" title="Something went wrong." />
+    <ErrorMessage :retry="fetchData" title="Something went wrong." />
   </div>
 </template>

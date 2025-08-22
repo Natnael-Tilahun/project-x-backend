@@ -1,50 +1,30 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
-import { columns as tableColumns } from "~/components/permissionGroups/columns"; // Renamed to avoid conflict
+import { columns as tableColumns } from "~/components/permissionGroups/columns";
 import { PermissionConstants } from "~/constants/permissions";
-import type { PermissionGroup } from "~/types";
+import ServerPagination from "~/components/ui/ServerPagination.vue";
 
-const { getPermissionGroups, isLoading } = usePermissionGroups();
-const loading = ref(isLoading.value);
-const isError = ref(false);
-const data = ref<PermissionGroup[]>([]);
+const {
+  page,
+  size,
+  sort,
+  permissionGroups: data,
+  total,
+  loading: isLoading,
+  error: isError,
+  fetchPermissionGroups: fetchData,
+  onPageChange,
+  onSizeChange,
+  onSortChange,
+} = usePermissionGroups();
 
-const fetchData = async () => {
-  try {
-    isLoading.value = true;
-    loading.value = true;
-    const permissionGroups = await getPermissionGroups();
-    data.value = permissionGroups;
-  } catch (err: any) {
-    console.error("Error fetching permission groups:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-    loading.value = false;
-  }
-};
-
-
-onMounted(() => {
-  fetchData();
-});
-
-const refetch = async () => {
-  await fetchData();
-};
-
-// Provide the refetch function
-provide('refetchPermissionGroups', refetch);
-
-// Generate columns by passing the refetch function
-const columns = computed(() => tableColumns(refetch));
-
+// Columns with refetch function
+const columns = computed(() => tableColumns(fetchData));
 </script>
 
 <!-- Render DataTable only if data is available -->
 <template>
-  <div v-if="loading" class="py-10 flex justify-center w-full">
+  <div v-if="isLoading" class="py-10 flex justify-center w-full">
     <UiLoading />
   </div>
   <div
@@ -62,11 +42,15 @@ const columns = computed(() => tableColumns(refetch));
     <UiDataTable :columns="columns" :data="data">
 
     </UiDataTable>
+    <ServerPagination
+      :page="page"
+      :size="size"
+      :total="total"
+      :on-page-change="onPageChange"
+      :on-size-change="onSizeChange"
+    />
   </div>
-  <!-- <div v-else-if="data && !isError && data?.length <= 0">
-    <UiNoResultFound title="Sorry, No customer found." />
-  </div> -->
   <div v-if="isError">
-    <ErrorMessage :retry="refetch" title="Something went wrong." />
+    <ErrorMessage :retry="fetchData" title="Something went wrong." />
   </div>
 </template>

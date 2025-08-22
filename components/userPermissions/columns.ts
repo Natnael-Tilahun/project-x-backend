@@ -4,8 +4,11 @@ import UserPermissionsDataTableRowActionsVue from "./DataTableRowActions.vue";
 import type { Permission } from "~/types";
 import { NuxtLink } from "#components";
 import Badge from "../ui/badge/Badge.vue";
+import { h } from "vue";
 
-export const columns: ColumnDef<Permission>[] = [
+type RefetchFunction = () => Promise<void>;
+
+export const columns = (refetch: RefetchFunction): ColumnDef<Permission>[] => [
   {
     id: "select",
     header: ({ table }) =>
@@ -123,6 +126,7 @@ export const columns: ColumnDef<Permission>[] = [
         { class: "relative" },
         h(UserPermissionsDataTableRowActionsVue, {
           row,
+          refetch,
         })
       );
     },

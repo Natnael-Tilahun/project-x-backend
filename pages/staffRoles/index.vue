@@ -4,38 +4,30 @@ import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import type { Role } from "~/types";
 import { columns as tableColumns } from "~/components/staffRoles/columns"; // Renamed to avoid conflict
 import { PermissionConstants } from "~/constants/permissions";
+import ServerPagination from "~/components/ui/ServerPagination.vue";
 
-const { getStaffRoles } = useStaffRoles();
-const isLoading = ref();
-const isError = ref(false);
-const data = ref<Role[]>([]);
-const { pageNumber } = usePagesInfoStore();
 
-const fetchStaffRoleData = async () => {
-  try {
-    isLoading.value = true;
-    data.value = await getStaffRoles(); // Call your API function to fetch roles
-  } catch (err) {
-    console.error("Error fetching staff roles:", err);
-    isError.value = true;
-  } finally {
-    isLoading.value = false;
-  }
-};
+const {
+  page,
+  size,
+  sort,
+  staffRoles: data, // Renamed to data for existing template usage
+  total,
+  loading: isLoading, // Renamed to isLoading for existing template usage
+  error: isError, // Renamed to isError for existing template usage
+  fetchStaffRoles: fetchData, // Renamed to fetchData for existing template usage
+  onPageChange,
+  onSizeChange,
+  onSortChange,
+} = useStaffRoles();
 
-onMounted(() => {
-  fetchStaffRoleData();
-});
+// Removed redundant isLoading and isError refs
 
-const refetch = async () => {
-  await fetchStaffRoleData();
-};
+// Provide the fetchStaffRoles function for columns
+provide('refetchStaffRoles', fetchData);
 
-// Provide the refetch function
-provide('refetchStaffRoles', refetch);
-
-// Generate columns by passing the refetch function
-const columns = computed(() => tableColumns(refetch));
+// Generate columns by passing the fetchStaffRoles function
+const columns = computed(() => tableColumns(fetchData));
 </script>
 
 <template>
@@ -71,12 +63,19 @@ const columns = computed(() => tableColumns(refetch));
         </div>
       </template>
     </UiDataTable>
+    <ServerPagination
+      :page="page"
+      :size="size"
+      :total="total"
+      :on-page-change="onPageChange"
+      :on-size-change="onSizeChange"
+    />
   </div>
 
   <!-- <div v-else-if="data && !isError ">
     <UiNoResultFound title="Sorry, No role found." />
   </div> -->
   <div v-if="isError">
-    <ErrorMessage :retry="refetch" title="Something went wrong." />
+    <ErrorMessage :retry="fetchData" title="Something went wrong." />
   </div>
 </template>

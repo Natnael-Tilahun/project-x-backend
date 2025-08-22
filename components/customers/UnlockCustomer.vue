@@ -2,9 +2,9 @@
 import { ref } from "vue";
 import { toast } from "~/components/ui/toast";
 
-const { unlockCustomer, isLoading } = useCustomers();
+const { unlockCustomer } = useCustomers();
 
-const loading = ref(isLoading.value);
+const loading = ref(false);
 const isError = ref(false);
 const openEditModal = ref(false);
 const showSuccess = ref(false);

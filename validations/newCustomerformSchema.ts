@@ -1,5 +1,6 @@
 import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
+import { PhoneUtil } from "~/lib/phoneUtil";
 
 export const newCustomerformSchema = toTypedSchema(
   z.object({
@@ -13,6 +14,11 @@ export const newCustomerformSchema = toTypedSchema(
     // city: z.string(),
     // country: z.string(),
     name: z.string(),
+    phone: z
+      .string()
+      .refine(PhoneUtil.isPhoneNumber, {
+        message: "Enter a valid Ethiopian phone number",
+      }),
     email: z.string().optional(),
     nationalId: z.string().optional().nullable(),
     // coreCustomerId: z.string(),

@@ -188,6 +188,18 @@ watch(
     }
   }
 );
+
+const isNumber  = () => {
+  if(form.values.dataType == DataType.INT || form.values.dataType == DataType.DOUBLE || form.values.dataType == DataType.LONG || form.values.dataType == DataType.NUMBER){
+    return true
+  }
+}
+
+const isString = () => {
+  if(form.values.dataType == DataType.STRING){
+    return true
+  }
+}
 </script>
 
 <template>
@@ -333,6 +345,7 @@ watch(
               </FormItem>
             </FormField>
             <FormField
+              v-if="isString()"
               :model-value="newParameter?.maxLength"
               v-slot="{ componentField }"
               name="maxLength"
@@ -350,6 +363,7 @@ watch(
               </FormItem>
             </FormField>
             <FormField
+              v-if="isString()"
               :model-value="newParameter?.minLength"
               v-slot="{ componentField }"
               name="minLength"
@@ -367,6 +381,7 @@ watch(
               </FormItem>
             </FormField>
             <FormField
+              v-if="isNumber()"
               :model-value="newParameter?.minValue"
               v-slot="{ componentField }"
               name="minValue"
@@ -384,6 +399,7 @@ watch(
               </FormItem>
             </FormField>
             <FormField
+              v-if="isNumber()"
               :model-value="newParameter?.maxValue"
               v-slot="{ componentField }"
               name="maxValue"
@@ -721,6 +737,7 @@ watch(
                     </FormItem>
                   </FormField>
                   <FormField
+                    v-if="isString()"
                     :model-value="item.maxLength"
                     v-slot="{ componentField }"
                     name="maxLength"
@@ -738,6 +755,7 @@ watch(
                     </FormItem>
                   </FormField>
                   <FormField
+                    v-if="isString()"
                     :model-value="item.minLength"
                     v-slot="{ componentField }"
                     name="minLength"
@@ -755,6 +773,7 @@ watch(
                     </FormItem>
                   </FormField>
                   <FormField
+                    v-if="isNumber()"
                     :model-value="item.minValue"
                     v-slot="{ componentField }"
                     name="minValue"
@@ -772,6 +791,7 @@ watch(
                     </FormItem>
                   </FormField>
                   <FormField
+                    v-if="isNumber()"
                     :model-value="item.maxValue"
                     v-slot="{ componentField }"
                     name="maxValue"

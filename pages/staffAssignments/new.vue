@@ -13,7 +13,7 @@ import { newStaffAssignmentsFormSchema } from "~/validations/newStaffAssignments
 import type { Office, Staff, StaffAssignment, Role } from "~/types";
 const { createNewStaffAssignment, isLoading } = useStaffAssignments();
 const { getOffices, isLoading: isLoadingOffices } = useOffice();
-const { getStaffRoles, isLoading: isLoadingRoles } = useStaffRoles();
+const { getStaffRoles } = useStaffRoles();
 const { getStaffs, isLoading: isLoadingStaffs } = useStaffs();
 
 const isError = ref(false);

@@ -37,6 +37,7 @@ const fetchMerchantAccountsData = async (coreCustomerId: string) => {
     isError.value = false;
     if (coreCustomerId) {
       const result = await getCoreAccountsByCustomerId(coreCustomerId);
+      console.log("result: ", result)
       accountsData.value = result ? [...result] : [];
     }
   } catch (err) {

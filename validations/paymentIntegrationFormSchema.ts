@@ -2,7 +2,6 @@ import { toTypedSchema } from "@vee-validate/zod";
 import { z } from "zod";
 import {
   PaymentIntegrationType,
-  Visibility,
   TransactionAmountType,
   PaymentOperationType,
   FormType,
@@ -11,12 +10,13 @@ import {
   CreditAccountNumberVariableType,
   PaymentCategory,
   LimitType,
+  VisibilityScope,
 } from "@/global-types";
 
 const IntegrationTypeSchema = z.nativeEnum(PaymentIntegrationType);
 const LimitTypeSchema = z.nativeEnum(LimitType)
 const TransactionAmountTypeSchema = z.nativeEnum(TransactionAmountType);
-const VisibilitySchema = z.nativeEnum(Visibility);
+const VisibilitySchema = z.nativeEnum(VisibilityScope);
 const PaymentOperationTypeSchema = z
   .nativeEnum(PaymentOperationType)
   .nullable()
@@ -64,7 +64,7 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     paymentErrorTemplateShort: z.string().optional().nullable(),
     integrationType: IntegrationTypeSchema,
     transactionAmountType: TransactionAmountTypeSchema,
-    visibility: VisibilitySchema,
+    visibilityScope: VisibilitySchema,
     confirmRecipientIdentity: z.boolean().optional().nullable().default(false),
     reEnquirePaymentDetailBeforePayment: z.boolean().optional().nullable(),
     singleFormPayment: z.boolean().optional().nullable().default(false),
@@ -82,6 +82,7 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     limitPerTransaction: z.number().optional().nullable(),
     category: PaymentCategorySchema,
     maxTransactionsPerDay: z.number().optional().nullable(),
+    coreTransactionReasonTemplate:  z.string().optional().nullable(),
   })
 );
 

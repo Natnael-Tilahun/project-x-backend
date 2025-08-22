@@ -13,7 +13,7 @@ import { toast } from "~/components/ui/toast";
 import { RoleScope } from "~/global-types";
 import type { Role } from "~/types";
 
-const { createNewMerchantOperatorRole, isLoading } = await useMerchantRoles();
+const { createNewMerchantOperatorRole } = await useMerchantRoles();
 const isError = ref(false);
 const data = ref<Role>();
 
@@ -27,6 +27,7 @@ const form = useForm({
     description: "",
     enabled: true,
     enforce2fa: false,
+    effectiveToAllBranch: false,
     scope: RoleScope.MERCHANT
   },
 });
@@ -34,7 +35,6 @@ const form = useForm({
 const onSubmit = form.handleSubmit(async (values: any) => {
   try {
     isSubmitting.value = true;
-    isLoading.value = true;
     data.value = await createNewMerchantOperatorRole(values); // Call your API function to fetch profile
     navigateTo(`/merchantRoles`);
     console.log("New merchant role data; ", data.value);
@@ -46,7 +46,6 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     console.error("Error creating new merchant role:", err);
     isError.value = true;
   } finally {
-    isLoading.value = false;
     isSubmitting.value = false;
   }
 });
@@ -113,6 +112,16 @@ const onSubmit = form.handleSubmit(async (values: any) => {
                 class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
               >
                 <FormLabel class="text-base"> Enforce 2fa </FormLabel>
+                <FormControl>
+                  <UiSwitch :checked="value" @update:checked="handleChange" />
+                </FormControl>
+              </FormItem>
+            </FormField>
+            <FormField v-slot="{ value, handleChange }" name="effectiveToAllBranch">
+              <FormItem
+                class="flex flex-row items-center justify-between rounded-lg border p-4 w-full"
+              >
+                <FormLabel class="text-base"> Effective To All Branch </FormLabel>
                 <FormControl>
                   <UiSwitch :checked="value" @update:checked="handleChange" />
                 </FormControl>

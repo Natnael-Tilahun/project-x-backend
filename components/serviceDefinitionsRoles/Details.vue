@@ -67,6 +67,7 @@ const fetchServiceDefinitionRole = async () => {
     permissionsData.value = data.value?.permissions || [];
     const newValues = {
       ...data.value,
+      isDefault: data.value?.isDefault || false,
       permissions: data.value?.permissions,
     };
     form.setValues(newValues);
@@ -85,8 +86,10 @@ const onSubmit = form.handleSubmit(async (values: any) => {
     isSubmitting.value = true;
     const newValues = {
       ...values,
+      isDefault: values.isDefault || false,
       serviceDefinition: serviceDefinition.value,
     };
+    console.log("new values: ", newValues)
     data.value = await updateServiceDefinitionRole(values.id, newValues); // Call your API function to fetch profile
     toast({
       title: "Service Definition Role Updated",
@@ -148,7 +151,7 @@ const updadateRoleStatus = async (status: boolean) => {
             class="flex items-center gap-4 border pb-1 pt-2 px-3 rounded-md "
           >
             <FormField
-              :model-value="data?.isDefault"
+              :model-value="data?.isDefault || false"
               v-slot="{ value, handleChange }"
               name="isDefault"
             >

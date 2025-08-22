@@ -1,4 +1,4 @@
-import type { PaymentIntegration, PaymentOperation, ThirdPartyTransactionDetail } from "~/types";
+import type { CustomerGroupMember, PaymentIntegration, PaymentOperation, ThirdPartyTransactionDetail } from "~/types";
 import { useApi } from "./useApi";
 import type { ApiResult } from "~/types/api";
 import { handleApiError } from "~/types/api";
@@ -8,6 +8,21 @@ export const usePaymentIntegrations = () => {
   const isLoading = ref<boolean>(false);
   const isSubmitting = ref<boolean>(false);
   const { fetch } = useApi();
+
+
+  const {
+    page,
+    size,
+    sort,
+    data,
+    total,
+    loading,
+    error,
+    fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+  } = usePagination<PaymentIntegration>({endpoint:'/api/v1/internal/payment-integrations', sortValue:"integrationName,asc"});
 
   const getPaymentIntegrations: (
     page?: number,
@@ -105,26 +120,26 @@ export const usePaymentIntegrations = () => {
     paymentIntegrationId,
     paymentIntegrationData
   ) => {
-    try {
-      const { data, pending, error, status } = await fetch<PaymentIntegration>(
-        `/api/v1/internal/payment-integrations/${paymentIntegrationId}`,
-        {
-          method: "PATCH",
-          body: paymentIntegrationData,
+      try {
+        const { data, pending, error, status } = await fetch<PaymentIntegration>(
+          `/api/v1/internal/payment-integrations/${paymentIntegrationId}`,
+          {
+            method: "PATCH",
+            body: paymentIntegrationData,
+          }
+        );
+
+        isSubmitting.value = pending.value;
+
+        if (status.value === "error") {
+          handleApiError(error);
         }
-      );
 
-      isSubmitting.value = pending.value;
-
-      if (status.value === "error") {
-        handleApiError(error);
+        return data.value ? (data.value as unknown as PaymentIntegration) : null;
+      } catch (err) {
+        throw err;
       }
-
-      return data.value ? (data.value as unknown as PaymentIntegration) : null;
-    } catch (err) {
-      throw err;
-    }
-  };
+    };
 
   const deletePaymentIntegration: (id: string) => ApiResult<any> = async (
     id
@@ -214,12 +229,11 @@ export const usePaymentIntegrations = () => {
     }
   };
 
-  const getThirdPartyPaymentTransactionsByPaymentIntegrationId: (
-    id: string
-  ) => ApiResult<ThirdPartyTransactionDetail[]> = async (id) => {
+
+  const getCustomerGroupByIntegrationId: (id: string) => ApiResult<CustomerGroupMember> = async (id) => {
     try {
-      const { data, pending, error, status } = await fetch<ThirdPartyTransactionDetail[]>(
-        `/api/v1/internal/third-party-payment-transactions/integration/${id}`
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
+        `/api/v1/internal/payment-integrations/${id}/groups`
       );
 
       isLoading.value = pending.value;
@@ -228,18 +242,20 @@ export const usePaymentIntegrations = () => {
         handleApiError(error);
       }
 
-      return data.value ? (data.value as unknown as ThirdPartyTransactionDetail[]) : null;
+      return data.value ? (data.value as unknown as CustomerGroupMember) : null;
     } catch (err) {
       throw err;
     }
   };
 
-  const getTransactionsDetailsByTransactionId: (
-    id: string
-  ) => ApiResult<ThirdPartyTransactionDetail> = async (id) => {
+  const createCustomerGroupByIntegrationId: (id: string, groupData: any) => ApiResult<CustomerGroupMember> = async (id, groupData) => {
     try {
-      const { data, pending, error, status } = await fetch<ThirdPartyTransactionDetail>(
-        `/api/v1/internal/third-party-payment-transactions/${id}`
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
+        `/api/v1/internal/payment-integrations/${id}/groups`,
+        {
+          method: "POST",
+          body: groupData,
+        }
       );
 
       isLoading.value = pending.value;
@@ -248,19 +264,20 @@ export const usePaymentIntegrations = () => {
         handleApiError(error);
       }
 
-      return data.value ? (data.value as unknown as ThirdPartyTransactionDetail) : null;
+      return data.value ? (data.value as unknown as CustomerGroupMember) : null;
     } catch (err) {
       throw err;
     }
   };
 
-
-  const getThirdPartyPaymentTransactionsByCustomerId: (
-    id: string
-  ) => ApiResult<ThirdPartyTransactionDetail[]> = async (id) => {
+  const deleteCustomerGroupByIntegrationId: (id: string, groupData: any) => ApiResult<CustomerGroupMember> = async (id, groupData) => {
     try {
-      const { data, pending, error, status } = await fetch<ThirdPartyTransactionDetail[]>(
-        `/api/v1/internal/third-party-payment-transactions/customer/${id}`
+      const { data, pending, error, status } = await fetch<CustomerGroupMember>(
+        `/api/v1/internal/payment-integrations/${id}/groups`,
+        {
+          method: "DELETE",
+          body: groupData,
+        }
       );
 
       isLoading.value = pending.value;
@@ -269,34 +286,26 @@ export const usePaymentIntegrations = () => {
         handleApiError(error);
       }
 
-      return data.value ? (data.value as unknown as ThirdPartyTransactionDetail[]) : null;
-    } catch (err) {
-      throw err;
-    }
-  };
-
-  const getThirdPartyPaymentTransactionsByCustomerAndIntegrationId: (
-    customerId: string,
-    integrationId:string
-  ) => ApiResult<ThirdPartyTransactionDetail[]> = async (customerId, integrationId) => {
-    try {
-      const { data, pending, error, status } = await fetch<ThirdPartyTransactionDetail[]>(
-        `/api/v1/internal/third-party-payment-transactions/customer/${customerId}/integration/${integrationId}`
-      );
-
-      isLoading.value = pending.value;
-
-      if (status.value === "error") {
-        handleApiError(error);
-      }
-
-      return data.value ? (data.value as unknown as ThirdPartyTransactionDetail[]) : null;
+      return data.value ? (data.value as unknown as CustomerGroupMember) : null;
     } catch (err) {
       throw err;
     }
   };
 
   return {
+    // Server pagination API
+    page,
+    size,
+    sort,
+    offices: data,
+    total,
+    loading,
+    error,
+    fetchOffices: fetchData,
+    onPageChange,
+    onSizeChange,
+    onSortChange,
+
     isLoading,
     getPaymentIntegrations,
     getPaymentIntegrationById,
@@ -306,10 +315,9 @@ export const usePaymentIntegrations = () => {
     updatePaymentIntegration,
     exportPaymentIntegration,
     importPaymentIntegration,
-    getThirdPartyPaymentTransactionsByPaymentIntegrationId,
-    getThirdPartyPaymentTransactionsByCustomerId,
-    getThirdPartyPaymentTransactionsByCustomerAndIntegrationId,
-    getTransactionsDetailsByTransactionId,
+    getCustomerGroupByIntegrationId,
+    createCustomerGroupByIntegrationId,
+    deleteCustomerGroupByIntegrationId,
     isSubmitting,
   };
 };

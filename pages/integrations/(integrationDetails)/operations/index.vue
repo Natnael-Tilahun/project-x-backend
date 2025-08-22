@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { columns } from "~/components/integrations/columns";
+// import { columns } from "~/components/integrations/columns";
 import { useIntegrations } from "~/composables/useIntegrations";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { PermissionConstants } from "~/constants/permissions";
 import type { ApiIntegration } from "~/types";
+import { columns as tableColumns } from "~/components/integrations/columns"; // Renamed to avoid conflict
 
 const { getIntegrations } = useIntegrations();
 const keyword = ref<string>("");
@@ -49,6 +50,12 @@ const refetch = async () => {
 //     loading.value = false;
 //   }
 // };
+
+provide('refetchApiIntegrationOperations', refetch);
+
+
+const columns = computed(() => tableColumns(refetch));
+
 </script>
 
 <!-- Render DataTable only if data is available -->
