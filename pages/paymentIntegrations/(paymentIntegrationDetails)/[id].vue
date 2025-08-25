@@ -37,8 +37,8 @@ const {
   isLoading,
 } = usePaymentIntegrations();
 const { uploadFile, getFile } = useDocuments(); // Get the upload function
-const {getCharges, isLoading:isChargeLoading} = useCharges()
-const {getCoreCustomerByAccountNumber} = useCustomers()
+const { getCharges, isLoading: isChargeLoading } = useCharges()
+const { getCoreCustomerByAccountNumber } = useCustomers()
 
 const openItems = ref("IntegrationDetails");
 const fullPath = ref(route.fullPath);
@@ -94,12 +94,12 @@ const onSubmit = form.handleSubmit(async (values: any) => {
       ...values,
       maximumAmount:
         values?.maximumAmountVariableType == MaximumAmountVariableType.FIXED &&
-        values?.transactionAmountType == TransactionAmountType.USER_DEFINED
+          values?.transactionAmountType == TransactionAmountType.USER_DEFINED
           ? values?.maximumAmount
           : null,
       minimumAmount:
         values?.minimumAmountVariableType == MinimumAmountVariableType.FIXED &&
-        values?.transactionAmountType == TransactionAmountType.USER_DEFINED
+          values?.transactionAmountType == TransactionAmountType.USER_DEFINED
           ? values?.minimumAmount
           : null,
     };
@@ -263,16 +263,16 @@ watch(
 
 const fetchChargeData = async () => {
   try {
-  isLoading.value = true;
-  loading.value = true;
-  chargesData.value = await getCharges(0,1000000);
-} catch (err) {
-  console.error("Error fetching charges:", err);
-  isError.value = true;
-} finally {
-  isLoading.value = false;
-  loading.value = false;
-}
+    isLoading.value = true;
+    loading.value = true;
+    chargesData.value = await getCharges(0, 1000000);
+  } catch (err) {
+    console.error("Error fetching charges:", err);
+    isError.value = true;
+  } finally {
+    isLoading.value = false;
+    loading.value = false;
+  }
 }
 
 // Fetch all merchant accounts
@@ -325,232 +325,154 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col gap-6 items-cente">
-    <div
-      class="flex flex-col justify-center items-center gap-3 border p-2 bg-background rounded-xl"
-    >
+    <div class="flex flex-col justify-center items-center gap-3 border p-2 bg-background rounded-xl">
       <h1 class="md:text-sm items-center font-bold">
         {{ data?.integrationName }}
       </h1>
     </div>
 
     <UiTabs v-model="openItems" class="w-full space-y-0">
-      <UiTabsList
-        class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0"
-      >
+      <UiTabsList class="w-full h-full overflow-x-scroll flex justify-start gap-2 px-0">
         <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_INTEGRATION>
-          <UiTabsTrigger
-            value="IntegrationDetails"
-            @click="
-              navigateTo({
-                path: route.path,
-                query: {
-                  activeTab: 'IntegrationDetails',
-                },
-              })
+          <UiTabsTrigger value="IntegrationDetails" @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'IntegrationDetails',
+              },
+            })
             "
-            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-          >
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none">
             Payment Integration Details
           </UiTabsTrigger>
         </UiPermissionGuard>
         <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_OPERATION>
-          <UiTabsTrigger
-            value="paymentOperations"
-            @click="
-              navigateTo({
-                path: route.path,
-                query: {
-                  activeTab: 'paymentOperations',
-                },
-              })
+          <UiTabsTrigger value="paymentOperations" @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'paymentOperations',
+              },
+            })
             "
-            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-          >
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none">
             Payment Operations
           </UiTabsTrigger>
-          <UiTabsTrigger
-            value="configurePaymentOperations"
-            @click="
-              navigateTo({
-                path: route.path,
-                query: {
-                  activeTab: 'configurePaymentOperations',
-                },
-              })
-            "
-            :disabled="openItems != 'configurePaymentOperations'"
+          <UiTabsTrigger value="configurePaymentOperations" @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'configurePaymentOperations',
+              },
+            })
+            " :disabled="openItems != 'configurePaymentOperations'"
             :class="openItems == 'configurePaymentOperations' ? '' : 'hidden'"
-            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-          >
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none">
             {{ operationName }}
           </UiTabsTrigger>
         </UiPermissionGuard>
         <UiPermissionGuard :permission=PermissionConstants.CREATE_PAYMENT_OPERATION>
-          <UiTabsTrigger
-            value="newPaymentOperation"
-            @click="
-              navigateTo({
-                path: route.path,
-                query: {
-                  activeTab: 'newPaymentOperation',
-                },
-              })
-            "
-            :disabled="openItems != 'newPaymentOperation'"
+          <UiTabsTrigger value="newPaymentOperation" @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'newPaymentOperation',
+              },
+            })
+            " :disabled="openItems != 'newPaymentOperation'"
             :class="openItems == 'newPaymentOperation' ? '' : 'hidden'"
-            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-2xl"
-          >
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-2xl">
             New Payment Operation
           </UiTabsTrigger>
         </UiPermissionGuard>
         <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_INTEGRATION>
-          <UiTabsTrigger
-            value="IntegrationTransactions"
-            @click="
-              navigateTo({
-                path: route.path,
-                query: {
-                  activeTab: 'IntegrationTransactions',
-                },
-              })
+          <UiTabsTrigger value="IntegrationTransactions" @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'IntegrationTransactions',
+              },
+            })
             "
-            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-          >
-          Integration Transactions
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none">
+            Integration Transactions
           </UiTabsTrigger>
-          <UiTabsTrigger
-            value="transactionDetails"
-            @click="
-              navigateTo({
-                path: route.path,
-                query: {
-                  activeTab: 'transactionDetails',
-                },
-              })
-            "
-            :disabled="openItems != 'transactionDetails'"
-            :class="openItems == 'transactionDetails' ? '' : 'hidden'"
-            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-          >
+          <UiTabsTrigger value="transactionDetails" @click="
+            navigateTo({
+              path: route.path,
+              query: {
+                activeTab: 'transactionDetails',
+              },
+            })
+            " :disabled="openItems != 'transactionDetails'" :class="openItems == 'transactionDetails' ? '' : 'hidden'"
+            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none">
             Transaction Details
           </UiTabsTrigger>
         </UiPermissionGuard>
-        <UiTabsTrigger
-            value="CustomerGroups"
-            v-if="data?.visibilityScope != 'PUBLIC'"
-            @click="
-              navigateTo({
-                path: route.path,
-                query: {
-                  activeTab: 'CustomerGroups',
-                },
-              })
-            "
-            class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none"
-          >
+        <UiTabsTrigger value="CustomerGroups" v-if="data?.visibilityScope != 'PUBLIC'" @click="
+          navigateTo({
+            path: route.path,
+            query: {
+              activeTab: 'CustomerGroups',
+            },
+          })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none">
           Allowed Customer Groups
-          </UiTabsTrigger>
+        </UiTabsTrigger>
       </UiTabsList>
 
       <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_INTEGRATION>
-        <UiTabsContent
-          value="IntegrationDetails"
-          class="text-base bg-background p-6 rounded-lg"
-        >
+        <UiTabsContent value="IntegrationDetails" class="text-base bg-background p-6 rounded-lg">
           <div v-if="loading" class="py-10 flex justify-center w-full">
             <UiLoading />
           </div>
           <div v-else-if="data && !isError">
             <form @submit="onSubmit">
               <div class="grid grid-cols-2 gap-6">
-                <FormField
-                  :model-value="data?.id"
-                  v-slot="{ componentField }"
-                  name="id"
-                >
+                <FormField :model-value="data?.id" v-slot="{ componentField }" name="id">
                   <FormItem>
                     <FormLabel> ID </FormLabel>
                     <FormControl>
-                      <UiInput
-                        type="text"
-                        disabled
-                        placeholder="id"
-                        v-bind="componentField"
-                      />
+                      <UiInput type="text" disabled placeholder="id" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
-                  :model-value="data?.alternateId"
-                  v-slot="{ componentField }"
-                  name="alternateId"
-                >
+                <FormField :model-value="data?.alternateId" v-slot="{ componentField }" name="alternateId">
                   <FormItem>
                     <FormLabel> Alternate ID </FormLabel>
                     <FormControl>
-                      <UiInput
-                        type="text"
-                        disabled
-                        placeholder="Enter alternate id"
-                        v-bind="componentField"
-                      />
+                      <UiInput type="text" disabled placeholder="Enter alternate id" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
-                  :model-value="data?.integrationName"
-                  v-slot="{ componentField }"
-                  name="integrationName"
-                >
+                <FormField :model-value="data?.integrationName" v-slot="{ componentField }" name="integrationName">
                   <FormItem>
                     <FormLabel> Integration Name </FormLabel>
                     <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter integration name"
-                        v-bind="componentField"
-                      />
+                      <UiInput type="text" placeholder="Enter integration name" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
-                  :model-value="data?.companyName"
-                  v-slot="{ componentField }"
-                  name="companyName"
-                >
+                <FormField :model-value="data?.companyName" v-slot="{ componentField }" name="companyName">
                   <FormItem>
                     <FormLabel> Company Name </FormLabel>
                     <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter company name"
-                        v-bind="componentField"
-                      />
+                      <UiInput type="text" placeholder="Enter company name" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <div
-                  v-if="form.values.isImage"
-                  class="w-full gap-2 grid grid-cols-5"
-                >
+                <div v-if="form.values.isImage" class="w-full gap-2 grid grid-cols-5">
                   <div class="col-span-2 w-full">
-                    <FormField
-                      :model-value="data?.iconPath"
-                      v-slot="{ componentField }"
-                      name="iconPath"
-                    >
+                    <FormField :model-value="data?.iconPath" v-slot="{ componentField }" name="iconPath">
                       <FormItem>
                         <FormLabel> Icon Path </FormLabel>
                         <FormControl>
-                          <UiInput
-                            v-bind="componentField"
-                            type="text"
-                            placeholder="Enter icon path"
-                          />
+                          <UiInput v-bind="componentField" type="text" placeholder="Enter icon path" />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -562,44 +484,24 @@ onMounted(() => {
                         <FormItem>
                           <FormLabel> Upload Icon </FormLabel>
                           <FormControl>
-                            <UiInput
-                              :key="fileInputKey"
-                              class="w-full"
-                              type="file"
-                              accept="image/*"
-                              @change="handleFileSelect"
-                            />
+                            <UiInput :key="fileInputKey" class="w-full" type="file" accept="image/*"
+                              @change="handleFileSelect" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       </FormField>
                       <!-- Image Preview with Remove Button -->
                       <div v-if="imagePreview" class="mt-2 relative group">
-                        <button
-                          @click="handleRemoveImage"
-                          class="group-hover:flex hidden absolute top-2 right-2 bg-red-500 rounded-lg p-1 items-center justify-center shadow-sm"
-                        >
+                        <button @click="handleRemoveImage"
+                          class="group-hover:flex hidden absolute top-2 right-2 bg-red-500 rounded-lg p-1 items-center justify-center shadow-sm">
                           <Icon name="lucide:x" class="h-6 w-6 text-white" />
                         </button>
-                        <img
-                          :src="imagePreview"
-                          alt="Preview"
-                          class="w-full h-60 object-contain rounded-md border"
-                        />
+                        <img :src="imagePreview" alt="Preview" class="w-full h-60 object-contain rounded-md border" />
                       </div>
                     </div>
-                    <UiButton
-                      size="sm"
-                      type="button"
-                      class="self-en mt-7"
-                      :disabled="!selectedFile || uploadLoading"
-                      @click="handleUpload"
-                    >
-                      <Icon
-                        v-if="uploadLoading"
-                        name="svg-spinners:8-dots-rotate"
-                        class="mr-2 h-4 w-4 animate-spin"
-                      />
+                    <UiButton size="sm" type="button" class="self-en mt-7" :disabled="!selectedFile || uploadLoading"
+                      @click="handleUpload">
+                      <Icon v-if="uploadLoading" name="svg-spinners:8-dots-rotate" class="mr-2 h-4 w-4 animate-spin" />
                       Upload
                     </UiButton>
                   </div>
@@ -610,11 +512,8 @@ onMounted(() => {
                     <FormItem>
                       <FormLabel>Icon Path</FormLabel>
                       <FormControl>
-                        <IconPicker
-                          :model-value="field.value"
-                          @update:modelValue="field.onChange"
-                          @select="field.onChange"
-                        />
+                        <IconPicker :model-value="field.value" @update:modelValue="field.onChange"
+                          @select="field.onChange" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -622,169 +521,103 @@ onMounted(() => {
                 </div>
 
                 <div class="col-span-full">
-                  <FormField
-                    :model-value="data?.description"
-                    v-slot="{ componentField }"
-                    name="description"
-                  >
+                  <FormField :model-value="data?.description" v-slot="{ componentField }" name="description">
                     <FormItem>
                       <FormLabel> Description </FormLabel>
                       <FormControl>
-                        <UiTextarea
-                          placeholder="Enter Description"
-                          class="resize-y col-span-full"
-                          rows="0"
-                          v-bind="componentField"
-                        />
+                        <UiTextarea placeholder="Enter Description" class="resize-y col-span-full" rows="0"
+                          v-bind="componentField" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   </FormField>
                 </div>
-                <FormField
-                  :model-value="data?.defaultLanguageCode"
-                  v-slot="{ componentField }"
-                  name="defaultLanguageCode"
-                >
+                <FormField :model-value="data?.defaultLanguageCode" v-slot="{ componentField }"
+                  name="defaultLanguageCode">
                   <FormItem>
                     <FormLabel> Default Language Code {{ form.values.limitType }} </FormLabel>
                     <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter default language code"
-                        v-bind="componentField"
-                      />
+                      <UiInput type="text" placeholder="Enter default language code" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
-                  :model-value="data?.currencyCode"
-                  v-slot="{ componentField }"
-                  name="currencyCode"
-                >
+                <FormField :model-value="data?.currencyCode" v-slot="{ componentField }" name="currencyCode">
                   <FormItem>
                     <FormLabel> Currency Code </FormLabel>
                     <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter currency code"
-                        v-bind="componentField"
-                      />
+                      <UiInput type="text" placeholder="Enter currency code" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
-              :model-value="data?.limitType"
-              v-slot="{ componentField }"
-              name="limitType"
-            >
-              <FormItem>
-                <FormLabel> Limit Type </FormLabel>
-                <UiSelect v-bind="componentField">
-                  <FormControl>
-                    <UiSelectTrigger>
-                      <UiSelectValue placeholder="Select a limit type" />
-                    </UiSelectTrigger>
-                  </FormControl>
-                  <UiSelectContent>
-                    <UiSelectGroup>
-                      <UiSelectItem
-                        v-for="item in Object.values(LimitType)"
-                        :key="item"
-                        :value="item"
-                      >
-                        {{ item }}
-                      </UiSelectItem>
-                    </UiSelectGroup>
-                  </UiSelectContent>
-                </UiSelect>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-                <FormField
-            v-if="form.values.limitType == LimitType.LIMITED"
-                  :model-value="data?.dailyLimitPerAccount"
-                  v-slot="{ componentField }"
-                  name="dailyLimitPerAccount"
-                >
+                <FormField :model-value="data?.limitType" v-slot="{ componentField }" name="limitType">
+                  <FormItem>
+                    <FormLabel> Limit Type </FormLabel>
+                    <UiSelect v-bind="componentField">
+                      <FormControl>
+                        <UiSelectTrigger>
+                          <UiSelectValue placeholder="Select a limit type" />
+                        </UiSelectTrigger>
+                      </FormControl>
+                      <UiSelectContent>
+                        <UiSelectGroup>
+                          <UiSelectItem v-for="item in Object.values(LimitType)" :key="item" :value="item">
+                            {{ item }}
+                          </UiSelectItem>
+                        </UiSelectGroup>
+                      </UiSelectContent>
+                    </UiSelect>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                <FormField v-if="form.values.limitType == LimitType.LIMITED" :model-value="data?.dailyLimitPerAccount"
+                  v-slot="{ componentField }" name="dailyLimitPerAccount">
                   <FormItem>
                     <FormLabel> Daily Limit Per Account </FormLabel>
                     <FormControl>
-                      <UiInput
-                        type="number"
-                        placeholder="Enter daily limit per account"
-                        v-bind="componentField"
-                      />
+                      <UiInput type="number" placeholder="Enter daily limit per account" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
-            v-if="form.values.limitType == LimitType.LIMITED"
-                  :model-value="data?.limitPerTransaction"
-                  v-slot="{ componentField }"
-                  name="limitPerTransaction"
-                >
+                <FormField v-if="form.values.limitType == LimitType.LIMITED" :model-value="data?.limitPerTransaction"
+                  v-slot="{ componentField }" name="limitPerTransaction">
                   <FormItem>
                     <FormLabel> Limit Per Transaction </FormLabel>
                     <FormControl>
-                      <UiInput
-                        type="number"
-                        placeholder="Enter limit per transaction"
-                        v-bind="componentField"
-                      />
+                      <UiInput type="number" placeholder="Enter limit per transaction" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
-            v-if="form.values.limitType == LimitType.LIMITED"
-                :model-value="data?.maxTransactionsPerDay"
-                v-slot="{ componentField }"
-                name="maxTransactionsPerDay"
-              >
-                <FormItem>
-                  <FormLabel> Max Transactions Per Day </FormLabel>
-                  <FormControl>
-                    <UiInput
-                      type="number"
-                      placeholder="Enter max transactions per day"
-                      v-bind="componentField"
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              </FormField>
-                <FormField
-                  :model-value="data?.integrationType"
-                  v-slot="{ componentField }"
-                  name="integrationType"
-                >
+                <FormField v-if="form.values.limitType == LimitType.LIMITED" :model-value="data?.maxTransactionsPerDay"
+                  v-slot="{ componentField }" name="maxTransactionsPerDay">
+                  <FormItem>
+                    <FormLabel> Max Transactions Per Day </FormLabel>
+                    <FormControl>
+                      <UiInput type="number" placeholder="Enter max transactions per day" v-bind="componentField" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                <FormField :model-value="data?.integrationType" v-slot="{ componentField }" name="integrationType">
                   <FormItem>
                     <FormLabel> Integration Type </FormLabel>
                     <UiSelect v-bind="componentField">
                       <FormControl>
                         <UiSelectTrigger>
-                          <UiSelectValue
-                            :placeholder="
-                              data?.integrationType
-                                ? data?.integrationType
-                                : 'Select a integration type'
-                            "
-                          />
+                          <UiSelectValue :placeholder="data?.integrationType
+                              ? data?.integrationType
+                              : 'Select a integration type'
+                            " />
                         </UiSelectTrigger>
                       </FormControl>
                       <UiSelectContent>
                         <UiSelectGroup>
-                          <UiSelectItem
-                            v-for="item in Object.values(
-                              PaymentIntegrationType
-                            )"
-                            :key="item"
-                            :value="item"
-                          >
+                          <UiSelectItem v-for="item in Object.values(
+                            PaymentIntegrationType
+                          )" :key="item" :value="item">
                             {{ item }}
                           </UiSelectItem>
                         </UiSelectGroup>
@@ -794,32 +627,22 @@ onMounted(() => {
                   </FormItem>
                 </FormField>
 
-                <FormField
-                  :model-value="data?.category"
-                  v-slot="{ componentField }"
-                  name="category"
-                >
+                <FormField :model-value="data?.category" v-slot="{ componentField }" name="category">
                   <FormItem>
                     <FormLabel> Category </FormLabel>
                     <UiSelect v-bind="componentField">
                       <FormControl>
                         <UiSelectTrigger>
-                          <UiSelectValue
-                            :placeholder="
-                              data?.category
-                                ? data?.category
-                                : 'Select a category'
-                            "
-                          />
+                          <UiSelectValue :placeholder="data?.category
+                              ? data?.category
+                              : 'Select a category'
+                            " />
                         </UiSelectTrigger>
                       </FormControl>
                       <UiSelectContent>
                         <UiSelectGroup>
-                          <UiSelectItem
-                            v-for="(displayValue, enumKey) in PaymentCategory"
-                            :key="enumKey"
-                            :value="enumKey"
-                          >
+                          <UiSelectItem v-for="(displayValue, enumKey) in PaymentCategory" :key="enumKey"
+                            :value="enumKey">
                             {{ displayValue }}
                           </UiSelectItem>
                         </UiSelectGroup>
@@ -829,32 +652,22 @@ onMounted(() => {
                   </FormItem>
                 </FormField>
 
-                <FormField
-                  :model-value="data?.transactionAmountType"
-                  v-slot="{ componentField }"
-                  name="transactionAmountType"
-                >
+                <FormField :model-value="data?.transactionAmountType" v-slot="{ componentField }"
+                  name="transactionAmountType">
                   <FormItem>
                     <FormLabel> Transaction Amount Type </FormLabel>
                     <UiSelect v-bind="componentField">
                       <FormControl>
                         <UiSelectTrigger>
-                          <UiSelectValue
-                            :placeholder="
-                              data?.transactionAmountType
-                                ? data?.transactionAmountType
-                                : 'Select a transaction amount type'
-                            "
-                          />
+                          <UiSelectValue :placeholder="data?.transactionAmountType
+                              ? data?.transactionAmountType
+                              : 'Select a transaction amount type'
+                            " />
                         </UiSelectTrigger>
                       </FormControl>
                       <UiSelectContent>
                         <UiSelectGroup>
-                          <UiSelectItem
-                            v-for="item in Object.values(TransactionAmountType)"
-                            :key="item"
-                            :value="item"
-                          >
+                          <UiSelectItem v-for="item in Object.values(TransactionAmountType)" :key="item" :value="item">
                             {{ item }}
                           </UiSelectItem>
                         </UiSelectGroup>
@@ -863,38 +676,27 @@ onMounted(() => {
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
-                  v-if="
-                    form.values.transactionAmountType ==
-                    TransactionAmountType.USER_DEFINED
-                  "
-                  :model-value="data?.maximumAmountVariableType"
-                  v-slot="{ componentField }"
-                  name="maximumAmountVariableType"
-                >
+                <FormField v-if="
+                  form.values.transactionAmountType ==
+                  TransactionAmountType.USER_DEFINED
+                " :model-value="data?.maximumAmountVariableType" v-slot="{ componentField }"
+                  name="maximumAmountVariableType">
                   <FormItem>
                     <FormLabel> Maximum Amount Variable Type </FormLabel>
                     <UiSelect v-bind="componentField">
                       <FormControl>
                         <UiSelectTrigger>
-                          <UiSelectValue
-                            :placeholder="
-                              data?.maximumAmountVariableType
-                                ? data?.maximumAmountVariableType
-                                : 'Select a maximum amount variable type'
-                            "
-                          />
+                          <UiSelectValue :placeholder="data?.maximumAmountVariableType
+                              ? data?.maximumAmountVariableType
+                              : 'Select a maximum amount variable type'
+                            " />
                         </UiSelectTrigger>
                       </FormControl>
                       <UiSelectContent>
                         <UiSelectGroup>
-                          <UiSelectItem
-                            v-for="item in Object.values(
-                              MaximumAmountVariableType
-                            )"
-                            :key="item"
-                            :value="item"
-                          >
+                          <UiSelectItem v-for="item in Object.values(
+                            MaximumAmountVariableType
+                          )" :key="item" :value="item">
                             {{ item }}
                           </UiSelectItem>
                         </UiSelectGroup>
@@ -903,61 +705,41 @@ onMounted(() => {
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
-                  v-if="
-                    form.values.maximumAmountVariableType ==
-                      MaximumAmountVariableType.FIXED &&
-                    form.values.transactionAmountType ==
-                      TransactionAmountType.USER_DEFINED
-                  "
-                  :model-value="data?.maximumAmount"
-                  v-slot="{ componentField }"
-                  name="maximumAmount"
-                >
+                <FormField v-if="
+                  form.values.maximumAmountVariableType ==
+                  MaximumAmountVariableType.FIXED &&
+                  form.values.transactionAmountType ==
+                  TransactionAmountType.USER_DEFINED
+                " :model-value="data?.maximumAmount" v-slot="{ componentField }" name="maximumAmount">
                   <FormItem>
                     <FormLabel> Maximum Amount </FormLabel>
                     <FormControl>
-                      <UiInput
-                        type="number"
-                        placeholder="Enter maximum amount"
-                        v-bind="componentField"
-                      />
+                      <UiInput type="number" placeholder="Enter maximum amount" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
-                  v-if="
-                    form.values.transactionAmountType ==
-                    TransactionAmountType.USER_DEFINED
-                  "
-                  :model-value="data?.minimumAmountVariableType"
-                  v-slot="{ componentField }"
-                  name="minimumAmountVariableType"
-                >
+                <FormField v-if="
+                  form.values.transactionAmountType ==
+                  TransactionAmountType.USER_DEFINED
+                " :model-value="data?.minimumAmountVariableType" v-slot="{ componentField }"
+                  name="minimumAmountVariableType">
                   <FormItem>
                     <FormLabel> Minimum Amount Variable Type </FormLabel>
                     <UiSelect v-bind="componentField">
                       <FormControl>
                         <UiSelectTrigger>
-                          <UiSelectValue
-                            :placeholder="
-                              data?.minimumAmountVariableType
-                                ? data?.minimumAmountVariableType
-                                : 'Select a minimum amount variable type'
-                            "
-                          />
+                          <UiSelectValue :placeholder="data?.minimumAmountVariableType
+                              ? data?.minimumAmountVariableType
+                              : 'Select a minimum amount variable type'
+                            " />
                         </UiSelectTrigger>
                       </FormControl>
                       <UiSelectContent>
                         <UiSelectGroup>
-                          <UiSelectItem
-                            v-for="item in Object.values(
-                              MinimumAmountVariableType
-                            )"
-                            :key="item"
-                            :value="item"
-                          >
+                          <UiSelectItem v-for="item in Object.values(
+                            MinimumAmountVariableType
+                          )" :key="item" :value="item">
                             {{ item }}
                           </UiSelectItem>
                         </UiSelectGroup>
@@ -966,57 +748,38 @@ onMounted(() => {
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
-                  v-if="
-                    form.values.minimumAmountVariableType ==
-                      MinimumAmountVariableType.FIXED &&
-                    form.values.transactionAmountType ==
-                      TransactionAmountType.USER_DEFINED
-                  "
-                  :model-value="data?.minimumAmount"
-                  v-slot="{ componentField }"
-                  name="minimumAmount"
-                >
+                <FormField v-if="
+                  form.values.minimumAmountVariableType ==
+                  MinimumAmountVariableType.FIXED &&
+                  form.values.transactionAmountType ==
+                  TransactionAmountType.USER_DEFINED
+                " :model-value="data?.minimumAmount" v-slot="{ componentField }" name="minimumAmount">
                   <FormItem>
                     <FormLabel> Minimum Amount </FormLabel>
                     <FormControl>
-                      <UiInput
-                        type="number"
-                        placeholder="Enter minimum amount"
-                        v-bind="componentField"
-                      />
+                      <UiInput type="number" placeholder="Enter minimum amount" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
-                  :model-value="data?.creditAccountNumberVariableType"
-                  v-slot="{ componentField }"
-                  name="creditAccountNumberVariableType"
-                >
+                <FormField :model-value="data?.creditAccountNumberVariableType" v-slot="{ componentField }"
+                  name="creditAccountNumberVariableType">
                   <FormItem>
                     <FormLabel> Credit Account Number Variable Type </FormLabel>
                     <UiSelect v-bind="componentField">
                       <FormControl>
                         <UiSelectTrigger>
-                          <UiSelectValue
-                            :placeholder="
-                              data?.creditAccountNumberVariableType
-                                ? data?.creditAccountNumberVariableType
-                                : 'Select a credit account number variable type'
-                            "
-                          />
+                          <UiSelectValue :placeholder="data?.creditAccountNumberVariableType
+                              ? data?.creditAccountNumberVariableType
+                              : 'Select a credit account number variable type'
+                            " />
                         </UiSelectTrigger>
                       </FormControl>
                       <UiSelectContent>
                         <UiSelectGroup>
-                          <UiSelectItem
-                            v-for="item in Object.values(
-                              CreditAccountNumberVariableType
-                            )"
-                            :key="item"
-                            :value="item"
-                          >
+                          <UiSelectItem v-for="item in Object.values(
+                            CreditAccountNumberVariableType
+                          )" :key="item" :value="item">
                             {{ item }}
                           </UiSelectItem>
                         </UiSelectGroup>
@@ -1025,55 +788,35 @@ onMounted(() => {
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
-                  v-if="
-                    form.values.creditAccountNumberVariableType ==
-                    CreditAccountNumberVariableType.FIXED
-                  "
-                  :model-value="data?.accountNumber"
-                  v-slot="{ componentField }"
-                  name="accountNumber"
-                >
+                <FormField v-if="
+                  form.values.creditAccountNumberVariableType ==
+                  CreditAccountNumberVariableType.FIXED
+                " :model-value="data?.accountNumber" v-slot="{ componentField }" name="accountNumber">
                   <FormItem>
                     <FormLabel> Account Number </FormLabel>
                     <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter account number"
-                        v-bind="componentField"
-                      />
+                      <UiInput type="text" placeholder="Enter account number" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
 
-                <FormField
-                  :model-value="data?.visibilityScope"
-                  v-slot="{ componentField }"
-                  name="visibilityScope"
-                >
+                <FormField :model-value="data?.visibilityScope" v-slot="{ componentField }" name="visibilityScope">
                   <FormItem>
                     <FormLabel> Visibility Scope</FormLabel>
                     <UiSelect v-bind="componentField">
                       <FormControl>
                         <UiSelectTrigger>
-                          <UiSelectValue
-                            :placeholder="
-                              data?.visibilityScope	
-                                ? data?.visibilityScope	
-                                : 'Select a visibility scope'
-                            "
-                          />
+                          <UiSelectValue :placeholder="data?.visibilityScope
+                              ? data?.visibilityScope
+                              : 'Select a visibility scope'
+                            " />
                         </UiSelectTrigger>
                       </FormControl>
                       <FormMessage />
                       <UiSelectContent>
                         <UiSelectGroup>
-                          <UiSelectItem
-                            v-for="item in Object.values(VisibilityScope)"
-                            :key="item"
-                            :value="item"
-                          >
+                          <UiSelectItem v-for="item in Object.values(VisibilityScope)" :key="item" :value="item">
                             {{ item }}
                           </UiSelectItem>
                         </UiSelectGroup>
@@ -1082,331 +825,219 @@ onMounted(() => {
                   </FormItem>
                 </FormField>
 
-                <FormField
-                  :model-value="data?.chargeId"
-                  v-slot="{ componentField }"
-                  name="chargeId"
-                >
+                <FormField :model-value="data?.chargeId" v-slot="{ componentField }" name="chargeId">
                   <FormItem>
                     <FormLabel>Charge</FormLabel>
-                    <ChargeSelect
-                      v-bind="componentField"
-                      :charges="chargesData"
-                    />
+                    <ChargeSelect v-bind="componentField" :charges="chargesData" />
                     <FormMessage />
                   </FormItem>
                 </FormField>
 
-                <FormField
-                  :model-value="data?.defaultPaymentReason"
-                  v-slot="{ componentField }"
-                  name="defaultPaymentReason"
-                >
+                <FormField :model-value="data?.defaultPaymentReason" v-slot="{ componentField }"
+                  name="defaultPaymentReason">
                   <FormItem>
                     <FormLabel> Default Payment Reason </FormLabel>
                     <FormControl>
-                      <UiInput
-                        type="text"
-                        placeholder="Enter default payment reason"
-                        v-bind="componentField"
-                      />
+                      <UiInput type="text" placeholder="Enter default payment reason" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
 
-                <FormField
-                  :model-value="data?.paymentConfirmationTemplate"
-                  v-slot="{ componentField }"
-                  name="paymentConfirmationTemplate"
-                >
-                  <FormItem>
-                    <FormLabel> Payment Confirmation Template </FormLabel>
-                    <FormControl>
-                      <UiTextarea
-                        placeholder="Enter Payment Confirmation Template"
-                        class="resize-y col-span-full"
-                        rows="0"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
+                <div class="w-full col-span-full">
+                  <FormField :model-value="data?.paymentConfirmationTemplate" v-slot="{ componentField }"
+                    name="paymentConfirmationTemplate">
+                    <FormItem>
+                      <FormLabel> Payment Confirmation Template </FormLabel>
+                      <FormControl>
+                        <PaymentIntegrationsPaymentIntegrationTemplateEditor :payment-integration="data"
+                          v-bind="componentField" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
 
-                <FormField
-                  :model-value="data?.paymentConfirmationTemplateShort"
-                  v-slot="{ componentField }"
-                  name="paymentConfirmationTemplateShort"
-                >
-                  <FormItem>
-                    <FormLabel> Payment Confirmation Template Short </FormLabel>
-                    <FormControl>
-                      <UiTextarea
-                        placeholder="Enter Payment Confirmation Template Short"
-                        class="resize-y col-span-full"
-                        rows="0"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
+                <div class="w-full col-span-full">
+                  <FormField :model-value="data?.paymentConfirmationTemplateShort" v-slot="{ componentField }"
+                    name="paymentConfirmationTemplateShort">
+                    <FormItem>
+                      <FormLabel> Payment Confirmation Template Short </FormLabel>
+                      <FormControl>
+                        <PaymentIntegrationsPaymentIntegrationTemplateEditor :payment-integration="data"
+                          v-bind="componentField" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
 
-                <FormField
-                  :model-value="data?.paymentDetailTemplate"
-                  v-slot="{ componentField }"
-                  name="paymentDetailTemplate"
-                >
-                  <FormItem>
-                    <FormLabel> Payment Detail Template </FormLabel>
-                    <FormControl>
-                      <UiTextarea
-                        placeholder="Enter Payment Detail Template"
-                        class="resize-y col-span-full"
-                        rows="0"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
+                <div class="w-full col-span-full">
+                  <FormField :model-value="data?.paymentDetailTemplate" v-slot="{ componentField }"
+                    name="paymentDetailTemplate">
+                    <FormItem>
+                      <FormLabel> Payment Detail Template </FormLabel>
+                      <FormControl>
+                        <PaymentIntegrationsPaymentIntegrationTemplateEditor :payment-integration="data"
+                          v-bind="componentField" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
 
-                <FormField
-                  :model-value="data?.paymentDetailTemplateShort"
-                  v-slot="{ componentField }"
-                  name="paymentDetailTemplateShort"
-                >
-                  <FormItem>
-                    <FormLabel> Payment Detail Template Short </FormLabel>
-                    <FormControl>
-                      <UiTextarea
-                        placeholder="Enter Payment Detail Template Short"
-                        class="resize-y col-span-full"
-                        rows="0"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
+                <div class="w-full col-span-full">
+                  <FormField :model-value="data?.paymentDetailTemplateShort" v-slot="{ componentField }"
+                    name="paymentDetailTemplateShort">
+                    <FormItem>
+                      <FormLabel> Payment Detail Template Short </FormLabel>
+                      <FormControl>
+                        <PaymentIntegrationsPaymentIntegrationTemplateEditor :payment-integration="data"
+                          v-bind="componentField" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
 
-                <FormField
-                  :model-value="data?.paymentSuccessTemplate"
-                  v-slot="{ componentField }"
-                  name="paymentSuccessTemplate"
-                >
-                  <FormItem>
-                    <FormLabel> Payment Success Template </FormLabel>
-                    <FormControl>
-                      <UiTextarea
-                        placeholder="Enter Payment Success Template"
-                        class="resize-y col-span-full"
-                        rows="0"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
+                <div class="w-full col-span-full">
+                  <FormField :model-value="data?.paymentSuccessTemplate" v-slot="{ componentField }"
+                    name="paymentSuccessTemplate" class="col-span-full">
+                    <FormItem>
+                      <FormLabel> Payment Success Template </FormLabel>
+                      <FormControl>
+                        <PaymentIntegrationsPaymentIntegrationTemplateEditor :payment-integration="data"
+                          v-bind="componentField" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
 
-                <FormField
-                  :model-value="data?.paymentSuccessTemplateShort"
-                  v-slot="{ componentField }"
-                  name="paymentSuccessTemplateShort"
-                >
-                  <FormItem>
-                    <FormLabel> Payment Success Template Short </FormLabel>
-                    <FormControl>
-                      <UiTextarea
-                        placeholder="Enter Payment Success Template Short"
-                        class="resize-y col-span-full"
-                        rows="0"
-                        v-bind="componentField"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                </FormField>
-
-                <FormField
-                  :model-value="data?.paymentErrorTemplate"
-                  v-slot="{ componentField }"
-                  name="paymentErrorTemplate"
-                >
+                <div class="w-full col-span-full">
+                  <FormField :model-value="data?.paymentSuccessTemplateShort" v-slot="{ componentField }"
+                    name="paymentSuccessTemplateShort">
+                    <FormItem>
+                      <FormLabel> Payment Success Template Short </FormLabel>
+                      <FormControl>
+                        <PaymentIntegrationsPaymentIntegrationTemplateEditor :payment-integration="data"
+                          v-bind="componentField" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  </FormField>
+                </div>
+                <div class="w-full col-span-full">
+                <FormField :model-value="data?.paymentErrorTemplate" v-slot="{ componentField }"
+                  name="paymentErrorTemplate">
                   <FormItem>
                     <FormLabel> Payment Error Template </FormLabel>
                     <FormControl>
-                      <UiTextarea
-                        placeholder="Enter Payment Error Template"
-                        class="resize-y col-span-full"
-                        rows="0"
-                        v-bind="componentField"
-                      />
+                      <PaymentIntegrationsPaymentIntegrationTemplateEditor :payment-integration="data"
+                          v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
+                </div>
 
-                <FormField
-                  :model-value="data?.paymentErrorTemplateShort"
-                  v-slot="{ componentField }"
-                  name="paymentErrorTemplateShort"
-                >
+                <div class="w-full col-span-full">
+                <FormField :model-value="data?.paymentErrorTemplateShort" v-slot="{ componentField }"
+                  name="paymentErrorTemplateShort">
                   <FormItem>
                     <FormLabel> Payment Error Template Short </FormLabel>
                     <FormControl>
-                      <UiTextarea
-                        placeholder="Enter Payment Error Template Short"
-                        class="resize-y col-span-full"
-                        rows="0"
-                        v-bind="componentField"
-                      />
+                      <PaymentIntegrationsPaymentIntegrationTemplateEditor :payment-integration="data"
+                          v-bind="componentField" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                </FormField>
+                </div>
+
+                <FormField :model-value="data?.coreTransactionReasonTemplate" v-slot="{ componentField }"
+                  name="coreTransactionReasonTemplate">
+                  <FormItem>
+                    <FormLabel> Core Banking Narative</FormLabel>
+                    <FormControl>
+                      <UiTextarea placeholder="Enter Payment core banking narative" class="resize-y col-span-full"
+                        rows="0" v-bind="componentField" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
 
-
-            <FormField
-              :model-value="data?.coreTransactionReasonTemplate"
-              v-slot="{ componentField }"
-              name="coreTransactionReasonTemplate"
-            >
-              <FormItem>
-                <FormLabel> Core Banking Narative</FormLabel>
-                <FormControl>
-                  <UiTextarea
-                    placeholder="Enter Payment core banking narative"
-                    class="resize-y col-span-full"
-                    rows="0"
-                    v-bind="componentField"
-                  />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            </FormField>
-
-                <FormField
-                  :model-value="data?.isDraft"
-                  v-slot="{ value, handleChange }"
-                  name="isDraft"
-                >
+                <FormField :model-value="data?.isDraft" v-slot="{ value, handleChange }" name="isDraft">
                   <FormItem>
                     <FormLabel> Is Draft </FormLabel>
                     <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
+                      <UiSwitch :checked="value" @update:checked="handleChange" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
 
-                <FormField
-                  :model-value="data?.enabled"
-                  v-slot="{ value, handleChange }"
-                  name="enabled"
-                >
+                <FormField :model-value="data?.enabled" v-slot="{ value, handleChange }" name="enabled">
                   <FormItem>
                     <FormLabel> Enabled </FormLabel>
                     <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
+                      <UiSwitch :checked="value" @update:checked="handleChange" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
 
-                <FormField
-                  :model-value="data?.isImage"
-                  v-slot="{ value, handleChange }"
-                  name="isImage"
-                >
+                <FormField :model-value="data?.isImage" v-slot="{ value, handleChange }" name="isImage">
                   <FormItem>
                     <FormLabel> Is Image </FormLabel>
                     <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
+                      <UiSwitch :checked="value" @update:checked="handleChange" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
 
-                <FormField
-                  :model-value="data?.confirmRecipientIdentity"
-                  v-slot="{ value, handleChange }"
-                  name="confirmRecipientIdentity"
-                >
+                <FormField :model-value="data?.confirmRecipientIdentity" v-slot="{ value, handleChange }"
+                  name="confirmRecipientIdentity">
                   <FormItem>
                     <FormLabel> Confirm Recipient Identity </FormLabel>
                     <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
+                      <UiSwitch :checked="value" @update:checked="handleChange" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                <FormField
-                  :model-value="data?.reEnquirePaymentDetailBeforePayment"
-                  v-slot="{ value, handleChange }"
-                  name="reEnquirePaymentDetailBeforePayment"
-                >
+                <FormField :model-value="data?.reEnquirePaymentDetailBeforePayment" v-slot="{ value, handleChange }"
+                  name="reEnquirePaymentDetailBeforePayment">
                   <FormItem>
                     <FormLabel>
                       Re-Enquire Payment Detail Before Payment
                     </FormLabel>
                     <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
+                      <UiSwitch :checked="value" @update:checked="handleChange" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
 
-                <FormField
-                  :model-value="data?.singleFormPayment"
-                  v-slot="{ value, handleChange }"
-                  name="singleFormPayment"
-                >
+                <FormField :model-value="data?.singleFormPayment" v-slot="{ value, handleChange }"
+                  name="singleFormPayment">
                   <FormItem>
                     <FormLabel> Single Form Payment </FormLabel>
                     <FormControl>
-                      <UiSwitch
-                        :checked="value"
-                        @update:checked="handleChange"
-                      />
+                      <UiSwitch :checked="value" @update:checked="handleChange" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 </FormField>
-                
+
                 <UiPermissionGuard :permission="PermissionConstants.UPDATE_PAYMENT_INTEGRATION">
                   <div class="col-span-full w-full py-4 flex justify-between">
-                    <UiButton
-                      :disabled="loading"
-                      variant="outline"
-                      type="button"
-                      size="lg"
-                      @click="$router.go(-1)"
-                    >
+                    <UiButton :disabled="loading" variant="outline" type="button" size="lg" @click="$router.go(-1)">
                       Cancel
                     </UiButton>
                     <UiButton :disabled="loading" size="lg" type="submit">
-                      <Icon
-                        name="svg-spinners:8-dots-rotate"
-                        v-if="loading"
-                        class="mr-2 h-4 w-4 animate-spin"
-                      ></Icon>
+                      <Icon name="svg-spinners:8-dots-rotate" v-if="loading" class="mr-2 h-4 w-4 animate-spin"></Icon>
 
                       Update
                     </UiButton>
@@ -1421,55 +1052,40 @@ onMounted(() => {
         </UiTabsContent>
       </UiPermissionGuard>
       <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_OPERATION>
-        <UiTabsContent
-          value="paymentOperations"
-          class="text-base bg-background p-6 rounded-lg"
-        >
+        <UiTabsContent value="paymentOperations" class="text-base bg-background p-6 rounded-lg">
           <PaymentIntegrationsPaymentOperations />
         </UiTabsContent>
-        <UiTabsContent
-          value="configurePaymentOperations"
-          class="text-base bg-background py-0 rounded-lg"
-        >
+        <UiTabsContent value="configurePaymentOperations" class="text-base bg-background py-0 rounded-lg">
           <PaymentOperationsConfigurations :integrationDataProps="data" />
         </UiTabsContent>
       </UiPermissionGuard>
       <UiPermissionGuard :permission=PermissionConstants.CREATE_PAYMENT_OPERATION>
-        <UiTabsContent
-          value="newPaymentOperation"
-          class="text-base bg-background py-6 rounded-lg"
-        >
-          <PaymentOperationsNewPaymentOperation
-            :integrationId="integrationId"
-          />
+        <UiTabsContent value="newPaymentOperation" class="text-base bg-background py-6 rounded-lg">
+          <PaymentOperationsNewPaymentOperation :integrationId="integrationId" />
         </UiTabsContent>
       </UiPermissionGuard>
       <UiPermissionGuard :permission=PermissionConstants.READ_PAYMENT_INTEGRATION>
-        <UiTabsContent
-          value="IntegrationTransactions"
-          class="text-base bg-background p-6 rounded-lg"
-        >
+        <UiTabsContent value="IntegrationTransactions" class="text-base bg-background p-6 rounded-lg">
           <PaymentIntegrationsTransactions />
         </UiTabsContent>
-        <UiTabsContent
-          value="transactionDetails"
-          class="text-base bg-background px-6 rounded-lg"
-        >
+        <UiTabsContent value="transactionDetails" class="text-base bg-background px-6 rounded-lg">
           <PaymentIntegrationsTransactionsDetails transactionDataProps="data" />
         </UiTabsContent>
       </UiPermissionGuard>
       <UiTabsContent value="CustomerGroups" class="space-y-4 py-8">
-          <PaymentIntegrationsCustomerGroups />
-        </UiTabsContent>
+        <PaymentIntegrationsCustomerGroups />
+      </UiTabsContent>
     </UiTabs>
   </div>
 
   <UiAlertDialog :open="openEditModal" :onOpenChange="setOpenEditModal">
     <UiAlertDialogContent>
       <UiAlertDialogHeader>
-        <UiAlertDialogTitle>Are you absolutely sure to set this account number as the collection account?</UiAlertDialogTitle>
+        <UiAlertDialogTitle>Are you absolutely sure to set this account number as the collection account?
+        </UiAlertDialogTitle>
         <UiAlertDialogDescription>
-          This will update the account number and set this account number as the collection account for this payment integration.
+          This will update the account number and set this account number as the collection account for this payment
+          integration.
           <br><br>
           <p class="text-base text-muted-foreground font-medium mb-1">
             Account Name: <span class="text-primary font-bold">{{ accountsInfoData?.fullName }}</span>
@@ -1486,15 +1102,8 @@ onMounted(() => {
         <UiAlertDialogCancel @click="setOpenEditModal(false)">
           Cancel
         </UiAlertDialogCancel>
-        <UiAlertDialogAction
-          @click="confirmUpdatePaymentIntegration"
-          :disabled="loading"
-        >
-          <Icon
-            name="svg-spinners:8-dots-rotate"
-            v-if="loading"
-            class="mr-2 h-4 w-4 animate-spin"
-          ></Icon>
+        <UiAlertDialogAction @click="confirmUpdatePaymentIntegration" :disabled="loading">
+          <Icon name="svg-spinners:8-dots-rotate" v-if="loading" class="mr-2 h-4 w-4 animate-spin"></Icon>
           Continue
         </UiAlertDialogAction>
       </UiAlertDialogFooter>

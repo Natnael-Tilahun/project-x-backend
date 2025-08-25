@@ -102,11 +102,9 @@ const usedVariables = computed(() => {
   return Array.from(new Set(variables));
 });
 const invalidVariables = computed(() => {
-  const avail = new Set((availableVariables.value || []).map(v => v.toLowerCase()));
-  return usedVariables.value.filter(v => !avail.has((v || "").toLowerCase()));
+  const availableSet = new Set(availableVariables.value || []);
+  return usedVariables.value.filter(v => !availableSet.has(v));
 });
-
-console.log("invalidVariables: ", invalidVariables.value)
 
 // Methods
 const copyVariable = (variable: string) => {
@@ -331,8 +329,20 @@ onMounted(() => {
     <!-- Right: Variables and Warnings -->
     <div class="flex flex-col gap-4 mt-2">
       <div class="bg-muted rounded-lg border p-4">
-        <div class="flex items-center justify-between mb-2">
+        <div class="flex gap-2 flex-col justify-between mb-2">
           <UiLabel class="text-base">Variables</UiLabel>
+                  <!-- Invalid Variable Warnings -->
+        <div class="mb-2" v-if="invalidVariables.length > 0">
+            <h3 class="text-base font-semibold mb-2 text-destructive flex items-center">
+                <Icon name="lucide:alert-triangle" class="h-5 w-5 mr-2" />
+                <span>Warnings</span>
+            </h3>
+            <ul class="space-y-1">
+                <li v-for="variable in invalidVariables" :key="variable" class="bg-destructive/10 text-destructive font-mono text-xs px-2 py-1 rounded-md border border-destructive/20">
+                    {{ variable }}
+                </li>
+            </ul>
+        </div>
         </div>
         <div class="space-y-4">
           <div
