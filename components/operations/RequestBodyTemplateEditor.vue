@@ -2,14 +2,15 @@
 <script lang="ts" setup>
 import { ref, computed, watch, nextTick, onMounted } from "vue";
 import type { RequestInput } from "~/types";
+import TemplateValidator from "~/components/TemplateValidator.vue";
 
-const props = defineProps<{
+const props = defineProps<{ 
   modelValue?: string | null;
   variables?: string[]; // available variables (union)
   requestInputs?: RequestInput[] | null; // full inputs for grouping
 }>();
 
-const emit = defineEmits<{
+const emit = defineEmits<{ 
   (e: "update:modelValue", value: string): void;
 }>();
 
@@ -25,6 +26,8 @@ watch(payload, (v) => emit("update:modelValue", v));
 const availableVariables = computed(() =>
   Array.from(new Set(props.variables || [])).filter(Boolean)
 );
+
+const isValidatorOpen = ref(false);
 
 const groupedVariables = computed(() => {
   const base: Record<string, string[]> = {
@@ -178,12 +181,11 @@ const hideSuggestions = () => {
 const insertVariableFromSuggestion = (variable: string) => {
   const textarea = editor.value;
   if (!textarea) return;
+  const textToInsert = `\${${variable}}`;
   const textUpToCursor = textarea.value.substring(0, textarea.selectionStart);
-  const braceIndex = textUpToCursor.lastIndexOf("${");
+  const braceIndex = textUpToCursor.lastIndexOf("${ ");
   const dollarIndex = textUpToCursor.lastIndexOf("$");
   const triggerIndex = Math.max(braceIndex, dollarIndex);
-
-  const textToInsert = `\${${variable}}`;
 
   if (triggerIndex !== -1) {
     const before = textarea.value.substring(0, triggerIndex);
@@ -258,8 +260,8 @@ onMounted(() => {
     <!-- Left: Editor -->
     <div class="relative">
       <div class="flex items-center justify-between mb-2">
-        <UiLabel class="text-base">Request Body Template</UiLabel>
-        <UiButton
+        <!-- <UiLabel class="text-base">Request Body Template</UiLabel> -->
+        <!-- <UiButton
           size="sm"
           type="button"
           variant="outline"
@@ -269,7 +271,7 @@ onMounted(() => {
           <Icon v-if="isPayloadCopied" name="ph:check-bold" class="h-4 w-4" />
           <Icon v-else name="material-symbols:content-copy" class="h-4 w-4" />
           <span>{{ isPayloadCopied ? "Copied" : "Copy" }}</span>
-        </UiButton>
+        </UiButton> -->
       </div>
 
       <div class="relative">
@@ -306,10 +308,28 @@ onMounted(() => {
         <!-- Hidden ghost element for cursor position calc (within the same wrapper) -->
         <!-- <div id="ghost" ref="ghost" class="editor-textarea absolute top-0 left-0 invisible whitespace-pre-wrap"></div> -->
       </div>
+       <div class="flex justify-end mt-2 gap-4">
+        
+          <UiButton type="button" size="sm" variant="outline" @click="isValidatorOpen = true">
+              <Icon name="lucide:test-tube-2" class="mr-2 h-4 w-4" />
+              Validate Template
+          </UiButton>
+          <UiButton
+          size="sm"
+          type="button"
+          variant="outline"
+          class="flex items-center gap-2"
+          @click="copyPayload"
+        >
+          <Icon v-if="isPayloadCopied" name="ph:check-bold" class="h-4 w-4" />
+          <Icon v-else name="material-symbols:content-copy" class="h-4 w-4" />
+          <span>{{ isPayloadCopied ? "Copied" : "Copy" }}</span>
+        </UiButton>
+      </div>
     </div>
 
     <!-- Right: Variables and Warnings -->
-    <div class="flex flex-col gap-4 mt-12">
+    <div class="flex flex-col gap-4 mt-2">
       <div class="bg-muted rounded-lg border p-4">
         <div class="flex items-center justify-between mb-2">
           <UiLabel class="text-base">Variables</UiLabel>
@@ -335,7 +355,9 @@ onMounted(() => {
                   size="icon"
                   class="h-6 w-6"
                   @click.stop="copyVariable(v)"
-                  :title="`Copy \${${v}}`"
+                  :title="`Copy \
+${v}
+`"
                 >
                   <Icon
                     v-if="copiedVariable === v"
@@ -355,7 +377,7 @@ onMounted(() => {
       </div>
     </div>
   </div>
-
+  <TemplateValidator v-model="isValidatorOpen" :template="payload" />
 </template>
 
 <style scoped>
