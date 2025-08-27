@@ -318,6 +318,10 @@ export enum InterfaceType {
   SWITCH = "SWITCH",
   DATE = "DATE",
   NONE = "NONE",
+  INPUT_QR = "INPUT_QR",
+  INPUT_OTP = "INPUT_OTP",
+  INPUT_CURRENCY = "INPUT_CURRENCY",
+  INPUT_LOCATION = "INPUT_LOCATION",
 }
 
 export enum AutoCompleteTrigger {
