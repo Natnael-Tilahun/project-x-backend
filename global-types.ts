@@ -6,6 +6,14 @@ export enum PaymentIntegrationType {
   NONE = "NONE",
 }
 
+export enum QrProcessorType{
+    EMV = "EMV",    // true = fetch from remote API
+    ET_SWITCH = "ET_SWITCH",
+    CBE_BIRR = "CBE_BIRR", // false = local/default
+    CNET = "CNET",
+    TELE_BIRR = "TELE_BIRR"
+}
+
 export enum PaymentCategory {
   WALLET_TRANSFER = "Wallet Transfer",
   BILL_PAYMENT = "Bill Payment",

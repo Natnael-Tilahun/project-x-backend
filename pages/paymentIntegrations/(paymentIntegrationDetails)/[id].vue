@@ -22,12 +22,14 @@ import {
   PaymentCategory,
   LimitType,
   VisibilityScope,
+  QrProcessorType,
 } from "@/global-types";
 import ErrorMessage from "~/components/errorMessage/ErrorMessage.vue";
 import { useDocuments } from "~/composables/useDocuments";
 import type { PaymentIntegration, ApiOperation, Charge, Customer } from "~/types";
 import ChargeSelect from "~/components/charges/ChargeSelect.vue";
 import { PermissionConstants } from "~/constants/permissions";
+import PaymentIntegrationsChargeCodeLists from "~/components/paymentIntegrations/ChargeCodeLists.vue";
 
 const route = useRoute();
 const {
@@ -419,6 +421,17 @@ onMounted(() => {
           "
           class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none">
           Allowed Customer Groups
+        </UiTabsTrigger>
+        <UiTabsTrigger value="ChargeCodeLists" @click="
+          navigateTo({
+            path: route.path,
+            query: {
+              activeTab: 'ChargeCodeLists',
+            },
+          })
+          "
+          class="text-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=inactive]:bg-muted-foreground data-[state=inactive]:text-muted rounded-t-lg rounded-b-none">
+          Allowed Charge Codes
         </UiTabsTrigger>
       </UiTabsList>
 
@@ -825,13 +838,38 @@ onMounted(() => {
                   </FormItem>
                 </FormField>
 
-                <FormField :model-value="data?.chargeId" v-slot="{ componentField }" name="chargeId">
+
+                <FormField :model-value="data?.qrProcessorType" v-slot="{ componentField }" name="qrProcessorType">
+                  <FormItem>
+                    <FormLabel> QR Processor Type</FormLabel>
+                    <UiSelect v-bind="componentField">
+                      <FormControl>
+                        <UiSelectTrigger>
+                          <UiSelectValue :placeholder="data?.qrProcessorType
+                              ? data?.qrProcessorType
+                              : 'Select a QR Processor Type'
+                            " />
+                        </UiSelectTrigger>
+                      </FormControl>
+                      <FormMessage />
+                      <UiSelectContent>
+                        <UiSelectGroup>
+                          <UiSelectItem v-for="item in Object.values(QrProcessorType)" :key="item" :value="item">
+                            {{ item }}
+                          </UiSelectItem>
+                        </UiSelectGroup>
+                      </UiSelectContent>
+                    </UiSelect>
+                  </FormItem>
+                </FormField>
+
+                <!-- <FormField :model-value="data?.chargeId" v-slot="{ componentField }" name="chargeId">
                   <FormItem>
                     <FormLabel>Charge</FormLabel>
                     <ChargeSelect v-bind="componentField" :charges="chargesData" />
                     <FormMessage />
                   </FormItem>
-                </FormField>
+                </FormField> -->
 
                 <FormField :model-value="data?.defaultPaymentReason" v-slot="{ componentField }"
                   name="defaultPaymentReason">
@@ -1074,6 +1112,9 @@ onMounted(() => {
       </UiPermissionGuard>
       <UiTabsContent value="CustomerGroups" class="space-y-4 py-8">
         <PaymentIntegrationsCustomerGroups />
+      </UiTabsContent>
+      <UiTabsContent value="ChargeCodeLists" class="space-y-4 py-8">
+        <PaymentIntegrationsChargeCodeLists />
       </UiTabsContent>
     </UiTabs>
   </div>
