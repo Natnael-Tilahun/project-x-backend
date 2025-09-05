@@ -1,17 +1,31 @@
 <script lang="ts" setup>
 import { useRoute } from "vue-router";
 import { Icons } from "@/components/icons.jsx";
+import QRCode from "qrcode";
 
 const route = useRoute();
 // const paymentResponse = route.query;
 const showFullAccountId = ref(false);
 const paymentResponse = ref<Transaction | null>(null);
+const qrCodeDataUrl = ref("");
 
 // Define props
 const props = defineProps(["transactionDetails"]);
-if(props){
-  paymentResponse.value = props.transactionDetails
+if (props) {
+  paymentResponse.value = props.transactionDetails;
 }
+
+watchEffect(async () => {
+  if (paymentResponse.value?.qrEncodedData) {
+    try {
+      qrCodeDataUrl.value = await QRCode.toDataURL(
+        paymentResponse.value.qrEncodedData
+      );
+    } catch (err) {
+      console.error(err);
+    }
+  }
+});
 
 function toggleAccountIdVisibility() {
   showFullAccountId.value = !showFullAccountId.value;
@@ -33,9 +47,7 @@ function formatAccountNumber(accountId: string) {
   <div
     class="flex flex-col md:flex-row lg:flex-col gap-4 md:gap-8 justify-center h-full"
   >
-    <UiCard
-      class="w-full  h-fit relative bg-gray-700"
-    >
+    <UiCard class="w-full h-fit relative bg-gray-700">
       <UiCardContent class="">
         <img
           src="/backgroundMap.png"
@@ -101,32 +113,35 @@ function formatAccountNumber(accountId: string) {
               class="w-fit flex justify-center items-center p-6 col-span-full place-self-center mt-4 bg-gray-50 dark:bg-white"
               v-if="paymentResponse"
             >
-              <img
-                :src="`https://api.qrserver.com/v1/create-qr-code/?data=${paymentResponse.qrEncodedData}`"
-                alt="QR Code"
-              />
+              <img :src="qrCodeDataUrl" alt="QR Code" />
             </UiCard>
-            <div class="flex w-full flex-col items-center gap-2 justify-center col-span-full">
+            <div
+              class="flex w-full flex-col items-center gap-2 justify-center col-span-full"
+            >
               <Icon
-                  v-if="paymentResponse.paymentStatus == 'PENDING'"
-                  name="svg-spinners:8-dots-rotate"
-                  class="h-6 w-6 animate-spin text-yellow-500"
-                ></Icon>
+                v-if="paymentResponse.paymentStatus == 'PENDING'"
+                name="svg-spinners:8-dots-rotate"
+                class="h-6 w-6 animate-spin text-yellow-500"
+              ></Icon>
               <div
                 :class="[
-        'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium flex flex-col items-center gap-2',
-        {
-          'bg-green-600 text-white font-bold w-fit':
-            String(paymentResponse.paymentStatus).toLowerCase() === 'completed',
-          'bg-yellow-500 text-black font-bold w-fit':
-            String(paymentResponse.paymentStatus).toLowerCase() === 'pending',
-          'bg-red-600 text-white font-bold w-fit':
-            String(paymentResponse.paymentStatus).toLowerCase() === 'failed' || String(paymentResponse.paymentStatus).toLowerCase() === 'expired',
-        },
-      ]"
+                  'inline-flex items-center px-3 py-1 rounded-full text-xs font-medium flex flex-col items-center gap-2',
+                  {
+                    'bg-green-600 text-white font-bold w-fit':
+                      String(paymentResponse.paymentStatus).toLowerCase() ===
+                      'completed',
+                    'bg-yellow-500 text-black font-bold w-fit':
+                      String(paymentResponse.paymentStatus).toLowerCase() ===
+                      'pending',
+                    'bg-red-600 text-white font-bold w-fit':
+                      String(paymentResponse.paymentStatus).toLowerCase() ===
+                        'failed' ||
+                      String(paymentResponse.paymentStatus).toLowerCase() ===
+                        'expired',
+                  },
+                ]"
               >
-              
-                <p>{{paymentResponse.paymentStatus}}</p>
+                <p>{{ paymentResponse.paymentStatus }}</p>
               </div>
             </div>
           </UiCardDescription>
@@ -134,7 +149,7 @@ function formatAccountNumber(accountId: string) {
       </UiCardContent>
     </UiCard>
     <DashboardInitiatePaymentPushUssd
-     v-if="String(paymentResponse.paymentStatus).toLowerCase() === 'pending'"
+      v-if="String(paymentResponse.paymentStatus).toLowerCase() === 'pending'"
       class="w-full min-h-max"
       :merchantTransactionId="paymentResponse?.merchantTransactionId"
     />

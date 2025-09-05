@@ -66,6 +66,12 @@ export default defineNuxtConfig({
     // "@babel/plugin-syntax-dynamic-import",
   ],
 
+  icon: {
+    iconifyApiOptions: {
+      url: '',
+    },
+  },
+
   // presets: [
   //  '@nuxt/babel-preset-app',
   // ],
