@@ -339,6 +339,7 @@ interface CustomerGroupMember{
   customer?:	Customer
 }
 
+
 interface Merchant {
   coreAccountNumber:	string
   merchantId?: string;
@@ -667,10 +668,11 @@ interface PaymentIntegration {
   dailyLimitPerAccount?: number | null;
   limitPerTransaction?: number | null;
   category?: PaymentCategory | null;
-  chargeId?: string | null;
+  chargeCodeList?: string[] | null;
   maxTransactionsPerDay?: number | null;
   visibilityScope?: VisibilityScope
   coreTransactionReasonTemplate?: string | null
+  qrProcessorType?: QrProcessorType | null
 }
 
 interface ThirdPartyTransactionDetail{

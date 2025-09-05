@@ -292,6 +292,68 @@ export const usePaymentIntegrations = () => {
     }
   };
 
+  const getChargeCodeListsByIntegrationId: (id: string) => ApiResult<string[]> = async (id) => {
+    try {
+      const { data, pending, error, status } = await fetch<string[]>(
+        `/api/v1/internal/payment-integrations/${id}/charges`
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as string[]) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const createChargeCodeListByIntegrationId: (id: string, chargeData: any) => ApiResult<any> = async (id, chargeData) => {
+    try {
+      const { data, pending, error, status } = await fetch<any>(
+        `/api/v1/internal/payment-integrations/${id}/charges`,
+        {
+          method: "POST",
+          body: chargeData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as any) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const deleteChargeCodeListByIntegrationId: (id: string, chargeData: any) => ApiResult<any> = async (id, chargeData) => {
+    try {
+      const { data, pending, error, status } = await fetch<any>(
+        `/api/v1/internal/payment-integrations/${id}/charges`,
+        {
+          method: "DELETE",
+          body: chargeData,
+        }
+      );
+
+      isLoading.value = pending.value;
+
+      if (status.value === "error") {
+        handleApiError(error);
+      }
+
+      return data.value ? (data.value as unknown as any) : null;
+    } catch (err) {
+      throw err;
+    }
+  };
+
   return {
     // Server pagination API
     page,
@@ -318,6 +380,9 @@ export const usePaymentIntegrations = () => {
     getCustomerGroupByIntegrationId,
     createCustomerGroupByIntegrationId,
     deleteCustomerGroupByIntegrationId,
+    getChargeCodeListsByIntegrationId,
+    createChargeCodeListByIntegrationId,
+    deleteChargeCodeListByIntegrationId,
     isSubmitting,
   };
 };
