@@ -11,6 +11,7 @@ import {
   PaymentCategory,
   LimitType,
   VisibilityScope,
+  QrProcessorType,
 } from "@/global-types";
 
 const IntegrationTypeSchema = z.nativeEnum(PaymentIntegrationType);
@@ -37,6 +38,10 @@ const CreditAccountNumberVariableTypeSchema = z
 const PaymentCategorySchema = z.enum(
   Object.keys(PaymentCategory) as [string, ...string[]]
 );
+const QrProcessorTypeSchema = z
+.nativeEnum(QrProcessorType)
+.nullable()
+.optional();
 
 export const paymentIntegrationFormSchema = toTypedSchema(
   z.object({
@@ -46,7 +51,7 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     integrationName: z.string(),
     companyName: z.string(),
     description: z.string().optional().nullable(),
-    chargeId: z.string(),
+    // chargeId: z.string(),
     iconPath: z.string().optional().nullable(),
     isDraft: z.boolean().optional().nullable().default(false),
     enabled: z.boolean().optional().nullable().default(false),
@@ -83,6 +88,7 @@ export const paymentIntegrationFormSchema = toTypedSchema(
     category: PaymentCategorySchema,
     maxTransactionsPerDay: z.number().optional().nullable(),
     coreTransactionReasonTemplate:  z.string().optional().nullable(),
+    qrProcessorType: QrProcessorTypeSchema
   })
 );
 
