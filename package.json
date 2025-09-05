@@ -9,6 +9,9 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare"
   },
+  "engines": {
+    "node": "22.x"
+  },
   "devDependencies": {
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@iconify-json/carbon": "^1.2.13",
